@@ -1,5 +1,6 @@
 function [param] = cts_param(guiinput,param)
 %WIP help
+%if guiinput =='gui' an input GUI is used for manual input, it will load any values given over defaults
 %voltage in KeV
 %aberration in mm
 %sigma arbitrary
@@ -12,6 +13,10 @@ function [param] = cts_param(guiinput,param)
 %(order is start point to positive/max, then start point towards negative)
 %pix is used to override the real pixel size of a model/mrc, otherwise leave as 0
 %tiltax sets tilt axis, 'X' or anything else becomes 'Y' - still janky
+%raddamage scales radiation damage (arbitrary)
+%scatter scales inelastic/lossy electron scattering (nonlinear, scales distance)
+%ctfoverlap sets how much overlap between CTF strips (default 2), 0 skips CTF convolution entirely
+
 
 arguments
     guiinput = 0
