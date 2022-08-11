@@ -1,8 +1,9 @@
 function [output, overlap] = helper_arrayinsert(dest,source,coord,method)
-%inserts source into dest at [coords]. by default, adds to destination values - method 'sum'.
-%'replace' replaces dest values with source instead, min/max/mean should be obvious.
-%'nonoverlap' adds if it does not overlap extant values, otherwise returns the original and overlap=1
-%'overlaptest' is nonoverlap, but doesn't operate on dest, only checks and returns an overlap value
+%inserts source into dest array at [coords] by the algorithm of "method".
+%method can be sum(default),min,max,mean (self explanatory) replace, overlaptest, or nonoverlap
+%replace replaces all values in the target region of dest
+%overlaptest outputs overlap=1 if the sum would cause an overlap of objects, output is unmodified dest
+%nonoverlap works as overlaptest, but if overlap!=1 also adds source to dest as output
 arguments
     dest double
     source double
