@@ -33,6 +33,8 @@ arguments
         %activate dose weighting with a list of length==tilts?
         %single = full scan, list==tilts in electrons for that scan
     param.tiltscheme = 0 %flip angle for bidirectional, otherwise 'symmetric'
+    %img.symmetric = 0
+    %param.doseweight = 0
     param.pix = 0 %0 to not override input
     param.tiltax = 'Y' %using X now works but generates super thick tomograms
     
@@ -89,13 +91,18 @@ if strcmp(guiinput,'gui') %basic GUI for manual input of values
     param.tilt = str2double(split(p{5}))'; %extract the list of potential tiltangles
 end
 
+numel(param.tilt)
+param.tilt
 if numel(param.tilt)==3
-    tilt = param.tilt(1):param.tilt(2):param.tilt(3);
-    if ~isempty(tilt), param.tilt=tilt; end
-end
-
-if numel(param.dose)~=numel(param.tilt) && numel(param.dose)~=1
-    warning('dose and tilt are incompatible sizes - they must be equal length or there must be a single dose') 
-end
-
+    tilt = param.tilt(1):param.tilt(2):param.tilt(3)
+    
+if ~isempty(tilt), param.tilt=tilt; end
+% if numel(param.tilt)==3 && param.tilt(3)>param.tilt(1)
+%     try 
+%         
+%     catch
+%         warning('tilt angles not parsed successfully')
+%     end
+% end
+    
 end
