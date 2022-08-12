@@ -41,7 +41,7 @@ arguments
     %simulation/computational parameters
     param.raddamage = 1;
     param.scatter = 1;
-    param.ctfoverlap {mustBeNonnegative,mustBeInteger} = 2
+    param.ctfoverlap {mustBeNonnegative,mustBeInteger} = 2 %if 0 skip ctf
     %randomization to tilt angles?
 end
 

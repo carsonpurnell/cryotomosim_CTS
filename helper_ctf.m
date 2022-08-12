@@ -8,31 +8,6 @@ arguments
 end
 if iscell(param), param = cts_param(param{:}); end
 if param.ctfoverlap==0, convolved=input; return; end %if overlap==0, skip doing CTF
-%tilts = param.tilt(1):param.tilt(2):param.tilt(3);
-
-%{
-if strcmp(param,'default'), param = struct('volt',3e2,'sphereabb',2.7,'defocus',-6,'sigma',1);
-elseif strcmp(param,'gui')
-    current = pwd; cd(userpath); cd('Toolbox/tomo_sim/defaults');
-    [file, path] = uigetfile('*.mat','Select the desired parameter file');
-    load(fullfile(path,file),'param')
-    cd(current)
-elseif strcmp(param,'manual')
-    param = [];
-    p = inputdlg( {'Microscope voltage (kV): ','Microscope spherical aberration (mm): ',...
-        'Session focus (negative for defocus, nm): ','Sigma value for CTF: ',...
-        'Save these parameters as a file for later use? (1 for yes): '},'Microscope and imaging parameters');
-    p = str2double(p); %convert to numbers
-    param.volt = p(1); param.sphereabb = p(2); param.defocus = p(3); param.sigma = p(4);
-    if p(5)==1
-        current = pwd;
-        q = append('volt',string(param.volt),'_sa',string(param.sphereabb),...
-            '_defoc',string(param.defocus),'_sigma',string(param.sigma),'.mat');
-        cd(userpath); cd('Toolbox/tomo_sim/defaults');
-        save(q,'param'); cd(current); disp('Saved input parameters')
-    end
-end
-%}
 
 V = param.voltage*1000; %convert from KeV to eV
 cs = param.aberration/1000; %convert from mm to m
@@ -42,7 +17,7 @@ Dz = param.defocus/1e6; %convert from microns to m
 L = relativistic_electrons(V); %compute wavelength from voltage, correcting for relativistic effects
 
 Ny = 1/(2*pix); B = param.sigma*Ny; q = 0.07; %nyquist, envelope, and amplitude contrast values
-%envelope still needs validation and corroboration to our real data
+%envelope/amplitude still needs validation and corroboration to our real data
 
 fprintf('Parameters: pixels %g angstroms, voltage %i KeV, aberration %g nm, sigma %g, defocus %d nm\n',...
     param.pix, param.voltage, param.aberration, param.sigma, param.defocus)
@@ -64,7 +39,7 @@ yl = binlength*2;
 k = sqrt(x.^2+y.^2);%+z.^2); %evaluate inverse distance, identical for all strips
 cv = zeros(size(padded)); %pre-initialize output array
 
-%weight for overlapping portions of bins
+%generate weights for overlapping portions of bins
 inc = 0.5/binlength; %make edges not fall to 0/centre not 1
 weight = 1-abs(linspace(-1+inc,1-inc,yl))'; %more simple weight function for strips
 weight = repmat(weight/param.ctfoverlap,[1 xl]); %replicate across the strip length
@@ -80,17 +55,16 @@ for i=1:numel(param.tilt) %loop through tilts
         Dzs = Dz + shift*sdist; %average defocus in the strip given tilt angle and horizontal distance
         in = padded(six(1):six(2),1:end,i);
         [lg, ctf] = internal_ctf(in,cs,L,k,Dzs,B,q); %get ctf-convolved subvolume
-        lg = lg.*weight; %scale by weight for overlap of nearby strips
+        lg = lg.*weight; %scale by weight for gradient overlap of strips
         cv(six(1):six(2),1:end,i) = cv(six(1):six(2),1:end,i)+lg;
-        %wgt(six(1):six(2),1:end,i) = wgt(six(1):six(2),1:end,i)+weight;
         
         %verbose real defoc listing
-        %fprintf('tiltangle %g ix %g to %g strip distance %g at defoc %g\n',tilts(i),six(1),six(2),sdist,Dzs)
+        %fprintf('tiltangle %g ix %g to %g strip distance %g at defoc %g\n',...
+            %param.tilt(i),six(1),six(2),sdist,Dzs)
     end
     
 end
 convolved = cv(1+edge:end-edge,1+pad:end-pad,:); %extract image area from padded dimensions
-%wgt = wgt(1+edge:end-edge,1+pad:end-pad,:);
 
 end
 
