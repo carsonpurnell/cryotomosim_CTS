@@ -1,15 +1,36 @@
 function [noised, conv, tiltseries] = tomosim_simulate(sampleMRC,param,opt)
 %{ help block
-%[noised, convolved, tiltseries] = tomosim_simulate(sampleMRC, tiltinput, param)
+%[noised, convolved, tiltseries] = tomosim_simulate(sampleMRC, param, opt)
 %simulates tomographic data as if collected from a sample and reconstructs a tomogram
 %
-% Inputs
+%  Inputs
 %
 %sample MRC     required, preferred input = 'gui'
 %an .mrc volume or .mat of a ts struct that provides the simulated sample (the .mat is much better)
 %'gui' option allows choosing the file with matlab's basic file browser utility
 %an input .mrc must be positive-scale density
 %
+%param          default = cts_param == {}
+%see cts_param for arguments and their usage. to pass arguments to cts_param, {enclose in brackets}
+%controls most of the behavior of the simulation through name-value pairs. use {'gui'} for manual input.
+%
+%suffix         default ''
+%suffix appended to the output filenames
+%
+%  Outputs
+%
+%outputs some workspace variables of intermediates if you want them for something
+%makes a folder with several intermediate volumes and a tiltangles.txt
+%0_model   the initial model from the input, intensify flipped to EM negative density
+%1_tilt    tiltprojection of initial model
+%3_ctf     CTF convolved tiltseries
+%4_dose    additional noise added after CTF
+%5_recon   reconstruction of a tomogram
+%if the input was a ts .mat from tomosim_model, also outputs individual models for each constituent class
+%each unique target ID counts as a class, as well as beads (if any)
+%}
+
+%{
 %tiltinput      default = {-60 60 2}
 %1x3 cell array in the above ^ format, order negative tilt - positive tilt - tilt increment
 %
@@ -17,23 +38,6 @@ function [noised, conv, tiltseries] = tomosim_simulate(sampleMRC,param,opt)
 %microscope parameters primarily for CTF as a struct in the format above ^
 %'manual' uses a gui dialogue to generate the parameters (and provides an option to save them as a file)
 %'gui' uses gui file browser to load params stored as a .mat file. defaults to tomo_sim/defaults folder
-%
-%opt - name-value pair arguments in the format ...'name',value... (or in 2021+ ...name=value...)
-%suffix         default ''
-%    suffix appended to the output filenames
-%
-% Outputs
-%
-%outputs some workspace variables of intermediates if you want them for something
-%makes a folder with several intermediate volumes and a tiltangles.txt
-%0_model   the initial model from the input, intensify flipped to EM negative density
-%1_noised  noise added to model volume
-%2_tilt    tiltprojection of noised model
-%3_ctf     CTF convolved tiltseries
-%4_noised  additional noise added after CTF
-%5_recon   reconstruction of a tomogram
-%if the input was a ts .mat from tomosim_model, also outputs individual models for each constituent class
-%each unique target ID counts as a class, as well as beads (if any)
 %}
 
 arguments
@@ -71,25 +75,6 @@ filename = append(filename,'_',opt.suffix);
 runfolder = append('sim_dose_',string(sum(param.dose)),'_',opt.suffix);
 mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',runfolder);
 
-%{
-if strcmp(sampleMRC,'gui') %ideally use the GUI to select files to make pathing easy
-    [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat'); 
-    if sampleMRC==0, error('At least one file must be selected or input'), end
-else
-    [path,sampleMRC,ext] = fileparts(sampleMRC); sampleMRC = append(sampleMRC,ext);
-end
-%}
-%{
-[path, filename, ext] = fileparts(fullfile(path,sampleMRC));
-if strcmp(ext,'.mrc') %load MRC and turn off split model saving
-    [vol, head] = ReadMRC(fullfile(path,sampleMRC)); 
-    pixelsize = head.pixA; ts = 0;
-elseif strcmp(ext,'.mat') %if .mat, load the ts
-    q = load(fullfile(path,sampleMRC));
-    if ~isfield(q,'ts'), error('Selected mat file is not a tomosim structure'); end
-    ts = q.ts; vol = ts.vol; pixelsize = ts.pix(1);
-end
-%}
 
 if param.pix==0, param.pix=pixelsize; end %override pixel size unless 0
 
@@ -103,7 +88,6 @@ end
 
 %run the simulation itself within the subfunction. might extend 'real' to also 'ideal' later
 [noised, conv, tiltseries] = internal_sim(vol,filename,param,'real');
-%[noised,conv,tiltseries] = internal_sim(vol,filename,pixelsize,param,opt.tiltax,tiltinput,opt.dose,'real');
 
 if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate individual particle standards
 if isfield(ts,'splitmodel')
