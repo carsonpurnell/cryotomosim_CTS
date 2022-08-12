@@ -8,7 +8,8 @@ arguments
 end
 if param.dose<=0, detect=tilt; return; end %if dose 0, skip detection and return perfect detection/original
 
-tiltangs = param.tilt(1):param.tilt(2):param.tilt(3); %have cts_param parse the tilt angles, or sim?
+%tiltangs = param.tilt(1):param.tilt(2):param.tilt(3); %have cts_param parse the tilt angles, or sim?
+tiltangs = param.tilt;
 %might get weird multifunction tilt angles working by input a list of all angles to cts_param
 
 arb = 1; %arbitrary scaling factor to make contrast look normal

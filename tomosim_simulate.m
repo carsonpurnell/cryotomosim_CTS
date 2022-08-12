@@ -131,9 +131,9 @@ WriteMRC(in,pix,prev) %write as initial model and for tiltprojection
 
 donoise = 0; convolved = 0; noised = 0;
 if strcmp(type,'real')
-tilts = param.tilt(1):param.tilt(2):param.tilt(3);
+%tilts = param.tilt(1):param.tilt(2):param.tilt(3);
 %future tilt randomization here?
-file = fopen('tiltangles.txt','w'); fprintf(file,'%i\n',tilts); fclose(file);
+file = fopen('tiltangles.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(file);
 
 if donoise==1
 samplenoised = helper_noisegen(in,pixelsize); %add multifactor noise

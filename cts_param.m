@@ -5,7 +5,8 @@ function [param] = cts_param(guiinput,param)
 %aberration in mm
 %sigma arbitrary
 %defocus in nm
-%tilt as [min increment max] in command line or just the numbers in GUI
+%tilt as [min increment max] in command line or just the numbers in GUI, 3 numbers are resolved as
+%   1:2:3 in matlab convention, otherwise the vector is the list of angles to acquire
 %dose in e/A^2. one value is distributed across all tilts, 0 does not simulate electron detection, and a
 %   vector with length==number of tilts is used for the dose for those tilts in order
 %tiltscheme is 'symmetric' for dose-symmetric or a number that sets the start point for two-phase imaging
@@ -29,6 +30,7 @@ arguments
     %scan/session parameters
     param.defocus = -5
     param.tilt = [-60 2 60]
+        %weird tilt scheme works but is out of order for radiation, other tiltscheme?
     param.dose = 60 %do a check for dose==0 to not do electron detection at all/perfect detector
         %activate dose weighting with a list of length==tilts?
         %single = full scan, list==tilts in electrons for that scan
@@ -89,12 +91,12 @@ if strcmp(guiinput,'gui') %basic GUI for manual input of values
     param.tilt = str2double(split(p{5}))'; %extract the list of potential tiltangles
 end
 
-if numel(param.tilt)==3
+if numel(param.tilt)==3 %if 3 numbers are input try to resolve them as a vector
     tilt = param.tilt(1):param.tilt(2):param.tilt(3);
     if ~isempty(tilt), param.tilt=tilt; end
 end
 
-if numel(param.dose)~=numel(param.tilt) && numel(param.dose)~=1
+if numel(param.dose)~=numel(param.tilt) && numel(param.dose)~=1 %check that dose works with the tilts
     warning('dose and tilt are incompatible sizes - they must be equal length or there must be a single dose') 
 end
 

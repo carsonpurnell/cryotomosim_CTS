@@ -8,7 +8,7 @@ arguments
 end
 if iscell(param), param = cts_param(param{:}); end
 if param.ctfoverlap==0, convolved=input; return; end %if overlap==0, skip doing CTF
-tilts = param.tilt(1):param.tilt(2):param.tilt(3);
+%tilts = param.tilt(1):param.tilt(2):param.tilt(3);
 
 %{
 if strcmp(param,'default'), param = struct('volt',3e2,'sphereabb',2.7,'defocus',-6,'sigma',1);
@@ -71,8 +71,8 @@ weight = repmat(weight/param.ctfoverlap,[1 xl]); %replicate across the strip len
 %[weight] = abs(abs(meshgrid(-1+0.5/binlength:1/(binlength):1-0.5/binlength,1:size(padded,2)))-1);
 %weight = permute(weight,[2 1])/overlap; %former method, a bit more convoluted to get the right values
 
-for i=1:numel(tilts) %loop through tilts
-    shift = tand(tilts(i)); %proportion of length by tilt to compute vertical displacement
+for i=1:numel(param.tilt) %loop through tilts
+    shift = tand(param.tilt(i)); %proportion of length by tilt to compute vertical displacement
     
     for j=1:numel(bincenter)
         six = round([1+bincenter(j)-binlength, bincenter(j)+binlength]);
