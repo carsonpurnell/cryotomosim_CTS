@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [v0.0.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.1) - 2022-08-12 19:56:36
+
+basic help documentation rewrites for simulation
+
+### Bug Fixes
+
+- general:
+  - fix pushing .asv files ([cd7ab45](https://github.com/carsonpurnell/cryotomosim_CTS/commit/cd7ab45f6aa6a1022fbddfd597bf666cfa4927c5))
+
 ## [v0.0.0](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.0) - 2022-08-12 17:13:11
 
 *No description*
