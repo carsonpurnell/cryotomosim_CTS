@@ -29,29 +29,16 @@ function [noised, conv, tiltseries] = tomosim_simulate(sampleMRC,param,opt)
 %if the input was a ts .mat from tomosim_model, also outputs individual models for each constituent class
 %each unique target ID counts as a class, as well as beads (if any)
 %}
-
-%{
-%tiltinput      default = {-60 60 2}
-%1x3 cell array in the above ^ format, order negative tilt - positive tilt - tilt increment
-%
-%param          default = 'default'== param = struct('volt',3e2,'sphereabb',2.7,'defocus',-6,'sigma',1);
-%microscope parameters primarily for CTF as a struct in the format above ^
-%'manual' uses a gui dialogue to generate the parameters (and provides an option to save them as a file)
-%'gui' uses gui file browser to load params stored as a .mat file. defaults to tomo_sim/defaults folder
-%}
-
 arguments
-    sampleMRC (1,1) string %full path to 
+    sampleMRC (1,1) string %full path to input mrc/ts, more realistically 'gui' for browser
     param = {} %input a cts_param call, or within {} to send to it
     opt.suffix string = ''
 end
 if iscell(param), param = cts_param(param{:}); end
 
-homedir = getenv('HOME'); cd(homedir);
-
 switch sampleMRC
 case 'gui'
-    [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat'); 
+    [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat',getenv('HOME')); 
     if sampleMRC==0, error('At least one file must be selected or input'), end
 otherwise
     [path,sampleMRC,ext] = fileparts(sampleMRC); sampleMRC = append(sampleMRC,ext);
@@ -71,13 +58,12 @@ end
 
 %folder preparation and navigation to session folder
 cd(path); %cd to the input file location
-filename = append(filename,'_',opt.suffix); 
+filename = append(filename,'_',opt.suffix); %generate initial filename
 runfolder = append('sim_dose_',string(sum(param.dose)),'_',opt.suffix);
 mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',runfolder);
 
 
 if param.pix==0, param.pix=pixelsize; end %override pixel size unless 0
-
 param.size = size(vol); %fix for x axis tilt size and for detect thickness
 switch param.tiltax %fix x axis being weird and only X and Y working
     case 'X' %rotate the vol to make normal tilt angles work
@@ -104,7 +90,6 @@ end
 cd(userpath) %return to the user directory
 end
 
-%function [noised, convolved, tilt] = internal_sim(in,filename,pixelsize,param,tiltax,tiltinput,dose,type)
 function [noised, convolved, tilt] = internal_sim(in,filename,param,type)
 pix = param.pix;
 
@@ -115,7 +100,6 @@ WriteMRC(in,pix,prev) %write as initial model and for tiltprojection
 
 donoise = 0; convolved = 0; noised = 0;
 if strcmp(type,'real')
-%tilts = param.tilt(1):param.tilt(2):param.tilt(3);
 %future tilt randomization here?
 file = fopen('tiltangles.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(file);
 
@@ -127,7 +111,7 @@ end
 
 %project the tiltseries
 tbase = append('1_tilt_',base);
-w = string(round(size(in,1)*1)); %default no shrinkage
+w = string(round(param.size(1)*1)); %default no shrinkage
 cmd = append('xyzproj -axis ', param.tiltax, ' -width ',w,' -tiltfile tiltangles.txt ',prev,' ',tbase);
 %-ray borks up smaller width completely, -constant makes beads slightly weird
 prev = tbase; disp(cmd); [~] = evalc('system(cmd)'); %run command, capture console spam
@@ -135,7 +119,7 @@ prev = tbase; disp(cmd); [~] = evalc('system(cmd)'); %run command, capture conso
 if strcmp(type,'real') %electron detection and CTF
 tilt = ReadMRC(prev); %load the projected tiltseries as a volume
 
-order = 2; %electron detection changable order thing
+order = 2; %electron detection changable order thing because i still don't know which is better!
 if order==1 %dose first, hackjob dose increase to get the scaling to work
     detected = helper_electrondetect(tilt,param);
     WriteMRC(detected,pix,append('2_dosetilt_',base));
@@ -160,14 +144,12 @@ prev = append('4_noised_',base);
 end
 end
 
-thick = string(round(param.size(3)*1)); w = string(param.size(1));
+thick = string(round(param.size(3)*1)); %w = string(param.size(1));
 %reconstruct and rotate back into the proper space
-%if strcmp(param.tiltax,'X'), thick=string(size(in,2)); end %for reorienting x tilts for not thickness
 cmd = append('tilt -tiltfile tiltangles.txt -width ',w,' -thickness ',thick,' ',prev,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
 cmd = append('trimvol -rx temp.mrc ',append('5_recon_',base)); %#ok<NASGU>
-[~] = evalc('system(cmd)'); %does this work?
+[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 
 delete temp.mrc %remove temporary files after they are used for rotation
-
 end
