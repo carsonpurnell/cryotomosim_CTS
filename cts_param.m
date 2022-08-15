@@ -18,7 +18,6 @@ function [param] = cts_param(guiinput,param)
 %scatter scales inelastic/lossy electron scattering (nonlinear, scales distance)
 %ctfoverlap sets how much overlap between CTF strips (default 2), 0 skips CTF convolution entirely
 
-
 arguments
     guiinput = 0
     
@@ -60,7 +59,6 @@ if strcmp(guiinput,'gui') %basic GUI for manual input of values
         'scale of inelastic (lossy) electron scattering',...
         'Processing: extent of defocus overlap for CTF calculation'};
         %'Save these parameters as a file for later use? (1 for yes): '};
-        %'Scan dose distribution, 1 for weighting --UNUSED--',...
     
     ptitle = 'Microscope and imaging parameters';
     
@@ -69,12 +67,6 @@ if strcmp(guiinput,'gui') %basic GUI for manual input of values
         default{i} = num2str(default{i});
     end
     
-    %{
-    default = {num2str(microscope.voltage),num2str(microscope.aberration),num2str(microscope.sigma),...
-        num2str(img.tilt),num2str(img.defocus),num2str(img.dose),...
-        num2str(img.symmetric),num2str(img.doseweight),num2str(img.raddamage),...
-        num2str(img.ctfoverlap),img.tiltax,num2str(img.pix)};
-    %}
     p = inputdlg(prompt,ptitle,[1 40],default); %dialogue input happens
     
     fn = fieldnames(param);
@@ -87,7 +79,6 @@ if strcmp(guiinput,'gui') %basic GUI for manual input of values
     param.tiltscheme = p{7};
     param.tiltax = p{9};
     
-    %parse tilt angle/s
     param.tilt = str2double(split(p{5}))'; %extract the list of potential tiltangles
 end
 

@@ -75,15 +75,8 @@ ts.inputs.beads = opt.beads; ts.inputs.grid = opt.grid; ts.inputs.ice = opt.ice;
 %load target particles and write to struct
 [ts.particles.targets] = helper_input(particleset,pix);
 
-%carbon grid and hole generator
-%maybe make a separate function to do the grid for ease of use
-%make it simpler to scale the intensity - base on some real carbon entity? meshgrid a carbon swatch?
-%need to make more probabalistic and also realistic simulation just like the ice
-%generate carbon points through the volume (fixed bulk with extra layer for randomness?), prune with mask?
-%accumulate intensity of carbon atoms, then mask to the grid area (which is already fine)
-%instead generate points further than the given radius? or generate everything then prune based on radius?
+% carbon grid and hole generator
 if opt.grid(1)~=0
-    %out = helper_oldgrid(input,pix,opt.grid); %old flat version
     fprintf('Generating carbon film ')
     [ts.vol] = helper_carbongrid(vol,pix,opt.grid); %new atomic carbon generator
     ts.model.grid = ts.vol; fprintf('\n')
@@ -137,7 +130,7 @@ end
 if opt.beads~=0 % bead generation block, need too change to a separate function call
     bead = zeros(61,61,61); 
     %bead(31,31,31) = max(ts.model.particles,[],'all')*2; %alternate pix^3?
-    bead(31,31,31) = 2*pix(1).^2.6;
+    bead(31,31,31) = 2*pix.^2.6;
     bead = imdilate(bead,strel('sphere',24)); %this is the slow part right here
     opt.beads = round(opt.beads); sc = 0; beadset = cell(2,opt.beads);
     beadstrc.type = 'single';
