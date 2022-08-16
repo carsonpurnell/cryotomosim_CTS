@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## [v0.0.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.2) - 2022-08-16 17:47:07
+
+*No description*
+
+### Feature
+
+- general:
+  - feature: bead generation ([3a2fcd8](https://github.com/carsonpurnell/cryotomosim_CTS/commit/3a2fcd829b578b72a80288d52cde0e8a347300fe))
+
+### Bug Fixes
+
+- general:
+  - fix carbon grid function call ([ecf38b6](https://github.com/carsonpurnell/cryotomosim_CTS/commit/ecf38b66624960465115ee1546cb1458395fcdff))
+
 ## [v0.0.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.1) - 2022-08-12 19:56:36
 
 basic help documentation rewrites for simulation
