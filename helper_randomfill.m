@@ -26,7 +26,7 @@ for i=1:iters
         case 'complex' %{'single','complex'} %complex works similarly to single, just with more parts
             sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
             
-            [rot,tform,loc,err] = init_place(inarray,sumvol,3);
+            [rot,tform,loc,err] = testplace(inarray,sumvol,3);
             
             counts.f = counts.f + err;
             if err==0 %on success, place in splits and working array
@@ -39,7 +39,7 @@ for i=1:iters
                 end
             end
             
-        case 'bundle' %bundle placement got complicated
+        case 'bundle' %bundle placement got complicated, need to refactor the internal function
             if i<iters/5 || randi(numel(set(which).vol))==1 %have some scalable value to determine weight?
             [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
             %increase iters by fraction of N to reduce runtime? can't modify i inside for loop
@@ -47,7 +47,7 @@ for i=1:iters
         
         case {'single','group'} %randomly select one particle from the group (including single)
             sub = randi(numel(particle)); %get random selection from the group
-            [rot,~,loc,err] = init_place(inarray,set(which).vol{sub},3);
+            [rot,~,loc,err] = testplace(inarray,set(which).vol{sub},3);
             
             counts.f = counts.f + err;
             if err==0 %on success, place in splits and working array
@@ -208,7 +208,7 @@ function [split, err, inarray, counts, loc] = fn_placement(inarray, split, parti
 end
 
 %preliminary internal function for initial placement testing
-function [rot,tform,loc,err] = init_place(inarray,particle,retry)
+function [rot,tform,loc,err] = testplace(inarray,particle,retry)
 for retry=1:retry
     tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
     rot = imwarp(particle,tform); %generated rotated particle
