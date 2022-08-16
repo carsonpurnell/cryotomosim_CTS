@@ -2,6 +2,7 @@ function [noised, noise] = helper_noisegen(inputvol,pixang,opt)
 %generate various kinds of noise based on an input volume
 %is rescaling to a common standard the best way to generate similar noise spectra? or can they be derived
 %independent of the initial image intensity?
+%currently deprecated legacy code
 arguments
     inputvol %must be rescaled before input, maybe rejigger to do rescaling and unscaling internally
     pixang
