@@ -1,4 +1,4 @@
-function [ts] = tomosim_model(particleset,vol,pix,opt)
+function [ts] = cts_model(particleset,vol,pix,opt)
 %[ts] = tomosim_model(particleset,vol,pix,opt)
 %generates model information for a single tomographic acquisition, stored in output struct ts
 %works by iteratively placing input particles at random orientations in random locations without overlap
@@ -53,7 +53,8 @@ arguments
     opt.density = 0.4
     opt.constraint string {mustBeMember(opt.constraint,{'none','box','tube','sides'})} = 'sides'
     opt.distract = 'none'
-    opt.beads = 0 %have beads use [number diamenter] and diam defaults to 10nm/100A. and rejigger bead block
+    opt.beads = 0 %new beads [number radius1 radius2 ... radiusn]
+    %opt.beads = 0 %have beads use [number diamenter] and diam defaults to 10nm/100A. and rejigger bead block
     %to work more like the grid generator, might be more hard-edged and effective.
     opt.grid = [15 2000] %[thick radius] both in nm [15 2000] our real grids
     opt.ice = 1 %0 to not add ice
@@ -62,6 +63,7 @@ end
 
 %still some weird bias where particles clip along certain directions and not others
 %i think i might have fixed this?
+
 
 
 %initialize the struct so the order is invariant and fill with input information
@@ -75,22 +77,22 @@ ts.inputs.beads = opt.beads; ts.inputs.grid = opt.grid; ts.inputs.ice = opt.ice;
 %load target particles and write to struct
 [ts.particles.targets] = helper_input(particleset,pix);
 
-% carbon grid and hole generator
-if opt.grid(1)~=0
+if opt.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
-    [ts.vol] = helper_carbongrid(vol,pix,opt.grid); %new atomic carbon generator
+    [ts.vol] = helper_carbongrid(vol,pix,opt.grid);
     ts.model.grid = ts.vol; fprintf('\n')
 end
 
-if opt.mem~=0 %membrane generation, might be broken with struct changes
+%need a new mem gen that uses generated points between radii of two spheres
+if opt.mem~=0 %membrane generation, likely broken with struct changes but old junk anyway
     mem = helper_membranegen(ts);
     ts.model.mem = mem; ts.vol = ts.vol+mem; %vol = ts.vol;
 end
 
-constraint = zeros(size(ts.vol));
+constraint = zeros(size(ts.vol)); %constraints are a big ugly mess right now
 switch opt.constraint %write constraints to initial starting volume
     case 'none'
-    case 'box'
+    case 'box' %intensity is ^2.3 to better match protein and prevent bad binarizations/overlap
         constraint(1:end,1:end,[1 end]) = pix^2.3; %constraint(1:end,1:end,end) = 1; %z end panes
         constraint(1:end,[1 end],1:end) = pix^2.3; %constraint(1:end,end,1:end) = 1; %y end panes
         constraint([1 end],1:end,1:end) = pix^2.3; %constraint(end,1:end,1:end) = 1; %x end panes
@@ -127,7 +129,16 @@ end
 %generate the specified number of 10nm beads, projected from 2A resolution to actual pixel size
 %need to refactor to have variable bead size and use meshgrid to generate harder bead edges
 %beads also slow and janky due to dilating from point and resizing
-if opt.beads~=0 % bead generation block, need too change to a separate function call
+if opt.beads~=0
+    beadstrc = gen_beads(pix,opt.beads(2:end)); %external generation of varied beads
+    ts.particles.beads = beadstrc;
+    [fill, ~] = helper_randomfill(ts.vol+constraint,beadstrc,opt.beads(1),opt.density,'type','bead');
+    ts.model.beads = fill;
+    ts.vol = fill + ts.vol; 
+    ts.model.particles = ts.vol;
+end
+%{
+if opt.beads==7 % bead generation block, need too change to a separate function call
     bead = zeros(61,61,61); 
     %bead(31,31,31) = max(ts.model.particles,[],'all')*2; %alternate pix^3?
     bead(31,31,31) = 2*pix.^2.6;
@@ -155,11 +166,11 @@ if opt.beads~=0 % bead generation block, need too change to a separate function 
     ts.vol = fill + ts.vol; 
     ts.model.particles = ts.vol;
 end
-
+%}
 
 if ~opt.ice==0 % vitreous ice generator, randomized molecular h2o throughout the volume
     fprintf('Generating vitreous ice')
-    [iced, ice] = helper_icevit(ts.vol,pix);
+    [iced, ice] = gen_ice(ts.vol,pix);
     ts.model.ice = ice; ts.vol = iced; fprintf('\n')
 end
 

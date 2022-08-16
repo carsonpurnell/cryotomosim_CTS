@@ -1,4 +1,4 @@
-function out = helper_carbongrid(vol,pix,grid)
+function out = gen_carbongrid(vol,pix,grid)
 arguments
     vol (:,:,:) double
     pix (1,1) double

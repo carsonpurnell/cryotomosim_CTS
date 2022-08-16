@@ -1,4 +1,4 @@
-function [iced, ice] = helper_icevit(vol,pix)
+function [iced, ice] = gen_ice(vol,pix)
 
 w = 8+2; %atomic number total in water molecule, until i can get electron opacity numbers
 %amorphous ice density .94g/cm^3, but unit vol of liquid h20 molecule is 29.7a^3, estimate 20-30
