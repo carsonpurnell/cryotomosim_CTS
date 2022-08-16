@@ -1,7 +1,7 @@
 function binned = helper_binvol(input, binning, verbose)
 %binned = tomosim_bin(input, binning, verbose)
 %input mrc volume required, binning is optional with default 2 - must be integer if supplied
-
+%currently unused demo code
 arguments
     input (1,1) string %mustBeFile requires 2020b for this validator
     binning (1,1) {mustBeInteger, mustBePositive} = 2 %ensure positive integer, default to 2
