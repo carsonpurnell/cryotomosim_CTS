@@ -1,22 +1,19 @@
 function [outarray, split] = helper_randomfill(inarray,set,iters,density,opt)
-%[outarray, split] = helper_randomfill(inarray,set,iters,density)
+%[outarray, split] = helper_randomfill(inarray,set,iters,density,opt)
 %shared function for adding particles randomly, used for generating models and adding distractors
 %
-arguments %is validation needed for dedicated helper function?
+arguments
     inarray (:,:,:) double
-    set
+    set struct
     iters
     density = 0.4
     opt.type = 'object'
 end
 insize = size(inarray); counts = struct('s',0,'f',0); %initialize counts and get input size
-counts.first =0; counts.sec = 0; counts.th =0;
 
-if isstruct(set) %prep for set being a struct - wait, what if it isn't? it should just break!
-namelist = [set(:).id]; %simplified collection of all ids instead of the former double loop
+namelist = [set(:).id]; %vector collection of all ids instead of the former double loop
 for i=1:numel(namelist)
-    split.(namelist{i}) = zeros(size(inarray)); %initialize split models, duplicates made redundant
-end
+    split.(namelist{i}) = zeros(size(inarray)); %initialize split models of target ids
 end
 
 fprintf('Attempting %i %s placements:  ',iters,opt.type)
@@ -26,36 +23,10 @@ for i=1:iters
     particle = set(which).vol; name = set(which).id{1};
     
     switch set(which).type
-        case {'single','complex'} %hopefully this is an OR as expected
+        case 'complex' %{'single','complex'} %complex works similarly to single, just with more parts
             sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
             
-            for retry=1:3
-            tform = randomAffine3d('Rotation',[0 360]);
-            rot = imwarp(sumvol,tform);
-            %{
-            %might transition to imwarp for slight speed increase if it doesn't cause problems
-            randvec = rand(1,3); randang = randi(360); %randomize rotation and alignment
-            rot = imrotate3(sumvol,randang,randvec);
-%             x = round(randi(size(inarray,1)+(size(rot,1)/3)*0)-(size(rot,1)/2));
-%             y = round(randi(size(inarray,2)+(size(rot,2)/3)*0)-(size(rot,2)/2));
-%             z = round(randi(size(inarray,3)+(size(rot,3)/3)*0)-(size(rot,3)/2));
-%             loc = [x y z];
-            %}
-            loc = round( rand(1,3).*size(inarray)-size(rot)/2 );
-
-            [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
-            %{
-            if err==0 && retry==1 %if first placement works, bail out of loop check
-                counts.first = counts.first+1;
-            elseif err==0 && retry==2 %just checking
-                counts.sec = counts.sec+1;
-            elseif err==0 && retry==3 %just checking
-                counts.th = counts.th+1;
-            end
-            %}
-            if err==0, break; end
-            end
-            %if err==1, disp(counts), end
+            [rot,tform,loc,err] = init_place(inarray,sumvol,3);
             
             counts.f = counts.f + err;
             if err==0 %on success, place in splits and working array
@@ -68,22 +39,30 @@ for i=1:iters
                 end
             end
             
-        case 'bundle'
+        case 'bundle' %bundle placement got complicated
             if i<iters/5 || randi(numel(set(which).vol))==1 %have some scalable value to determine weight?
             [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
-            %increase iters by fraction of N to reduce runtime?
-            %i = i+8;
+            %increase iters by fraction of N to reduce runtime? can't modify i inside for loop
+            end
+        
+        case {'single','group'} %randomly select one particle from the group (including single)
+            sub = randi(numel(particle)); %get random selection from the group
+            [rot,~,loc,err] = init_place(inarray,set(which).vol{sub},3);
+            
+            counts.f = counts.f + err;
+            if err==0 %on success, place in splits and working array
+                counts.s=counts.s+1;
+                [inarray] = helper_arrayinsert(inarray,rot,loc);
+                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
             end
             
         case 'cluster'
             disp('oh boy this is going to bug out for sure')
     end
-    %i = i+1;
     
     if 1<0 %janky internal function call
-    [split, err, inarray, counts, loc] = fn_placement(inarray, split, particle, name, insize, [0 0 0], counts);
+    %[split, err, inarray, counts, loc] = fn_placement(inarray, split, particle, name, insize, [0 0 0], counts);
     end
-    
     if strcmp(set(which).type,'cluster') && err==0 %maybe while loop to terminate early and reduce nesting?
         %q = 0;
         %still can only deal with a single input option, not a mixed cluster
@@ -109,8 +88,6 @@ for i=1:iters
 end
 
 fprintf('\nPlaced %i particles, failed %i attempted placements\n',counts.s,counts.f)
-%verbose test for indicating when placements were successful
-%fprintf('%i first successes, %i second successes, %i third successes\n',counts.first,counts.sec,counts.th)
 
 outarray = zeros(insize);
 splitnames = fieldnames(split);
@@ -228,4 +205,15 @@ function [split, err, inarray, counts, loc] = fn_placement(inarray, split, parti
         if rem(counts.s,700)==0, fprintf('\n'), end
     end
     
+end
+
+%preliminary internal function for initial placement testing
+function [rot,tform,loc,err] = init_place(inarray,particle,retry)
+for retry=1:retry
+    tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
+    rot = imwarp(particle,tform); %generated rotated particle
+    loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
+    [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
+    if err==0, break; end
+end
 end
