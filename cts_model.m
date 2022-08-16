@@ -77,7 +77,7 @@ ts.inputs.beads = opt.beads; ts.inputs.grid = opt.grid; ts.inputs.ice = opt.ice;
 
 if opt.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
-    [ts.vol] = helper_carbongrid(vol,pix,opt.grid);
+    [ts.vol] = gen_carbongrid(vol,pix,opt.grid);
     ts.model.grid = ts.vol; fprintf('\n')
 end
 
@@ -124,10 +124,7 @@ ts.vol = fill + ts.vol;
 ts.model.particles = ts.vol;
 end
 
-%generate the specified number of 10nm beads, projected from 2A resolution to actual pixel size
-%need to refactor to have variable bead size and use meshgrid to generate harder bead edges
-%beads also slow and janky due to dilating from point and resizing
-if opt.beads~=0
+if opt.beads~=0 %bead generation and placement block
     beadstrc = gen_beads(pix,opt.beads(2:end)); %external generation of varied beads
     ts.particles.beads = beadstrc;
     [fill, ~] = helper_randomfill(ts.vol+constraint,beadstrc,opt.beads(1),opt.density,'type','bead');
