@@ -25,8 +25,8 @@ function [ts] = cts_model(particleset,vol,pix,opt)
 %    must be 'sides','box','tube', or 'none'. determines how many sides have borders that prevent clipping
 %distract       default 'none'
 %    usage is identical to particles, places additional non-target objects after the initial target model
-%beads          default 0
-%    number iterations for 10nm bead placements (happens after distractors)
+%beads          default [0 50], format [number radius1 radius2... radiusn]
+%    number of beads to place, from a set of beads generated based on the input radii (default 50A)
 %grid           default [0 0], author uses [15 2000]
 %    [thickness radius] of carbon film and grid hole, in nm.
 %ice            default 1
@@ -54,8 +54,7 @@ arguments
     opt.constraint string {mustBeMember(opt.constraint,{'none','box','tube','sides'})} = 'sides'
     opt.distract = 'none'
     opt.beads = 0 %new beads [number radius1 radius2 ... radiusn]
-    %opt.beads = 0 %have beads use [number diamenter] and diam defaults to 10nm/100A. and rejigger bead block
-    %to work more like the grid generator, might be more hard-edged and effective.
+    %opt.beads = 0 %have beads use [number diamenter] and diam defaults to 10nm/100A.
     opt.grid = [15 2000] %[thick radius] both in nm [15 2000] our real grids
     opt.ice = 1 %0 to not add ice
     opt.mem = 0 %is a super jankfest that might not work right now
@@ -63,7 +62,6 @@ end
 
 %still some weird bias where particles clip along certain directions and not others
 %i think i might have fixed this?
-
 
 
 %initialize the struct so the order is invariant and fill with input information
