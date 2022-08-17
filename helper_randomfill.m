@@ -25,7 +25,6 @@ for i=1:iters
     switch set(which).type
         case 'complex' %{'single','complex'} %complex works similarly to single, just with more parts
             sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
-            
             [rot,tform,loc,err] = testplace(inarray,sumvol,3);
             
             counts.f = counts.f + err;
@@ -33,7 +32,6 @@ for i=1:iters
                 counts.s=counts.s+numel(set(which).vol);
                 [inarray] = helper_arrayinsert(inarray,rot,loc);
                 for t=1:numel(set(which).vol) %rotate and place each component of complex
-                    %rot = imrotate3(set(which).vol{t},randang,randvec); 
                     rot = imwarp(set(which).vol{t},tform);
                     split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
                 end

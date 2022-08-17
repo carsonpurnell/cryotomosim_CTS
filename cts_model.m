@@ -63,11 +63,9 @@ end
 %still some weird bias where particles clip along certain directions and not others
 %i think i might have fixed this?
 
-
 %initialize the struct so the order is invariant and fill with input information
 ts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[],'inputs',[]);
 ts.inputs.pix = pix;
-%ts.particles.targets = [];
 ts.inputs.density = opt.density; ts.inputs.constraint = opt.constraint;
 ts.inputs.beads = opt.beads; ts.inputs.grid = opt.grid; ts.inputs.ice = opt.ice; 
 %inputs.mem = opt.mem;
@@ -132,36 +130,6 @@ if opt.beads~=0 %bead generation and placement block
     ts.vol = fill + ts.vol; 
     ts.model.particles = ts.vol;
 end
-%{
-if opt.beads==7 % bead generation block, need too change to a separate function call
-    bead = zeros(61,61,61); 
-    %bead(31,31,31) = max(ts.model.particles,[],'all')*2; %alternate pix^3?
-    bead(31,31,31) = 2*pix.^2.6;
-    bead = imdilate(bead,strel('sphere',24)); %this is the slow part right here
-    opt.beads = round(opt.beads); sc = 0; beadset = cell(2,opt.beads);
-    beadstrc.type = 'single';
-    if numel(opt.beads)==1, opt.beads(2)=1; end
-    for i=1:opt.beads(2)
-        temp = imresize3(bead,(2+sc)/ts.pix(1),'linear'); 
-        beadset{1,i} = temp; beadset{2,i} = append('bead',string(sc));
-        if rem(i,2)==0
-            sc = -(sc-0.1);
-        else
-            sc = -(sc+0.1);
-        end
-        beadstrc.vol{i} = temp;
-        beadstrc.id{i} = append('bead__',string(i));
-    end
-    ts.particles.beads = beadstrc;
-    %randomfill for the set
-    iters = opt.beads(1); %number of beads from the first value
-    %external function here for generating the beadset
-    [fill, ~] = helper_randomfill(ts.vol+constraint,beadstrc,iters,opt.density,'type','bead');
-    ts.model.beads = fill;
-    ts.vol = fill + ts.vol; 
-    ts.model.particles = ts.vol;
-end
-%}
 
 if ~opt.ice==0 % vitreous ice generator, randomized molecular h2o throughout the volume
     fprintf('Generating vitreous ice')
