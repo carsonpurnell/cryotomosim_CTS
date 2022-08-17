@@ -50,8 +50,8 @@ thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not i
 %roughly 5*tilt works for 13.6 filaments, but won't scale due to pixel size. divide by pix^2?
 %for 6A, *22 is required. not as big a difference as expected
 
-%radiation magnitude calculation, counteracts dose increasing by pixel size
-radscale = .1*param.raddamage/param.pix^2;
+
+radscale = .1*param.raddamage/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
 dw = thickscatter.*dose*DQE;
 accum = 0; %initialize accumulated dose of irradiation to 0
