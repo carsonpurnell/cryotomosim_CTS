@@ -50,14 +50,15 @@ thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not i
 %roughly 5*tilt works for 13.6 filaments, but won't scale due to pixel size. divide by pix^2?
 %for 6A, *22 is required. not as big a difference as expected
 
+%radiation magnitude calculation, counteracts dose increasing by pixel size
+radscale = .1*param.raddamage/param.pix^2;
+
 dw = thickscatter.*dose*DQE;
 accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; %pre-initialize output array for speed during the loop
 for i=1:size(tilt,3)
-    irad = tilt(:,:,i)+(randn(size(tilt(:,:,i)))*accum)*.005*param.raddamage; %radiation as 0-center noise
-    %.005 rad is too much at 13.6, just wrecks the signal by end tilt
-    %.01 is varguely useful for CaMK2, less is better
-    %maybe do some masking procedure to blur out only densities near proteins?
+    irad = tilt(:,:,i)+(randn(size(tilt(:,:,i)))*accum)*radscale; %radiation as 0-center noise
+    %need to do some procedure to mask/weight the noise near density rather than globally
     
     accum = accum+dw(i); %add to accumulated dose delivered
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad));

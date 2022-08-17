@@ -99,30 +99,30 @@ end
 %radial internal func
 function [inarray,split,counts] = radialfill(inarray,bundle,n,split,counts)
 
-for retry=1:4 %attempt placing the initial segment, currently 4 tries
+%for retry=1:4 %attempt placing the initial segment, currently 4 tries
 which = randi(numel(bundle.vol));
-primary = bundle.vol{which};
-tform = randomAffine3d('Rotation',[0 360]);
-primary = imwarp(primary,tform);
 %{
-% x = round(randi(size(inarray,1)+(size(primary,1)/3)*0)-(size(primary,1)/2));
-% y = round(randi(size(inarray,2)+(size(primary,2)/3)*0)-(size(primary,2)/2));
-% z = round(randi(size(inarray,3)+(size(primary,3)/3)*0)-(size(primary,3)/2));
-% init = [x y z];
-%}
-init = round( rand(1,3).*size(inarray)-size(primary)/2 );
+%primary = bundle.vol{which};
 
-[inarray,err] = helper_arrayinsert(inarray,primary,init,'overlaptest');
+%tform = randomAffine3d('Rotation',[0 360]);
+%primary = imwarp(primary,tform);
+%init = round( rand(1,3).*size(inarray)-size(primary)/2 );
+
+%[inarray,err] = helper_arrayinsert(inarray,primary,init,'overlaptest');
+%}
+
+%replacement for redundant initial test code
+[primary,tform,init,err] = testplace(inarray,bundle.vol{which},4);
 
 if err==0
     counts.s=counts.s+1;
     [inarray] = helper_arrayinsert(inarray,primary,init);
     split.(bundle.id{which}) = helper_arrayinsert(split.(bundle.id{which}),primary,init);
-    break
-elseif err==1 && retry==3
+    %break
+elseif err==1 %&& retry==3
     counts.f=counts.f+1;
 end
-end
+%end
 
 if err==0 %don't try radial if primary not placed
 [vec] = shapeaxis(primary);
