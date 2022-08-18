@@ -55,9 +55,40 @@ for i=1:iters
             end
             
         case 'cluster'
-            disp('oh boy this is going to bug out for sure')
+            %disp('oh boy this is going to bug out for sure')
+            sub = randi(numel(particle)); %get random selection from the group
+            [rot,~,loc,err] = testplace(inarray,set(which).vol{sub},3);
+            counts.f = counts.f + err;
+            if err==0 %on success, place in splits and working array
+                counts.s=counts.s+1;
+                [inarray] = helper_arrayinsert(inarray,rot,loc);
+                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
+                %generate list of random points near loc
+                num = 12;
+                r = randn(1,num).*mean(size(set(which).vol{sub}))/2+mean(size(set(which).vol{sub}));
+                az = rand(1,num)*360; el = rand(1,num)*360;
+                [x,y,z] = sph2cart(az,el,abs(r));
+                clusterpts = round([x;y;z])+loc';
+                %clusterpts = loc'+round(randn(3,12).*size(set(which).vol{sub})'/2);
+                %need to use sph2cart to generate points from a radius, too many close to 0
+                
+                %loop through points and try to place them
+                for j=1:size(clusterpts,2)
+                    sub = randi(numel(particle)); %new random member
+                    
+                    tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
+                    rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
+                    [inarray,errc] = helper_arrayinsert(inarray,rot,clusterpts(:,j),'nonoverlap'); %test place
+                    if errc==0 %if nonoverlap record and add to split
+                        counts.s=counts.s+1;
+                        split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,clusterpts(:,j));
+                    end
+                end
+            end
+            
     end
     
+    %{
     if 1<0 %janky internal function call
     %[split, err, inarray, counts, loc] = fn_placement(inarray, split, particle, name, insize, [0 0 0], counts);
     end
@@ -75,6 +106,7 @@ for i=1:iters
         end
         
     end
+    %}
     
     if rem(i,25)==0, fprintf('%i,',counts.s), end
     if rem(i,500)==0, fprintf('\n'), end
@@ -93,13 +125,10 @@ for i=1:numel(splitnames)
     outarray = outarray+split.(splitnames{i});
 end
 
-
 end
 
 %radial internal func
 function [inarray,split,counts] = radialfill(inarray,bundle,n,split,counts)
-
-%for retry=1:4 %attempt placing the initial segment, currently 4 tries
 which = randi(numel(bundle.vol));
 %{
 %primary = bundle.vol{which};
@@ -111,18 +140,16 @@ which = randi(numel(bundle.vol));
 %[inarray,err] = helper_arrayinsert(inarray,primary,init,'overlaptest');
 %}
 
-%replacement for redundant initial test code
+%replacement for redundant initial test code, using 4 tries (might need more to balance out bundles)
 [primary,tform,init,err] = testplace(inarray,bundle.vol{which},4);
 
 if err==0
     counts.s=counts.s+1;
     [inarray] = helper_arrayinsert(inarray,primary,init);
     split.(bundle.id{which}) = helper_arrayinsert(split.(bundle.id{which}),primary,init);
-    %break
-elseif err==1 %&& retry==3
+elseif err==1
     counts.f=counts.f+1;
 end
-%end
 
 if err==0 %don't try radial if primary not placed
 [vec] = shapeaxis(primary);
@@ -181,19 +208,10 @@ function [split, err, inarray, counts, loc] = fn_placement(inarray, split, parti
     randang = randi(360);
     rot = imrotate3(particle,randang,randvec);
     
-    %{
-    x = randi(insize(1)+round(size(rot,1)/3))-round(size(rot,1)/3);
-    y = randi(insize(2)+round(size(rot,2)/3))-round(size(rot,2)/3);
-    z = randi(insize(3)+round(size(rot,3)/3))-round(size(rot,3)/3);
-    loc = [x y z];
-    %}
     loc = round( rand(1,3).*size(inarray)-size(rot)/2 );
     if sum(vec)~=0, loc= vec; end
-    %disp(loc)
     
     [inarray,err] = helper_arrayinsert(inarray,rot,loc,'nonoverlap');
-    %if err==1, disp(counts), end
-    %err = 0;
     
     counts.f = counts.f + err;
     if err==0
