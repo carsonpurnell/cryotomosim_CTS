@@ -21,7 +21,6 @@ fprintf('Attempting %i %s placements:  ',iters,opt.type)
 for i=1:iters
     which = randi(numel(set)); 
     particle = set(which).vol; 
-    %name = set(which).id{1};
     
     switch set(which).type
         case 'complex' %{'single','complex'} %complex works similarly to single, just with more parts
@@ -56,7 +55,6 @@ for i=1:iters
             end
             
         case 'cluster' %need to move into call to cluster function like bundle has
-            %disp('oh boy this is going to bug out for sure')
             sub = randi(numel(particle)); %get random selection from the group
             [rot,~,loc,err] = testplace(inarray,set(which).vol{sub},3);
             counts.f = counts.f + err;
@@ -70,8 +68,6 @@ for i=1:iters
                 az = rand(1,num)*360; el = rand(1,num)*360;
                 [x,y,z] = sph2cart(az,el,abs(r));
                 clusterpts = round([x;y;z])+loc';
-                %clusterpts = loc'+round(randn(3,12).*size(set(which).vol{sub})'/2);
-                %need to use sph2cart to generate points from a radius, too many close to 0
                 
                 %loop through points and try to place them
                 for j=1:size(clusterpts,2)
