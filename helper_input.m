@@ -65,7 +65,7 @@ for i=1:numel(list)
     for j=1:numel(id)
         id{j} = string(id{j});
         if ~isempty(sscanf(id{1},'%f')) %fix names to start with a letter
-            id = strcat('a_',id{1});
+            id{1} = strcat('a_',id{1});
         end
     end
     %store filename and classification id of object

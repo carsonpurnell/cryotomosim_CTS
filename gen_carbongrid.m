@@ -12,7 +12,7 @@ l = round(size(vol,3)/2-thick/2);
 if numel(grid)<3, grid(3) = size(vol,1)/2+randi(20); end
 if numel(grid)<4, grid(4) = r+20+randi(10)-pix*1; end
 
-density = 2/(1e8)^3/12*6.022e23; %convert from 2-3.5g/cm^3 to atom/ang^3, ==~0.1 atoms per a^3
+density = 2.5/(1e8)^3/12*6.022e23; %convert from 2-3.5g/cm^3 to atom/ang^3, ==~0.1 atoms per a^3
 densepix = pix^2.8*density; %convert to average atoms per pixel
 
 carbon = zeros(size(vol,1),size(vol,2),thick);

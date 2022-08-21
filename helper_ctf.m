@@ -16,13 +16,14 @@ Dz = param.defocus/1e6; %convert from microns to m
 
 L = relativistic_electrons(V); %compute wavelength from voltage, correcting for relativistic effects
 
-Ny = 1/(2*pix); B = param.sigma*Ny; q = 0.07; %nyquist, envelope, and amplitude contrast values
+Ny = 1/(2*pix); B = param.sigma*Ny; q = -0.07*1; %nyquist, envelope, and amplitude contrast values
 %envelope/amplitude still needs validation and corroboration to our real data
 
 fprintf('Parameters: pixels %g angstroms, voltage %i KeV, aberration %g nm, sigma %g, defocus %d nm\n',...
     param.pix, param.voltage, param.aberration, param.sigma, param.defocus)
 
 k = 1:size(input,1); divs = k(rem(size(input,1),k)==0); %find divisible factors from volume size
+
 binspacing = divs(round(end/2)); %use the middle divisor as the spacing
 bins = size(input,1)/binspacing+1; %determine bins from the spacing and vol size
 
@@ -37,6 +38,8 @@ yl = binlength*2;
 [x,y] = meshgrid(-Ny:2*Ny/xl:Ny-Ny/xl,-Ny:2*Ny/yl:Ny-Ny/yl);%,-Ny:2*Ny/zl:Ny-Ny/zl);
 
 k = sqrt(x.^2+y.^2);%+z.^2); %evaluate inverse distance, identical for all strips
+
+%k looks in the 1e9 range for a typical area for camk2 volumes
 cv = zeros(size(padded)); %pre-initialize output array
 
 %generate weights for overlapping portions of bins
@@ -71,7 +74,11 @@ end
 function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,q)
 eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2); %main equation for each part of CTF
 env = exp(-(k./(B)).^2); %envelope function of the overall CTF
+%env = exp(-3e-15*k.^2); %alternative envelope to try out- near 0, wipes almost all signal out
+%should envelope incorporate K or be flat?
 ctf = ( sqrt(1-q^2)*sin(eq) - q*cos(eq) ) .*env; %complete CTF evaluation
+%negative Q makes better tilts - is this driven by reducing phase or increasing amp?
+%the amplitude is doing the work here, phase is sqrt but amp is driving the retained darkness of carbon
 out = real(ifft2(ifftshift(fftshift(fft2(in)).*ctf))); %fft stack to translate from ctf fourier to realspace
 end
 
