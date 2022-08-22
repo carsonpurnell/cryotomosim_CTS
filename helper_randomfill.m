@@ -106,7 +106,7 @@ for i=1:iters
     if rem(i,25)==0, fprintf('%i,',counts.s), end
     if rem(i,500)==0, fprintf('\n'), end
     
-    if counts.s>iters/2 && rem(counts.s,6)==0 %filter to prevent the slower IF from running so often
+    if rem(i,5)==0 && rem(counts.s,2)==0 %filter to prevent the slower IF from running so often
     if nnz(inarray)/numel(inarray)>density, fprintf('Density limit reached.'), break, end
     end
     
