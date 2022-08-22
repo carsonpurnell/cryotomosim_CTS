@@ -5,10 +5,10 @@ if nargin<4, savemat=1; end %make name-val to generate .mat name with prefix/suf
 %need user input or name/val to set what each model is for class/ID
 
 %pdb to atoms
-[path,base,ext] = fileparts(pdb);
+[~,~,ext] = fileparts(pdb);
 if strcmp(ext,'.mat') %if .mat, load the data from the file
     try q = load(pdb); data = q.data;
-    catch warning('Input is not a pdb2vol-generated .mat file'); end
+    catch warning('Input is not a pdb2vol-generated .mat file'); end %#ok<SEPEX>
 elseif strcmp(ext,'.pdb') %if .pdb, parse the file into a data variable
     data = internal_pdbparse(pdb);
 end
@@ -20,7 +20,6 @@ vol = internal_volbuild(data,pix,trim);
 if savemat==1
     %a1 = fullfile(path,append(base,'.mat')); %significantly slower for unknown reason
     a2 = strrep(pdb,'.pdb','.mat');
-    %save(a1,'data'); % %30% of runtime for some reason?
     save(a2,'data','-nocompression'); %slightly faster without compression
 end
 
