@@ -13,13 +13,15 @@ elseif strcmp(ext,'.pdb') %if .pdb, parse the file into a data variable
     data = internal_pdbparse(pdb);
 end
 
+%probably faster to store coords as normal array and atom id as a separate cell array or string array
+
 vol = internal_volbuild(data,pix,trim);
 
 if savemat==1
-    %a1 = fullfile(path,append(base,'.mat'));
+    %a1 = fullfile(path,append(base,'.mat')); %significantly slower for unknown reason
     a2 = strrep(pdb,'.pdb','.mat');
     %save(a1,'data'); % %30% of runtime for some reason?
-    save(a2,'data'); %slightly faster
+    save(a2,'data','-nocompression'); %slightly faster without compression
 end
 
 end
