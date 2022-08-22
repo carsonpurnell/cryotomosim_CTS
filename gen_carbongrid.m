@@ -16,7 +16,10 @@ density = 2.5/(1e8)^3/12*6.022e23; %convert from 2-3.5g/cm^3 to atom/ang^3, ==~0
 densepix = pix^2.8*density; %convert to average atoms per pixel
 
 carbon = zeros(size(vol,1),size(vol,2),thick);
-atoms = round(densepix*numel(carbon)*0.4); %40% random
+
+atomfrac = exp(-pix/6);
+atoms = round(densepix*numel(carbon)*atomfrac); %40% random
+%need to scale distribution by pixel size, more flat with larger size for best speed
 
 pts = rand(3,atoms).*size(carbon)'; %pregenerate points
 dist = sqrt( (pts(1,:)-grid(3)).^2 + (pts(2,:)-grid(4)).^2 ) +rand(1,atoms)*2;
@@ -27,7 +30,7 @@ for i=1:size(pts,2)
     carbon(x,y,z) = carbon(x,y,z) + c;
 end
 
-carbon = carbon+round(densepix*c*0.6).*imbinarize(carbon); %60% flat background for speed
+carbon = carbon+round(densepix*c*(1-atomfrac)).*imbinarize(carbon); %60% flat background for speed
 vol(:,:,l:l+thick-1) = carbon;
 out = vol;
 end

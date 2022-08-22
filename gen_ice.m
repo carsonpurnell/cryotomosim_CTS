@@ -7,8 +7,9 @@ density = 0.94/(1e8)^3/18*6.022e23; %convert from cm3 to a3, then g to molecules
 
 denspix = density*(pix^2.8);%/24; %^3 theoretical calculation correct, might be as low as 2.7
 %different pixel size densities don't scale exactly cubic due to protein folding/surfacing
-mol = round(denspix*numel(vol)*0.2); % 20% of ice mass randomly distributed as molecules (half molecules?)
-ice = round(vol*0+denspix*0.80*w); %80% of ice mass as flat background for speed
+atomfrac = exp(-pix/3);
+mol = round(denspix*numel(vol)*atomfrac); % 20% of ice mass randomly distributed as molecules (half molecules?)
+ice = round(vol*0+denspix*(1-atomfrac)*w); %80% of ice mass as flat background for speed
 
 pts = rand(3,mol).*size(vol)'; ix = round(pts+0.5); %fast pregeneration of all points
 for i=1:mol
