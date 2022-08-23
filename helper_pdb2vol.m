@@ -163,14 +163,6 @@ for i=1:models
         %x3=coords(1,j); y3=coords(2,j); z3=coords(3,j); em(x3,y3,z3) = em(x3,y3,z3)+mag.(atoms{j});
         %pt = coords(:,j); %get coord for the atom record
         %co = round((pt+adj)./pix); %vectorize coordinate math
-        
-        %still don't know how to properly split vector into singles
-        %x1=co(1); y1=co(2); z1=co(3); em(x1,y1,z1) = em(x1,y1,z1)+opacity;
-        
-        %x2=idx(1,j); y2=idx(2,j); z2=idx(3,j); em(x2,y2,z2) = em(x2,y2,z2)+opacity; 
-        %no speed increase with inline reference to atom
-        
-        %x3=coords2(1,j); y3=coords2(2,j); z3=coords2(3,j); em(x3,y3,z3) = em(x3,y3,z3)+opacity;
     end
     if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
         em = em(:,any(em ~= 0,[1 3]),:); 
