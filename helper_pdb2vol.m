@@ -58,34 +58,20 @@ end
 
 data = cell(numel(model),2);
 for i=1:models
-    %stringarray = string(model{i});
     chararray = char(model{i}); %convert to char array to make column operable
-    chararray(:,[1:30,55:76]) = []; %delete columns outside coords and atom id
-    %atomvec = chararray(:,26:27); atomvec = upper(strrep(string(atomvec),' ',''));
+    chararray(:,[1:30,55:76]) = []; %delete columns outside coords and atom id, faster than making new array
+    
     atomvec = upper(strrep(string(chararray(:,25:26)),' ','')); %process atom ids to only letters
-    
+    %atomvec1 = chararray(:,25:26); atomvec1 = upper(strrep(string(atomvec1),' ','')); %slightly slower
     data{i,1} = atomvec;
-    %data{i,2} = coords;
     
-    %can't add spaces in this vector
-    %coordchar = [chararray(:,[1:8]),chararray(:,[9:17]),chararray(:,[18:24])];
     coords = [str2num(chararray(:,1:8)),str2num(chararray(:,9:17)),str2num(chararray(:,18:24))]'; %#ok<ST2NM>
+    %using str2num because str2double won't operate on arrays, and can't add spaces while vectorized
     data{i,2} = coords;
-    %coords(1:3,end);
-    %coords2 = [str2double(chararray(:,1:8)),str2double(chararray(:,9:17)),str2double(chararray(:,18:24))]';
-    %str2double can't op on vectors
-    %x = str2num(chararray(:,1:8))';
-    %y = str2num(chararray(:,9:16))';
-    %z = str2num(chararray(:,17:24))';
-    %stcoords = string(coordchar);
-    %co2 = convertCharsToStrings(stcoords);
-    %coord2 = sscanf(coordchar,'%f%f%f')
-    %coord = textscan(coordchar,'%f%f%f',numel(atomvec))
-    %coord{1}'
-    %co = {coord{1}';coord{2}';coord{3}'}
 end
 
-%for i=1:models %loop through detected models
+%{
+for i=1:models %loop through detected models
     %atomcell = cell(1,numel(model{i}));
     %atomcell = data{i,1};
     %atomst = strings(1,numel(model{i})); %string is unexpectedly slower than cell
@@ -131,7 +117,8 @@ end
     %end
     %data{i,1} = atomcell; 
     %data{i,2} = coordchar;
-%end
+end
+%}
 
 end
 
@@ -167,9 +154,11 @@ for i=1:models
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
     em = zeros(lim'); %initialize empty array
     for j=1:numel(atoms)
-        opacity = mag.(atoms{j}); 
-        x=coords(1,j); y=coords(2,j); z=coords(3,j); 
+        opacity = mag.(atoms{j}); %get atom mag from record - this is the slow step
+        x=coords(1,j); y=coords(2,j); z=coords(3,j); %parse coords manually, no method to split vector
+        %tmp = num2cell(coords(:,j)); [x1,y1,z1] = tmp{:}; %works but is much slower
         em(x,y,z) = em(x,y,z)+opacity;
+        
         
         %ever so slightly slower to do inline reference to atom mag
         %x3=coords(1,j); y3=coords(2,j); z3=coords(3,j); em(x3,y3,z3) = em(x3,y3,z3)+mag.(atoms{j});
