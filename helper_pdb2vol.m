@@ -69,7 +69,7 @@ for i=1:models
     
     %can't add spaces in this vector
     %coordchar = [chararray(:,[1:8]),chararray(:,[9:17]),chararray(:,[18:24])];
-    coords = [str2num(chararray(:,[1:8])),str2num(chararray(:,[9:17])),str2num(chararray(:,[18:24]))]';
+    coords = [str2num(chararray(:,1:8)),str2num(chararray(:,9:17)),str2num(chararray(:,18:24))]'; %#ok<ST2NM>
     data{i,2} = coords;
     %coords(1:3,end);
     %coords2 = [str2double(chararray(:,1:8)),str2double(chararray(:,9:17)),str2double(chararray(:,18:24))]';
@@ -85,11 +85,11 @@ for i=1:models
     %co = {coord{1}';coord{2}';coord{3}'}
 end
 
-for i=1:models %loop through detected models
+%for i=1:models %loop through detected models
     %atomcell = cell(1,numel(model{i}));
-    atomcell = data{i,1};
+    %atomcell = data{i,1};
     %atomst = strings(1,numel(model{i})); %string is unexpectedly slower than cell
-    coordchar = zeros(3,numel(model{i}));
+    %coordchar = zeros(3,numel(model{i}));
     %vectorize pruning coords and atom ID to avoid doing so much in the loop?
     %veclabel{1:numel(model{i})} = model{i}{:}(77:78); %still doesn't work
     %veccoord = model{i}{:}(31:54); %mixmatch output errors from this
@@ -100,7 +100,7 @@ for i=1:models %loop through detected models
     %textscan through cell array works, but is >3x slower than the sscanf method inside the loop
     %is cellfun the slow part, or is textscan?
     
-    for j=1:numel(model{i}) %loop through each line of the model
+    %for j=1:numel(model{i}) %loop through each line of the model
         %line = model{i}{j}; %extract single line from pdb record
         %atomcell{j} = upper(strrep(line(77:78),' ','')); %read atom identifier while pruning spaces
         %this is the fastest known method, append/strjoin slower. needs spaces to avoid runover of long coords
@@ -108,7 +108,7 @@ for i=1:models %loop through detected models
         %can sscanf bypass spaces by parsing the numbers directly from the line portion?
         %coords(:,j) = sscanf(fv,'%f',[3 1]); %read all coords for the atom record (>str2double>>>str2num)
         
-        % {
+        %{
         coord = model{i}{j}(31:54); 
         co = [coord(1:8),' ',coord(9:16),' ',coord(17:24)]; 
         coordchar(:,j) = sscanf(co,'%f',[3 1]);
@@ -128,10 +128,10 @@ for i=1:models %loop through detected models
         %coords(1,j) = sscanf(line(31:38),'%f'); %x %slightly faster than cell array, thought it would be more
         %coords(2,j) = sscanf(line(39:46),'%f'); %y
         %coords(3,j) = sscanf(line(47:54),'%f'); %z
-    end
+    %end
     %data{i,1} = atomcell; 
     %data{i,2} = coordchar;
-end
+%end
 
 end
 
@@ -167,9 +167,12 @@ for i=1:models
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
     em = zeros(lim'); %initialize empty array
     for j=1:numel(atoms)
-        %atomid = atoms{j}; opacity = mag.(atomid); %strangely this is the slow part
-        opacity = mag.(atoms{j}); x=coords(1,j); y=coords(2,j); z=coords(3,j); em(x,y,z) = em(x,y,z)+opacity;
-        x3=coords(1,j); y3=coords(2,j); z3=coords(3,j); em(x3,y3,z3) = em(x3,y3,z3)+mag.(atoms{j});
+        opacity = mag.(atoms{j}); 
+        x=coords(1,j); y=coords(2,j); z=coords(3,j); 
+        em(x,y,z) = em(x,y,z)+opacity;
+        
+        %ever so slightly slower to do inline reference to atom mag
+        %x3=coords(1,j); y3=coords(2,j); z3=coords(3,j); em(x3,y3,z3) = em(x3,y3,z3)+mag.(atoms{j});
         %pt = coords(:,j); %get coord for the atom record
         %co = round((pt+adj)./pix); %vectorize coordinate math
         
