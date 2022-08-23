@@ -70,6 +70,7 @@ for i=1:models
     data{i,2} = coords;
 end
 
+%defunct old code for looping through each atom record individually
 %{
 for i=1:models %loop through detected models
     %atomcell = cell(1,numel(model{i}));
@@ -80,7 +81,6 @@ for i=1:models %loop through detected models
     %veclabel{1:numel(model{i})} = model{i}{:}(77:78); %still doesn't work
     %veccoord = model{i}{:}(31:54); %mixmatch output errors from this
     %t = model{i};
-    
     
     %atom = cellfun(@(x) textscan(x,'%*s%*s%*s%*s%*s%*f%f%f%f%*f%*f%c'),t, 'uni', false);
     %textscan through cell array works, but is >3x slower than the sscanf method inside the loop
@@ -144,18 +144,16 @@ interaction parameters for voltage 100=.92 200=.73 300=.65 mrad/(V*A) (multiply 
 %faster, vectorized adjustments and limits to coordinates and bounding box
 [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
 adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
-lim = round( (adj+b)/pix +1); %array size to place into, same box for all models
+lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
 
 models = numel(data(:,2)); emvol = cell(models,1); %pre-allocate stuff
 if models==1, trim=1; end
 for i=1:models
     atoms = data{i,1}; %single column, hopefully for speed
-    %coords = data{i,2}; %column per atom, hopefully faster indexing
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
     em = zeros(lim'); %initialize empty volume for the model
     for j=1:numel(atoms)
         opacity = mag.(atoms{j}); %get atom mag from record - this is the slow step
-        %coords(:,j)
         x=coords(1,j); y=coords(2,j); z=coords(3,j); %parse coords manually, no method to split vector
         %tmp = num2cell(coords(:,j)); [x1,y1,z1] = tmp{:}; %works but is much slower
         em(x,y,z) = em(x,y,z)+opacity;
@@ -174,7 +172,7 @@ for i=1:models
         
         %x3=coords2(1,j); y3=coords2(2,j); z3=coords2(3,j); em(x3,y3,z3) = em(x3,y3,z3)+opacity;
     end
-    if trim==1 %for bundles, should probably do singles here or helper_input for efficiency
+    if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
         em = em(:,any(em ~= 0,[1 3]),:); 
         em = em(any(em ~= 0,[2 3]),:,:); 
         em = em(:,:,any(em ~= 0,[1 2]));
@@ -182,6 +180,6 @@ for i=1:models
     emvol{i} = em;
 end
 
-emvol = reshape(emvol,1,numel(emvol)); %make list horizontal because specifying it initially doesn't work
-vol = emvol;
+vol = reshape(emvol,1,numel(emvol)); %make list horizontal because specifying it initially doesn't work
+%vol = emvol;
 end
