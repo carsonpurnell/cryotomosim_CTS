@@ -152,9 +152,10 @@ for i=1:models
     atoms = data{i,1}; %single column, hopefully for speed
     %coords = data{i,2}; %column per atom, hopefully faster indexing
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
-    em = zeros(lim'); %initialize empty array
+    em = zeros(lim'); %initialize empty volume for the model
     for j=1:numel(atoms)
         opacity = mag.(atoms{j}); %get atom mag from record - this is the slow step
+        %coords(:,j)
         x=coords(1,j); y=coords(2,j); z=coords(3,j); %parse coords manually, no method to split vector
         %tmp = num2cell(coords(:,j)); [x1,y1,z1] = tmp{:}; %works but is much slower
         em(x,y,z) = em(x,y,z)+opacity;
