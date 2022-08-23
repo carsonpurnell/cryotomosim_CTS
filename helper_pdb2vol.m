@@ -68,9 +68,10 @@ for i=1:models
     %data{i,2} = coords;
     
     %can't add spaces in this vector
-    coordchar = [chararray(:,[1:8]),chararray(:,[9:17]),chararray(:,[18:24])];
-    coords = [str2num(chararray(:,[1:8])),str2num(chararray(:,[9:17])),str2num(chararray(:,[18:24]))]'
-    coords(1:3,end);
+    %coordchar = [chararray(:,[1:8]),chararray(:,[9:17]),chararray(:,[18:24])];
+    coords = [str2num(chararray(:,[1:8])),str2num(chararray(:,[9:17])),str2num(chararray(:,[18:24]))]';
+    data{i,2} = coords;
+    %coords(1:3,end);
     %coords2 = [str2double(chararray(:,1:8)),str2double(chararray(:,9:17)),str2double(chararray(:,18:24))]';
     %str2double can't op on vectors
     %x = str2num(chararray(:,1:8))';
@@ -107,11 +108,12 @@ for i=1:models %loop through detected models
         %can sscanf bypass spaces by parsing the numbers directly from the line portion?
         %coords(:,j) = sscanf(fv,'%f',[3 1]); %read all coords for the atom record (>str2double>>>str2num)
         
+        % {
         coord = model{i}{j}(31:54); 
         co = [coord(1:8),' ',coord(9:16),' ',coord(17:24)]; 
         coordchar(:,j) = sscanf(co,'%f',[3 1]);
-        
         if strcmp(atomcell{j},''), error('Bad PDB, try resaving with proper software'), end
+        %}
         
         %{
         %slightly slower version that parses line components first
@@ -128,7 +130,7 @@ for i=1:models %loop through detected models
         %coords(3,j) = sscanf(line(47:54),'%f'); %z
     end
     %data{i,1} = atomcell; 
-    data{i,2} = coordchar;
+    %data{i,2} = coordchar;
 end
 
 end
