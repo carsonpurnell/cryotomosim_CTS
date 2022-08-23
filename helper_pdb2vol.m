@@ -43,7 +43,7 @@ modend = find(strncmp(text,'ENDMDL',6)); %find the end of each model entry
 if isempty(modstart) %if single-model, extract start and end of atom lines
     modstart = find(strncmp(text(1:round(end/2)),'ATOM  ',6)); modstart = modstart(1);
     endatm = find(strncmp(text(modstart:end),'ATOM  ',6)); endatm = endatm(end);
-    endhet = find(strncmp(text(modstart:end),'HETATMjj',6)); 
+    endhet = find(strncmp(text(modstart:end),'HETATMjj',6)); %disabled by jj, hetarm currently ignored
     if ~isempty(endhet), endhet = endhet(end); else endhet = 0; end %#ok<SEPEX>
     modend = max(endatm,endhet)+modstart-1; %adjust for having searched only part of the list for speed
     model{1} = text(modstart:modend); models = 1;
@@ -57,45 +57,78 @@ elseif numel(modstart)~=numel(modend) %check if model numbers are the same
 end
 
 data = cell(numel(model),2);
+for i=1:models
+    %stringarray = string(model{i});
+    chararray = char(model{i}); %convert to char array to make column operable
+    chararray(:,[1:30,55:76]) = []; %delete columns outside coords and atom id
+    %atomvec = chararray(:,26:27); atomvec = upper(strrep(string(atomvec),' ',''));
+    atomvec = upper(strrep(string(chararray(:,25:26)),' ','')); %process atom ids to only letters
+    
+    data{i,1} = atomvec;
+    %data{i,2} = coords;
+    
+    %can't add spaces in this vector
+    coordchar = [chararray(:,[1:8]),chararray(:,[9:17]),chararray(:,[18:24])];
+    coords = [str2num(chararray(:,[1:8])),str2num(chararray(:,[9:17])),str2num(chararray(:,[18:24]))]'
+    coords(1:3,end);
+    %coords2 = [str2double(chararray(:,1:8)),str2double(chararray(:,9:17)),str2double(chararray(:,18:24))]';
+    %str2double can't op on vectors
+    %x = str2num(chararray(:,1:8))';
+    %y = str2num(chararray(:,9:16))';
+    %z = str2num(chararray(:,17:24))';
+    %stcoords = string(coordchar);
+    %co2 = convertCharsToStrings(stcoords);
+    %coord2 = sscanf(coordchar,'%f%f%f')
+    %coord = textscan(coordchar,'%f%f%f',numel(atomvec))
+    %coord{1}'
+    %co = {coord{1}';coord{2}';coord{3}'}
+end
+
 for i=1:models %loop through detected models
-    atomcell = cell(1,numel(model{i}));
+    %atomcell = cell(1,numel(model{i}));
+    atomcell = data{i,1};
     %atomst = strings(1,numel(model{i})); %string is unexpectedly slower than cell
-    coords = zeros(3,numel(model{i}));
+    coordchar = zeros(3,numel(model{i}));
     %vectorize pruning coords and atom ID to avoid doing so much in the loop?
     %veclabel{1:numel(model{i})} = model{i}{:}(77:78); %still doesn't work
     %veccoord = model{i}{:}(31:54); %mixmatch output errors from this
     %t = model{i};
     
-    %atom = cellfun(@(x) sscanf(x,'%s%g%s%s%s%g%g%g%g%g%g%s'),t, 'uni', false);
-    %atom = cellfun(@(x) sscanf(x,'%4c%s%s%s%s%s%s%s%s%s%s%s',[12,1]),t, 'uni', false);
-    %atom{1}
-    %atom{end}
-    %t{1}
-    %t{end}
-    %also doesn't vectorize neatly
+    
+    %atom = cellfun(@(x) textscan(x,'%*s%*s%*s%*s%*s%*f%f%f%f%*f%*f%c'),t, 'uni', false);
+    %textscan through cell array works, but is >3x slower than the sscanf method inside the loop
+    %is cellfun the slow part, or is textscan?
     
     for j=1:numel(model{i}) %loop through each line of the model
-        line = model{i}{j}; %extract single line from pdb record
-        atomcell{j} = upper(strrep(line(77:78),' ','')); %read atom identifier while pruning spaces
+        %line = model{i}{j}; %extract single line from pdb record
+        %atomcell{j} = upper(strrep(line(77:78),' ','')); %read atom identifier while pruning spaces
         %this is the fastest known method, append/strjoin slower. needs spaces to avoid runover of long coords
-        fv = [line(31:38),' ',line(39:46),' ',line(47:54)]; %build coords string for atom
-        coords(:,j) = sscanf(fv,'%f',[3 1]); %read all coords for the atom record (>str2double>>>str2num)
+        %fv = [line(31:38),' ',line(39:46),' ',line(47:54)]; %build coords string for atom
+        %can sscanf bypass spaces by parsing the numbers directly from the line portion?
+        %coords(:,j) = sscanf(fv,'%f',[3 1]); %read all coords for the atom record (>str2double>>>str2num)
+        
+        coord = model{i}{j}(31:54); 
+        co = [coord(1:8),' ',coord(9:16),' ',coord(17:24)]; 
+        coordchar(:,j) = sscanf(co,'%f',[3 1]);
+        
         if strcmp(atomcell{j},''), error('Bad PDB, try resaving with proper software'), end
         
         %{
         %slightly slower version that parses line components first
-        label = model{i}{j}(77:78); coord = model{i}{j}(31:54); 
-        atomcell2{j} = upper(strrep(label,' ','')); 
+        %label = model{i}{j}(77:78); atomcell2{j} = upper(strrep(label,' ','')); 
+        coord = model{i}{j}(31:54); 
         co = [coord(1:8),' ',coord(9:16),' ',coord(17:24)]; 
         coords(:,j) = sscanf(co,'%f',[3 1]);
         %}
         
+        %tt = textscan(line,'%*s%*s%*s%*s%*s%*f%f%f%f%*f%*f%c'); %slower than above, but only ~10%
         %coords2(1:3,j) = sscanf(line(31:54),'%f',[3 1]); %reads coords, sscanf>str2double>>str2num
         %coords(1,j) = sscanf(line(31:38),'%f'); %x %slightly faster than cell array, thought it would be more
         %coords(2,j) = sscanf(line(39:46),'%f'); %y
         %coords(3,j) = sscanf(line(47:54),'%f'); %z
     end
-    data{i,1} = atomcell; data{i,2} = coords;
+    %data{i,1} = atomcell; 
+    data{i,2} = coordchar;
 end
 
 end
