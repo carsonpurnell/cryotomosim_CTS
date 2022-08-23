@@ -181,5 +181,4 @@ for i=1:models
 end
 
 vol = reshape(emvol,1,numel(emvol)); %make list horizontal because specifying it initially doesn't work
-%vol = emvol;
 end
