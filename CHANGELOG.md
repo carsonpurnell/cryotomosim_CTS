@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [v0.0.3](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.3) - 2022-08-23 18:17:56
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix error in name parsing ([3182446](https://github.com/carsonpurnell/cryotomosim_CTS/commit/3182446cc593f32641c68f88d26be53f99a1c7c8))
+
+### Performance Improvements
+
+- general:
+  - perf pdb2vol speed improvements ([b15f368](https://github.com/carsonpurnell/cryotomosim_CTS/commit/b15f368aca47e153d4ebba36235fc023fe1084ae))
+  - perf faster pdb2vol ([0560bc6](https://github.com/carsonpurnell/cryotomosim_CTS/commit/0560bc6b837ea83805fe3a7656999275b8515337))
+
 ## [v0.0.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.2) - 2022-08-16 17:47:07
 
 *No description*
