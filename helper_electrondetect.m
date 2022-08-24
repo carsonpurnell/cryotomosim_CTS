@@ -9,7 +9,7 @@ end
 if param.dose<=0, detect=tilt; return; end %if dose 0, skip detection and return perfect detection/original
 tiltangs = param.tilt; %unfortunately similar name to tilt 
 
-arb = 0.1; %arbitrary scaling factor to make contrast look normal
+arb = 0.025; %arbitrary scaling factor to make contrast look normal
 %13.6   same as 12
 %12     0.1 is high, 40e is only a bit worse than 120e, 0.01 is low, 40e almost pure noise
 %8      0.01 garbo, 0.1 reasonably good, clear differences between 40/80/120
