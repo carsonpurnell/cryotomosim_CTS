@@ -16,7 +16,7 @@ Dz = param.defocus/1e6; %convert from microns to m
 
 L = relativistic_electrons(V); %compute wavelength from voltage, correcting for relativistic effects
 
-Ny = 1/(2*pix); B = param.sigma*Ny; q = -0.07*1; %nyquist, envelope, and amplitude contrast values
+Ny = 1/(2*pix); B = param.sigma*Ny; q = 0.07*1; %nyquist, envelope, and amplitude contrast values
 %envelope/amplitude still needs validation and corroboration to our real data
 
 fprintf('Parameters: pixels %g angstroms, voltage %i KeV, aberration %g nm, sigma %g, defocus %d nm\n',...
@@ -76,7 +76,7 @@ eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2); %main equation for each part of CTF
 env = exp(-(k./(B)).^2); %envelope function of the overall CTF
 %env = exp(-3e-15*k.^2); %alternative envelope to try out- near 0, wipes almost all signal out
 %should envelope incorporate K or be flat?
-ctf = ( sqrt(1-q^2)*sin(eq) - q*cos(eq) ) .*env; %complete CTF evaluation
+ctf = ( (1-q)*sin(eq) + (1)*q*cos(eq) ) .*env; %complete CTF evaluation
 %does reducing phase with 1-q or sqrt(1-q) improve image contrast?
 %negative Q makes better tilts - is this driven by reducing phase or increasing amp?
 %the amplitude is doing the work here, phase is sqrt but amp is driving the retained darkness of carbon
