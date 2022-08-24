@@ -74,8 +74,6 @@ end
 function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,q)
 eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2); %main equation for each part of CTF
 env = exp(-(k./(B)).^2); %envelope function of the overall CTF
-%env = exp(-3e-15*k.^2); %alternative envelope to try out- near 0, wipes almost all signal out
-%should envelope incorporate K or be flat?
 ctf = ( (1-q)*sin(eq) + (1)*q*cos(eq) ) .*env; %complete CTF evaluation
 %phase component generates halo artifacts, reduced by amplitude contribution
 out = real(ifft2(ifftshift(fftshift(fft2(in)).*ctf))); %fft stack to translate from ctf fourier to realspace
