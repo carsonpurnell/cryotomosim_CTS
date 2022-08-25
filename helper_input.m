@@ -44,7 +44,7 @@ end
 
 %output = cell(1,numel(list));
 %fprintf('Input list: '), disp(list) %too much command window spam
-types = {'single','bundle','complex','cluster'};
+types = {'single','bundle','complex','cluster','group'};
 
 for i=1:numel(list)
     fprintf('Loading input %i  ',i)
