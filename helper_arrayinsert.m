@@ -26,20 +26,28 @@ sz=max(-coord(3)+2,1):min(d3-coord(3)+1,s3);
 
 switch method
     case 'sum'
+        %sumtarg = source(sx,sy,sz) + dest(dx,dy,dz);
         dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz);
+        %dest(dx,dy,dz) = sumtarg;
     case 'replace'
         dest(dx,dy,dz) = source(sx,sy,sz);
     case 'nonoverlap'
+        %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
-        if max(max(max(dbin+sbin)))>1 %if overlap, record and output original
+        
+        olog = dbin+sbin; olog = max(olog(:)); %fastest method, sum areas and find max to test if there was overlap
+        if olog>1 %if overlap, record and output original
             overlap = 1; 
         else %if no overlap, add the source to the destination
             dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz);
             overlap = 0;
         end
     case 'overlaptest' %much faster, test only variation
+        %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
-        if max(max(max(dbin+sbin)))>1 %if overlap, record and output original
+        
+        olog = dbin+sbin; olog = max(olog(:)); %fastest method, sum areas and find max to test if there was overlap
+        if olog>1 %if overlap, record and output original
             overlap = 1; 
         else %if no overlap, record result
             overlap = 0;
