@@ -8,18 +8,18 @@ arguments
     dest double
     source double
     coord (1,:) double
-    method (1,1) string {mustBeMember(method,{'sum','replace','nonoverlap','overlaptest','min','max','mean'})} = 'sum'
+    method string {mustBeMember(method,{'sum','replace','nonoverlap','overlaptest','min','max','mean'})} = 'sum'
 end
 
 [d1, d2, d3]=size(dest);
 [s1, s2, s3]=size(source);
 
-%dest
+%compute indexes for the relevant region of the dest
 dx=max(1,coord(1)):min(d1,coord(1)+s1-1);
 dy=max(1,coord(2)):min(d2,coord(2)+s2-1);
 dz=max(1,coord(3)):min(d3,coord(3)+s3-1);
 
-%source
+%compute indexes for the relevant region of the source
 sx=max(-coord(1)+2,1):min(d1-coord(1)+1,s1);
 sy=max(-coord(2)+2,1):min(d2-coord(2)+1,s2);
 sz=max(-coord(3)+2,1):min(d3-coord(3)+1,s3);
@@ -27,29 +27,29 @@ sz=max(-coord(3)+2,1):min(d3-coord(3)+1,s3);
 switch method
     case 'sum'
         dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz);
-    case 'replace'
-        dest(dx,dy,dz) = source(sx,sy,sz);
-    case 'nonoverlap'
+    case 'nonoverlap' %first test if there would be overlap to save time
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
         
-        olog = dbin+sbin; olog = max(olog(:)); %fastest method, sum areas and find max to test if there was overlap
+        olog = dbin+sbin; olog = max(olog(:)); %fastest method to find potential overlaps
         if olog>1 %if overlap, record and output original
             overlap = 1; 
         else %if no overlap, add the source to the destination
             dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz);
             overlap = 0;
         end
-    case 'overlaptest' %much faster, test only variation
+    case 'overlaptest' %faster than nonoverlap by only testing for overlap, will not do operations
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
         
-        olog = dbin+sbin; olog = max(olog(:)); %fastest method, sum areas and find max to test if there was overlap
+        olog = dbin+sbin; olog = max(olog(:)); %fastest method to find potential overlaps
         if olog>1 %if overlap, record and output original
             overlap = 1; 
         else %if no overlap, record result
             overlap = 0;
         end
+    case 'replace'
+        dest(dx,dy,dz) = source(sx,sy,sz);
     case 'min'
         dest(dx,dy,dz) = min( source(sx,sy,sz),dest(dx,dy,dz) );
     case 'max'
