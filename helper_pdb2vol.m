@@ -66,11 +66,11 @@ for i=1:models
     
     atomvec = upper(strrep(string(chararray(:,25:26)),' ','')); %process atom ids to only letters
     %atomvec1 = chararray(:,25:26); atomvec1 = upper(strrep(string(atomvec1),' ','')); %slightly slower
-    data{i,1} = atomvec;
+    data{i,1} = atomvec; %store atoms
     
     coords = [str2num(chararray(:,1:8)),str2num(chararray(:,9:17)),str2num(chararray(:,18:24))]'; %#ok<ST2NM>
     %using str2num because str2double won't operate on arrays, and can't add spaces while vectorized
-    data{i,2} = coords;
+    data{i,2} = coords; %store coordinates
 end
 
 %defunct old code for looping through each atom record individually
@@ -129,6 +129,9 @@ function vol = internal_volbuild(data,pix,trim)
 
 %initialize atomic magnitude information
 mag = struct('H',0,'C',6+1.3,'N',7+1.1,'O',8+0.2,'P',15,'S',16+0.6);
+%is there a faster way to access structs, or does speed require a different solution?
+%possible to vectorize conversion of strings into corresponding numbers?
+
 %{
 %shang/sigworth numbers (HCNOSP): backwards C and N?
 25, 108,  130, 97,  100 and 267   V·Å3
