@@ -2,7 +2,8 @@ function [vol,data] = helper_pdb2vol(pdb,pix,trim,savemat)
 if nargin<2, error('requires both pdb and pixel size inputs'), end
 if nargin<3, trim=0; end %don't trim by default, but does auto-trim singles
 if nargin<4, savemat=1; end %make name-val to generate .mat name with prefix/suffix?
-%need user input or name/val to set what each model is for class/ID
+%user input or name/val to set what each model is for class/ID?
+%set a per-input prevalence scale to make asymmetric contents?
 
 %pdb to atoms
 [~,~,ext] = fileparts(pdb);
@@ -12,9 +13,6 @@ if strcmp(ext,'.mat') %if .mat, load the data from the file
 elseif strcmp(ext,'.pdb') %if .pdb, parse the file into a data variable
     data = internal_pdbparse(pdb);
 end
-
-%probably faster to store coords as normal array and atom id as a separate cell array or string array
-%save each variable independently to the mat
 
 vol = internal_volbuild(data,pix,trim);
 
