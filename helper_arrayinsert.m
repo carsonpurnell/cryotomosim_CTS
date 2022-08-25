@@ -26,9 +26,7 @@ sz=max(-coord(3)+2,1):min(d3-coord(3)+1,s3);
 
 switch method
     case 'sum'
-        %sumtarg = source(sx,sy,sz) + dest(dx,dy,dz);
         dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz);
-        %dest(dx,dy,dz) = sumtarg;
     case 'replace'
         dest(dx,dy,dz) = source(sx,sy,sz);
     case 'nonoverlap'
