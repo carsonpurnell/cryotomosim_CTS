@@ -156,15 +156,10 @@ for i=1:models
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
     em = zeros(lim'); %initialize empty volume for the model
     for j=1:numel(atoms)
-        opacity = mag.(atoms{j}); %get atom mag from record - this is the slow step
+        opacity = mag.(atoms{j}); %get atom mag from record - this is the slow step (faster than inline though)
         x=coords(1,j); y=coords(2,j); z=coords(3,j); %parse coords manually, no method to split vector
         %tmp = num2cell(coords(:,j)); [x1,y1,z1] = tmp{:}; %works but is much slower
         em(x,y,z) = em(x,y,z)+opacity; %write mag to the model vol
-        
-        %ever so slightly slower to do inline reference to atom mag
-        %x3=coords(1,j); y3=coords(2,j); z3=coords(3,j); em(x3,y3,z3) = em(x3,y3,z3)+mag.(atoms{j});
-        %pt = coords(:,j); %get coord for the atom record
-        %co = round((pt+adj)./pix); %vectorize coordinate math
     end
     if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
         em = em(:,any(em ~= 0,[1 3]),:); 
