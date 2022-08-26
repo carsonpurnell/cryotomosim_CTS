@@ -171,7 +171,6 @@ for i=1:models
     %atomscat = categorical(atoms);
     %[~,c] = ismember(atoms,{[elements{:}]}); % .445/.222/.185 when first, doesn't work to generate c
     [~,c] = ismember(atomid,elements); % .654/.649/.609 when first, .641 when alone
-    %[~,c] = ismember(atoms,char(elements{:})); % .621/.678/.695 when first, 1.6 when alone
     atomint = op(c); %logical index the atom data relative to the atomic symbols
     
     em = zeros(lim'); %initialize empty volume for the model
