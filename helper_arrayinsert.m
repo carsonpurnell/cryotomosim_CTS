@@ -34,7 +34,6 @@ switch method
     case 'sum'
         tmp = source(sx,sy,sz) + dest(dx,dy,dz);
         dest(dx,dy,dz) = tmp;
-        %dest2(dind) = tmp;
     case 'nonoverlap' %first test if there would be overlap to save time
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); 
