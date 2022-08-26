@@ -169,9 +169,6 @@ for i=1:models
     
     %try to convert atom id to atom opacity info in vector form
     %atomscat = categorical(atoms);
-    %atomscat
-    %elements
-    %op
     %[~,c] = ismember(atoms,{[elements{:}]}); % .445/.222/.185 when first, doesn't work to generate c
     [~,c] = ismember(atomid,elements); % .654/.649/.609 when first, .641 when alone
     %[~,c] = ismember(atoms,char(elements{:})); % .621/.678/.695 when first, 1.6 when alone
