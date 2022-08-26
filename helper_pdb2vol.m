@@ -69,7 +69,7 @@ for i=1:models
     data{i,1} = atomvec; %store atoms
     
     coords = [str2num(chararray(:,1:8)),str2num(chararray(:,9:17)),str2num(chararray(:,18:24))]'; %#ok<ST2NM>
-    %using str2num because str2double won't operate on arrays, and can't add spaces while vectorized
+    %using str2num because str2double won't operate on 2d arrays, and can't add spaces while vectorized
     data{i,2} = coords; %store coordinates
 end
 
