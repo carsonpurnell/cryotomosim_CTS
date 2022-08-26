@@ -19,7 +19,6 @@ dx=max(1,coord(1)):min(d1,coord(1)+s1-1);
 dy=max(1,coord(2)):min(d2,coord(2)+s2-1);
 dz=max(1,coord(3)):min(d3,coord(3)+s3-1);
 
-
 %linear index is slower than direct indexing, probably because it needs to reshape internally
 %s = [d1,d2,d3]; %size of array to index
 %index = dx.' + s(1)*(dy-1) + s(1)*s(2)*reshape(dz-1,1,1,numel(dz));
