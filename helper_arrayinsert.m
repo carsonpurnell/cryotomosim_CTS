@@ -38,8 +38,8 @@ switch method
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
         
-        olog = dbin+sbin; olog = max(olog(:)); %fastest method to find potential overlaps
-        if olog>1 %if overlap, record and output original
+        overlap = dbin+sbin; overlap = max(overlap(:)); %fastest method to find potential overlaps
+        if overlap>1 %if overlap, record and output original
             overlap = 1; 
         else %if no overlap, add the source to the destination
             dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz);
@@ -49,8 +49,8 @@ switch method
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
         
-        olog = dbin+sbin; olog = max(olog(:)); %fastest method to find potential overlaps
-        if olog>1 %if overlap, record and output original
+        overlap = dbin+sbin; overlap = max(overlap(:)); %fastest method to find potential overlaps
+        if overlap>1 %if overlap, record and output original
             overlap = 1; 
         else %if no overlap, record result
             overlap = 0;
