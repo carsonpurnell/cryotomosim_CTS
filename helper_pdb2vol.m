@@ -134,12 +134,8 @@ edat = {'H',0;'C',6+1.3;'N',7+1.1;'O',8+0.2;'P',15;'S',16+0.6};
 elements = edat(:,1);
 e2 = char(elements{:});
 op = cell2mat(edat(:,2));
-%cats = categorical(elements);
-%conv = renamecats(cats,elements,op)
 %elements = {'H','C',    'N',    'O',    'P', 'S'};
 %op =       {'0','6+1.3','7+1.1','8+0.2','15','16+0.6'};
-%is there a faster way to access structs, or does speed require a different solution?
-%possible to vectorize conversion of strings into corresponding numbers?
 
 %{
 %shang/sigworth numbers (HCNOSP): backwards C and N?
