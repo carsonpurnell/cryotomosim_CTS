@@ -68,5 +68,4 @@ switch method
 end
 
 output = dest;
-
 end
