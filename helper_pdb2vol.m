@@ -128,11 +128,9 @@ end
 function vol = internal_volbuild(data,pix,trim)
 
 %initialize atomic magnitude information
-mag = struct('H',0,'C',6+1.3,'N',7+1.1,'O',8+0.2,'P',15,'S',16+0.6);
-
+%mag = struct('H',0,'C',6+1.3,'N',7+1.1,'O',8+0.2,'P',15,'S',16+0.6);
 edat = {'H',0;'C',6+1.3;'N',7+1.1;'O',8+0.2;'P',15;'S',16+0.6};
 elements = edat(:,1);
-e2 = char(elements{:});
 op = cell2mat(edat(:,2));
 %elements = {'H','C',    'N',    'O',    'P', 'S'};
 %op =       {'0','6+1.3','7+1.1','8+0.2','15','16+0.6'};
