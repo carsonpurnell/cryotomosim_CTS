@@ -167,10 +167,8 @@ for i=1:models
     atomid = data{i,1}; %single column, hopefully for speed
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
     
-    %try to convert atom id to atom opacity info in vector form
-    %atomscat = categorical(atoms);
-    %[~,c] = ismember(atoms,{[elements{:}]}); % .445/.222/.185 when first, doesn't work to generate c
-    [~,c] = ismember(atomid,elements); % .654/.649/.609 when first, .641 when alone
+    %convert atomic labels into atom opacity information outside the loop for speed
+    [~,c] = ismember(atomid,elements); % get index for each atom indicating what reference it is
     atomint = op(c); %logical index the atom data relative to the atomic symbols
     
     em = zeros(lim'); %initialize empty volume for the model
