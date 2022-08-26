@@ -129,6 +129,15 @@ function vol = internal_volbuild(data,pix,trim)
 
 %initialize atomic magnitude information
 mag = struct('H',0,'C',6+1.3,'N',7+1.1,'O',8+0.2,'P',15,'S',16+0.6);
+
+edat = {'H',0;'C',6+1.3;'N',7+1.1;'O',8+0.2;'P',15;'S',16+0.6};
+elements = edat(:,1);
+e2 = char(elements{:});
+op = cell2mat(edat(:,2));
+%cats = categorical(elements);
+%conv = renamecats(cats,elements,op)
+%elements = {'H','C',    'N',    'O',    'P', 'S'};
+%op =       {'0','6+1.3','7+1.1','8+0.2','15','16+0.6'};
 %is there a faster way to access structs, or does speed require a different solution?
 %possible to vectorize conversion of strings into corresponding numbers?
 
@@ -155,15 +164,45 @@ lim = round( (adj+b)/pix +1); %array size to place into, same initial box for al
 models = numel(data(:,2)); emvol = cell(models,1); %pre-allocate stuff
 if models==1, trim=1; end
 for i=1:models
-    atoms = data{i,1}; %single column, hopefully for speed
+    atomid = data{i,1}; %single column, hopefully for speed
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
+    
+    %try to convert atom id to atom opacity info in vector form
+    %atomscat = categorical(atoms);
+    %atomscat
+    %elements
+    %op
+    %[~,c] = ismember(atoms,{[elements{:}]}); % .445/.222/.185 when first, doesn't work to generate c
+    [~,c] = ismember(atomid,elements); % .654/.649/.609 when first, .641 when alone
+    %[~,c] = ismember(atoms,char(elements{:})); % .621/.678/.695 when first, 1.6 when alone
+    atomint = op(c); %logical index the atom data relative to the atomic symbols
+    %atoms2 = str2double(op(c)); %shockingly MUCH slower than struct key-value
+    %atoms3 = str2num(op(c));
+    %atoms = renamecats(atomscat,elements,op)
+    
     em = zeros(lim'); %initialize empty volume for the model
-    for j=1:numel(atoms)
-        opacity = mag.(atoms{j}); %get atom mag from record - this is the slow step (faster than inline though)
+    
+    for j=1:numel(atomint) %faster loop, use vectorized converted atomic info faster than struct reference
+        x=coords(1,j); y=coords(2,j); z=coords(3,j);
+        em(x,y,z) = em(x,y,z)+atomint(j);
+    end
+    
+    %{
+    for j=1:numel(atomid) %slower loop, key-value struct is slow (but almost the fastest method)
+        opacity = mag.(atomid{j}); %get atom mag from record - this is the slow step (faster than inline though)
         x=coords(1,j); y=coords(2,j); z=coords(3,j); %parse coords manually, no method to split vector
         %tmp = num2cell(coords(:,j)); [x1,y1,z1] = tmp{:}; %works but is much slower
         em(x,y,z) = em(x,y,z)+opacity; %write mag to the model vol
     end
+    %}
+    
+    %{
+    if em==em2
+        %sliceViewer(em); figure(); sliceViewer(em2);
+    else
+        warning('not the same')
+    end
+    %}
     if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
         em = em(:,any(em ~= 0,[1 3]),:); 
         em = em(any(em ~= 0,[2 3]),:,:); 
