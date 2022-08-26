@@ -25,7 +25,6 @@ dz=max(1,coord(3)):min(d3,coord(3)+s3-1);
 %index = dx.' + s(1)*(dy-1) + s(1)*s(2)*reshape(dz-1,1,1,numel(dz));
 %if ~dest(index)==dest(dx,dy,dz), fprintf('xx'); end %test identity
 
-
 %compute indexes for the relevant region of the source
 sx=max(-coord(1)+2,1):min(d1-coord(1)+1,s1);
 sy=max(-coord(2)+2,1):min(d2-coord(2)+1,s2);
