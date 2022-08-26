@@ -36,8 +36,7 @@ switch method
         dest(dx,dy,dz) = tmp;
     case 'nonoverlap' %first test if there would be overlap to save time
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
-        dbin = imbinarize(rescale(dest(dx,dy,dz))); 
-        sbin = imbinarize(rescale(source(sx,sy,sz)));
+        dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
         
         olog = dbin+sbin; olog = max(olog(:)); %fastest method to find potential overlaps
         if olog>1 %if overlap, record and output original
