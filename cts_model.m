@@ -71,7 +71,11 @@ ts.inputs.beads = opt.beads; ts.inputs.grid = opt.grid; ts.inputs.ice = opt.ice;
 %inputs.mem = opt.mem;
 
 %load target particles and write to struct
-[ts.particles.targets] = helper_input(particleset,pix);
+if isstruct(particleset)
+    ts.particles.targets = particleset;
+else
+    [ts.particles.targets] = helper_input(particleset,pix);
+end
 
 if opt.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
