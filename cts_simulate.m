@@ -3,6 +3,7 @@ function [noised, conv, tiltseries] = cts_simulate(sampleMRC,param,opt)
 %[noised, convolved, tiltseries] = tomosim_simulate(sampleMRC, param, opt)
 %simulates tomographic data as if collected from a sample and reconstructs a tomogram
 %
+%
 %  Inputs
 %
 %sample MRC     required, preferred input = 'gui'
