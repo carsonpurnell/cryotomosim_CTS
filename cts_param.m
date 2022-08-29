@@ -18,6 +18,7 @@ function [param] = cts_param(guiinput,param)
 %scatter scales inelastic/lossy electron scattering (nonlinear, scales distance)
 %ctfoverlap sets how much overlap between CTF strips (default 2), 0 skips CTF convolution entirely
 
+
 arguments
     guiinput = 0
     
