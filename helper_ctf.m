@@ -14,7 +14,7 @@ cs = param.aberration/1000; %convert from mm to m
 pix = param.pix/1e10; %convert from angstroms to m
 Dz = param.defocus/1e6; %convert from microns to m
 
-L = relativistic_electrons(V); %compute wavelength from voltage, correcting for relativistic effects
+L = relativistic_electrons(V); %compute wavelength from voltage, correcting for relativity at speed
 
 Ny = 1/(2*pix); B = param.sigma*Ny; q = 0.07*1; %nyquist, envelope, and amplitude contrast values
 %envelope/amplitude still needs validation and corroboration to our real data
