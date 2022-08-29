@@ -60,8 +60,6 @@ arguments
     opt.mem = 0 %is a super jankfest that might not work right now
 end
 
-%still some weird bias where particles clip along certain directions and not others
-%i think i might have fixed this?
 
 %initialize the struct so the order is invariant and fill with input information
 ts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[],'inputs',[]);
