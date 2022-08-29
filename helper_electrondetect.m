@@ -10,11 +10,7 @@ if param.dose<=0, detect=tilt; return; end %if dose 0, skip detection and return
 tiltangs = param.tilt; %unfortunately similar name to tilt 
 
 arb = 10/param.pix^2; %arbitrary scaling factor to make contrast look normal
-%13.6   same as 12
-%12     0.1 is high, 40e is only a bit worse than 120e, 0.01 is low, 40e almost pure noise
-%8      0.01 garbo, 0.1 reasonably good, clear differences between 40/80/120
-%5      0.1 maybe a bit low, terrible defocus main problem in test case
-%5      0.1 very low contrast for CaMK2, 1 still meh contrast at 120
+%what are the new good values? is this scale working well?
 
 %too high a dose makes the image dominated by noise - is it reasonable? even 40e is blowing out 5a ribos
 DQE = .84*arb; %doesn't change with tilts, not sure how to implement fourier space falloff
