@@ -2,8 +2,6 @@ function [vol,data] = helper_pdb2vol(pdb,pix,trim,savemat)
 if nargin<2, error('requires both pdb and pixel size inputs'), end
 if nargin<3, trim=0; end %don't trim by default, but does auto-trim singles
 if nargin<4, savemat=1; end %make name-val to generate .mat name with prefix/suffix?
-%user input or name/val to set what each model is for class/ID?
-%set a per-input prevalence scale to make asymmetric contents?
 
 %pdb to atoms
 [~,~,ext] = fileparts(pdb);
