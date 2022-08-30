@@ -33,6 +33,8 @@ function [ts] = cts_model(particleset,vol,pix,opt)
 %     change to 0 to not generate vitreous ice in the model
 %mem            default 0
 %    1 to generate a super janktastic not at all realistic fascimile of a cell membrane
+%graph          default 0
+%    1 to have a plot continuously update with particle placement success/failure numbers
 %
 %Output
 %a folder will be generated with a name of the input particles, with a .mrc of vol and a .mat of ts
@@ -58,6 +60,7 @@ arguments
     opt.grid = [15 2000] %[thick radius] both in nm [15 2000] our real grids
     opt.ice = 1 %0 to not add ice
     opt.mem = 0 %is a super jankfest that might not work right now
+    opt.graph = 0
 end
 
 runtime = numel(vol)/60*1.2e-5;
@@ -117,7 +120,7 @@ end
 %generate model and add (in case input vol had stuff in it)
 iters = round(ts.pix(1)*sqrt(numel(ts.vol))/30); %modeling iters, maybe simplify
 [fill, ts.splitmodel] = helper_randomfill(ts.vol+constraint,ts.particles.targets,iters,...
-    opt.density,'type','target'); 
+    opt.density,'type','target','graph',1); 
 ts.vol = ts.vol+fill; 
 ts.model.targets = fill;
 ts.model.particles = ts.vol;

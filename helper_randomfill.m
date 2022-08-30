@@ -8,8 +8,17 @@ arguments
     iters
     density = 0.4
     opt.type = 'object'
+    opt.graph = 0
 end
 insize = size(inarray); counts = struct('s',0,'f',0); %initialize counts and get input size
+
+%opt.graph = 1;
+if opt.graph==1
+    figure('Name','Placement Progress')
+    xlabel('Failed placements')
+    ylabel('Successful placements')
+    hold on; 
+end
 
 namelist = [set(:).id]; %vector collection of all ids instead of the former double loop
 for i=1:numel(namelist)
@@ -110,7 +119,11 @@ for i=1:iters
     if nnz(inarray)/numel(inarray)>density, fprintf('Density limit reached.'), break, end
     end
     
+    if opt.graph==1
+        plot(counts.f,counts.s,'.'); drawnow;
+    end
 end
+
 
 fprintf('\nPlaced %i particles, failed %i attempted placements\n',counts.s,counts.f)
 
