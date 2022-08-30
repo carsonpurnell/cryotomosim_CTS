@@ -120,7 +120,7 @@ end
 %generate model and add (in case input vol had stuff in it)
 iters = round(ts.pix(1)*sqrt(numel(ts.vol))/30); %modeling iters, maybe simplify
 [fill, ts.splitmodel] = helper_randomfill(ts.vol+constraint,ts.particles.targets,iters,...
-    opt.density,'type','target','graph',1); 
+    opt.density,'type','target','graph',opt.graph); 
 ts.vol = ts.vol+fill; 
 ts.model.targets = fill;
 ts.model.particles = ts.vol;
