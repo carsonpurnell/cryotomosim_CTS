@@ -60,6 +60,15 @@ arguments
     opt.mem = 0 %is a super jankfest that might not work right now
 end
 
+runtime = numel(vol)/60*1.2e-5;
+fprintf('Estimated model generation time: %g minutes\n',runtime)
+if runtime>30
+    txt = input('Runtime is very long, verify inputs. ctlr+C to end, or enter "proceed" to run anyway: ','s');
+    if ~strcmp(txt,'proceed')
+        ts = NaN; fprintf('Model generation declined, process aborted.\n')
+        return
+    end
+end
 
 %initialize the struct so the order is invariant and fill with input information
 ts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[],'inputs',[]);
