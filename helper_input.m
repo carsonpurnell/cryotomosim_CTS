@@ -1,4 +1,4 @@
-function [output] = helper_input(list,pixelsize,sv)
+function [particleset] = helper_input(list,pixelsize,sv)
 %outputs a cell array of 3d volumes ready to input into other tomosim functions
 %list is a cell array of input files(pdb or mrc) and workspace variables, which can be mixed. 
 %list=='user' opens a broswer for selecting inputs(files only) or for each time it is used in the cell array
@@ -105,7 +105,7 @@ for i=1:numel(list)
     
     %tmp.vol = helper_preproc(tmp.vol,proc);
     
-    output(i) = tmp; %#ok<AGROW> %store in multidim struct for ease of use
+    particleset(i) = tmp; %#ok<AGROW> %store in multidim struct for ease of use
     
     fprintf('  done\n')
 end
