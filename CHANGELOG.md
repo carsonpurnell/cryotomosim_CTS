@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## [v0.0.4](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.4) - 2022-08-30 18:35:49
+
+many miscellaneous speed and accuracy improvements, cts_model can now generate a dynamic graph readout of particle placement results
+
+### Feature
+
+- general:
+  - model progress graph ([ff6e67b](https://github.com/carsonpurnell/cryotomosim_CTS/commit/ff6e67b767bda8f874c42a14df66d20c8d27c5e1))
+
+### Performance Improvements
+
+- general:
+  - faster pdb2vol vectorized atomic data ([dc5e660](https://github.com/carsonpurnell/cryotomosim_CTS/commit/dc5e660316e223ae7e3c780700a2836ecfd06bff))
+  - arrayinsert improvements ([a9af0ec](https://github.com/carsonpurnell/cryotomosim_CTS/commit/a9af0ecb572cc76c7fddd084e278ae65f52036e3))
+  - pdb2vol avoid saving .mat that exists ([44e3ed2](https://github.com/carsonpurnell/cryotomosim_CTS/commit/44e3ed259c966cd32d9927e7ee017436858b88ae))
+
 ## [v0.0.3](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.3) - 2022-08-23 18:17:56
 
 *No description*
