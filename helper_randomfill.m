@@ -121,9 +121,6 @@ end
 %radial internal func
 function [inarray,split,counts] = radialfill(inarray,bundle,n,split,counts)
 which = randi(numel(bundle.vol));
-%{
-%[inarray,err] = helper_arrayinsert(inarray,primary,init,'overlaptest');
-%}
 
 %replacement for redundant initial test code, using 4 tries (might need more to balance out bundles)
 [primary,tform,init,err] = testplace(inarray,bundle.vol{which},4);
