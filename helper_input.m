@@ -19,12 +19,15 @@ function [particleset] = helper_input(list,pixelsize,sv)
 
 %need a desc/filename field for structs too so that things can be traced
 %systemize names, break name at first underscore?
-
-if nargin<2, error('first 2 inputs are required'), end
-%by default, preproc everything
-if nargin<3, sv=1; end 
+arguments
+    list
+    pixelsize
+    sv = 1 %save generated .mat intermediates by default
+end
+%if nargin<2, error('first 2 inputs are required'), end
+%if nargin<3, sv=1; end 
 %resolution projection is not used anymore, resizing also breaks intensity scaling
-if numel(pixelsize)==1, pixelsize(2)=pixelsize(1); end
+%if numel(pixelsize)==1, pixelsize(2)=pixelsize(1); end
 
 
 if strcmp(list,'gui') %preferred method of using GUI to find target files
