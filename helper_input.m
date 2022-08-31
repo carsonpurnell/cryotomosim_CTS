@@ -18,7 +18,21 @@ arguments
     sv = 1 %save generated .mat intermediates by default
 end
 
-if strcmp(list,'gui') %preferred method of using GUI to find target files
+if strcmp(list,'gui') && exist('uipickfiles','file')==2%preferred method of using GUI to find target files
+    list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$'); %need to add .mat once generator is made
+    if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
+    
+elseif strcmp(list,'gui')
+    [list, path] = uigetfile({'*.pdb;*.mrc'},'Select input files','MultiSelect','on');
+    %similar checks to make sure files were selected, and if no bail immediately with error
+    if numel(string(list))==1, list={list}; end
+    if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
+    for i=1:numel(list) %make the list full file paths rather than just names so it works off-path
+        list{i} = fullfile(path,list{i}); 
+    end
+    
+end
+%{
     try %use uipickfiles if available, it's significantly better
         list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$'); %need to add .mat once generator is made
         if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
@@ -32,6 +46,7 @@ if strcmp(list,'gui') %preferred method of using GUI to find target files
         end
     end
 end
+%}
 
 %output = cell(1,numel(list));
 types = {'single','bundle','complex','cluster','group'};
