@@ -98,10 +98,6 @@ for i=1:iters
     if 1<0 %janky internal function call
     %[split, err, inarray, counts, loc] = fn_placement(inarray, split, particle, name, insize, [0 0 0], counts);
     end
-    if strcmp(set(which).type,'cluster') && err==0 %maybe while loop to terminate early and reduce nesting?
-        %q = 0;
-        %still can only deal with a single input option, not a mixed cluster
-    end
     %}
     
     if rem(i,25)==0, fprintf('%i,',counts.s), end
