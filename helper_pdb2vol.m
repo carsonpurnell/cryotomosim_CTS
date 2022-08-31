@@ -89,13 +89,6 @@ for i=1:models %loop through detected models
     %is cellfun the slow part, or is textscan?
     
     %for j=1:numel(model{i}) %loop through each line of the model
-        %line = model{i}{j}; %extract single line from pdb record
-        %atomcell{j} = upper(strrep(line(77:78),' ','')); %read atom identifier while pruning spaces
-        %this is the fastest known method, append/strjoin slower. needs spaces to avoid runover of long coords
-        %fv = [line(31:38),' ',line(39:46),' ',line(47:54)]; %build coords string for atom
-        %can sscanf bypass spaces by parsing the numbers directly from the line portion?
-        %coords(:,j) = sscanf(fv,'%f',[3 1]); %read all coords for the atom record (>str2double>>>str2num)
-        
         
     %end
     %data{i,1} = atomcell; 
