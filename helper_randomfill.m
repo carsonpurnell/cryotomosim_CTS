@@ -94,11 +94,7 @@ for i=1:iters
             
     end
     
-    %{
-    if 1<0 %janky internal function call
-    %[split, err, inarray, counts, loc] = fn_placement(inarray, split, particle, name, insize, [0 0 0], counts);
-    end
-    %}
+    
     
     if rem(i,25)==0, fprintf('%i,',counts.s), end
     if rem(i,500)==0, fprintf('\n'), end
@@ -107,7 +103,7 @@ for i=1:iters
     if nnz(inarray)/numel(inarray)>density, fprintf('Density limit reached.'), break, end
     end
     
-    if opt.graph==1
+    if opt.graph==1 %draw progress graph continuously
         plot(counts.f,counts.s,'.'); drawnow;
     end
 end
