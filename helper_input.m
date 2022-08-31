@@ -114,11 +114,5 @@ for i=1:numel(list)
     fprintf('  done\n')
 end
 
-%sorting not relevant anymore with a struct per class. holding temporarily in case of within-class sorting
-% if sorting~=0 %sort largest to smallest
-%     counts = cellfun(@numel,output(1,:));
-%     [~, ix] = sort(counts,'descend');
-%     output = output(:,ix); %output = output(2,ix);
-% end
 
 end
