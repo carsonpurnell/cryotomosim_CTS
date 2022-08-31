@@ -21,13 +21,11 @@ function [particleset] = helper_input(list,pixelsize,sv)
 %systemize names, break name at first underscore?
 arguments
     list
-    pixelsize
+    pixelsize double
     sv = 1 %save generated .mat intermediates by default
 end
 %if nargin<2, error('first 2 inputs are required'), end
-%if nargin<3, sv=1; end 
-%resolution projection is not used anymore, resizing also breaks intensity scaling
-%if numel(pixelsize)==1, pixelsize(2)=pixelsize(1); end
+%if nargin<3, sv=1; end
 
 
 if strcmp(list,'gui') %preferred method of using GUI to find target files
@@ -77,13 +75,13 @@ for i=1:numel(list)
     
     if iscellstr(list(i)) && (strcmp(ext,'.pdb') || strcmp(ext,'.mat'))  
         fprintf('reading %s ',filename)
-        tmp.vol = helper_pdb2vol(list{i},pixelsize(1),trim,sv); %read pdb and construct as volume at pixel size
-        fprintf('generating at %g pixelsize ',pixelsize(1))
+        tmp.vol = helper_pdb2vol(list{i},pixelsize,trim,sv); %read pdb and construct as volume at pixel size
+        fprintf('generating at %g pixelsize ',pixelsize)
     elseif iscellstr(list(i)) && strcmp(ext,'.mrc')
         fprintf('loading %s  ',filename)
         [tmp, head] = ReadMRC(list{i});
-        fprintf('resizing from %g to %g pixel size',head.pixA,pixelsize(1))
-        tmp.vol = imresize3(tmp,head.pixA/pixelsize(1));
+        fprintf('resizing from %g to %g pixel size',head.pixA,pixelsize)
+        tmp.vol = imresize3(tmp,head.pixA/pixelsize);
         %need to filter mrc to make density maps clean, pdb are already good to go
         
 %     elseif ~iscellstr(list(i)) && numel(size(list{i}))==3
