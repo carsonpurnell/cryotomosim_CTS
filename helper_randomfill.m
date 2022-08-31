@@ -118,6 +118,17 @@ end
 
 end
 
+%preliminary internal function for initial placement testing
+function [rot,tform,loc,err] = testplace(inarray,particle,retry)
+for retry=1:retry
+    tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
+    rot = imwarp(particle,tform); %generated rotated particle
+    loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
+    [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
+    if err==0, break; end
+end
+end
+
 %radial internal func
 function [inarray,split,counts] = radialfill(inarray,bundle,n,split,counts)
 which = randi(numel(bundle.vol));
@@ -204,13 +215,3 @@ function [split, err, inarray, counts, loc] = fn_placement(inarray, split, parti
     
 end
 
-%preliminary internal function for initial placement testing
-function [rot,tform,loc,err] = testplace(inarray,particle,retry)
-for retry=1:retry
-    tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
-    rot = imwarp(particle,tform); %generated rotated particle
-    loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
-    [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
-    if err==0, break; end
-end
-end
