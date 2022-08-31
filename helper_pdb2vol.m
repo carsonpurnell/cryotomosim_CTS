@@ -111,11 +111,6 @@ for i=1:models %loop through detected models
         coords(:,j) = sscanf(co,'%f',[3 1]);
         %}
         
-        %tt = textscan(line,'%*s%*s%*s%*s%*s%*f%f%f%f%*f%*f%c'); %slower than above, but only ~10%
-        %coords2(1:3,j) = sscanf(line(31:54),'%f',[3 1]); %reads coords, sscanf>str2double>>str2num
-        %coords(1,j) = sscanf(line(31:38),'%f'); %x %slightly faster than cell array, thought it would be more
-        %coords(2,j) = sscanf(line(39:46),'%f'); %y
-        %coords(3,j) = sscanf(line(47:54),'%f'); %z
     %end
     %data{i,1} = atomcell; 
     %data{i,2} = coordchar;
