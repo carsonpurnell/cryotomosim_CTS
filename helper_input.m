@@ -34,7 +34,6 @@ if strcmp(list,'gui') %preferred method of using GUI to find target files
 end
 
 %output = cell(1,numel(list));
-%fprintf('Input list: '), disp(list) %too much command window spam
 types = {'single','bundle','complex','cluster','group'};
 
 for i=1:numel(list)
