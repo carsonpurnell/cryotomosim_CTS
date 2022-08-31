@@ -21,7 +21,6 @@ end
 if strcmp(list,'gui') && exist('uipickfiles','file')==2%preferred method of using GUI to find target files
     list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$'); %need to add .mat once generator is made
     if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
-    
 elseif strcmp(list,'gui')
     [list, path] = uigetfile({'*.pdb;*.mrc'},'Select input files','MultiSelect','on');
     %similar checks to make sure files were selected, and if no bail immediately with error
@@ -30,7 +29,6 @@ elseif strcmp(list,'gui')
     for i=1:numel(list) %make the list full file paths rather than just names so it works off-path
         list{i} = fullfile(path,list{i}); 
     end
-    
 end
 %{
     try %use uipickfiles if available, it's significantly better
@@ -59,7 +57,8 @@ for i=1:numel(list)
     if sum(strcmp(type,types))==0, type='single'; end %should fix empty types
     tmp.type=type;
     trim=0;
-    if strcmp(type,'bundle') || strcmp(type,'single'), trim=1; end
+    if ~strcmp(type,'complex'), trim=1; end %trim anything except complexes
+    
     %need to do trimming based on type
     %typecheck = strcmp(type,types)
     %check2 = types(typecheck); check2=check2{1}; %string of the actual type
