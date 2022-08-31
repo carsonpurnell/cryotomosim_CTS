@@ -101,14 +101,6 @@ for i=1:iters
     if strcmp(set(which).type,'cluster') && err==0 %maybe while loop to terminate early and reduce nesting?
         %q = 0;
         %still can only deal with a single input option, not a mixed cluster
-        for j=1:12
-            sz = max(size(particle));
-            [x, y, z] = sph2cart(rand*360,rand*360,rand*sz*1.6+sz*0.8);
-            vec = round([x y z]+loc);
-            [split, ~, inarray, counts] = fn_placement(inarray, split, particle, name, insize, vec, counts);
-            %q = err+q;
-            %if q>10, disp('early end'), break,  end
-        end
     end
     %}
     
