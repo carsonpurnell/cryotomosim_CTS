@@ -23,7 +23,6 @@ if strcmp(list,'gui') && exist('uipickfiles','file')==2%preferred method of usin
     if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
 elseif strcmp(list,'gui')
     [list, path] = uigetfile({'*.pdb;*.mrc'},'Select input files','MultiSelect','on');
-    %similar checks to make sure files were selected, and if no bail immediately with error
     if numel(string(list))==1, list={list}; end
     if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
     for i=1:numel(list) %make the list full file paths rather than just names so it works off-path
@@ -56,8 +55,7 @@ for i=1:numel(list)
     type = id{end}; %last item in the ID, need to match to a list somehow
     if sum(strcmp(type,types))==0, type='single'; end %should fix empty types
     tmp.type=type;
-    trim=0;
-    if ~strcmp(type,'complex'), trim=1; end %trim anything except complexes
+    trim=0; if ~strcmp(type,'complex'), trim=1; end %trim anything except complexes
     
     %need to do trimming based on type
     %typecheck = strcmp(type,types)
