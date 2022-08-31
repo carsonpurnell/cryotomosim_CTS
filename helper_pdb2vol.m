@@ -72,21 +72,6 @@ for i=1:models
     data{i,2} = coords; %store coordinates
 end
 
-%defunct old code for looping through each atom record individually
-%{
-for i=1:models %loop through detected models
-    %atomcell = cell(1,numel(model{i}));
-    %atomcell = data{i,1};
-    %atomst = strings(1,numel(model{i})); %string is unexpectedly slower than cell
-    %coordchar = zeros(3,numel(model{i}));
-    %vectorize pruning coords and atom ID to avoid doing so much in the loop?
-    %veclabel{1:numel(model{i})} = model{i}{:}(77:78); %still doesn't work
-    %veccoord = model{i}{:}(31:54); %mixmatch output errors from this
-    %t = model{i};
-    
-end
-%}
-
 end
 
 function vol = internal_volbuild(data,pix,trim)
