@@ -95,7 +95,6 @@ for i=1:iters
     end
     
     
-    
     if rem(i,25)==0, fprintf('%i,',counts.s), end
     if rem(i,500)==0, fprintf('\n'), end
     
@@ -214,4 +213,3 @@ function [split, err, inarray, counts, loc] = fn_placement(inarray, split, parti
     end
     
 end
-
