@@ -96,12 +96,6 @@ for i=1:models %loop through detected models
         %can sscanf bypass spaces by parsing the numbers directly from the line portion?
         %coords(:,j) = sscanf(fv,'%f',[3 1]); %read all coords for the atom record (>str2double>>>str2num)
         
-        %{
-        coord = model{i}{j}(31:54); 
-        co = [coord(1:8),' ',coord(9:16),' ',coord(17:24)]; 
-        coordchar(:,j) = sscanf(co,'%f',[3 1]);
-        if strcmp(atomcell{j},''), error('Bad PDB, try resaving with proper software'), end
-        %}
         
         %{
         %slightly slower version that parses line components first
