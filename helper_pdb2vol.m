@@ -15,13 +15,12 @@ end
 vol = internal_volbuild(data,pix,trim);
 
 if savemat==1
-    %a1 = fullfile(path,append(base,'.mat')); %significantly slower for unknown reason
-    a2 = strrep(pdb,'.pdb','.mat');
+    a2 = strrep(pdb,'.pdb','.mat'); %using strrep because fullfile was slower for unknown reason
     if isfile(a2)
         fprintf(' .mat exists, '); 
     else
         fprintf(' saving .mat... ')
-        save(a2,'data','-nocompression'); %slightly faster without compression
+        save(a2,'data','-nocompression'); %don't compress to save a bit of time saving+loading
     end
 end
 
