@@ -122,12 +122,6 @@ end
 function [inarray,split,counts] = radialfill(inarray,bundle,n,split,counts)
 which = randi(numel(bundle.vol));
 %{
-%primary = bundle.vol{which};
-
-%tform = randomAffine3d('Rotation',[0 360]);
-%primary = imwarp(primary,tform);
-%init = round( rand(1,3).*size(inarray)-size(primary)/2 );
-
 %[inarray,err] = helper_arrayinsert(inarray,primary,init,'overlaptest');
 %}
 
