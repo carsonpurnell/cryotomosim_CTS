@@ -186,8 +186,7 @@ end
 function [split, err, inarray, counts, loc] = fn_placement(inarray, split, particle, name, insize, vec, counts)
     % nargin<6, vec = [0 0 0]; end
     
-    randvec = rand(1,3); 
-    randang = randi(360);
+    randvec = rand(1,3); randang = randi(360);
     rot = imrotate3(particle,randang,randvec);
     
     loc = round( rand(1,3).*size(inarray)-size(rot)/2 );
