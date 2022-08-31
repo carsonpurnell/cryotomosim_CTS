@@ -1,12 +1,9 @@
 function [particleset] = helper_input(list,pixelsize,sv)
 %outputs a cell array of 3d volumes ready to input into other tomosim functions
 %list is a cell array of input files(pdb or mrc) and workspace variables, which can be mixed. 
-%list=='user' opens a broswer for selecting inputs(files only) or for each time it is used in the cell array
+%list=='gui' opens a broswer for selecting inputs(files only) or for each time it is used in the cell array
 %accepts a list of mixed pdb, mrc, and variables. alternatively, list=='user' allows browsing for only files
-%pixelsize is required if any files are input. [pixelsize resolution] projects pdb files as that resolution.
-%proc is passed to helper_preproc method. 0 = none, 1 = crop, 2+ = masking/thresholding+cropping
-%files are processed with masking and cropping empty planes by default. proc==0 only performs cropping.
-%the list of outputs is sorted largest to smallest by default. sorting==0 to skip sorting.
+%pixelsize is required if any files are input. 
 %LIMITATION: you can't preset the number of manual browser inputs, you only get one attempt
 
 %any other file formats that are important to have supported?
@@ -111,6 +108,5 @@ for i=1:numel(list)
     
     fprintf('  done\n')
 end
-
 
 end
