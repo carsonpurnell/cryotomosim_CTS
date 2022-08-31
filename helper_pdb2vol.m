@@ -97,14 +97,6 @@ for i=1:models %loop through detected models
         %coords(:,j) = sscanf(fv,'%f',[3 1]); %read all coords for the atom record (>str2double>>>str2num)
         
         
-        %{
-        %slightly slower version that parses line components first
-        %label = model{i}{j}(77:78); atomcell2{j} = upper(strrep(label,' ','')); 
-        coord = model{i}{j}(31:54); 
-        co = [coord(1:8),' ',coord(9:16),' ',coord(17:24)]; 
-        coords(:,j) = sscanf(co,'%f',[3 1]);
-        %}
-        
     %end
     %data{i,1} = atomcell; 
     %data{i,2} = coordchar;
