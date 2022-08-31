@@ -111,8 +111,7 @@ end
 
 fprintf('\nPlaced %i particles, failed %i attempted placements\n',counts.s,counts.f)
 
-outarray = zeros(insize);
-splitnames = fieldnames(split);
+outarray = zeros(insize); splitnames = fieldnames(split);
 for i=1:numel(splitnames)
     outarray = outarray+split.(splitnames{i});
 end
