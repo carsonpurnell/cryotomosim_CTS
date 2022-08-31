@@ -9,24 +9,14 @@ function [particleset] = helper_input(list,pixelsize,sv)
 %the list of outputs is sorted largest to smallest by default. sorting==0 to skip sorting.
 %LIMITATION: you can't preset the number of manual browser inputs, you only get one attempt
 
-%no variables? require using separate group/variable constructor to make .mat files?
-
-%uipickfiles optional (much better) GUI for selecting files
-
 %any other file formats that are important to have supported?
 
-%can this be reformulated to use argument validation?
-
 %need a desc/filename field for structs too so that things can be traced
-%systemize names, break name at first underscore?
 arguments
     list
     pixelsize double
     sv = 1 %save generated .mat intermediates by default
 end
-%if nargin<2, error('first 2 inputs are required'), end
-%if nargin<3, sv=1; end
-
 
 if strcmp(list,'gui') %preferred method of using GUI to find target files
     try %use uipickfiles if available, it's significantly better
