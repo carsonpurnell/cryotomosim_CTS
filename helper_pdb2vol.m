@@ -31,7 +31,7 @@ function [data] = internal_pdbparse(pdb)
 fid = fileread(pdb); 
 text = textscan(fid,'%s','delimiter','\n'); %slightly faster to not parse remarks at all
 %text = textscan(fid,'%s','delimiter','\n','CommentStyle',{'REMARK'}); %import each line individually
-text = text{1}; %fix being inside a 1x1 cell array for no reason
+text = text{1}; %fix being inside a 1x1 cell array
 
 %delete terminator and temperature/ANISOU records that mess with model reading and parsing
 ix = strncmp(text,'REMARK',6); text(ix) = []; %clear terminator lines
