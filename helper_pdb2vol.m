@@ -84,15 +84,6 @@ for i=1:models %loop through detected models
     %veccoord = model{i}{:}(31:54); %mixmatch output errors from this
     %t = model{i};
     
-    %atom = cellfun(@(x) textscan(x,'%*s%*s%*s%*s%*s%*f%f%f%f%*f%*f%c'),t, 'uni', false);
-    %textscan through cell array works, but is >3x slower than the sscanf method inside the loop
-    %is cellfun the slow part, or is textscan?
-    
-    %for j=1:numel(model{i}) %loop through each line of the model
-        
-    %end
-    %data{i,1} = atomcell; 
-    %data{i,2} = coordchar;
 end
 %}
 
