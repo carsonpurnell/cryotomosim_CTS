@@ -130,13 +130,6 @@ for i=1:models
     end
     %}
     
-    %{
-    if em==em2
-        %sliceViewer(em); figure(); sliceViewer(em2);
-    else
-        warning('not the same')
-    end
-    %}
     if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
         em = em(:,any(em ~= 0,[1 3]),:); 
         em = em(any(em ~= 0,[2 3]),:,:); 
