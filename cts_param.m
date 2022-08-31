@@ -18,7 +18,6 @@ function [param] = cts_param(guiinput,param)
 %scatter scales inelastic/lossy electron scattering (nonlinear, scales distance)
 %ctfoverlap sets how much overlap between CTF strips (default 2), 0 skips CTF convolution entirely
 
-
 arguments
     guiinput = 0
     
@@ -30,9 +29,7 @@ arguments
     %scan/session parameters
     param.defocus = -5
     param.tilt = [-60 2 60]
-        %weird tilt scheme works but is out of order for radiation, other tiltscheme?
     param.dose = 60 %do a check for dose==0 to not do electron detection at all/perfect detector
-        %activate dose weighting with a list of length==tilts?
         %single = full scan, list==tilts in electrons for that scan
     param.tiltscheme = 0 %flip angle for bidirectional, otherwise 'symmetric'
     param.pix = 0 %0 to not override input
