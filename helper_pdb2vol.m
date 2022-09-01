@@ -67,7 +67,7 @@ for i=1:models
     %atomvec1 = chararray(:,25:26); atomvec1 = upper(strrep(string(atomvec1),' ','')); %slightly slower
     data{i,1} = atomvec; %store atoms
     
-    coords = [str2num(chararray(:,1:8)),str2num(chararray(:,9:17)),str2num(chararray(:,18:24))]'; %#ok<ST2NM>
+    coords = [str2num(chararray(:,1:8)),str2num(chararray(:,9:16)),str2num(chararray(:,17:24))]'; %#ok<ST2NM>
     %using str2num because str2double won't operate on 2d arrays, and can't add spaces while vectorized
     data{i,2} = coords; %store coordinates
 end
