@@ -48,28 +48,21 @@ types = {'single','bundle','complex','cluster','group'};
 for i=1:numel(list)
     fprintf('Loading input %i  ',i)
     [~,filename,ext] = fileparts(list{i}); %get file name and extension
-    id = strsplit(filename,{'__','.'}); %extract class ID from filename (leading string up to . or __)
-    tmp.type = id{end}; %last item in the ID, need to match to a list somehow
-    if sum(strcmp(tmp.type,types))==0, tmp.type='single'; end %should fix empty types
-    %tmp.type=type;
+    
+    id = strsplit(filename,{'__','.'}); %extract class IDs from filename, delimited by . or __
+    tmp.type = id{end}; %type is the last item in the parsed name, if at all
+    if sum(strcmp(tmp.type,types))==0, tmp.type='single'; end %default to single with no type ID in name
     trim=1; if strcmp(tmp.type,'complex'), trim=0; end %trim anything except complexes
     
-    %need to do trimming based on type
-    %typecheck = strcmp(type,types)
-    %check2 = types(typecheck); check2=check2{1}; %string of the actual type
-    %can use .bundle to get the type, along with .complex and .cluster and so on
-    %currently the last item before extension
-    
     id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
-    for j=1:numel(id)
-        id{j} = string(id{j});
+    for j=1:numel(id) %loop through ID parts to make them functional for field names
+        id{j} = string(id{j}); %convert to string for consistency with other functions
         if ~isempty(sscanf(id{1},'%f')) %fix names to start with a letter
             id{1} = strcat('a_',id{1});
         end
     end
     %store filename and classification id of object
-    tmp.file = {filename}; 
-    tmp.id = id;
+    tmp.file = {filename}; tmp.id = id;
     
     if iscellstr(list(i)) && (strcmp(ext,'.pdb') || strcmp(ext,'.mat'))  
         fprintf('reading %s ',filename)
