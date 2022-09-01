@@ -47,7 +47,7 @@ thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not i
 %for 6A, *22 is required. not as big a difference as expected
 
 
-radscale = .1*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
+radscale = .05*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
 dw = thickscatter.*dose*DQE;
 accum = 0; %initialize accumulated dose of irradiation to 0
