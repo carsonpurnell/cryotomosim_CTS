@@ -27,7 +27,7 @@ for j=1:numel(radius)
     
     for i=1:size(pts,2)
         x = pts(1,i); y = pts(2,i);  z = pts(3,i);
-        gold(x,y,z) = gold(x,y,z) + Au/10;
+        gold(x,y,z) = gold(x,y,z) + Au/4; %reducing gold signal to prevent protein overlap, needs work
     end
     
     gold = gold(:,any(gold ~= 0,[1 3]),:); 
