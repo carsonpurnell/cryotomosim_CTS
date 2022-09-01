@@ -49,10 +49,10 @@ for i=1:numel(list)
     fprintf('Loading input %i  ',i)
     [~,filename,ext] = fileparts(list{i}); %get file name and extension
     id = strsplit(filename,{'__','.'}); %extract class ID from filename (leading string up to . or __)
-    type = id{end}; %last item in the ID, need to match to a list somehow
-    if sum(strcmp(type,types))==0, type='single'; end %should fix empty types
-    tmp.type=type;
-    trim=0; if ~strcmp(type,'complex'), trim=1; end %trim anything except complexes
+    tmp.type = id{end}; %last item in the ID, need to match to a list somehow
+    if sum(strcmp(tmp.type,types))==0, tmp.type='single'; end %should fix empty types
+    %tmp.type=type;
+    trim=1; if strcmp(tmp.type,'complex'), trim=0; end %trim anything except complexes
     
     %need to do trimming based on type
     %typecheck = strcmp(type,types)
