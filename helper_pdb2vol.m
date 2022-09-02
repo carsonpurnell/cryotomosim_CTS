@@ -8,7 +8,9 @@ if nargin<4, savemat=1; end %make name-val to generate .mat name with prefix/suf
 if strcmp(ext,'.mat') %if .mat, load the data from the file
     try q = load(pdb); data = q.data;
     catch warning('Input is not a pdb2vol-generated .mat file'); end %#ok<SEPEX>
-elseif strcmp(ext,'.pdb') %if .pdb, parse the file into a data variable
+elseif ismember(ext,{'.cif','.mmcif'})
+    data = internal_cifparse(pdb);
+elseif ismember(ext,{'.pdb','.pdb1'}) %if .pdb, parse the file into a data variable
     data = internal_pdbparse(pdb);
 end
 
@@ -45,7 +47,7 @@ modend = find(strncmp(text,'ENDMDL',6)); %find the end of each model entry
 if isempty(modstart) %if single-model, extract start and end of atom lines
     modstart = find(strncmp(text(1:round(end/2)),'ATOM  ',6)); modstart = modstart(1);
     endatm = find(strncmp(text(modstart:end),'ATOM  ',6)); endatm = endatm(end);
-    endhet = find(strncmp(text(modstart:end),'HETATMjj',6)); %disabled by jj, hetarm currently ignored
+    endhet = find(strncmp(text(modstart:end),'HETATMjj',6)); %disabled by jj, hetatm currently ignored
     if ~isempty(endhet), endhet = endhet(end); else endhet = 0; end %#ok<SEPEX>
     modend = max(endatm,endhet)+modstart-1; %adjust for having searched only part of the list for speed
     model{1} = text(modstart:modend); models = 1;
@@ -63,7 +65,7 @@ for i=1:models
     chararray = char(model{i}); %convert to char array to make column operable
     chararray(:,[1:30,55:76]) = []; %delete columns outside coords and atom id, faster than making new array
     
-    atomvec = upper(strrep(string(chararray(:,25:26)),' ','')); %process atom ids to only letters
+    atomvec = upper(strtrim(string(chararray(:,25:26)))); %process atom ids to only letters
     %atomvec1 = chararray(:,25:26); atomvec1 = upper(strrep(string(atomvec1),' ','')); %slightly slower
     data{i,1} = atomvec; %store atoms
     
@@ -74,6 +76,52 @@ end
 
 end
 
+function [data] = internal_cifparse(pdb)
+
+fid = fileread(pdb); 
+text = textscan(fid,'%s','delimiter','\n'); %slightly faster to not parse remarks at all
+%text = textscan(fid,'%s','delimiter','\n','CommentStyle',{'REMARK'}); %import each line individually
+text = text{1}; %fix being inside a 1x1 cell array
+
+
+ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
+
+modstart = find(strncmp(text,'_atom_site.pdbx_PDB_model_num',29)); %find model start regions
+loopend = find(strncmp(text,'loop_',5));
+%loopend(loopend<modstart(1)) = []
+
+%run from below line _atom_site.pdbx_PDB_model_num
+% to 2 lines above the next loop_ line
+data = cell(numel(modstart),2);
+for i=1:numel(modstart)
+    loopend(loopend<modstart(i)) = [];
+    model = text( modstart(i)+1:loopend(1)-2 );
+    %need to merge delimiters or figure out a hacky way to deal with unfixed width lines
+    %model{1}
+    if numel(model{1})==79
+        model = append('   ',model);
+    end
+    
+    array = char(model); %convert to char array to make column operable
+    
+    
+    atoms = strtrim(string(array(:,15:16))); %fails due to irregularity in cif format row content
+    %atoms = array(:,15:16);
+    %atoms = string(atoms);
+    %atoms = strrep(atoms,' ',''); %very slow
+    %atoms = strtrim(atoms); %much faster than strrep to trim lead/trail spaces
+    
+    coord = [str2num(array(:,36:43)),str2num(array(:,44:51)),str2num(array(:,52:59))]'; %#ok<ST2NM>
+    %coord = array;
+    %coord(:,[1:35,62:end]) = []; %delete columns outside coords and atom id, faster than making new array
+    %coord = [str2num(coord(:,1:8)),str2num(coord(:,9:16)),str2num(coord(:,17:24))]';
+    
+    data{i,1} = atoms; data{i,2} = coord;
+end
+
+
+end
+
 function vol = internal_volbuild(data,pix,trim)
 
 %initialize atomic magnitude information
@@ -81,8 +129,6 @@ function vol = internal_volbuild(data,pix,trim)
 edat = {'H',0;'C',6+1.3;'N',7+1.1;'O',8+0.2;'P',15;'S',16+0.6};
 elements = edat(:,1);
 op = cell2mat(edat(:,2));
-%elements = {'H','C',    'N',    'O',    'P', 'S'};
-%op =       {'0','6+1.3','7+1.1','8+0.2','15','16+0.6'};
 
 %{
 %shang/sigworth numbers (HCNOSP): backwards C and N?
@@ -112,6 +158,7 @@ for i=1:models
     
     %convert atomic labels into atom opacity information outside the loop for speed
     [~,c] = ismember(atomid,elements); % get index for each atom indicating what reference it is
+    
     atomint = op(c); %logical index the atom data relative to the atomic symbols
     
     em = zeros(lim'); %initialize empty volume for the model
