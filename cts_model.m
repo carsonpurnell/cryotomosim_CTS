@@ -63,7 +63,7 @@ arguments
     opt.graph = 0
 end
 
-runtime = numel(vol)/60*1.2e-5;
+runtime = numel(vol)/60*1.2e-5; %for my laptop, doesn't really apply to anything else
 fprintf('Estimated model generation time: %g minutes\n',runtime)
 if runtime>30
     txt = input('Runtime is long, verify inputs. ctlr+C to end, or enter "proceed" to run anyway: ','s');
