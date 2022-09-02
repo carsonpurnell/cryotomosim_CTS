@@ -96,26 +96,19 @@ data = cell(numel(modstart),2);
 for i=1:numel(modstart)
     loopend(loopend<modstart(i)) = [];
     model = text( modstart(i)+1:loopend(1)-2 );
+    
     %need to merge delimiters or figure out a hacky way to deal with unfixed width lines
-    %model{1}
     if numel(model{1})==79
         model = append('   ',model);
     end
     
     array = char(model); %convert to char array to make column operable
     
-    
-    atoms = strtrim(string(array(:,15:16))); %fails due to irregularity in cif format row content
-    %atoms = array(:,15:16);
-    %atoms = string(atoms);
-    %atoms = strrep(atoms,' ',''); %very slow
-    %atoms = strtrim(atoms); %much faster than strrep to trim lead/trail spaces
+    %unfortunately this fails due to lines being unreliable length and content, returning some 0
+    atoms = strtrim(string(array(:,15:16))); %trim faster than strrep for the spaces
     
     coord = [str2num(array(:,36:43)),str2num(array(:,44:51)),str2num(array(:,52:59))]'; %#ok<ST2NM>
-    %coord = array;
-    %coord(:,[1:35,62:end]) = []; %delete columns outside coords and atom id, faster than making new array
-    %coord = [str2num(coord(:,1:8)),str2num(coord(:,9:16)),str2num(coord(:,17:24))]';
-    
+
     data{i,1} = atoms; data{i,2} = coord;
 end
 
