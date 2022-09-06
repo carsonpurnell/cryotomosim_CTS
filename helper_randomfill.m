@@ -12,12 +12,19 @@ arguments
 end
 insize = size(inarray); counts = struct('s',0,'f',0); %initialize counts and get input size
 
+%if graph also find cts app and subindex
+%need catch for finding no graph
+
 %opt.graph = 1;
 if opt.graph==1
-    figure('Name','Placement Progress')
-    xlabel('Failed placements')
-    ylabel('Successful placements')
-    hold on; 
+    try
+        gui = findall(0,'Name','ctsapp','Tag','thing').RunningAppInstance.UIAxes;
+    catch
+        gui = figure('Name','Placement Progress');
+        xlabel('Failed placements')
+        ylabel('Successful placements')
+        hold on; 
+    end
 end
 
 namelist = [set(:).id]; %vector collection of all ids instead of the former double loop
@@ -103,7 +110,7 @@ for i=1:iters
     end
     
     if opt.graph==1 %draw progress graph continuously
-        plot(counts.f,counts.s,'.'); drawnow;
+        gui = plot(counts.f,counts.s,'.'); drawnow;
     end
 end
 
