@@ -116,7 +116,6 @@ for i=1:numel(modstart)
     data{i,1} = atoms; data{i,2} = coord;
 end
 
-
 end
 
 function vol = internal_volbuild(data,pix,trim)
