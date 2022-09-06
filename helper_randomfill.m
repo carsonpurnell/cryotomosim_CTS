@@ -22,10 +22,8 @@ if opt.graph==1
     catch
         gui = figure('Name','Placement Progress');
     end
-    %clf(gui,'reset'); %clear old plots?
-    %hold off; plot(gui,1,1,'.'); hold on; %maybe this?
     %xlabel('Failed placements'); ylabel('Successful placements');
-    hold(gui,'off'); plot(gui,0,0,'.'); hold(gui,'on');
+    hold(gui,'off'); plot(gui,0,0,'.'); hold(gui,'on'); %clear any prior contents of the graph
 end
 
 namelist = [set(:).id]; %vector collection of all ids instead of the former double loop
