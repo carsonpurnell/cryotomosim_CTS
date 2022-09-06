@@ -16,7 +16,8 @@ if opt.graph==1 %graphical output of particles block
     try %first try to find a cts gui plot to ouput to
         gui = findall(0,'Name','ctsgui').RunningAppInstance.UIAxes;
     catch %if no cts gui found, output to a newly created figure axis
-        gui = figure('Name','Placement Progress');
+        gui = figure('Name','Placement Progress'); gui = gca;
+        xlabel('Failed placements'); ylabel('Successful placements');
     end
     %xlabel('Failed placements'); ylabel('Successful placements');
     hold(gui,'off'); plot(gui,0,0,'.'); hold(gui,'on'); %clear any prior contents of the graph
