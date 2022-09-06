@@ -18,14 +18,14 @@ insize = size(inarray); counts = struct('s',0,'f',0); %initialize counts and get
 %opt.graph = 1;
 if opt.graph==1
     try
-        gui = findall(0,'Name','ctsapp','Tag','thing').RunningAppInstance.UIAxes;
+        gui = findall(0,'Name','ctsgui').RunningAppInstance.UIAxes;
     catch
         gui = figure('Name','Placement Progress');
     end
     %clf(gui,'reset'); %clear old plots?
-    hold off; gui = plot(1,1,'.'); hold on; %maybe this?
-    xlabel('Failed placements'); ylabel('Successful placements');
-    hold on; 
+    %hold off; plot(gui,1,1,'.'); hold on; %maybe this?
+    %xlabel('Failed placements'); ylabel('Successful placements');
+    hold(gui,'off'); plot(gui,0,0,'.'); hold(gui,'on');
 end
 
 namelist = [set(:).id]; %vector collection of all ids instead of the former double loop
@@ -111,7 +111,8 @@ for i=1:iters
     end
     
     if opt.graph==1 %draw progress graph continuously
-        gui = plot(counts.f,counts.s,'.'); drawnow;
+        %gui = 
+        plot(gui,counts.f,counts.s,'.'); drawnow;
     end
 end
 
