@@ -21,10 +21,9 @@ if opt.graph==1
         gui = findall(0,'Name','ctsapp','Tag','thing').RunningAppInstance.UIAxes;
     catch
         gui = figure('Name','Placement Progress');
-        xlabel('Failed placements')
-        ylabel('Successful placements')
-        hold on; 
     end
+    xlabel('Failed placements'); ylabel('Successful placements');
+    hold on; 
 end
 
 namelist = [set(:).id]; %vector collection of all ids instead of the former double loop
