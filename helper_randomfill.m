@@ -12,14 +12,10 @@ arguments
 end
 insize = size(inarray); counts = struct('s',0,'f',0); %initialize counts and get input size
 
-%if graph also find cts app and subindex
-%need catch for finding no graph
-
-%opt.graph = 1;
-if opt.graph==1
-    try
+if opt.graph==1 %graphical output of particles block
+    try %first try to find a cts gui plot to ouput to
         gui = findall(0,'Name','ctsgui').RunningAppInstance.UIAxes;
-    catch
+    catch %if no cts gui found, output to a newly created figure axis
         gui = figure('Name','Placement Progress');
     end
     %xlabel('Failed placements'); ylabel('Successful placements');
