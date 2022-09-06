@@ -101,11 +101,11 @@ for i=1:numel(modstart)
     if numel(model{1})==79
         model = append('   ',model);
     end
-    model{1}
+    %model{1}
     %read a second time to get the relevant info only?
     %multiple component reads instead ignores following, does not read multiple
-    q = textscan(model{1},'%s','Delimiter',' ','MultipleDelimsAsOne',1); 
-    q{1}'
+    %q = textscan(model{1},'%s','Delimiter',' ','MultipleDelimsAsOne',1); 
+    
     array = char(model); %convert to char array to make column operable
     
     %unfortunately this fails due to lines being unreliable length and content, returning some 0
