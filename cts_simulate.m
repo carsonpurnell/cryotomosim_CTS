@@ -15,7 +15,7 @@ function [noised, conv, tiltseries] = cts_simulate(sampleMRC,param,opt)
 %see cts_param for arguments and their usage. to pass arguments to cts_param, {enclose in brackets}
 %controls most of the behavior of the simulation through name-value pairs. use {'gui'} for manual input.
 %
-%suffix         default ''
+%opt.suffix         default ''
 %suffix appended to the output filenames
 %
 %  Outputs
