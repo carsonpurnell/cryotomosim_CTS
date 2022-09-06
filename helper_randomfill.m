@@ -22,6 +22,8 @@ if opt.graph==1
     catch
         gui = figure('Name','Placement Progress');
     end
+    %clf(gui,'reset'); %clear old plots?
+    hold off; gui = plot(1,1,'.'); hold on; %maybe this?
     xlabel('Failed placements'); ylabel('Successful placements');
     hold on; 
 end
