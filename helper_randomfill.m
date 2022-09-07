@@ -172,7 +172,7 @@ for i=1:n
     rot = imrotate3(sec,randi(360),vec); %randomly rotate around its axis for variability
     
     theta = rand*2*pi; %random points for variety
-    rad = (r+ri+rs(which));
+    rad = (r+ri+rs(which)); %get radial distance for the attempt from component radii and accumulated disp
     radial = rad*(p(1,:)*cos(theta)+p(2,:)*sin(theta)); %generate radial vector with radius and null vecs
     slide = (rand-0.5)*len*vecfix; %random displacement along axis direction
     loc = round(initcenter-size(rot)/2-(radial+slide));
