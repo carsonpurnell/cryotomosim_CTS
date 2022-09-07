@@ -156,6 +156,7 @@ time = string(datetime('now','Format','yyyy-MM-dd''t''HH.mm')); %timestamp
 ident = strjoin(fieldnames(ts.splitmodel),'_'); %combine target names to one string
 foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix)); %combine info for folder name
 %filename needs to use inputs like size and other options after particle info
+%folder names can easily overflow and become invalidly long, need to have a truncating check
 
 %move to output directory in user/tomosim
 cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
