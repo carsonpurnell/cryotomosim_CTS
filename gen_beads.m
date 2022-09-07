@@ -1,7 +1,7 @@
 function [beadstrc] = gen_beads(pix,radius)
 %no help yet you're on your own
 %but use angstroms
-%radius default 50, outputs the same number of beads as input radii
+%radius default 50, outputs the same number of different beads as input radii
 arguments
     pix (1,1) {mustBePositive}
     radius (1,:) = 50 %can use multiple as [40 60 120]
@@ -37,7 +37,6 @@ for j=1:numel(radius)
     beadstrc(j).vol{1} = gold;
     beadstrc(j).id = append('bead__',string(radius(j)));
     beadstrc(j).type = 'single';
-    %might need to generate flat density based on a binary mask of the placed points
 end
 
 end
