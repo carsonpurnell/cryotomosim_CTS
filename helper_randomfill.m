@@ -193,8 +193,7 @@ end
 
 end
 
-%need efficient and straightforward generic function for single, complex, group/multiple and bundle initial
-
+%{
 %superjanky internal function call that i will probably discard
 function [split, err, inarray, counts, loc] = fn_placement(inarray, split, particle, name, insize, vec, counts)
     % nargin<6, vec = [0 0 0]; end
@@ -216,3 +215,4 @@ function [split, err, inarray, counts, loc] = fn_placement(inarray, split, parti
     end
     
 end
+%}
