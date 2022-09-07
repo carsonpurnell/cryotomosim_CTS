@@ -88,12 +88,8 @@ ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS 
 
 headstart = find(strncmp(text,'_atom_site.group_PDB',20)); %header id start
 headend = find(strncmp(text,'_atom_site.pdbx_PDB_model_num',29)); %header id end
-
 loopend = find(strncmp(text,'loop_',5)); %all loop ends
-%loopend(loopend<modstart(1)) = []
 
-%run from below line _atom_site.pdbx_PDB_model_num
-% to 2 lines above the next loop_ line
 data = cell(numel(headstart),2);
 for i=1:numel(headstart)
     loopend(loopend<headstart(i)) = []; %remove loop ends before current block
@@ -105,13 +101,10 @@ for i=1:numel(headstart)
     q = reshape(q{1},numel(header),[])';
     t = cell2table(q,'VariableNames',header);
     
-    %array = char(model); %convert to char array to make column operable
-    
     atoms = t.type_symbol;
     
     x = char(t.Cartn_x); y = char(t.Cartn_y); z = char(t.Cartn_z);
     coord = [str2num(x),str2num(y),str2num(z)]';  %#ok<ST2NM>
-    %coord = [str2num(t.Cartn_x{:}),str2num(t.Cartn_y{:}),str2num(t.Cartn_z{:})]'; %#ok<ST2NM>
     
     data{i,1} = atoms; data{i,2} = coord;
 end
