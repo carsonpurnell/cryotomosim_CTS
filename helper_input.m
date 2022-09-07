@@ -2,7 +2,6 @@ function [particleset] = helper_input(list,pixelsize,sv)
 %outputs a cell array of 3d volumes ready to input into other tomosim functions
 %list is a cell array of input files(pdb or mrc) and workspace variables, which can be mixed. 
 %list=='gui' opens a broswer for selecting inputs(files only) or for each time it is used in the cell array
-%accepts a list of mixed pdb, mrc, and variables. alternatively, list=='user' allows browsing for only files
 %pixelsize is required if any files are input. 
 %LIMITATION: you can't preset the number of manual browser inputs, you only get one attempt
 
@@ -15,9 +14,8 @@ arguments
     sv = 1 %save generated .mat intermediates by default
 end
 
-if strcmp(list,'gui') && exist('uipickfiles','file')==2%preferred method of using GUI to find target files
+if strcmp(list,'gui') && exist('uipickfiles','file')==2 %preferred method of using GUI to find target files
     list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$|\.pdb1$|\.cif$|\.mmcif$'); 
-    %need to add .mat once generator is made
     if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
 elseif strcmp(list,'gui')
     [list, path] = uigetfile({'*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif'},'Select input files','MultiSelect','on');
