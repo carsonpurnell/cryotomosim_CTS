@@ -105,7 +105,7 @@ for i=1:iters
     if nnz(inarray)/numel(inarray)>density, fprintf('Density limit reached.'), break, end
     end
     
-    if opt.graph==1 %draw progress graph continuously when requested
+    if opt.graph==1 %draw progress graph continuously when used
         plot(gui,counts.f,counts.s,'.'); drawnow;
     end
 end
