@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## [v0.0.5](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.5) - 2022-09-07 18:59:11
+
+implemented support for .cif and .mmcif files
+
+### Feature
+
+- general:
+  - update helper_input for .cif ([85003f2](https://github.com/carsonpurnell/cryotomosim_CTS/commit/85003f26ed043e0ef96ce623832d705f5734134b))
+  - .cif implemented and working ([2f6f608](https://github.com/carsonpurnell/cryotomosim_CTS/commit/2f6f608bb39aefa13ab9dd2249dab3dffe397693))
+  - feat graph export to GUI ([62b121c](https://github.com/carsonpurnell/cryotomosim_CTS/commit/62b121c7eb47cf5a3c16b5b0975fac05e2f5608f))
+  - feature: .cif kind of working ([f19d743](https://github.com/carsonpurnell/cryotomosim_CTS/commit/f19d74329b2b1da40dc151d1a600bf16fd553c67))
+
+### Bug Fixes
+
+- general:
+  - fix pdb2vol bad range for coords ([ebec1da](https://github.com/carsonpurnell/cryotomosim_CTS/commit/ebec1da5e67e126e98dca5a054f01e6e6d016483))
+
 ## [v0.0.4](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.4) - 2022-08-30 18:35:49
 
 many miscellaneous speed and accuracy improvements, cts_model can now generate a dynamic graph readout of particle placement results
