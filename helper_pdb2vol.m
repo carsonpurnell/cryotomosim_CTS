@@ -86,25 +86,25 @@ text = text{1}; %fix being inside a 1x1 cell array
 
 ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
 
-modstart = find(strncmp(text,'_atom_site.pdbx_PDB_model_num',29)); %find model start regions
-loopend = find(strncmp(text,'loop_',5));
+headstart = find(strncmp(text,'_atom_site.group_PDB',20)); %header id start
+headend = find(strncmp(text,'_atom_site.pdbx_PDB_model_num',29)); %header id end
+
+loopend = find(strncmp(text,'loop_',5)); %all loop ends
 %loopend(loopend<modstart(1)) = []
 
 %run from below line _atom_site.pdbx_PDB_model_num
 % to 2 lines above the next loop_ line
-data = cell(numel(modstart),2);
-for i=1:numel(modstart)
-    loopend(loopend<modstart(i)) = [];
-    model = text( modstart(i)+1:loopend(1)-2 );
+data = cell(numel(headstart),2);
+for i=1:numel(headstart)
+    loopend(loopend<headstart(i)) = [];
+    header = text( headstart(i):headend(i) )'
+    model = text( headend(i)+1:loopend(1)-2 );
     
-    %need to merge delimiters or figure out a hacky way to deal with unfixed width lines
-    if numel(model{1})==79
-        model = append('   ',model);
-    end
-    %model{1}
-    %read a second time to get the relevant info only?
-    %multiple component reads instead ignores following, does not read multiple
-    %q = textscan(model{1},'%s','Delimiter',' ','MultipleDelimsAsOne',1); 
+    q = textscan([model{:}],'%s','Delimiter',' ','MultipleDelimsAsOne',1);
+    q = reshape(q{1},21,[])';
+    %size(q)
+    q(1:2,:)
+    %q{1}(1:42)'
     
     array = char(model); %convert to char array to make column operable
     
