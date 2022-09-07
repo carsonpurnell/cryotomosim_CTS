@@ -95,9 +95,9 @@ for i=1:numel(headstart)
     header = regexprep(header,{'_atom_site.',' '},{'',''}); %clean bad chars from headers
     model = text( headend(i)+1:loopend(1)-2 ); %pull model lines from after header to loop end
     
-    q = textscan([model{:}],'%s','Delimiter',' ','MultipleDelimsAsOne',1);
-    q = reshape(q{1},numel(header),[])';
-    t = cell2table(q,'VariableNames',header);
+    q = textscan([model{:}],'%s','Delimiter',' ','MultipleDelimsAsOne',1); %read strings into cells
+    q = reshape(q{1},numel(header),[])'; %reshape cells to row per atom
+    t = cell2table(q,'VariableNames',header); %generate table from atoms using extracted headers
     
     atoms = t.type_symbol;
     
