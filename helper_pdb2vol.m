@@ -96,19 +96,14 @@ loopend = find(strncmp(text,'loop_',5)); %all loop ends
 % to 2 lines above the next loop_ line
 data = cell(numel(headstart),2);
 for i=1:numel(headstart)
-    loopend(loopend<headstart(i)) = [];
-    header = text( headstart(i):headend(i) )';
-    header = strrep(header,'_atom_site.',''); header = strrep(header,' ','');
-    model = text( headend(i)+1:loopend(1)-2 );
+    loopend(loopend<headstart(i)) = []; %remove loop ends before current block
+    header = text( headstart(i):headend(i) )'; %pull header lines
+    header = strrep(header,'_atom_site.',''); header = strrep(header,' ',''); %clean bad chars from headers
+    model = text( headend(i)+1:loopend(1)-2 ); %pull model lines from after header to loop end
     
     q = textscan([model{:}],'%s','Delimiter',' ','MultipleDelimsAsOne',1);
     q = reshape(q{1},numel(header),[])';
-    %size(q)
-    %q(1:2,:)
-    %q{1}(1:42)'
     t = cell2table(q,'VariableNames',header);
-    
-    head(t)
     
     %array = char(model); %convert to char array to make column operable
     
