@@ -77,7 +77,6 @@ end
 end
 
 function [data] = internal_cifparse(pdb)
-
 fid = fileread(pdb); 
 text = textscan(fid,'%s','delimiter','\n'); %read in each line of the text file as strings
 text = text{1}; %fix being inside a 1x1 cell array
@@ -92,10 +91,11 @@ data = cell(numel(headstart),2);
 for i=1:numel(headstart)
     loopend(loopend<headstart(i)) = []; %remove loop ends before current block
     header = text( headstart(i):headend(i) )'; %pull header lines
-    header = regexprep(header,{'_atom_site.',' '},{'',''}); %clean bad chars from headers
+    header = replace(header,{'_atom_site.',' '},{'',''}); %clean bad chars from headers
     model = text( headend(i)+1:loopend(1)-2 ); %pull model lines from after header to loop end
     
     q = textscan([model{:}],'%s','Delimiter',' ','MultipleDelimsAsOne',1); %read strings into cells
+    qq = sscanf([model{:}],'%s',
     q = reshape(q{1},numel(header),[])'; %reshape cells to row per atom
     t = cell2table(q,'VariableNames',header); %generate table from atoms using extracted headers
     
