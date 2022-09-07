@@ -45,6 +45,7 @@ end
 
 %output = cell(1,numel(list));
 types = {'single','bundle','complex','cluster','group'};
+modelext = {'.pdb','.pdb1','.cif','.mmcif'};
 
 for i=1:numel(list)
     fprintf('Loading input %i  ',i)
@@ -65,7 +66,8 @@ for i=1:numel(list)
     %store filename and classification id of object
     tmp.file = {filename}; tmp.id = id;
     
-    if iscellstr(list(i)) && (strcmp(ext,'.pdb') || strcmp(ext,'.mat'))  
+    if iscellstr(list(i)) && ismember(ext,modelext)
+        %(strcmp(ext,'.pdb') || strcmp(ext,'.mat'))  
         fprintf('reading %s ',filename)
         tmp.vol = helper_pdb2vol(list{i},pixelsize,trim,sv); %read pdb and construct as volume at pixel size
         fprintf('generating at %g pixelsize ',pixelsize)
@@ -80,7 +82,7 @@ for i=1:numel(list)
 %         fprintf('using %ix%ix%i input array  ',size(list{i}))
 %         tmp.vol = list{i}; tmp.file = {'var'};
     elseif iscellstr(list(i)) %#ok<*ISCLSTR>
-        error('Error: item %i in the input list is a string, but not a .pdb, .mat, or .mrc',i)
+        error('Error: item %i in the input list is a string, but not a valid file type',i)
     end
     
     %id specification stuff
