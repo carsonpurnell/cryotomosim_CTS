@@ -107,8 +107,6 @@ for i=1:numel(headstart)
     
     %array = char(model); %convert to char array to make column operable
     
-    %unfortunately this fails due to lines being unreliable length and content, returning some 0
-    %atoms = strtrim(string(array(:,15:16))); %trim faster than strrep for the spaces
     atoms = t.type_symbol;
     
     x = char(t.Cartn_x); y = char(t.Cartn_y); z = char(t.Cartn_z);
