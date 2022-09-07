@@ -83,7 +83,6 @@ text = textscan(fid,'%s','delimiter','\n'); %slightly faster to not parse remark
 %text = textscan(fid,'%s','delimiter','\n','CommentStyle',{'REMARK'}); %import each line individually
 text = text{1}; %fix being inside a 1x1 cell array
 
-
 ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
 
 headstart = find(strncmp(text,'_atom_site.group_PDB',20)); %header id start
