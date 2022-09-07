@@ -79,8 +79,7 @@ end
 function [data] = internal_cifparse(pdb)
 
 fid = fileread(pdb); 
-text = textscan(fid,'%s','delimiter','\n'); %slightly faster to not parse remarks at all
-%text = textscan(fid,'%s','delimiter','\n','CommentStyle',{'REMARK'}); %import each line individually
+text = textscan(fid,'%s','delimiter','\n'); %read in each line of the text file as strings
 text = text{1}; %fix being inside a 1x1 cell array
 
 ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
