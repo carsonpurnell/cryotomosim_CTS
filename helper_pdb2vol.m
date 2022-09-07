@@ -97,22 +97,29 @@ loopend = find(strncmp(text,'loop_',5)); %all loop ends
 data = cell(numel(headstart),2);
 for i=1:numel(headstart)
     loopend(loopend<headstart(i)) = [];
-    header = text( headstart(i):headend(i) )'
+    header = text( headstart(i):headend(i) )';
+    header = strrep(header,'_atom_site.',''); header = strrep(header,' ','');
     model = text( headend(i)+1:loopend(1)-2 );
     
     q = textscan([model{:}],'%s','Delimiter',' ','MultipleDelimsAsOne',1);
-    q = reshape(q{1},21,[])';
+    q = reshape(q{1},numel(header),[])';
     %size(q)
-    q(1:2,:)
+    %q(1:2,:)
     %q{1}(1:42)'
+    t = cell2table(q,'VariableNames',header);
     
-    array = char(model); %convert to char array to make column operable
+    head(t)
+    
+    %array = char(model); %convert to char array to make column operable
     
     %unfortunately this fails due to lines being unreliable length and content, returning some 0
-    atoms = strtrim(string(array(:,15:16))); %trim faster than strrep for the spaces
+    %atoms = strtrim(string(array(:,15:16))); %trim faster than strrep for the spaces
+    atoms = t.type_symbol;
     
-    coord = [str2num(array(:,36:43)),str2num(array(:,44:51)),str2num(array(:,52:59))]'; %#ok<ST2NM>
-
+    x = char(t.Cartn_x); y = char(t.Cartn_y); z = char(t.Cartn_z);
+    coord = [str2num(x),str2num(y),str2num(z)]';  %#ok<ST2NM>
+    %coord = [str2num(t.Cartn_x{:}),str2num(t.Cartn_y{:}),str2num(t.Cartn_z{:})]'; %#ok<ST2NM>
+    
     data{i,1} = atoms; data{i,2} = coord;
 end
 
