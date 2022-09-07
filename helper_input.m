@@ -16,10 +16,11 @@ arguments
 end
 
 if strcmp(list,'gui') && exist('uipickfiles','file')==2%preferred method of using GUI to find target files
-    list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$'); %need to add .mat once generator is made
+    list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$|\.pdb1$|\.cif$|\.mmcif$'); 
+    %need to add .mat once generator is made
     if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
 elseif strcmp(list,'gui')
-    [list, path] = uigetfile({'*.pdb;*.mrc'},'Select input files','MultiSelect','on');
+    [list, path] = uigetfile({'*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif'},'Select input files','MultiSelect','on');
     if numel(string(list))==1, list={list}; end
     if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
     for i=1:numel(list) %make the list full file paths rather than just names so it works off-path
