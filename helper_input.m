@@ -43,7 +43,7 @@ end
 
 %output = cell(1,numel(list));
 types = {'single','bundle','complex','cluster','group'};
-modelext = {'.pdb','.pdb1','.cif','.mmcif'};
+modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
 
 for i=1:numel(list)
     fprintf('Loading input %i  ',i)
