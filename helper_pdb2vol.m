@@ -79,6 +79,7 @@ end
 function [data] = internal_cifparse(pdb)
 fid = fileread(pdb); 
 text = textscan(fid,'%s','delimiter','\n'); %read in each line of the text file as strings
+%tst = readlines(fid); %readlines from 2020b, compat problems
 text = text{1}; %fix being inside a 1x1 cell array
 
 ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
