@@ -46,9 +46,9 @@ for i=1:iters
                 members = 2:numel(set(which).vol);
                 if strcmp(set(which).type,'assembly') 
                     members = members(randperm(length(members))); 
-                    if numel(members)>1, members(end) = []; end
+                    if numel(members)>1, members = members(randi(numel(members)+1):end); end
                 end
-                members = [1,members];
+                members = [1,members]; %#ok<AGROW>
                 for t=members %rotate and place each component of complex
                     rot = imwarp(set(which).vol{t},tform);
                     split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
