@@ -51,7 +51,7 @@ for i=1:numel(list)
     
     id = strsplit(filename,{'__','.'}); %extract class IDs from filename, delimited by . or __
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
-    if sum(strcmp(tmp.type,types))==0, tmp.type='single'; end %default to single with no type ID in name
+    if ismember(tmp.type,types)==0, tmp.type='single'; end %default to single with no type ID in name
     trim=1; if strcmp(tmp.type,'complex'), trim=0; end %trim anything except complexes
     
     id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
