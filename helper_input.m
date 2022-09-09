@@ -42,7 +42,7 @@ end
 %}
 
 %output = cell(1,numel(list));
-types = {'single','bundle','complex','cluster','group'};
+types = {'single','bundle','complex','cluster','group','assembly'};
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
 
 for i=1:numel(list)
