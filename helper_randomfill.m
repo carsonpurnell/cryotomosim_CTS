@@ -35,7 +35,7 @@ for i=1:iters
     particle = set(which).vol; 
     
     switch set(which).type
-        case 'complex' %{'single','complex'} %complex works similarly to single, just with more parts
+        case {'complex','assembly'} %all or multiple structured components of a protein complex
             sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
             [rot,tform,loc,err] = testplace(inarray,sumvol,3);
             
@@ -43,7 +43,13 @@ for i=1:iters
             if err==0 %on success, place in splits and working array
                 counts.s=counts.s+numel(set(which).vol);
                 [inarray] = helper_arrayinsert(inarray,rot,loc);
-                for t=1:numel(set(which).vol) %rotate and place each component of complex
+                members = 2:numel(set(which).vol);
+                if strcmp(set(which).type,'assembly') 
+                    members = members(randperm(length(members))); 
+                    if numel(members)>1, members(end) = []; end
+                end
+                members = [1,members];
+                for t=members %rotate and place each component of complex
                     rot = imwarp(set(which).vol{t},tform);
                     split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
                 end
