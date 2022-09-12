@@ -40,6 +40,7 @@ arguments
     param.scatter = 1;
     param.ctfoverlap {mustBeNonnegative,mustBeInteger} = 2 %if 0 skip ctf
     %randomization to tilt angles?
+    param.tilterr = 0;
 end
 
 if strcmp(guiinput,'gui') %basic GUI for manual input of values
@@ -81,8 +82,14 @@ end
 
 if numel(param.tilt)==3 %if 3 numbers are input try to resolve them as a vector
     tilt = param.tilt(1):param.tilt(2):param.tilt(3);
+    err = param.tilt(2)/2;
     if ~isempty(tilt), param.tilt=tilt; end
+    if param.tilterr~=0
+        err = (-err+rand(1,numel(tilt))*err);
+        param.tilt = param.tilt+err*param.tilterr;
+    end
 end
+
 
 if numel(param.dose)~=numel(param.tilt) && numel(param.dose)~=1 %check that dose works with the tilts
     warning('dose and tilt are incompatible sizes - they must be equal length or there must be a single dose') 
