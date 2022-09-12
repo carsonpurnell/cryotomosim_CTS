@@ -63,7 +63,6 @@ filename = append(filename,'_',opt.suffix); %generate initial filename
 runfolder = append('sim_dose_',string(sum(param.dose)),'_',opt.suffix);
 mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',runfolder);
 
-
 if param.pix==0, param.pix=pixelsize; end %override pixel size unless 0
 param.size = size(vol); %fix for x axis tilt size and for detect thickness
 switch param.tiltax %fix x axis being weird and only X and Y working
