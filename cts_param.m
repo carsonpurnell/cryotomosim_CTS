@@ -56,7 +56,6 @@ if strcmp(guiinput,'gui') %basic GUI for manual input of values
         'scale of radiation damage (0=none, 1 = standard)',...
         'scale of inelastic (lossy) electron scattering',...
         'Processing: extent of defocus overlap for CTF calculation'};
-        %'Save these parameters as a file for later use? (1 for yes): '};
     
     ptitle = 'Microscope and imaging parameters';
     
