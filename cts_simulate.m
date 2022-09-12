@@ -33,6 +33,7 @@ arguments
     sampleMRC (1,1) string %full path to input mrc/ts, more realistically 'gui' for browser
     param = {} %input a cts_param call, or within {} to send to it
     opt.suffix string = ''
+    opt.bin = 1 %by default binarize individual model outputs
 end
 if iscell(param), param = cts_param(param{:}); end
 
@@ -80,7 +81,9 @@ if isfield(ts,'splitmodel')
     splitnames = fieldnames(ts.splitmodel);
     for i=1:numel(splitnames)
         filename = append('ind',string(i),'_',splitnames{i},'.mrc');
-        WriteMRC(ts.splitmodel.(splitnames{i}),param.pix,filename)
+        ind = ts.splitmodel.(splitnames{i});
+        if opt.bin==1; ind=imbinarize(rescale(ind)); end
+        WriteMRC(ind,param.pix,filename)
     end
 end
 if isfield(ts.model,'beads'), WriteMRC(ts.model.beads,param.pix,'ind_beads.mrc'), end
