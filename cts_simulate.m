@@ -65,6 +65,11 @@ mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',ru
 
 if param.pix==0, param.pix=pixelsize; end %override pixel size unless 0
 param.size = size(vol); %fix for x axis tilt size and for detect thickness
+if strcmp(param.tiltax,'X')
+    vol = imrotate3(vol,90,[0 1 0]);
+else
+    param.tiltax = 'Y';
+end
 switch param.tiltax %fix x axis being weird and only X and Y working
     case 'X' %rotate the vol to make normal tilt angles work
         vol = imrotate3(vol,90,[0 1 0]); %works but super deep recon, fix during recon with thickness
