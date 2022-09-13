@@ -76,7 +76,7 @@ end
 [noised, conv, tiltseries] = internal_sim(vol,filename,param,'real');
 
 if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate individual particle standards
-%if isfield(ts,'splitmodel')
+%if isfield(ts,'splitmodel') %obsolete second check, an invalid ts would already break
     splitnames = fieldnames(ts.splitmodel);
     for i=1:numel(splitnames)
         filename = append('ind',string(i),'_',splitnames{i},'.mrc');
