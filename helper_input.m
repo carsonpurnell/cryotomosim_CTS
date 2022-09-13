@@ -29,8 +29,10 @@ end
 types = {'single','bundle','complex','cluster','group','assembly'};
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
 
+%list
+
 for i=1:numel(list)
-    fprintf('Loading input %i  ',i)
+    fprintf('Loading input %i ',i)
     [~,filename,ext] = fileparts(list{i}); %get file name and extension
     
     id = strsplit(filename,{'__','.'}); %extract class IDs from filename, delimited by . or __
@@ -41,18 +43,17 @@ for i=1:numel(list)
     id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
     for j=1:numel(id) %loop through ID parts to make them functional for field names
         id{j} = string(id{j}); %convert to string for consistency with other functions
-        if ~isempty(sscanf(id{1},'%f')) %fix names to start with a letter
-            id{1} = strcat('a_',id{1});
+        if ~isempty(sscanf(id{1},'%f')) %detect id that do not start with a letter
+            id{1} = strcat('a_',id{1}); %append a letter when necessary
         end
     end
-    %store filename and classification id of object
-    tmp.file = {filename}; tmp.id = id;
+    tmp.file = {filename}; tmp.id = id; %store filename and classification id of object
     
     if iscellstr(list(i)) && ismember(ext,modelext)
         %(strcmp(ext,'.pdb') || strcmp(ext,'.mat'))  
-        fprintf('reading %s ',filename)
+        fprintf('read: %s ',filename)
         tmp.vol = helper_pdb2vol(list{i},pixelsize,trim,sv); %read pdb and construct as volume at pixel size
-        fprintf('generating at %g pixelsize ',pixelsize)
+        fprintf('generating at %g A ',pixelsize)
     elseif iscellstr(list(i)) && strcmp(ext,'.mrc')
         fprintf('loading %s  ',filename)
         [tmp, head] = ReadMRC(list{i});
@@ -60,9 +61,6 @@ for i=1:numel(list)
         tmp.vol = imresize3(tmp,head.pixA/pixelsize);
         %need to filter mrc to make density maps clean, pdb are already good to go
         
-%     elseif ~iscellstr(list(i)) && numel(size(list{i}))==3
-%         fprintf('using %ix%ix%i input array  ',size(list{i}))
-%         tmp.vol = list{i}; tmp.file = {'var'};
     elseif iscellstr(list(i)) %#ok<*ISCLSTR>
         error('Error: item %i in the input list is a string, but not a valid file type',i)
     end
