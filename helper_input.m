@@ -26,22 +26,20 @@ elseif strcmp(list,'gui')
     end
 end
 %{
-    try %use uipickfiles if available, it's significantly better
-        list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$'); %need to add .mat once generator is made
-        if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
-    catch %if not uipickfiles, use inferior matlab version
-        [list, path] = uigetfile({'*.pdb;*.mrc'},'Select input files','MultiSelect','on');
-        %similar checks to make sure files were selected, and if no bail immediately with error
-        if numel(string(list))==1, list={list}; end
-        if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
-        for i=1:numel(list) %make the list full file paths rather than just names so it works off-path
-            list{i} = fullfile(path,list{i}); 
-        end
+try %use uipickfiles if available, it's significantly better
+    list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$'); %need to add .mat once generator is made
+    if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
+catch %if not uipickfiles, use inferior matlab version
+    [list, path] = uigetfile({'*.pdb;*.mrc'},'Select input files','MultiSelect','on');
+    %similar checks to make sure files were selected, and if no bail immediately with error
+    if numel(string(list))==1, list={list}; end
+    if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
+    for i=1:numel(list) %make the list full file paths rather than just names so it works off-path
+        list{i} = fullfile(path,list{i}); 
     end
 end
 %}
 
-%output = cell(1,numel(list));
 types = {'single','bundle','complex','cluster','group','assembly'};
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
 
