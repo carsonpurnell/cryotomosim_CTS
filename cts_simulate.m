@@ -57,8 +57,7 @@ otherwise
     error('selected file is not a .mat or a .mrc, aborting')
 end
 
-%folder preparation and navigation to session folder
-cd(path); %cd to the input file location
+cd(path); %cd to the input file location to prepare session folder
 filename = append(filename,'_',opt.suffix); %generate initial filename
 runfolder = append('sim_dose_',string(sum(param.dose)),'_',opt.suffix);
 mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',runfolder);
@@ -66,7 +65,7 @@ mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',ru
 if param.pix==0, param.pix=pixelsize; end %override pixel size unless 0
 param.size = size(vol); %fix for x axis tilt size and for detect thickness
 if strcmp(param.tiltax,'X')
-    vol = imrotate3(vol,90,[0 1 0]);
+    vol = imrotate3(vol,90,[0 1 0]); %rotate X tiltax volume to be not insane (still mirrored and tilted)
 else
     param.tiltax = 'Y';
 end
