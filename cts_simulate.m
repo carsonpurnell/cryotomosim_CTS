@@ -43,15 +43,7 @@ if strcmp(sampleMRC,'gui')
 else
     [path,sampleMRC,ext] = fileparts(sampleMRC); sampleMRC = append(sampleMRC,ext);
 end
-%{
-switch sampleMRC
-case 'gui'
-    [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat',getenv('HOME')); 
-    if sampleMRC==0, error('At least one file must be selected or input'), end
-otherwise
-    [path,sampleMRC,ext] = fileparts(sampleMRC); sampleMRC = append(sampleMRC,ext);
-end
-%}
+
 [path, filename, ext] = fileparts(fullfile(path,sampleMRC));
 switch ext
 case '.mat'
