@@ -37,7 +37,7 @@ arguments
 end
 if iscell(param), param = cts_param(param{:}); end
 
-if strcmp(sampleMRC,'gui')
+if strcmp(sampleMRC,'gui') %load model via GUI or specific filename
     [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat',getenv('HOME')); 
     if sampleMRC==0, error('At least one file must be selected or input'), end
 else
