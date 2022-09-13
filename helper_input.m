@@ -66,6 +66,15 @@ for i=1:numel(list)
     end
     
     %id specification stuff
+    tmp.id
+    if numel(tmp.vol)==1 || numel(tmp.vol)==numel(id)-2
+        tmp.id = tmp.id(1:numel(tmp.vol));
+    else
+        postnum = {1:numel(tmp.vol)}; %because string doesn't work on cell arrays that are not variables
+        tmp.id = append(tmp.id{1},'_',string(postnum{:}));
+    end
+    tmp.id
+    %{
     if numel(tmp.vol)==1 %for single models, use the id (first split string)
         tmp.id = (tmp.id(1));
     elseif numel(tmp.vol)==numel(id)-2 %for specifically named models, distribute the ID parts
@@ -77,6 +86,7 @@ for i=1:numel(list)
         postnum = {1:numel(tmp.vol)}; %because string doesn't work on cell arrays that are not variables
         tmp.id = append(tmp.id{1},'_',string(postnum{:}));
     end
+    %}
     
     %tmp.vol = helper_preproc(tmp.vol,proc);
     
