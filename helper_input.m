@@ -29,8 +29,6 @@ end
 types = {'single','bundle','complex','cluster','group','assembly'};
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
 
-%list
-
 for i=1:numel(list)
     fprintf('Loading input %i ',i)
     [~,filename,ext] = fileparts(list{i}); %get file name and extension
@@ -59,13 +57,11 @@ for i=1:numel(list)
         [tmp, head] = ReadMRC(list{i});
         fprintf('resizing from %g to %g pixel size',head.pixA,pixelsize)
         tmp.vol = imresize3(tmp,head.pixA/pixelsize);
-        %need to filter mrc to make density maps clean, pdb are already good to go
-        
     elseif iscellstr(list(i)) %#ok<*ISCLSTR>
         error('Error: item %i in the input list is a string, but not a valid file type',i)
     end
     
-    %id specification stuff
+    %id specification from filename
     if numel(tmp.vol)==1 || numel(tmp.vol)==numel(id)-2
         tmp.id = tmp.id(1:numel(tmp.vol));
     else
@@ -74,6 +70,7 @@ for i=1:numel(list)
     end
     
     %tmp.vol = helper_preproc(tmp.vol,proc);
+    %need to filter mrc to make density maps clean, pdb are already good to go
     
     particleset(i) = tmp; %#ok<AGROW> %store in multidim struct for ease of use
     
