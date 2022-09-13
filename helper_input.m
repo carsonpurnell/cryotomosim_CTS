@@ -48,7 +48,6 @@ for i=1:numel(list)
     tmp.file = {filename}; tmp.id = id; %store filename and classification id of object
     
     if iscellstr(list(i)) && ismember(ext,modelext)
-        %(strcmp(ext,'.pdb') || strcmp(ext,'.mat'))  
         fprintf('read: %s ',filename)
         tmp.vol = helper_pdb2vol(list{i},pixelsize,trim,sv); %read pdb and construct as volume at pixel size
         fprintf('generating at %g A ',pixelsize)
