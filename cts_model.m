@@ -154,10 +154,8 @@ end
 %folder and file generation stuff
 time = string(datetime('now','Format','yyyy-MM-dd''t''HH.mm')); %timestamp
 ident = char(strjoin(fieldnames(ts.splitmodel),'_')); %combine target names to one string
-if length(ident)>60, ident=ident(1:60); end
+if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
 foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix)); %combine info for folder name
-%filename needs to use inputs like size and other options after particle info
-%folder names can easily overflow and become invalidly long, need to have a truncating check
 
 %move to output directory in user/tomosim
 cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
