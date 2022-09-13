@@ -90,13 +90,15 @@ end
 if opt.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
     [ts.vol] = gen_carbongrid(vol,pix,opt.grid);
-    ts.model.grid = ts.vol; fprintf('\n')
+    ts.model.grid = ts.vol; %ts.split.zgrid = ts.vol; 
+    fprintf('\n')
 end
 
 %need a new mem gen that uses generated points between radii of two spheres
 if opt.mem~=0 %membrane generation, likely broken with struct changes but old junk anyway
     mem = helper_membranegen(ts);
-    ts.model.mem = mem; ts.vol = ts.vol+mem; %vol = ts.vol;
+    ts.model.mem = mem; %ts.split.mem = ymem;
+    ts.vol = ts.vol+mem; %vol = ts.vol;
 end
 
 constraint = zeros(size(ts.vol)); %constraints are a big ugly mess right now
@@ -156,6 +158,13 @@ time = string(datetime('now','Format','yyyy-MM-dd''t''HH.mm')); %timestamp
 ident = char(strjoin(fieldnames(ts.splitmodel),'_')); %combine target names to one string
 if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
 foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix)); %combine info for folder name
+
+%get other stuff under beads? or extract manually with particleatlas?
+%{
+if isfield(ts.model,'beads'), ts.splitmodel.beads = ts.model.beads; end
+if isfield(ts.model,'mem'), ts.splitmodel.mem = ts.model.mem; end
+if isfield(ts.model,'grid'), ts.splitmodel.grid = ts.model.grid; end
+%}
 
 %move to output directory in user/tomosim
 cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
