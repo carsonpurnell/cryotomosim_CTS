@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [v0.0.6](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.6) - 2022-09-13 13:27:57
+
+implemented random error in tilt angles (name-val 'tilterr'), a new model handle (.assembly) for nonuniform complexes, and ind_x output .mrc are now by default binary, can be changed with cts_simulate name-val 'bin'.
+
+### Feature
+
+- general:
+  - feat tilt angle error margin ([a23a30f](https://github.com/carsonpurnell/cryotomosim_CTS/commit/a23a30fad55385b856b0508ec79ce8fbf45e7440))
+  - feat variable complex - assembly ([03657d2](https://github.com/carsonpurnell/cryotomosim_CTS/commit/03657d2616be30635d1bbe6e578123a6e19e5b8d))
+
+### Bug Fixes
+
+- general:
+  - fix overflow filenames ([55d6254](https://github.com/carsonpurnell/cryotomosim_CTS/commit/55d6254b1ba4fb7ec918bb59ab939724b8fd9fcd))
+
 ## [v0.0.5](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.5) - 2022-09-07 18:59:11
 
 implemented support for .cif and .mmcif files
