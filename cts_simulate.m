@@ -70,12 +70,14 @@ if strcmp(param.tiltax,'X')
 else
     param.tiltax = 'Y';
 end
+%{
 switch param.tiltax %fix x axis being weird and only X and Y working
     case 'X' %rotate the vol to make normal tilt angles work
         vol = imrotate3(vol,90,[0 1 0]); %works but super deep recon, fix during recon with thickness
     otherwise %anything not X reverts to Y
         param.tiltax = 'Y';
 end
+%}
 
 %run the simulation itself within the subfunction. might extend 'real' to also 'ideal' later
 [noised, conv, tiltseries] = internal_sim(vol,filename,param,'real');
