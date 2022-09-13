@@ -76,7 +76,7 @@ end
 [noised, conv, tiltseries] = internal_sim(vol,filename,param,'real');
 
 if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate individual particle standards
-if isfield(ts,'splitmodel')
+%if isfield(ts,'splitmodel')
     splitnames = fieldnames(ts.splitmodel);
     for i=1:numel(splitnames)
         filename = append('ind',string(i),'_',splitnames{i},'.mrc');
@@ -84,7 +84,7 @@ if isfield(ts,'splitmodel')
         if opt.bin==1; ind=imbinarize(rescale(ind)); end
         WriteMRC(ind,param.pix,filename)
     end
-end
+%end
 if isfield(ts.model,'beads'), WriteMRC(ts.model.beads,param.pix,'ind_beads.mrc'), end
 if isfield(ts.model,'mem'), WriteMRC(ts.model.mem,param.pix,'ind_membrane.mrc'), end
 end
