@@ -14,7 +14,9 @@ function [noised, conv, tiltseries, atlas] = cts_simulate(sampleMRC,param,opt)
 %see cts_param for arguments and their usage. to pass arguments to cts_param, {enclose in brackets}
 %controls most of the behavior of the simulation through name-value pairs. use {'gui'} for manual input.
 %
-%opt.suffix         default ''
+%name-val options:
+%
+%suffix         default '' (empty)
 %suffix appended to the output filenames
 %
 %  Outputs
@@ -33,7 +35,7 @@ arguments
     sampleMRC (1,1) string %full path to input mrc/ts, more realistically 'gui' for browser
     param = {} %input a cts_param call, or within {} to send to it
     opt.suffix string = ''
-    opt.bin = 1 %by default binarize individual model outputs
+    %opt.bin = 1 %by default binarize individual model outputs
 end
 if iscell(param), param = cts_param(param{:}); end
 
