@@ -86,15 +86,6 @@ end
 
 if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
     atlas = helper_particleatlas(ts,'individual',opt.atlasindividual,'dynamotable',opt.dynamotable);
-    %{
-    splitnames = fieldnames(ts.splitmodel);
-    for i=1:numel(splitnames)
-        filename = append('ind',string(i),'_',splitnames{i},'.mrc');
-        ind = ts.splitmodel.(splitnames{i});
-        if opt.bin==1; ind=imbinarize(rescale(ind)); end
-        WriteMRC(ind,param.pix,filename)
-    end
-    %}
 end
 
 cd(userpath) %return to the user directory
