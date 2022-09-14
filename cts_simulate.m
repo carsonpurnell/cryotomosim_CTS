@@ -19,6 +19,13 @@ function [noised, conv, tiltseries, atlas] = cts_simulate(sampleMRC,param,opt)
 %suffix         default '' (empty)
 %suffix appended to the output filenames
 %
+%atlasindividual    default 0
+%if 1, in addition to generating a single-volume label atlas a binary volume is generated for each particle
+%
+%dynamotable         default 0
+%if 1, generates dynamo .tbl files for each target particle of the simulation model
+%
+%
 %  Outputs
 %
 %outputs some workspace variables of intermediates if you want them for something
@@ -36,6 +43,8 @@ arguments
     param = {} %input a cts_param call, or within {} to send to it
     opt.suffix string = ''
     %opt.bin = 1 %by default binarize individual model outputs
+    opt.atlasindividual = 0
+    opt.dynamotable = 0
 end
 if iscell(param), param = cts_param(param{:}); end
 
@@ -76,7 +85,7 @@ end
 [noised, conv, tiltseries] = internal_sim(vol,filename,param,'real');
 
 if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
-    atlas = helper_particleatlas(ts);%,'dynamotable',1,'individual',1);
+    atlas = helper_particleatlas(ts,'individual',opt.atlasindividual,'dynamotable',opt.dynamotable);
     %{
     splitnames = fieldnames(ts.splitmodel);
     for i=1:numel(splitnames)
