@@ -84,8 +84,6 @@ if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate indivi
         WriteMRC(ind,param.pix,filename)
     end
     %}
-%if isfield(ts.model,'beads'), WriteMRC(ts.model.beads,param.pix,'ind_beads.mrc'), end
-%if isfield(ts.model,'mem'), WriteMRC(ts.model.mem,param.pix,'ind_membrane.mrc'), end
 end
 
 cd(userpath) %return to the user directory
