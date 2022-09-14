@@ -1,4 +1,4 @@
-function [noised, conv, tiltseries] = cts_simulate(sampleMRC,param,opt)
+function [noised, conv, tiltseries, atlas] = cts_simulate(sampleMRC,param,opt)
 %{ help block
 %[noised, convolved, tiltseries] = tomosim_simulate(sampleMRC, param, opt)
 %simulates tomographic data as if collected from a sample and reconstructs a tomogram
@@ -73,8 +73,8 @@ end
 %run the simulation itself within the subfunction. might extend 'real' to also 'ideal' later
 [noised, conv, tiltseries] = internal_sim(vol,filename,param,'real');
 
-if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate individual particle standards
-    helper_particleatlas(ts);%,'dynamotable',1,'individual',1);
+if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
+    atlas = helper_particleatlas(ts);%,'dynamotable',1,'individual',1);
     %{
     splitnames = fieldnames(ts.splitmodel);
     for i=1:numel(splitnames)
