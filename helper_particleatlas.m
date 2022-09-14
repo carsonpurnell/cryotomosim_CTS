@@ -1,4 +1,5 @@
 function [atlas,roinames,indvol] = helper_particleatlas(cts,opt)
+%generates an atlas of the target (and mem/grid/beads) particles 
 
 arguments
     cts struct %might make this work other than needing the cts struct
@@ -41,11 +42,8 @@ end
 
 
 function dynamotable(split,filename)
-
 cl = imclose(split,strel('sphere',2)); %close small holes to avoid chopping most particles up
-%er = imerode(cl,strel('sphere',1));
 
-%binarizing doesn't matter with this scheme, so operating directly on image and keeping watershed label
 d = -bwdist(~cl); %calculate distances for watershed
 mask = imextendedmin(d,2);
 
