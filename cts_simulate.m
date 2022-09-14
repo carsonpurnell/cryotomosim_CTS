@@ -74,7 +74,6 @@ end
 [noised, conv, tiltseries] = internal_sim(vol,filename,param,'real');
 
 if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate individual particle standards
-%if isfield(ts,'splitmodel') %obsolete second check, an invalid ts would already break
     helper_particleatlas(ts);%,'dynamotable',1,'individual',1);
     %{
     splitnames = fieldnames(ts.splitmodel);
@@ -85,7 +84,6 @@ if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate indivi
         WriteMRC(ind,param.pix,filename)
     end
     %}
-%end
 %if isfield(ts.model,'beads'), WriteMRC(ts.model.beads,param.pix,'ind_beads.mrc'), end
 %if isfield(ts.model,'mem'), WriteMRC(ts.model.mem,param.pix,'ind_membrane.mrc'), end
 end
