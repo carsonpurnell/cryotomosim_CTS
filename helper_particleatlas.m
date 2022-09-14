@@ -40,20 +40,17 @@ WriteMRC(atlas,cts.pix,append('atlas_',ident,'.mrc'))
 
 end
 
-
 function dynamotable(split,filename)
 cl = imclose(split,strel('sphere',2)); %close small holes to avoid chopping most particles up
 
 d = -bwdist(~cl); %calculate distances for watershed
-mask = imextendedmin(d,2);
-
-%generate area mask, don't actually know why i'm using 2
-d2 = imimposemin(d,mask); %local minima to make segmentations less chopped
-w = watershed(d2); w(~cl) = 0; %label{i} = w; %do watershed on inverse distances
+mask = imextendedmin(d,2); %generate extended minima mask from distance map (not sure why 2)
+d2 = imimposemin(d,mask); %merge local minima to make segmentations less chopped
+w = watershed(d2); w(~cl) = 0; %watershed the local minima and mask out non-particles
 if 1==2 %diagnostic output of the watershed region map
     WriteMRC(w,2,append(filename,'_wshed_','.mrc'))
 end
-regions = regionprops3(~w==0,"Centroid"); %identify particle centroids
+regions = regionprops3(~w==0,"Centroid"); %identify particle centroids from watershed mask
 
 dtable = zeros(size(regions.Centroid,1),35); %pregenerate the full table with zeros
 dtable(:,1) = 1:size(regions.Centroid,1); %particle number
@@ -61,9 +58,7 @@ dtable(:,24) = regions.Centroid(:,2); %x coords xyflip because matlab backwards 
 dtable(:,25) = regions.Centroid(:,1); %y coords
 dtable(:,26) = regions.Centroid(:,3); %z coords
 
-%[path,out,ext] = fileparts(file{i}); %out = append(string(out),'.tbl');
 fid = fopen(append(filename,'.tbl'),'wt'); %writing to file per column after transposing
 fprintf(fid,[repmat('%g ', 1, size(dtable,2)) '\n'],transpose(dtable));
 fclose(fid);
-
 end
