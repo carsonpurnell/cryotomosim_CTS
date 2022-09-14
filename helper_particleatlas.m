@@ -1,11 +1,16 @@
 function [atlas,roinames,indvol] = helper_particleatlas(cts,opt)
 %generates an atlas of the target (and mem/grid/beads) particles 
+%
+%cts is a cts struct from cts_model
+%
+%name-value opts:
+%individual (default 0) if 1 also save individual binary images for particles (space-consuming)
+%dynamotable (default 0) if 1 generates dynamo .tbl files for each type of particle
 
 arguments
     cts struct %might make this work other than needing the cts struct
     opt.individual = 0 %by default don't save individual splits, only global atlas image
     opt.dynamotable = 0 %switch to generate dynamo table
-    %opt.path %hoping that this inherits the path from higher-level functions
 end
 
 %move other important particles to splitmodel if they exist
@@ -18,9 +23,9 @@ indvol = cell(1,numel(roinames));
 atlas = zeros(size(cts.splitmodel.(roinames{1})));
 
 for i=1:numel(roinames)
-    tmp = cts.splitmodel.(roinames{i}); %pull model into temporary volume
+    indvol{i} = cts.splitmodel.(roinames{i}); %add model to stack
     
-    bin = imbinarize(rescale(tmp)); %binarize model to add to atlas
+    bin = imbinarize(rescale(indvol{i})); %binarize model to add to atlas
     atlas = atlas+bin*i; %generate label image atlas based on model order for label intensity
     
     filename = append('ind',string(i),'_',roinames{i});
@@ -28,7 +33,7 @@ for i=1:numel(roinames)
         WriteMRC(bin,cts.pix,append(filename,'.mrc'))
     end
     if opt.dynamotable==1
-        dynamotable(tmp,filename);
+        dynamotable(indvol{i},filename);
     end
     
 end
