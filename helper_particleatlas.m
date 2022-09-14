@@ -18,14 +18,12 @@ indvol = cell(1,numel(roinames));
 atlas = zeros(size(cts.splitmodel.(roinames{1})));
 
 for i=1:numel(roinames)
-    %filename = append('ind',string(i),'_',roinames{i},'.mrc');
-    tmp = cts.splitmodel.(roinames{i});
-    %if opt.bin==1; indvol=imbinarize(rescale(indvol{i})); end
+    tmp = cts.splitmodel.(roinames{i}); %pull model into temporary volume
     
-    bin = imbinarize(rescale(tmp));
-    atlas = atlas+bin*i;
+    bin = imbinarize(rescale(tmp)); %binarize model to add to atlas
+    atlas = atlas+bin*i; %generate label image atlas based on model order for label intensity
     
-    filename = append('ind',string(i),'_',roinames{i});%,'.mrc');
+    filename = append('ind',string(i),'_',roinames{i});
     if opt.individual==1
         WriteMRC(bin,cts.pix,append(filename,'.mrc'))
     end
@@ -37,7 +35,6 @@ end
 
 ident = char(strjoin(roinames,'_'));
 WriteMRC(atlas,cts.pix,append('atlas_',ident,'.mrc'))
-
 end
 
 function dynamotable(split,filename)
