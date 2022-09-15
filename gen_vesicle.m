@@ -3,7 +3,7 @@ function [memvol,count,ves] = gen_vesicle(vol,num,pix)
 arguments
     vol = zeros(300,300,100)
     num = 5
-    pix = 6
+    pix = 12
 end
 %generate vesicles directly inside the volume?
 %generate a struct of different vesicles probably too cumbersome and inflexible
@@ -15,13 +15,14 @@ memvol = vol*0;
 for i=1:num
     
     %generate random inner rad, compute outer rad from inner with pixelsize
-    radi = (rand*300+100)/pix; %randomly generate inner radius of vesicle (need better range)
+    radi = (rand*300+120)/pix; %randomly generate inner radius of vesicle (need better range)
     rado = radi+40/pix; %get outer radius from inner, should be constant something (5nm-ish?)
     %reduced outer radius distance for pearson, skew makes it wider
     offset = round(rado+20); %centroid offset to prevent negative values
     
     w = rado-radi; %depth of the membrane distribution
-    sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2 %factor to correct for inner density skew
+    sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2;
+    %factor to correct for inner density skew
     
     %fill space between radii with tons of points
     %generate a large number of random sph2cart radii,azimuth,elevation to convert into shell coordinates
@@ -29,13 +30,15 @@ for i=1:num
     %might need to add extra layer of points closer to inner and outer radii to get bilayer
     %ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
     shellvol = 4/8*pi*(rado^3-radi^3); %in pixels
-    ptnum = round( 0.25*shellvol*pix^3 )*2; %convert to angstroms, scale to some density
-    %frac = [ptnum,ptnum*(sf),ptnum*(1-sf)]
+    ptnum = round( 0.5*shellvol*pix^3 )*2; %convert to angstroms, scale to some density
+    frac = [ptnum,ptnum*sf(2),ptnum*sf(1)];
+    rti = round(ptnum*sf(2)); 
+    rto = ptnum-rti;
     
     %uniform random generation - no layers
     %ptrad = rand(ptnum,1)*(rado-radi)+radi;
     %pearson random jankery - leaflets, but inner radius
-    ptrad = [pearsrnd(radi,w/3,0.7,3,ptnum/2,1);pearsrnd(rado,w/3,-0.7,3,ptnum/2,1)];
+    ptrad = [pearsrnd(radi,w/3,0.7,3,rti,1);pearsrnd(rado,w/3,-0.7,3,rto,1)];
     %figure(); histogram(ptrad);
     
     ptaz = rand(ptnum,1)*pi*2;
