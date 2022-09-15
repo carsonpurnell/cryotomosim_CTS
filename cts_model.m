@@ -91,14 +91,20 @@ if opt.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
     [ts.vol] = gen_carbongrid(vol,pix,opt.grid);
     ts.model.grid = ts.vol; %ts.split.zgrid = ts.vol; 
-    fprintf('\n')
+    fprintf('   complete \n')
 end
 
-%need a new mem gen that uses generated points between radii of two spheres
-if opt.mem~=0 %membrane generation, likely broken with struct changes but old junk anyway
+if opt.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
+    fprintf('Generating vesicular membranes ')
+    ts.model.mem = gen_vesicle(ts.vol,round(opt.mem),pix);
+    ts.vol = ts.vol+ts.model.mem;
+    fprintf('   complete \n')
+    %old mem code
+    %{
     mem = helper_membranegen(ts);
     ts.model.mem = mem; %ts.split.mem = ymem;
     ts.vol = ts.vol+mem; %vol = ts.vol;
+    %}
 end
 
 constraint = zeros(size(ts.vol)); %constraints are a big ugly mess right now
