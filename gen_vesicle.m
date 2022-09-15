@@ -11,6 +11,7 @@ end
 %clipping out of the Z also conviniently how tomos actually look
 
 count.s = 0; count.f = 0;
+memvol = vol*0;
 for i=1:num
     
     %generate random inner rad, compute outer rad from inner with pixelsize
@@ -22,13 +23,15 @@ for i=1:num
     %generate a large number of random sph2cart radii,azimuth,elevation to convert into shell coordinates
     %does the shell data need to be pruned or cleaned in some way?
     %might need to add extra layer of points closer to inner and outer radii to get bilayer
-    ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
+    %ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
+    shellvol = 4/8*pi*(rado^3-radi^3); %in pixels
+    ptnum = round( 0.5*shellvol*pix^3 ); %convert to angstroms, scale to some density
     ptrad = rand(1,ptnum)*(rado-radi)+radi;
     ptaz = rand(1,ptnum)*pi*2;
-    %ptel = rand(1,ptnum)*pi*2;
+    %ptel = rand(1,ptnum)*pi*2; %cause asymmetry, polar density accumulation
     ptel = asin(2*rand(1,ptnum)-1);
     %convert spherical data to cartesian
-    [x,y,z] = sph2cart(ptaz,ptel,ptrad); %assymmetry: poles have higher density!
+    [x,y,z] = sph2cart(ptaz,ptel,ptrad);
     %[a,b] = bounds(x)
     %[a,b] = bounds(y)
     %[a,b] = bounds(z)
@@ -40,7 +43,7 @@ for i=1:num
     x = round(x+offset);
     y = round(y+offset);
     z = round(z+offset);
-    lipid = 5; %need to find the typical density of lipid membrane
+    lipid = 3; %need to find the typical density of lipid membrane
     for j=1:numel(x) %loop through and add points as density to the shell
         tmp(x(j),y(j),z(j)) = tmp(x(j),y(j),z(j)) + lipid;
     end
@@ -60,7 +63,7 @@ for i=1:num
         [vol,err] = helper_arrayinsert(vol,tmp,loc,'nonoverlap');
         count.f = count.f + err;
         if err==0
-            %[vol] = helper_arrayinsert(vol,tmp,loc); %should not be necessary, output will be the split
+            [memvol] = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
             count.s = count.s+1; 
         end
         
@@ -70,5 +73,5 @@ end
 
 %disp(count)
 
-memvol=vol;
+%memvol=vol;
 end
