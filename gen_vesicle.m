@@ -30,7 +30,7 @@ for i=1:num
     %might need to add extra layer of points closer to inner and outer radii to get bilayer
     %ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
     shellvol = 4/8*pi*(rado^3-radi^3); %in pixels
-    ptnum = round( 0.5*shellvol*pix^3 )*2; %convert to angstroms, scale to some density
+    ptnum = round( 0.3*shellvol*pix^3 )*2; %convert to angstroms, scale to some density
     frac = [ptnum,ptnum*sf(2),ptnum*sf(1)];
     rti = round(ptnum*sf(2)); 
     rto = ptnum-rti;
@@ -38,7 +38,7 @@ for i=1:num
     %uniform random generation - no layers
     %ptrad = rand(ptnum,1)*(rado-radi)+radi;
     %pearson random jankery - leaflets, but inner radius
-    ptrad = [pearsrnd(radi,w/3,0.7,3,rti,1);pearsrnd(rado,w/3,-0.7,3,rto,1)];
+    ptrad = [pearsrnd(radi,w/2,0.7,3,rti,1);pearsrnd(rado,w/2,-0.7,3,rto,1)];
     %figure(); histogram(ptrad);
     
     ptaz = rand(ptnum,1)*pi*2;
@@ -53,13 +53,12 @@ for i=1:num
     %[a,b] = bounds(z)
     %plot3(x,y,z,'.'); axis equal
     
-    
     %generate empty array and round points to positive coords
     tmp = zeros(offset*2,offset*2,offset*2);
     x = round(x+offset);
     y = round(y+offset);
     z = round(z+offset);
-    lipid = 2; %need to find the typical density of lipid membrane
+    lipid = 3; %need to find the typical density of lipid membrane
     for j=1:numel(x) %loop through and add points as density to the shell
         tmp(x(j),y(j),z(j)) = tmp(x(j),y(j),z(j)) + lipid;
     end
