@@ -16,11 +16,11 @@ for i=1:num
     
     %generate random inner rad, compute outer rad from inner with pixelsize
     radi = (rand*300+120)/pix; %randomly generate inner radius of vesicle (need better range)
-    rado = radi+40/pix; %get outer radius from inner, should be constant something (5nm-ish?)
+    rado = radi+32/pix; %get outer radius from inner, should be constant something (5nm-ish?)
     %reduced outer radius distance for pearson, skew makes it wider
     offset = round(rado+20); %centroid offset to prevent negative values
     
-    w = rado-radi; %depth of the membrane distribution
+    w = (rado-radi)/1.8; %deviation of the membrane distribution
     sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2;
     %factor to correct for inner density skew
     
@@ -38,7 +38,7 @@ for i=1:num
     %uniform random generation - no layers
     %ptrad = rand(ptnum,1)*(rado-radi)+radi;
     %pearson random jankery - leaflets, but inner radius
-    ptrad = [pearsrnd(radi,w/2,0.7,3,rti,1);pearsrnd(rado,w/2,-0.7,3,rto,1)];
+    ptrad = [pearsrnd(radi,w,0.7,3,rti,1);pearsrnd(rado,w,-0.7,3,rto,1)];
     %figure(); histogram(ptrad);
     
     ptaz = rand(ptnum,1)*pi*2;
