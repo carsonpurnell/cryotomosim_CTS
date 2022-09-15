@@ -40,7 +40,7 @@ for i=1:num
     x = round(x+offset);
     y = round(y+offset);
     z = round(z+offset);
-    lipid = 4; %need to find the typical density of lipid membrane
+    lipid = 5; %need to find the typical density of lipid membrane
     for j=1:numel(x) %loop through and add points as density to the shell
         tmp(x(j),y(j),z(j)) = tmp(x(j),y(j),z(j)) + lipid;
     end
@@ -49,6 +49,7 @@ for i=1:num
     tmp = tmp(any(tmp ~= 0,[2 3]),:,:); 
     tmp = tmp(:,:,any(tmp ~= 0,[1 2]));
     ves{i} = tmp; %#ok<AGROW>
+    
     
     %use internal function similar to randomfill internal testplace to try to place vesicle a few times
     %if placed, probably bail (maybe keep trying? avoids needing the check)
