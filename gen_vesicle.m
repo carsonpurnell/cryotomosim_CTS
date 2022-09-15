@@ -1,4 +1,4 @@
-function [memvol,ves] = gen_vesicle(vol,num,pix)
+function [memvol,count,ves] = gen_vesicle(vol,num,pix)
 
 arguments
     vol = zeros(300,300,100)
@@ -14,7 +14,7 @@ count.s = 0; count.f = 0;
 for i=1:num
     
     %generate random inner rad, compute outer rad from inner with pixelsize
-    radi = (rand*200+80)/pix; %randomly generate inner radius of vesicle (need better range)
+    radi = (rand*300+100)/pix; %randomly generate inner radius of vesicle (need better range)
     rado = radi+50/pix; %get outer radius from inner, should be constant something
     offset = round(rado+20); %centroid offset to prevent negative values
     
@@ -67,7 +67,7 @@ for i=1:num
     
 end
 
-disp(count)
+%disp(count)
 
 memvol=vol;
 end
