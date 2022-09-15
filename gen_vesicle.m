@@ -3,17 +3,17 @@ function [memvol,ves] = gen_vesicle(vol, num, pix)
 arguments
     vol = zeros(300,300,100)
     num = 5
-    pix = 5
+    pix = 13
 end
 %generate vesicles directly inside the volume?
 %generate a struct of different vesicles probably too cumbersome and inflexible
 %needs to be done prior to constraints, vesicles too large to stay inside border
 
-
+count.s = 0; count.f = 0;
 for i=1:num
     
     %generate random inner rad, compute outer rad from inner with pixelsize
-    radi = (rand*150+80)/pix; %randomly generate inner radius of vesicle (need better range)
+    radi = (rand*200+80)/pix; %randomly generate inner radius of vesicle (need better range)
     rado = radi+50/pix; %get outer radius from inner, should be constant something
     offset = round(rado+20); %centroid offset to prevent negative values
     
@@ -34,13 +34,13 @@ for i=1:num
     %plot3(x,y,z,'.'); axis equal
     
     
-    %loop through each point and add as some scaled intensity into an array
+    %generate empty array and round points to positive coords
     tmp = zeros(offset*2,offset*2,offset*2);
     x = round(x+offset);
     y = round(y+offset);
     z = round(z+offset);
     lipid = 7; %need to find the typical density of lipid membrane
-    for j=1:numel(x)
+    for j=1:numel(x) %loop through and add points as density to the shell
         tmp(x(j),y(j),z(j)) = tmp(x(j),y(j),z(j)) + lipid;
     end
     %trim and store the vesicle into the output array
@@ -54,13 +54,19 @@ for i=1:num
     for q=1:3
         %currently not doing any rotation with imwarp, no point with a sphere
         
+        loc = round( rand(1,3).*size(vol)-size(tmp)/2 ); %randomly generate test position
+        [vol,err] = helper_arrayinsert(vol,tmp,loc,'nonoverlap');
+        count.f = count.f + err;
+        if err==0
+            %[vol] = helper_arrayinsert(vol,tmp,loc); %should not be necessary, output will be the split
+            count.s = count.s+1; 
+        end
         
     end
     
-    
 end
 
+%disp(count)
 
-%ves = 0;
 memvol=vol;
 end
