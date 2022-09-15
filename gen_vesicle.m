@@ -26,10 +26,10 @@ for i=1:num
     %ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
     shellvol = 4/8*pi*(rado^3-radi^3); %in pixels
     ptnum = round( 0.5*shellvol*pix^3 ); %convert to angstroms, scale to some density
-    ptrad = rand(1,ptnum)*(rado-radi)+radi;
-    ptaz = rand(1,ptnum)*pi*2;
+    ptrad = rand(ptnum,1)*(rado-radi)+radi; %can this be made a bimodal dist approaching radi and rado?
+    ptaz = rand(ptnum,1)*pi*2;
     %ptel = rand(1,ptnum)*pi*2; %cause asymmetry, polar density accumulation
-    ptel = asin(2*rand(1,ptnum)-1);
+    ptel = asin(2*rand(ptnum,1)-1);
     %convert spherical data to cartesian
     [x,y,z] = sph2cart(ptaz,ptel,ptrad);
     %[a,b] = bounds(x)
@@ -43,7 +43,7 @@ for i=1:num
     x = round(x+offset);
     y = round(y+offset);
     z = round(z+offset);
-    lipid = 3; %need to find the typical density of lipid membrane
+    lipid = 2; %need to find the typical density of lipid membrane
     for j=1:numel(x) %loop through and add points as density to the shell
         tmp(x(j),y(j),z(j)) = tmp(x(j),y(j),z(j)) + lipid;
     end
