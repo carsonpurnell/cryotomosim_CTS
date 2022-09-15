@@ -1,5 +1,4 @@
 function mem = helper_membranegen(ts)
-
 vol = ts.vol;
 pix = ts.pix;
 
@@ -32,7 +31,6 @@ mem = rescale(mem,0,1400);
 
 %write to struct
 %ts.misc.membrane = mem; ts.vol = vol
-
 end
 
 % 
@@ -73,8 +71,6 @@ end
 % vol = vol+mem;
 
 %mem = imdilate(e,strel('sphere',1));
-
-
 
 % sm = imgaussfilt3(q,10);
 % bin = imbinarize(sm);
