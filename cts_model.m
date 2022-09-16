@@ -97,11 +97,8 @@ if opt.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
     ts.vol = ts.model.mem+ts.vol;
     fprintf('   complete,  %i placed, %i failed \n',count.s,count.f)
     %old mem code
-    %{
-    mem = helper_membranegen(ts);
-    ts.model.mem = mem; %ts.split.mem = ymem;
-    ts.vol = ts.vol+mem; %vol = ts.vol;
-    %}
+    %mem = helper_membranegen(ts);
+    %ts.model.mem = mem; %ts.split.mem = ymem;
 end
 
 constraint = zeros(size(ts.vol)); %constraints are a big ugly mess right now
