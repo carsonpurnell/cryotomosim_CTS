@@ -156,13 +156,6 @@ ident = char(strjoin(fieldnames(ts.splitmodel),'_')); %combine target names to o
 if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
 foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix)); %combine info for folder name
 
-%get other stuff under beads? or extract manually with particleatlas?
-%{
-if isfield(ts.model,'beads'), ts.splitmodel.beads = ts.model.beads; end
-if isfield(ts.model,'mem'), ts.splitmodel.mem = ts.model.mem; end
-if isfield(ts.model,'grid'), ts.splitmodel.grid = ts.model.grid; end
-%}
-
 %move to output directory in user/tomosim
 cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
 mkdir(foldername); cd(foldername);
