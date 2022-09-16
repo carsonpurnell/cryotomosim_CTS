@@ -1,4 +1,4 @@
-function [ts] = cts_model(particleset,vol,pix,opt)
+function [ts] = cts_model(targets,vol,pix,opt)
 %[ts] = tomosim_model(particleset,vol,pix,opt)
 %generates model information for a single tomographic acquisition, stored in output struct ts
 %works by iteratively placing input particles at random orientations in random locations without overlap
@@ -48,7 +48,7 @@ function [ts] = cts_model(particleset,vol,pix,opt)
 %splitmodel has fields of each target id, containing a volume of only those particles from the model
 
 arguments
-    particleset
+    targets
     vol (:,:,:) double
     pix (1,1) double
     
@@ -79,11 +79,7 @@ ts.inputs.density = opt.density; ts.inputs.constraint = opt.constraint;
 ts.inputs.beads = opt.beads; ts.inputs.grid = opt.grid; ts.inputs.mem = opt.mem;
 ts.inputs.ice = opt.ice; 
 
-if isstruct(particleset) %load target particles
-    ts.particles.targets = particleset; %if already a struct, assume it is properly formatted particles
-else
-    [ts.particles.targets] = helper_input(particleset,pix); %otherwise, load and parse files
-end
+[ts.particles.targets] = helper_input(targets,pix); %load target particles
 
 if opt.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
@@ -125,11 +121,6 @@ ts.model.targets = fill;
 ts.model.particles = ts.vol;
 
 if ~strcmp(opt.distract,'none') %DISTRACTORS
-% if isstruct(opt.distract) %load distractor particles
-%     ts.particles.distractors = opt.distract; %if already a struct, assume it is properly formatted particles
-% else
-%     [ts.particles.distractors] = helper_input(opt.distract,pix); %otherwise, load and parse files
-% end
 [ts.particles.distractors] = helper_input(opt.distract,pix);
 
 %generated distraction filler iterations and add to volume to generate the sample
