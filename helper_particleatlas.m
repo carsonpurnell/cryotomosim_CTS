@@ -1,16 +1,14 @@
-function [atlas,roinames,indvol] = helper_particleatlas(cts,opt)
+function [atlas,roinames,indvol] = helper_particleatlas(cts,individual,dynamotable)
 %generates an atlas of the target (and mem/grid/beads) particles 
 %
 %cts is a cts struct from cts_model
-%
-%name-value opts:
 %individual (default 0) if 1 also save individual binary images for particles (space-consuming)
 %dynamotable (default 0) if 1 generates dynamo .tbl files for each type of particle
 
 arguments
     cts struct %might make this work other than needing the cts struct
-    opt.individual = 0 %by default don't save individual splits, only global atlas image
-    opt.dynamotable = 0 %switch to generate dynamo table
+    individual = 0 %by default don't save individual splits, only global atlas image
+    dynamotable = 0 %switch to generate dynamo table
 end
 
 %move other important particles to splitmodel if they exist
