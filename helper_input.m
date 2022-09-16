@@ -14,6 +14,10 @@ arguments
     sv = 1 %save generated .mat intermediates by default
 end
 
+if isstruct(list) && isfield(list,'type') %if the input is a formatted particle list, record and end
+    particleset = list; return
+end
+
 if strcmp(list,'gui') && exist('uipickfiles','file')==2 %preferred method of using GUI to find target files
     list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$|\.pdb1$|\.cif$|\.mmcif$'); 
     if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
