@@ -88,8 +88,7 @@ end
 if opt.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
     [ts.vol] = gen_carbongrid(vol,pix,opt.grid);
-    ts.model.grid = ts.vol; %ts.split.zgrid = ts.vol; 
-    fprintf('   complete \n')
+    ts.model.grid = ts.vol; fprintf('   complete \n')
 end
 
 if opt.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
