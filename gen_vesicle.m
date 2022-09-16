@@ -1,5 +1,5 @@
 function [memvol,count,ves] = gen_vesicle(vol,num,pix,tries)
-%randomly generates and places spherical vesicles into a volume
+%randomly generates and places spherical vesicles into a volume without overlapping contents
 %
 %inputs:
 %vol - 3d volume to place vesicles. does not need to be empty.
@@ -8,10 +8,10 @@ function [memvol,count,ves] = gen_vesicle(vol,num,pix,tries)
 %tries - number of placement attempts for each vesicle. default 2
 %
 %outputs:
+%memvol - volume with only membranes. does not contain any prior contents of vol
+%count - counts of successes (s) and failures (f) in attempting to place vesicles
+%ves - cell array of each generated vesicle
 %
-%
-%
-%generate num different vesicles, try to place each into vol
 
 arguments
     vol
@@ -52,6 +52,7 @@ for i=1:num
     %ptrad = rand(ptnum,1)*(rado-radi)+radi;
     %pearson random jankery - leaflets, but inner radius
     ptrad = [pearsrnd(radi,w,0.7,3,rti,1);pearsrnd(rado,w,-0.7,3,rto,1)];
+    %pearson is very slow, calls beta to call gamma which takes most of the time
     %figure(); histogram(ptrad);
     
     ptaz = rand(ptnum,1)*pi*2; %random circular azimuth angles
