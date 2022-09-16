@@ -27,20 +27,18 @@ for i=1:num
     %reduced outer radius distance for pearson, skew makes it wider
     offset = round(rado+20); %centroid offset to prevent negative values
     
-    w = (rado-radi)/1.8; %deviation of the membrane distribution
+    w = (rado-radi)/1.9; %deviation of the membrane distribution
     sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2; %factor to correct for excess inner density
     
     %fill space between radii with tons of points
-    %generate a large number of random sph2cart radii,azimuth,elevation to convert into shell coordinates
     %ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
     shellvol = 4/8*pi*(rado^3-radi^3); %volume of shell in pixels
     ptnum = round( 0.2*shellvol*pix^3 )*2; %convert to angstroms, scale to some arbitrary working density
     frac = [ptnum,ptnum*sf(2),ptnum*sf(1)]; %get fractions of the total to distribute between inner and outer
     rti = round(ptnum*sf(2)); rto = ptnum-rti; %partitian density between inner and outer radii
     
-    %uniform random generation - no layers
-    %ptrad = rand(ptnum,1)*(rado-radi)+radi;
-    %pearson random jankery - leaflets, but inner radius
+    %ptrad = rand(ptnum,1)*(rado-radi)+radi; %uniform - flat monolayer
+    %mirrored pearson - makes inner and outer layers with lower density midline
     ptrad = [pearsrnd(radi,w,0.7,3,rti,1);pearsrnd(rado,w,-0.7,3,rto,1)];
     %pearson is very slow, calls beta to call gamma which takes most of the time
     %figure(); histogram(ptrad);
@@ -64,9 +62,7 @@ for i=1:num
     tmp = tmp(:,:,any(tmp ~= 0,[1 2]));
     ves{i} = tmp; %#ok<AGROW>
     
-    
     for q=1:tries %try to place each vesicle N times, allows for duplicates
-        %currently not doing any rotation with imwarp, no point with a sphere
         loc = round( rand(1,3).*size(vol)-size(tmp)/2 ); %randomly generate test position
         [vol,err] = helper_arrayinsert(vol,tmp,loc,'nonoverlap');
         count.f = count.f + err;
