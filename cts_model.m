@@ -79,12 +79,10 @@ ts.inputs.density = opt.density; ts.inputs.constraint = opt.constraint;
 ts.inputs.beads = opt.beads; ts.inputs.grid = opt.grid; ts.inputs.mem = opt.mem;
 ts.inputs.ice = opt.ice; 
 
-[ts.particles.targets] = helper_input(targets,pix); %load target particles
-
 if opt.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
-    [ts.vol] = gen_carbongrid(vol,pix,opt.grid);
-    ts.model.grid = ts.vol; fprintf('   complete \n')
+    [ts.model.grid] = gen_carbongrid(vol,pix,opt.grid);
+    ts.vol = ts.model.grid+ts.vol; fprintf('   complete \n')
 end
 
 if opt.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
@@ -102,41 +100,40 @@ switch opt.constraint %write constraints to initial starting volume
         constraint(1:end,[1 end],1:end) = pix^2.5; %constraint(1:end,end,1:end) = 1; %y end panes
         constraint([1 end],1:end,1:end) = pix^2.5; %constraint(end,1:end,1:end) = 1; %x end panes
         disp('Warning: with a complete box, some particles may be impossible to place')
-        ts.model.constraintbox = constraint;
+        %ts.model.constraintbox = constraint;
     case 'tube'
         constraint(1:end,1:end,[1 end]) = pix^2.5; %constraint(1:end,1:end,end) = 1; %z end panes
         constraint(1:end,[1 end],1:end) = pix^2.5; %constraint(1:end,end,1:end) = 1; %y end panes
-        ts.model.constrainttube = constraint;
+        %ts.model.constrainttube = constraint;
     case 'sides'
         constraint(1:end,1:end,[1 end]) = pix^2.5; %constraint(1:end,1:end,end) = 1; %z end panes
-        ts.model.constraintsides = constraint;
+        %ts.model.constraintsides = constraint;
 end
 
 %generate model and add (in case input vol had stuff in it)
+[ts.particles.targets] = helper_input(targets,pix); %load target particles
 iters = round(ts.pix(1)*sqrt(numel(ts.vol))/30); %modeling iters, maybe simplify
-[fill, ts.splitmodel] = helper_randomfill(ts.vol+constraint,ts.particles.targets,iters,...
+[ts.model.targets, ts.splitmodel] = helper_randomfill(ts.vol+constraint,ts.particles.targets,iters,...
     opt.density,'type','target','graph',opt.graph); 
-ts.vol = ts.vol+fill; 
-ts.model.targets = fill;
+ts.vol = ts.vol+ts.model.targets; 
 ts.model.particles = ts.vol;
 
 if ~strcmp(opt.distract,'none') %DISTRACTORS
-[ts.particles.distractors] = helper_input(opt.distract,pix);
+[ts.particles.distractors] = helper_input(opt.distract,pix); %load distractor particles
 
 %generated distraction filler iterations and add to volume to generate the sample
 iters = round( iters*sqrt(numel(ts.particles.distractors(1,:))) ); %distractor iters
-[fill] = helper_randomfill(ts.vol+constraint,ts.particles.distractors,iters,opt.density,'type','distractor');
-ts.model.distractors = fill;
-ts.vol = fill + ts.vol; 
+[ts.model.distractors] = helper_randomfill(ts.vol+constraint,ts.particles.distractors,iters,...
+    opt.density,'type','distractor');
+ts.vol = ts.vol + ts.model.distractors; 
 ts.model.particles = ts.vol;
 end
 
 if opt.beads~=0 %bead generation and placement block
     beadstrc = gen_beads(pix,opt.beads(2:end)); %external generation of varied beads
     ts.particles.beads = beadstrc;
-    [fill, ~] = helper_randomfill(ts.vol+constraint,beadstrc,opt.beads(1),opt.density,'type','bead');
-    ts.model.beads = fill;
-    ts.vol = fill + ts.vol; 
+    [ts.model.beads] = helper_randomfill(ts.vol+constraint,beadstrc,opt.beads(1),opt.density,'type','bead');
+    ts.vol = ts.vol + ts.model.beads; 
     ts.model.particles = ts.vol;
 end
 
