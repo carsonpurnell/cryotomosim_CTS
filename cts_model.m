@@ -58,7 +58,7 @@ arguments
     opt.beads = 0 %new beads [number radius1 radius2 ... radiusn]
     opt.grid = [15 2000] %[thick radius] both in nm [15 2000] our real grids
     opt.ice = 1 %0 to not add ice
-    opt.mem = 0 %is a super jankfest that might not work right now
+    opt.mem = 0 %is now working, mostly! value is now the number of vesicles randomly generated
     opt.graph = 0
 end
 
