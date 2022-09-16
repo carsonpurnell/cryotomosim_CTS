@@ -1,9 +1,9 @@
 function [memvol,count,ves] = gen_vesicle(vol,num,pix)
 
 arguments
-    vol = zeros(300,300,100)
-    num = 5
-    pix = 12
+    vol
+    num
+    pix
 end
 %generate vesicles directly inside the volume?
 %generate a struct of different vesicles probably too cumbersome and inflexible
@@ -73,7 +73,6 @@ for i=1:num
     %if placed, probably bail (maybe keep trying? avoids needing the check)
     for q=1:2
         %currently not doing any rotation with imwarp, no point with a sphere
-        
         loc = round( rand(1,3).*size(vol)-size(tmp)/2 ); %randomly generate test position
         [vol,err] = helper_arrayinsert(vol,tmp,loc,'nonoverlap');
         count.f = count.f + err;
