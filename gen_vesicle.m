@@ -1,9 +1,23 @@
-function [memvol,count,ves] = gen_vesicle(vol,num,pix)
+function [memvol,count,ves] = gen_vesicle(vol,num,pix,tries)
+%randomly generates and places spherical vesicles into a volume
+%
+%inputs:
+%vol - 3d volume to place vesicles. does not need to be empty.
+%num - number of different vesicles to generate
+%pix - pixelsize of generated vesicles
+%tries - number of placement attempts for each vesicle. default 2
+%
+%outputs:
+%
+%
+%
+%generate num different vesicles, try to place each into vol
 
 arguments
     vol
     num
     pix
+    tries = 2
 end
 %generate vesicles directly inside the volume?
 %generate a struct of different vesicles probably too cumbersome and inflexible
@@ -67,7 +81,7 @@ for i=1:num
     
     %use internal function similar to randomfill internal testplace to try to place vesicle a few times
     %if placed, probably bail (maybe keep trying? avoids needing the check)
-    for q=1:2
+    for q=1:tries
         %currently not doing any rotation with imwarp, no point with a sphere
         loc = round( rand(1,3).*size(vol)-size(tmp)/2 ); %randomly generate test position
         [vol,err] = helper_arrayinsert(vol,tmp,loc,'nonoverlap');
