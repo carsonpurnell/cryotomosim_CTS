@@ -11,7 +11,6 @@ function [memvol,count,ves] = gen_vesicle(vol,num,pix,tries)
 %memvol - volume with only membranes. does not contain any prior contents of vol
 %count - counts of successes (s) and failures (f) in attempting to place vesicles
 %ves - cell array of each generated vesicle
-%
 
 arguments
     vol
