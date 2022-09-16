@@ -65,7 +65,7 @@ end
 
 runtime = numel(vol)/60*1.2e-5; %for my laptop, doesn't really apply to anything else
 fprintf('Estimated model generation time: %g minutes\n',runtime)
-if runtime>30
+if runtime>30 %if >30 mins force manual input start
     txt = input('Runtime is long, verify inputs. ctlr+C to end, or enter "proceed" to run anyway: ','s');
     if ~strcmp(txt,'proceed')
         ts = NaN; fprintf('Model generation declined, process aborted.\n')
@@ -77,8 +77,8 @@ end
 ts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[],'inputs',[]);
 ts.inputs.pix = pix;
 ts.inputs.density = opt.density; ts.inputs.constraint = opt.constraint;
-ts.inputs.beads = opt.beads; ts.inputs.grid = opt.grid; ts.inputs.ice = opt.ice; 
-%inputs.mem = opt.mem;
+ts.inputs.beads = opt.beads; ts.inputs.grid = opt.grid; ts.inputs.mem = opt.mem;
+ts.inputs.ice = opt.ice; 
 
 if isstruct(particleset) %load target particles
     ts.particles.targets = particleset; %if already a struct, assume it is properly formatted particles
