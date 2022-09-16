@@ -56,7 +56,6 @@ arguments
     opt.constraint string {mustBeMember(opt.constraint,{'none','box','tube','sides'})} = 'sides'
     opt.distract = 'none'
     opt.beads = 0 %new beads [number radius1 radius2 ... radiusn]
-    %opt.beads = 0 %have beads use [number diamenter] and diam defaults to 10nm/100A.
     opt.grid = [15 2000] %[thick radius] both in nm [15 2000] our real grids
     opt.ice = 1 %0 to not add ice
     opt.mem = 0 %is a super jankfest that might not work right now
