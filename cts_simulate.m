@@ -85,7 +85,7 @@ end
 [noised, conv, tiltseries] = internal_sim(vol,filename,param,'real');
 
 if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
-    atlas = helper_particleatlas(ts,'individual',opt.atlasindividual,'dynamotable',opt.dynamotable);
+    atlas = helper_particleatlas(ts,opt.atlasindividual,opt.dynamotable);
 end
 
 cd(userpath) %return to the user directory
