@@ -20,17 +20,16 @@ for i=1:num
     %reduced outer radius distance for pearson, skew makes it wider
     offset = round(rado+20); %centroid offset to prevent negative values
     
-    w = (rado-radi)/1.8; %deviation of the membrane distribution
-    sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2;
-    %factor to correct for inner density skew
+    w = (rado-radi)/1.9; %deviation of the membrane distribution
+    sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2; %factor to correct for excess inner density
     
     %fill space between radii with tons of points
     %generate a large number of random sph2cart radii,azimuth,elevation to convert into shell coordinates
     %does the shell data need to be pruned or cleaned in some way?
     %might need to add extra layer of points closer to inner and outer radii to get bilayer
     %ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
-    shellvol = 4/8*pi*(rado^3-radi^3); %in pixels
-    ptnum = round( 0.3*shellvol*pix^3 )*2; %convert to angstroms, scale to some density
+    shellvol = 4/8*pi*(rado^3-radi^3); %volume of shell in pixels
+    ptnum = round( 0.3*shellvol*pix^3 )*2; %convert to angstroms, scale to some arbitrary working density
     frac = [ptnum,ptnum*sf(2),ptnum*sf(1)];
     rti = round(ptnum*sf(2)); 
     rto = ptnum-rti;
@@ -41,16 +40,13 @@ for i=1:num
     ptrad = [pearsrnd(radi,w,0.7,3,rti,1);pearsrnd(rado,w,-0.7,3,rto,1)];
     %figure(); histogram(ptrad);
     
-    ptaz = rand(ptnum,1)*pi*2;
-    %ptel = rand(1,ptnum)*pi*2; %cause asymmetry, polar density accumulation
-    ptel = asin(2*rand(ptnum,1)-1);
-    %size(ptrad),size(ptaz),size(ptel)
+    ptaz = rand(ptnum,1)*pi*2; %random circular azimuth angles
+    %ptel = rand(1,ptnum)*pi*2; %causes asymmetry, polar density accumulation
+    ptel = asin(2*rand(ptnum,1)-1); %random elevation angles, corrected for polar density accumulation
     
     %convert spherical data to cartesian
     [x,y,z] = sph2cart(ptaz,ptel,ptrad);
-    %[a,b] = bounds(x)
-    %[a,b] = bounds(y)
-    %[a,b] = bounds(z)
+    %[a,b] = bounds(x), [a,b] = bounds(y), [a,b] = bounds(z)
     %plot3(x,y,z,'.'); axis equal
     
     %generate empty array and round points to positive coords
@@ -80,12 +76,9 @@ for i=1:num
             [memvol] = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
             count.s = count.s+1; 
         end
-        
     end
     
 end
-
-%disp(count)
 
 %memvol=vol;
 end
