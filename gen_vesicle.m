@@ -58,10 +58,7 @@ for i=1:num
     %ptel = rand(1,ptnum)*pi*2; %causes asymmetry, polar density accumulation
     ptel = asin(2*rand(ptnum,1)-1); %random elevation angles, corrected for polar density accumulation
     
-    %convert spherical data to cartesian
-    [x,y,z] = sph2cart(ptaz,ptel,ptrad);
-    %[a,b] = bounds(x), [a,b] = bounds(y), [a,b] = bounds(z)
-    %plot3(x,y,z,'.'); axis equal
+    [x,y,z] = sph2cart(ptaz,ptel,ptrad); %convert spherical coords to cartesian coords
     
     %generate empty array and round points to positive coords
     tmp = zeros(offset*2,offset*2,offset*2);
