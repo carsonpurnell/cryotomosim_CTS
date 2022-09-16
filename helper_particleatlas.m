@@ -27,10 +27,10 @@ for i=1:numel(roinames)
     atlas = atlas+bin*i; %generate label image atlas based on model order for label intensity
     
     filename = append('ind',string(i),'_',roinames{i});
-    if opt.individual==1
+    if individual==1
         WriteMRC(bin,cts.pix,append(filename,'.mrc'))
     end
-    if opt.dynamotable==1
+    if dynamotable==1
         dynamotable(indvol{i},filename);
     end
     
