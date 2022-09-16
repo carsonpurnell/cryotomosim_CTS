@@ -80,11 +80,10 @@ ts.inputs.density = opt.density; ts.inputs.constraint = opt.constraint;
 ts.inputs.beads = opt.beads; ts.inputs.grid = opt.grid; ts.inputs.ice = opt.ice; 
 %inputs.mem = opt.mem;
 
-%load target particles and write to struct
-if isstruct(particleset)
-    ts.particles.targets = particleset;
+if isstruct(particleset) %load target particles
+    ts.particles.targets = particleset; %if already a struct, assume it is properly formatted particles
 else
-    [ts.particles.targets] = helper_input(particleset,pix);
+    [ts.particles.targets] = helper_input(particleset,pix); %otherwise, load and parse files
 end
 
 if opt.grid(1)~=0 % new carbon grid and hole generator
