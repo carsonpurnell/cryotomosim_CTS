@@ -125,7 +125,12 @@ ts.model.targets = fill;
 ts.model.particles = ts.vol;
 
 if ~strcmp(opt.distract,'none') %DISTRACTORS
-[ts.particles.distractors] = helper_input(opt.distract,pix,3); %load distractor particle set
+if isstruct(opt.distract) %load distractor particles
+    ts.particles.distractors = opt.distract; %if already a struct, assume it is properly formatted particles
+else
+    [ts.particles.distractors] = helper_input(opt.distract,pix); %otherwise, load and parse files
+end
+%[ts.particles.distractors] = helper_input(opt.distract,pix); %load distractor particle set
 
 %generated distraction filler iterations and add to volume to generate the sample
 iters = round( iters*sqrt(numel(ts.particles.distractors(1,:))) ); %distractor iters
