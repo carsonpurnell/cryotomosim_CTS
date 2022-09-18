@@ -124,7 +124,7 @@ if ~strcmp(opt.distract,'none') %DISTRACTORS
 %generated distraction filler iterations and add to volume to generate the sample
 iters = round( iters*sqrt(numel(ts.particles.distractors(1,:))) ); %distractor iters
 [ts.model.distractors] = helper_randomfill(ts.vol+constraint,ts.particles.distractors,iters,...
-    opt.density,'type','distractor');
+    opt.density,'type','distractor','graph',opt.graph);
 ts.vol = ts.vol + ts.model.distractors; 
 ts.model.particles = ts.vol;
 end
