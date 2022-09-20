@@ -15,17 +15,7 @@ if isstruct(list) && isfield(list,'type') %if the input is a formatted particle 
     particleset = list; return
 end
 
-if strcmp(list,'gui') && exist('uipickfiles','file')==2 %preferred method of using GUI to find target files
-    list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$|\.pdb1$|\.cif$|\.mmcif$'); 
-    if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
-elseif strcmp(list,'gui')
-    [list, path] = uigetfile({'*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif'},'Select input files','MultiSelect','on');
-    if numel(string(list))==1, list={list}; end
-    if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
-    for i=1:numel(list) %make the list full file paths rather than just names so it works off-path
-        list{i} = fullfile(path,list{i}); 
-    end
-end
+list = internal_load(list); %internal call to either uipickfiles or uigetfiles
 
 types = {'single','bundle','complex','cluster','group','assembly'};
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
@@ -77,4 +67,18 @@ for i=1:numel(list)
     fprintf('  done\n')
 end
 
+end
+
+function list = internal_load(list)
+if strcmp(list,'gui') && exist('uipickfiles','file')==2 %preferred method of using GUI to find target files
+    list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$|\.pdb1$|\.cif$|\.mmcif$'); 
+    if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
+elseif strcmp(list,'gui')
+    [list, path] = uigetfile({'*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif'},'Select input files','MultiSelect','on');
+    if numel(string(list))==1, list={list}; end
+    if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
+    for i=1:numel(list) %make the list full file paths rather than just names so it works off-path
+        list{i} = fullfile(path,list{i}); 
+    end
+end
 end
