@@ -12,11 +12,9 @@ tiltangs = param.tilt; %unfortunately similar name to tilt
 arb = 4/param.pix^2; %arbitrary scaling factor to make contrast look normal
 %what are the new good values? is this scale working well?
 
-%too high a dose makes the image dominated by noise - is it reasonable? even 40e is blowing out 5a ribos
 DQE = .84*arb; %doesn't change with tilts, not sure how to implement fourier space falloff
 
-%tilt ordering
-switch param.tiltscheme
+switch param.tiltscheme %organize tilt ordering, sort according to split if not symmetric
     case 'symmetric'
         [~,ix] = sort(abs(tiltangs)); 
     otherwise %find and sort the data from the split between tilt directions
