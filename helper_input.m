@@ -6,8 +6,6 @@ function [particleset] = helper_input(list,pixelsize,sv)
 %LIMITATION: you can't preset the number of manual browser inputs, you only get one attempt
 
 %any other file formats that are important to have supported?
-
-%need a desc/filename field for structs too so that things can be traced
 arguments
     list
     pixelsize double
