@@ -22,7 +22,7 @@ end
 count.s = 0; count.f = 0;
 memvol = vol*0;
 for i=1:num
-    radi = (rand*300+120)/pix; %randomly generate inner radius of vesicle (need better range)
+    radi = (rand*300+150)/pix; %randomly generate inner radius of vesicle (need better range)
     rado = radi+32/pix; %get outer radius from inner, should be constant something (5nm-ish?)
     %reduced outer radius distance for pearson, skew makes it wider
     offset = round(rado+20); %centroid offset to prevent negative values
@@ -39,7 +39,12 @@ for i=1:num
     
     %ptrad = rand(ptnum,1)*(rado-radi)+radi; %uniform - flat monolayer
     %mirrored pearson - makes inner and outer layers with lower density midline
-    ptrad = [pearsrnd(radi,w,0.7,3,rti,1);pearsrnd(rado,w,-0.7,3,rto,1)];
+    switch randi(2)
+        case 1
+            ptrad = [pearsrnd(radi,w,0.7,3,rti,1);pearsrnd(rado,w,-0.7,3,rto,1)];
+        case 2
+            ptrad = radi+[betarnd(2.9,6,rti,1);betarnd(6,2.9,rto,1)]*(rado-radi)*3.2;
+    end
     %pearson is very slow, calls beta to call gamma which takes most of the time
     %figure(); histogram(ptrad);
     
