@@ -3,7 +3,6 @@ function [particleset] = helper_input(list,pixelsize,sv)
 %list is a cell array of input files(pdb or mrc) and workspace variables, which can be mixed. 
 %list=='gui' opens a broswer for selecting inputs(files only) or for each time it is used in the cell array
 %pixelsize is required if any files are input. 
-%LIMITATION: you can't preset the number of manual browser inputs, you only get one attempt
 
 %any other file formats that are important to have supported?
 arguments
