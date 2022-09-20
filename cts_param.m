@@ -17,6 +17,7 @@ function [param] = cts_param(guiinput,param)
 %raddamage scales radiation damage (arbitrary)
 %scatter scales inelastic/lossy electron scattering (nonlinear, scales distance)
 %ctfoverlap sets how much overlap between CTF strips (default 2), 0 skips CTF convolution entirely
+%tilterr scales tilt angle randomization from 0 to N, with 1 the error range equals the tilt increment
 
 arguments
     guiinput = 0
