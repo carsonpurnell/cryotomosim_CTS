@@ -27,7 +27,7 @@ for i=1:num
     %reduced outer radius distance for pearson, skew makes it wider
     offset = round(rado+20); %centroid offset to prevent negative values
     
-    w = (rado-radi)/1.8; %deviation of the membrane distribution
+    w = (rado-radi)/1.6; %deviation of the membrane distribution
     sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2; %factor to correct for excess inner density
     
     %fill space between radii with tons of points
@@ -43,7 +43,7 @@ for i=1:num
         case 1
             ptrad = [pearsrnd(radi,w,0.7,3,rti,1);pearsrnd(rado,w,-0.7,3,rto,1)];
         case 2
-            ptrad = radi+[betarnd(2.9,6,rti,1);betarnd(6,2.9,rto,1)]*(rado-radi)*3.2;
+            ptrad = radi+[betarnd(3.0,6,rti,1);betarnd(6,3.0,rto,1)]*(rado-radi)*3.5;
     end
     %pearson is very slow, calls beta to call gamma which takes most of the time
     %figure(); histogram(ptrad);
