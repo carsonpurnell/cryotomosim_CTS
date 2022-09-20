@@ -35,14 +35,10 @@ end
 
 thick = param.size(3)*param.pix; %compute thickness from depth of original model
 IMFP = 3500; %inelastic mean free path, average distance before inelastic electron scatter (for water/ice)
-%current scattering has a very large effect on signal at higher tilt angles, is IMFP the right scale?
-%IMFP is estimated 350nm - just a real thickness and angle problem?
+%IMFP estimated to be 350 for water ice, is probabaly somewhat different for vitreous (higher)
 electronpath = thick*(1+abs(tand(tiltangs))); %compute the path length of electrons through ice
 thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not inelastically/lossly scattered
 %change IMFP to instead be per pixel, so more electrons are lost at high density AND thickness?
-%roughly 5*tilt works for 13.6 filaments, but won't scale due to pixel size. divide by pix^2?
-%for 6A, *22 is required. not as big a difference as expected
-
 
 radscale = .05*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
