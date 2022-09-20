@@ -27,7 +27,7 @@ for i=1:num
     %reduced outer radius distance for pearson, skew makes it wider
     offset = round(rado+20); %centroid offset to prevent negative values
     
-    w = (rado-radi)/1.9; %deviation of the membrane distribution
+    w = (rado-radi)/1.8; %deviation of the membrane distribution
     sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2; %factor to correct for excess inner density
     
     %fill space between radii with tons of points
