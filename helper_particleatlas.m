@@ -22,10 +22,8 @@ atlas = zeros(size(cts.splitmodel.(roinames{1})));
 
 for i=1:numel(roinames)
     indvol{i} = cts.splitmodel.(roinames{i}); %add model to stack
-    
     bin = imbinarize(rescale(indvol{i})); %binarize model to add to atlas
     atlas = atlas+bin*i; %generate label image atlas based on model order for label intensity
-    
     filename = append('ind',string(i),'_',roinames{i});
     if individual==1
         WriteMRC(bin,cts.pix,append(filename,'.mrc'))
@@ -33,7 +31,6 @@ for i=1:numel(roinames)
     if dynamotable==1
         generatetable(indvol{i},filename);
     end
-    
 end
 
 ident = char(strjoin(roinames,'_'));
