@@ -38,11 +38,11 @@ for i=1:num
     rti = round(ptnum*sf(2)); rto = ptnum-rti; %partitian density between inner and outer radii
     
     %ptrad = rand(ptnum,1)*(rado-radi)+radi; %uniform - flat monolayer
-    %mirrored pearson - makes inner and outer layers with lower density midline
+    
     switch randi(2)
-        case 1
+        case 1 %mirrored pearson - relatively hard inner and outer edges
             ptrad = [pearsrnd(radi,w,0.7,3,rti,1);pearsrnd(rado,w,-0.7,3,rto,1)];
-        case 2
+        case 2 %mirrored gamma - a bit narrower, more edge smoothing
             ptrad = radi+[betarnd(3.0,6,rti,1);betarnd(6,3.0,rto,1)]*(rado-radi)*3.5;
     end
     %pearson is very slow, calls beta to call gamma which takes most of the time
