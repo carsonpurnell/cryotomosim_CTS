@@ -14,7 +14,6 @@ end
 if isstruct(list) && isfield(list,'type') %if the input is a formatted particle list, record and end
     particleset = list; return
 end
-
 list = internal_load(list); %internal call to either uipickfiles or uigetfiles
 
 types = {'single','bundle','complex','cluster','group','assembly'};
@@ -61,7 +60,6 @@ for i=1:numel(list)
     
     %tmp.vol = helper_preproc(tmp.vol,proc);
     %need to filter mrc to make density maps clean, pdb are already good to go
-    
     particleset(i) = tmp; %#ok<AGROW> %store in multidim struct for ease of use
     
     fprintf('  done\n')
