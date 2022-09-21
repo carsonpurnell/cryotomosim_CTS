@@ -51,7 +51,6 @@ weight = repmat(weight/param.ctfoverlap,[1 xl]); %replicate across the strip len
 
 for i=1:numel(param.tilt) %loop through tilts
     shift = tand(param.tilt(i)); %proportion of length by tilt to compute vertical displacement
-    
     for j=1:numel(bincenter)
         six = round([1+bincenter(j)-binlength, bincenter(j)+binlength]);
         sdist = pix*(bincenter(j)-size(padded,1)/2)*1; %calculate horizontal distance
