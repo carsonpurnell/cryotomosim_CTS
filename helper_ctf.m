@@ -60,7 +60,6 @@ for i=1:numel(param.tilt) %loop through tilts
         [lg, ctf] = internal_ctf(in,cs,L,k,Dzs,B,q); %get ctf-convolved subvolume
         lg = lg.*weight; %scale by weight for gradient overlap of strips
         cv(six(1):six(2),1:end,i) = cv(six(1):six(2),1:end,i)+lg;
-        
         %verbose real defoc listing
         %fprintf('tiltangle %g ix %g to %g strip distance %g at defoc %g\n',...
             %param.tilt(i),six(1),six(2),sdist,Dzs)
