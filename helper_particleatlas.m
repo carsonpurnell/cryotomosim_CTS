@@ -31,16 +31,17 @@ for i=1:numel(roinames)
         WriteMRC(bin,cts.pix,append(filename,'.mrc'))
     end
     if dynamotable==1
-        dynamotable(indvol{i},filename);
+        generatetable(indvol{i},filename);
     end
     
 end
 
 ident = char(strjoin(roinames,'_'));
+if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
 WriteMRC(atlas,cts.pix,append('atlas_',ident,'.mrc'))
 end
 
-function dynamotable(split,filename)
+function generatetable(split,filename)
 cl = imclose(split,strel('sphere',2)); %close small holes to avoid chopping most particles up
 
 d = -bwdist(~cl); %calculate distances for watershed
