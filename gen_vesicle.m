@@ -38,7 +38,6 @@ for i=1:num
     rti = round(ptnum*sf(2)); rto = ptnum-rti; %partitian density between inner and outer radii
     
     %ptrad = rand(ptnum,1)*(rado-radi)+radi; %uniform - flat monolayer
-    
     switch randi(2)
         case 1 %mirrored pearson - relatively hard inner and outer edges
             ptrad = [pearsrnd(radi,w,0.7,3,rti,1);pearsrnd(rado,w,-0.7,3,rto,1)];
