@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## [v0.0.7](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.7) - 2022-09-21 16:17:07
+
+*No description*
+
+### Feature
+
+- general:
+  - feat membrane generation as vesicles ([cfe98e2](https://github.com/carsonpurnell/cryotomosim_CTS/commit/cfe98e2f13585da063ae412136c1a1d0061894f6))
+
+### Bug Fixes
+
+- general:
+  - fix dynamotable generation failure ([bbb32e2](https://github.com/carsonpurnell/cryotomosim_CTS/commit/bbb32e2acc4d14d58ddc73d166f8caebbaf24a77))
+
+### Performance Improvements
+
+- general:
+  - perf helper_input skips if given formatted particles ([0f86551](https://github.com/carsonpurnell/cryotomosim_CTS/commit/0f865519d93a73a588095e5f4a5a92ade3e7516a))
+
 ## [v0.0.6](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.6) - 2022-09-13 13:27:57
 
 implemented random error in tilt angles (name-val 'tilterr'), a new model handle (.assembly) for nonuniform complexes, and ind_x output .mrc are now by default binary, can be changed with cts_simulate name-val 'bin'.
