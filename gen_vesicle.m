@@ -27,7 +27,7 @@ for i=1:num
     %reduced outer radius distance for pearson, skew makes it wider
     offset = round(rado+20); %centroid offset to prevent negative values
     
-    w = (rado-radi)/1.6; %deviation of the membrane distribution
+    w = (rado-radi)/1.5; %deviation of the membrane distribution
     sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2; %factor to correct for excess inner density
     
     %fill space between radii with tons of points
@@ -38,7 +38,7 @@ for i=1:num
     rti = round(ptnum*sf(2)); rto = ptnum-rti; %partitian density between inner and outer radii
     
     %ptrad = rand(ptnum,1)*(rado-radi)+radi; %uniform - flat monolayer
-    switch randi(2)
+    switch 1
         case 1 %mirrored pearson - relatively hard inner and outer edges
             ptrad = [pearsrnd(radi,w,0.7,3,rti,1);pearsrnd(rado,w,-0.7,3,rto,1)];
         case 2 %mirrored gamma - a bit narrower, more edge smoothing
@@ -56,15 +56,14 @@ for i=1:num
     %generate empty array and round points to positive coords
     tmp = zeros(offset*2,offset*2,offset*2);
     x = round(x+offset); y = round(y+offset); z = round(z+offset);
-    lipid = 5; %need to find the typical density of lipid membrane
+    lipid = 6; %need to find the typical density of lipid membrane
     for j=1:numel(x) %loop through and add points as density to the shell
         tmp(x(j),y(j),z(j)) = tmp(x(j),y(j),z(j)) + lipid;
     end
-    %trim and store the vesicle into the output array
     tmp = tmp(:,any(tmp ~= 0,[1 3]),:); 
     tmp = tmp(any(tmp ~= 0,[2 3]),:,:); 
     tmp = tmp(:,:,any(tmp ~= 0,[1 2]));
-    ves{i} = tmp; %#ok<AGROW>
+    ves{i} = tmp; %#ok<AGROW> %store trimmed vesicle into output cell array
     
     for q=1:tries %try to place each vesicle N times, allows for duplicates
         loc = round( rand(1,3).*size(vol)-size(tmp)/2 ); %randomly generate test position
