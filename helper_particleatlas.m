@@ -10,7 +10,6 @@ arguments
     individual = 0 %by default don't save individual splits, only global atlas image
     dynamotable = 0 %switch to generate dynamo table
 end
-
 %move other important particles to splitmodel if they exist
 if isfield(cts.model,'beads'), cts.splitmodel.beads = cts.model.beads; end
 if isfield(cts.model,'mem'), cts.splitmodel.mem = cts.model.mem; end
