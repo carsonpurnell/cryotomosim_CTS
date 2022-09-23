@@ -13,7 +13,6 @@ elseif ismember(ext,{'.cif','.mmcif'})
 elseif ismember(ext,{'.pdb','.pdb1'}) %if .pdb, parse the file into a data variable
     data = internal_pdbparse(pdb);
 end
-
 vol = internal_volbuild(data,pix,trim);
 
 if savemat==1
