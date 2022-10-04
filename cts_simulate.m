@@ -1,4 +1,4 @@
-function [noised, conv, tiltseries, atlas] = cts_simulate(sampleMRC,param,opt)
+function [noised, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param,opt)
 %{ help block
 %[noised, convolved, tiltseries] = tomosim_simulate(sampleMRC, param, opt)
 %simulates tomographic data as if collected from a sample and reconstructs a tomogram
@@ -82,7 +82,7 @@ else
 end
 
 %run the simulation itself within the subfunction. might extend 'real' to also 'ideal' later
-[noised, conv, tiltseries] = internal_sim(vol,filename,param,'real');
+[noised, conv, tiltseries, ctf] = internal_sim(vol,filename,param,'real');
 
 if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
     atlas = helper_particleatlas(ts,opt.atlasindividual,opt.dynamotable);
@@ -91,7 +91,7 @@ end
 cd(userpath) %return to the user directory
 end
 
-function [noised, convolved, tilt] = internal_sim(in,filename,param,type)
+function [noised, convolved, tilt, ctf] = internal_sim(in,filename,param,type)
 pix = param.pix;
 
 base = append(filename,'.mrc'); 
@@ -124,12 +124,12 @@ order = 2; %electron detection changable order thing because i still don't know 
 if order==1 %dose first, hackjob dose increase to get the scaling to work
     detected = helper_electrondetect(tilt,param);
     WriteMRC(detected,pix,append('2_dosetilt_',base));
-    convolved = helper_ctf(detected,param); %per-tilt ctf convolution
+    [convolved,ctf] = helper_ctf(detected,param); %per-tilt ctf convolution
     prev = append('3_ctf_',base);
     WriteMRC(convolved,pix,prev); %save the convolved image for review
 end
 if order==2 %dose second, reduces pixel size effect so more generalized but values are arbitrary?
-    convolved = helper_ctf(tilt,param); %per-tilt ctf convolution
+    [convolved,ctf] = helper_ctf(tilt,param); %per-tilt ctf convolution
     prev = append('3_ctf_',base);
     WriteMRC(convolved,pix,prev); %save the convolved image for review
     convolved = rescale(convolved,min(tilt,[],'all'),max(tilt,[],'all')-0); %fix negative CTF
