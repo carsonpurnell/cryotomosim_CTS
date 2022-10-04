@@ -4,7 +4,7 @@ function detect = helper_electrondetect(tilt,param)
 %param is a param struct created by cts_param, it's important
 arguments
     tilt
-    param
+    param struct
 end
 if param.dose<=0, detect=tilt; return; end %if dose 0, skip detection and return perfect detection/original
 tiltangs = param.tilt; %unfortunately similar name to tilt 
@@ -12,7 +12,8 @@ tiltangs = param.tilt; %unfortunately similar name to tilt
 arb = 4/param.pix^2; %arbitrary scaling factor to make contrast look normal
 %what are the new good values? is this scale working well?
 
-DQE = .84*arb; %doesn't change with tilts, not sure how to implement fourier space falloff
+DQE = .84*arb; % gatan camera lists 84% maximum detection, so that'll work for now
+%doesn't change with tilts, not sure how to implement fourier space falloff
 
 switch param.tiltscheme %organize tilt ordering, sort according to split if not symmetric
     case 'symmetric'
