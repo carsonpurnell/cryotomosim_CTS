@@ -9,7 +9,7 @@ end
 if param.dose<=0, detect=tilt; return; end %if dose 0, skip detection and return perfect detection/original
 tiltangs = param.tilt; %unfortunately similar name to tilt 
 
-arb = 4/param.pix^2; %arbitrary scaling factor to make contrast look normal
+arb = 4;%/param.pix^2; %arbitrary scaling factor to make contrast look normal
 %what are the new good values? is this scale working well?
 
 DQE = .84*arb; % gatan camera lists 84% maximum detection, so that'll work for now
@@ -27,7 +27,7 @@ tiltangs = tiltangs(ix); tilt = tilt(:,:,ix); %sort tilt angles and tilts
 ixr(ix) = 1:numel(ix); %generate reverse sorting index
 
 %dose weighting/distribution
-dose = param.dose.*param.pix^2; %convert dose in e/A^2 to e/pixel
+dose = param.dose;%.*param.pix^2; %convert dose in e/A^2 to e/pixel
 if numel(param.dose)==1
     dose = dose/size(tilt,3); %single dose distributed across tilts evenly
 else
@@ -42,7 +42,7 @@ electronpath = thick*cosd(tiltangs).^-1; %corrected trig, very slightly better a
 thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not inelastically/lossly scattered
 %change IMFP to instead be per pixel, so more electrons are lost at high density AND thickness?
 
-radscale = .05*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
+radscale = .09*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
 dw = thickscatter.*dose*DQE;
 accum = 0; %initialize accumulated dose of irradiation to 0
