@@ -105,8 +105,7 @@ for i=1:iters
     if rem(i,500)==0, fprintf('\n'), end
     
     if rem(i,5)==0 && rem(counts.s,2)==0 %filter to prevent the slower IF from running so often
-    if nnz(inarray)/numel(inarray)>density, fprintf('Density limit reached.'), break, end
-    end
+    if nnz(inarray)/numel(inarray)>density, fprintf('Density limit reached.'), break, end, end
     
     if opt.graph==1 %draw progress graph continuously when used
         plot(gui,counts.f,counts.s,'.'); drawnow;
