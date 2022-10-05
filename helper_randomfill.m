@@ -103,7 +103,6 @@ for i=1:iters
             
     end
     
-    
     if rem(i,25)==0, fprintf('%i,',counts.s), end
     if rem(i,500)==0, fprintf('\n'), end
     
@@ -115,7 +114,6 @@ for i=1:iters
         plot(gui,counts.f,counts.s,'.'); drawnow;
     end
 end
-
 
 fprintf('\nPlaced %i particles, failed %i attempted placements\n',counts.s,counts.f)
 
