@@ -18,7 +18,6 @@ if opt.graph==1 %graphical output of particles block
         gui = figure('Name','Placement Progress'); gui = gca;
         xlabel('Failed placements'); ylabel('Successful placements');
     end
-    %xlabel('Failed placements'); ylabel('Successful placements');
     hold(gui,'off'); plot(gui,0,0,'.'); hold(gui,'on'); %clear any prior contents of the graph
 end
 
