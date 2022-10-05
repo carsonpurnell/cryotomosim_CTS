@@ -9,6 +9,9 @@ end
 if iscell(param), param = cts_param(param{:}); end
 if param.ctfoverlap==0, convolved=input; return; end %if overlap==0, skip doing CTF
 
+fprintf('CTF parameters: pixels %g angstroms, %i KeV, aberration %g nm, sigma %g, defocus %d nm',...
+    param.pix, param.voltage, param.aberration, param.sigma, param.defocus)
+
 V = param.voltage*1000; %convert from KeV to eV
 cs = param.aberration/1000; %convert from mm to m
 pix = param.pix/1e10; %convert from angstroms to m
@@ -19,8 +22,7 @@ L = relativistic_electrons(V); %compute wavelength from voltage, correcting for 
 Ny = 1/(2*pix); B = param.sigma*Ny; q = 0.07*1; %nyquist, envelope, and amplitude contrast values
 %envelope/amplitude still needs validation and corroboration to our real data
 
-fprintf('Parameters: pixels %g angstroms, voltage %i KeV, aberration %g nm, sigma %g, defocus %d nm\n',...
-    param.pix, param.voltage, param.aberration, param.sigma, param.defocus)
+
 
 k = 1:size(input,1); divs = k(rem(size(input,1),k)==0); %find divisible factors from volume size
 
@@ -66,7 +68,7 @@ for i=1:numel(param.tilt) %loop through tilts
     
 end
 convolved = cv(1+edge:end-edge,1+pad:end-pad,:); %extract image area from padded dimensions
-
+fprintf('  - modulation done \n')
 end
 
 function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,q)
