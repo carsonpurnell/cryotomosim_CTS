@@ -23,6 +23,8 @@ for i=1:numel(roinames)
     indvol{i} = cts.splitmodel.(roinames{i}); %add model to stack
     bin = imbinarize(rescale(indvol{i})); %binarize model to add to atlas
     atlas = atlas+bin*i; %generate label image atlas based on model order for label intensity
+    overlap = atlas>i; %make a mask of overlap regions 
+    atlas = imfill(atlas-overlap); %remove overlap regions and fill with neighbor values
     filename = append('ind',string(i),'_',roinames{i});
     if individual==1
         WriteMRC(bin,cts.pix,append(filename,'.mrc'))
