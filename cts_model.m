@@ -1,4 +1,4 @@
-function [ts] = cts_model(targets,vol,pix,opt)
+function [cts] = cts_model(targets,vol,pix,opt)
 %[ts] = tomosim_model(particleset,vol,pix,opt)
 %generates model information for a single tomographic acquisition, stored in output struct ts
 %works by iteratively placing input particles at random orientations in random locations without overlap
@@ -67,32 +67,32 @@ fprintf('Estimated model generation time: %g minutes\n',runtime)
 if runtime>30 %if >30 mins force manual input start
     txt = input('Runtime is long, verify inputs. ctlr+C to end, or enter "proceed" to run anyway: ','s');
     if ~strcmp(txt,'proceed')
-        ts = NaN; fprintf('Model generation declined, process aborted.\n')
+        cts = NaN; fprintf('Model generation declined, process aborted.\n')
         return
     end
 end
 
 %initialize the struct so the order is invariant and fill with input information
-ts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[],'inputs',[]);
-ts.inputs.pix = pix;
-ts.inputs.density = opt.density; ts.inputs.constraint = opt.constraint;
-ts.inputs.beads = opt.beads; ts.inputs.grid = opt.grid; ts.inputs.mem = opt.mem;
-ts.inputs.ice = opt.ice; 
+cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[],'inputs',[]);
+cts.inputs.pix = pix;
+cts.inputs.density = opt.density; cts.inputs.constraint = opt.constraint;
+cts.inputs.beads = opt.beads; cts.inputs.grid = opt.grid; cts.inputs.mem = opt.mem;
+cts.inputs.ice = opt.ice; 
 
 if opt.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
-    [ts.model.grid] = gen_carbongrid(vol,pix,opt.grid);
-    ts.vol = ts.model.grid+ts.vol; fprintf('   complete \n')
+    [cts.model.grid] = gen_carbongrid(vol,pix,opt.grid);
+    cts.vol = cts.model.grid+cts.vol; fprintf('   complete \n')
 end
 
 if opt.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
     fprintf('Generating vesicular membranes ')
-    [ts.model.mem,count] = gen_vesicle(ts.vol,round(opt.mem),pix);
-    ts.vol = ts.model.mem+ts.vol;
+    [cts.model.mem,count] = gen_vesicle(cts.vol,round(opt.mem),pix);
+    cts.vol = cts.model.mem+cts.vol;
     fprintf('   complete,  %i placed, %i failed \n',count.s,count.f)
 end
 
-constraint = zeros(size(ts.vol)); %constraints are a big ugly mess right now
+constraint = zeros(size(cts.vol)); %constraints are a big ugly mess right now
 switch opt.constraint %write constraints to initial starting volume
     case 'none'
     case 'box' %intensity is ^2.3 to better match protein and prevent bad binarizations/overlap
@@ -111,48 +111,48 @@ switch opt.constraint %write constraints to initial starting volume
 end
 
 %generate model and add (in case input vol had stuff in it)
-[ts.particles.targets] = helper_input(targets,pix); %load target particles
-iters = round(ts.pix(1)*sqrt(numel(ts.vol))/30); %modeling iters, maybe simplify
-[ts.model.targets, ts.splitmodel] = helper_randomfill(ts.vol+constraint,ts.particles.targets,iters,...
+[cts.particles.targets] = helper_input(targets,pix); %load target particles
+iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
+[cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,cts.particles.targets,iters,...
     opt.density,'type','target','graph',opt.graph); 
-ts.vol = ts.vol+ts.model.targets; 
-ts.model.particles = ts.vol;
+cts.vol = cts.vol+cts.model.targets; 
+cts.model.particles = cts.vol;
 
 if ~strcmp(opt.distract,'none') %DISTRACTORS
-[ts.particles.distractors] = helper_input(opt.distract,pix); %load distractor particles
+[cts.particles.distractors] = helper_input(opt.distract,pix); %load distractor particles
 
 %generated distraction filler iterations and add to volume to generate the sample
-iters = round( iters*sqrt(numel(ts.particles.distractors(1,:))) ); %distractor iters
-[ts.model.distractors] = helper_randomfill(ts.vol+constraint,ts.particles.distractors,iters,...
+iters = round( iters*sqrt(numel(cts.particles.distractors(1,:))) ); %distractor iters
+[cts.model.distractors] = helper_randomfill(cts.vol+constraint,cts.particles.distractors,iters,...
     opt.density,'type','distractor','graph',opt.graph);
-ts.vol = ts.vol + ts.model.distractors; 
-ts.model.particles = ts.vol;
+cts.vol = cts.vol + cts.model.distractors; 
+cts.model.particles = cts.vol;
 end
 
 if opt.beads~=0 %bead generation and placement block
     beadstrc = gen_beads(pix,opt.beads(2:end)); %external generation of varied beads
-    ts.particles.beads = beadstrc;
-    [ts.model.beads] = helper_randomfill(ts.vol+constraint,beadstrc,opt.beads(1),opt.density,'type','bead');
-    ts.vol = ts.vol + ts.model.beads; 
-    ts.model.particles = ts.vol;
+    cts.particles.beads = beadstrc;
+    [cts.model.beads] = helper_randomfill(cts.vol+constraint,beadstrc,opt.beads(1),opt.density,'type','bead');
+    cts.vol = cts.vol + cts.model.beads; 
+    cts.model.particles = cts.vol;
 end
 
 if ~opt.ice==0 % vitreous ice generator, randomized molecular h2o throughout the volume
     fprintf('Generating vitreous ice')
-    [iced, ice] = gen_ice(ts.vol,pix);
-    ts.model.ice = ice; ts.vol = iced; fprintf('\n')
+    [iced, ice] = gen_ice(cts.vol,pix);
+    cts.model.ice = ice; cts.vol = iced; fprintf('\n')
 end
 
 %folder and file generation stuff
 time = string(datetime('now','Format','yyyy-MM-dd''t''HH.mm')); %timestamp
-ident = char(strjoin(fieldnames(ts.splitmodel),'_')); %combine target names to one string
+ident = char(strjoin(fieldnames(cts.splitmodel),'_')); %combine target names to one string
 if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
 foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix)); %combine info for folder name
 
 %move to output directory in user/tomosim
 cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
 mkdir(foldername); cd(foldername);
-WriteMRC(ts.vol,ts.pix(1),append(ident,'.mrc'))
+WriteMRC(cts.vol,cts.pix(1),append(ident,'.mrc'))
 save(append(ident,'.mat'),'ts','-v7.3')
 
 %output text file of input informations?
