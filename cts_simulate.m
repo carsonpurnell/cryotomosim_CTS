@@ -59,7 +59,7 @@ end
 switch ext
 case '.mat'
     q = load(fullfile(path,sampleMRC));
-    if ~isfield(q,'ts'), error('Selected mat file is not a tomosim structure'); end
+    if ~isfield(q,'cts'), error('Selected mat file is not a tomosim structure'); end
     ts = q.ts; vol = ts.vol; pixelsize = ts.pix(1);
 case '.mrc'
     [vol, head] = ReadMRC(fullfile(path,sampleMRC)); 
