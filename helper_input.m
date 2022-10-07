@@ -32,7 +32,7 @@ for i=1:numel(list)
     for j=1:numel(id) %loop through ID parts to make them functional for field names
         id{j} = string(id{j}); %convert to string for consistency with other functions
         if ~isempty(sscanf(id{1},'%f')) %detect id that do not start with a letter
-            id{1} = strcat('a_',id{1}); %append a letter when necessary
+            id{1} = strcat('fix_',id{1}); %append a letter when necessary
         end
     end
     tmp.file = {filename}; tmp.id = id; %store filename and classification id of object
