@@ -4,6 +4,8 @@ function [atlas,roinames,indvol] = helper_particleatlas(cts,individual,dynamotab
 %cts is a cts struct from cts_model
 %individual (default 0) if 1 also save individual binary images for particles (space-consuming)
 %dynamotable (default 0) if 1 generates dynamo .tbl files for each type of particle
+%
+%outputs
 
 arguments
     cts struct %might make this work other than needing the cts struct
