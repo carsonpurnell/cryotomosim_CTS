@@ -6,7 +6,7 @@ function [noised, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param,o
 %  Inputs
 %
 %sample MRC     required, preferred input = 'gui'
-%an .mrc volume or .mat of a ts struct that provides the simulated sample (the .mat is much better)
+%an .mrc volume or .mat of a cts struct that provides the simulated sample (the .mat is much better)
 %'gui' option allows choosing the file with matlab's basic file browser utility
 %an input .mrc must be positive-scale density
 %
