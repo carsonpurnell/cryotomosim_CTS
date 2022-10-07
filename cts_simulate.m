@@ -60,10 +60,10 @@ switch ext
 case '.mat'
     q = load(fullfile(path,sampleMRC));
     if ~isfield(q,'cts'), error('Selected mat file is not a tomosim structure'); end
-    ts = q.ts; vol = ts.vol; pixelsize = ts.pix(1);
+    cts = q.cts; vol = cts.vol; pixelsize = cts.pix(1);
 case '.mrc'
     [vol, head] = ReadMRC(fullfile(path,sampleMRC)); 
-    pixelsize = head.pixA; ts = 0;
+    pixelsize = head.pixA; cts = 0;
 otherwise
     error('selected file is not a .mat or a .mrc, aborting')
 end
@@ -84,8 +84,8 @@ end
 %run the simulation itself within the subfunction. might extend 'real' to also 'ideal' later
 [noised, conv, tiltseries, ctf] = internal_sim(vol,filename,param,'real');
 
-if isstruct(ts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
-    atlas = helper_particleatlas(ts,opt.atlasindividual,opt.dynamotable);
+if isstruct(cts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
+    atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable);
 end
 
 cd(userpath) %return to the user directory
