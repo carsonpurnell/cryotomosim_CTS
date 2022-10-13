@@ -58,7 +58,7 @@ for i=1:iters
             [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
             %increase iters by fraction of N to reduce runtime? can't modify i inside for loop
             end
-        
+            
         case {'single','group'} %randomly select one particle from the group (including single)
             sub = randi(numel(particle)); %get random selection from the group
             [rot,~,loc,err] = testplace(inarray,set(which).vol{sub},3);
