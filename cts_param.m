@@ -7,9 +7,8 @@ function [param] = cts_param(guiinput,param)
 %values that were supplied, and otherwise have defaults.
 %
 %name-value pair inputs:
-%
-%voltage in KeV
-%aberration in mm
+%voltage -  in KeV
+%aberration - in mm
 %sigma arbitrary
 %defocus in nm
 %tilt as [min increment max] in command line or just the numbers in GUI, 3 numbers are resolved as
