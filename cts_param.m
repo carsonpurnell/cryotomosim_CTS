@@ -18,10 +18,9 @@ function [param] = cts_param(guiinput,param)
 %pix overrides a pixel size from an input model
 %tiltax determines the tilt axis, input 'X' else 'Y'. still some janky rotations
 %raddamage - arbitrary scale for radiation damage imparted to tilts (default 1)
-%scatter - 
+%scatter - scales inelastic(lossy) electron scattering (nonlinear, scales distance relative to IMFP)
 
 
-%scatter scales inelastic/lossy electron scattering (nonlinear, scales distance)
 %ctfoverlap sets how much overlap between CTF strips (default 2), 0 skips CTF convolution entirely
 %tilterr scales tilt angle randomization from 0 to N, with 1 the error range equals the tilt increment
 
