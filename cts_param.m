@@ -13,16 +13,14 @@ function [param] = cts_param(guiinput,param)
 %defocus - in nm
 %tilt - [min increment max], min:increment:max, or otherwise a list of tilt angles in the simulation
 %dose - in e/A^2. one value is distributed, 0 skips dose simulation, else must be a vector matching tilts
-%tiltscheme - 'symmetric' or otherwise a tilt angle that splits the half-tilt segments (min/max for continuous
-%
+%tiltscheme - 'symmetric' or otherwise a tilt angle that splits the half-tilt segments
+%      tilt acquisition proceeds from the split angle to positive, then the split towards negative
+%pix overrides a pixel size from an input model
+%tiltax determines the tilt axis, input 'X' else 'Y'. still some janky rotations
+%raddamage - arbitrary scale for radiation damage imparted to tilts (default 1)
+%scatter - 
 
 
-%tiltscheme is 'symmetric' for dose-symmetric or a number that sets the start point for two-phase imaging
-%   single-phase requires setting the value to either the min or max tilt angle, depending on direction
-%(order is start point to positive/max, then start point towards negative)
-%pix is used to override the real pixel size of a model/mrc, otherwise leave as 0
-%tiltax sets tilt axis, 'X' or anything else becomes 'Y' - still janky
-%raddamage scales radiation damage (arbitrary)
 %scatter scales inelastic/lossy electron scattering (nonlinear, scales distance)
 %ctfoverlap sets how much overlap between CTF strips (default 2), 0 skips CTF convolution entirely
 %tilterr scales tilt angle randomization from 0 to N, with 1 the error range equals the tilt increment
