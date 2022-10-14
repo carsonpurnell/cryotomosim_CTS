@@ -11,8 +11,8 @@ function [param] = cts_param(guiinput,param)
 %aberration - in mm
 %sigma - arbitrary value of the CTF envelope function
 %defocus - in nm
-%tilt as [min increment max] in command line or just the numbers in GUI, 3 numbers are resolved as
-%   1:2:3 in matlab convention, otherwise the vector is the list of angles to acquire
+%tilt - [min increment max], min:increment:max, or otherwise a list of tilt angles in the simulation
+%
 %dose in e/A^2. one value is distributed across all tilts, 0 does not simulate electron detection, and a
 %   vector with length==number of tilts is used for the dose for those tilts in order
 %tiltscheme is 'symmetric' for dose-symmetric or a number that sets the start point for two-phase imaging
