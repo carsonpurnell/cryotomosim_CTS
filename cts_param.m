@@ -9,8 +9,8 @@ function [param] = cts_param(guiinput,param)
 %name-value pair inputs:
 %voltage -  in KeV
 %aberration - in mm
-%sigma arbitrary
-%defocus in nm
+%sigma - arbitrary value of the CTF envelope function
+%defocus - in nm
 %tilt as [min increment max] in command line or just the numbers in GUI, 3 numbers are resolved as
 %   1:2:3 in matlab convention, otherwise the vector is the list of angles to acquire
 %dose in e/A^2. one value is distributed across all tilts, 0 does not simulate electron detection, and a
