@@ -1,4 +1,7 @@
 function detect = helper_electrondetect(tilt,param)
+%detect = helper_electrondetect(tilt,param)
+%
+%
 %lazy temporary help
 %tilt is a tilt series (ideally created by helper_ctf)
 %param is a param struct created by cts_param, it's important
