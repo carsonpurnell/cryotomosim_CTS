@@ -13,6 +13,9 @@ function [param] = cts_param(guiinput,param)
 %defocus - in nm
 %tilt - [min increment max], min:increment:max, or otherwise a list of tilt angles in the simulation
 %dose - in e/A^2. one value is distributed, 0 skips dose simulation, else must be a vector matching tilts
+%tiltscheme - 'symmetric' or otherwise a tilt angle that splits the half-tilt segments (min/max for continuous
+%
+
 
 %tiltscheme is 'symmetric' for dose-symmetric or a number that sets the start point for two-phase imaging
 %   single-phase requires setting the value to either the min or max tilt angle, depending on direction
