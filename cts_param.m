@@ -12,9 +12,8 @@ function [param] = cts_param(guiinput,param)
 %sigma - arbitrary value of the CTF envelope function
 %defocus - in nm
 %tilt - [min increment max], min:increment:max, or otherwise a list of tilt angles in the simulation
-%
-%dose in e/A^2. one value is distributed across all tilts, 0 does not simulate electron detection, and a
-%   vector with length==number of tilts is used for the dose for those tilts in order
+%dose - in e/A^2. one value is distributed, 0 skips dose simulation, else must be a vector matching tilts
+
 %tiltscheme is 'symmetric' for dose-symmetric or a number that sets the start point for two-phase imaging
 %   single-phase requires setting the value to either the min or max tilt angle, depending on direction
 %(order is start point to positive/max, then start point towards negative)
