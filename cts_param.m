@@ -1,6 +1,13 @@
 function [param] = cts_param(guiinput,param)
 %WIP help
-%if guiinput =='gui' an input GUI is used for manual input, it will load any values given over defaults
+%  Inputs
+%
+%guiinput        default 0
+%if guiinput == 'gui', then a GUI dialogue will be shown for manual inputs. The GUI will use any paramter
+%values that were supplied, and otherwise have defaults.
+%
+%name-value pair inputs:
+%
 %voltage in KeV
 %aberration in mm
 %sigma arbitrary
