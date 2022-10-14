@@ -1,9 +1,10 @@
 function [convolved, ctf, param] = helper_ctf(input,param,pad)
+%[convolved, ctf, param] = helper_ctf(input,param,pad)
 %no help yet, good luck!
 %check cts_param for what the param argument should be, this program defaults to it
 arguments
     input
-    param = {}
+    param = {} %direct inputs from cts_param
     pad = 10; %padding added to volume before any computations
 end
 if iscell(param), param = cts_param(param{:}); end
