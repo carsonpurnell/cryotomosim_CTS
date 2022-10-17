@@ -4,7 +4,7 @@ if nargin<3, trim=0; end %don't trim by default, but does auto-trim singles
 if nargin<4, savemat=1; end %make name-val to generate .mat name with prefix/suffix?
 
 %pdb to atoms
-[~,~,ext] = fileparts(pdb);
+[path,file,ext] = fileparts(pdb);
 if strcmp(ext,'.mat') %if .mat, load the data from the file
     try q = load(pdb); data = q.data;
     catch warning('Input is not a pdb2vol-generated .mat file'); end %#ok<SEPEX>
@@ -16,12 +16,13 @@ end
 vol = internal_volbuild(data,pix,trim);
 
 if savemat==1
-    a2 = strrep(pdb,'.pdb','.mat'); %using strrep because fullfile was slower for unknown reason
-    if isfile(a2)
+    outsave = fullfile(path,append(file,'.mat'));
+   % a2 = strrep(pdb,'.pdb','.mat'); %using strrep because fullfile was slower for unknown reason
+    if isfile(outsave)
         fprintf(' .mat exists, '); 
     else
         fprintf(' saving .mat... ')
-        save(a2,'data','-nocompression'); %don't compress to save a bit of time saving+loading
+        save(outsave,'data','-nocompression'); %don't compress to save a bit of time saving+loading
     end
 end
 
