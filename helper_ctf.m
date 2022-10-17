@@ -75,10 +75,11 @@ end
 
 function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,q)
 eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2); %main equation for each part of CTF signal wave
-env = exp(-(k./(B)).^2); %envelope function of the overall CTF
+env = exp(-(k./(B)).^2); %envelope function of the overall CTF, radial signal falloff
 ctf = ( (1-q)*sin(eq) + (1)*q*cos(eq) ) .*env; %evaluate phase and amp components, amplitude reduces halo
 out = real(ifft2(ifftshift(fftshift(fft2(in)).*ctf))); %fft stack to translate from ctf fourier to realspace
 end
+
 
 function L = relativistic_electrons(V) %for calculating relativistic wavelengths of electrons
 m = 9.1093837e-31; %mass of electron Kg
