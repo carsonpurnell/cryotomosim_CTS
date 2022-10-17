@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [v0.0.8](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.8) - 2022-10-17 14:55:38
+
+*No description*
+
+### Feature
+
+- general:
+  - feat output ctf profile by simulate ([4970880](https://github.com/carsonpurnell/cryotomosim_CTS/commit/4970880f4c8a68570def2215ce1774dd0d9a824f))
+
+### Bug Fixes
+
+- general:
+  - fix prevent atlas label overlaps ([d4e7a7e](https://github.com/carsonpurnell/cryotomosim_CTS/commit/d4e7a7e7d6b14d35aa5fec2beda0603ccaf5562e))
+  - fix corrected tilt thickness calculation ([a54c850](https://github.com/carsonpurnell/cryotomosim_CTS/commit/a54c850970543cc5f29e4ca01a6957c63680e458))
+
 ## [v0.0.7](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.7) - 2022-09-21 16:17:07
 
 *No description*
