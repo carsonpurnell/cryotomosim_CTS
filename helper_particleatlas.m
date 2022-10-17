@@ -7,6 +7,7 @@ function [atlas,roinames,indvol] = helper_particleatlas(cts,individual,dynamotab
 %
 %outputs
 
+%better way to label atlas components?
 arguments
     cts struct %might make this work other than needing the cts struct
     individual = 0 %by default don't save individual splits, only global atlas image
