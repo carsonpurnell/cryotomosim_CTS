@@ -18,7 +18,8 @@ tiltangs = param.tilt; %unfortunately similar name to tilt
 %what are the new good values? is this scale working well?
 
 DQE = .84*4; % gatan camera lists 84% maximum detection, so that'll work for now
-%doesn't change with tilts, not sure how to implement fourier space falloff
+%4 is arbitrary scalar to make contrast look 'normal' with the CTF modulation
+%doesn't change with tilts, not sure how to implement fourier space falloff without merging with CTFsim
 
 switch param.tiltscheme %organize tilt ordering, sort according to split if not symmetric
     case 'symmetric'
