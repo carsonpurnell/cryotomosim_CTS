@@ -55,15 +55,15 @@ end
 
 [path, filename, ext] = fileparts(fullfile(path,sampleMRC));
 switch ext
-case '.mat'
-    q = load(fullfile(path,sampleMRC));
-    if ~isfield(q,'cts'), error('Selected mat file is not a tomosim structure'); end
-    cts = q.cts; vol = cts.vol; pixelsize = cts.pix(1);
-case '.mrc'
-    [vol, head] = ReadMRC(fullfile(path,sampleMRC)); 
-    pixelsize = head.pixA; cts = 0;
-otherwise
-    error('selected file is not a .mat or a .mrc, aborting')
+    case '.mat'
+        q = load(fullfile(path,sampleMRC));
+        if ~isfield(q,'cts'), error('Selected mat file is not a tomosim structure'); end
+        cts = q.cts; vol = cts.vol; pixelsize = cts.pix(1);
+    case '.mrc'
+        [vol, head] = ReadMRC(fullfile(path,sampleMRC)); 
+        pixelsize = head.pixA; cts = 0;
+    otherwise
+        error('selected file is not a .mat or a .mrc, aborting')
 end
 
 cd(path); %cd to the input file location to prepare session folder
