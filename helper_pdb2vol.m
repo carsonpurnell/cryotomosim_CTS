@@ -1,6 +1,6 @@
 function [vol,data] = helper_pdb2vol(pdb,pix,trim,savemat)
-%
-%
+%[vol,data] = helper_pdb2vol(pdb,pix,trim,savemat)
+%generates an EM density map from an atomic structure definition file (.pdb/1, .mm/cif)
 %
 %
 arguments
