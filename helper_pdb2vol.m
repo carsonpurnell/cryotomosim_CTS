@@ -9,9 +9,7 @@ arguments
     trim = 0 %by default, don't trim (singles still automatically trimmed)
     savemat = 1 %by default, save a .mat file if possible as a much faster alternative
 end
-if nargin<2, error('requires both pdb and pixel size inputs'), end
-if nargin<3, trim=0; end %don't trim by default, but does auto-trim singles
-if nargin<4, savemat=1; end %make name-val to generate .mat name with prefix/suffix?
+%if nargin<2, error('requires both pdb and pixel size inputs'), end
 
 %pdb to atoms
 [path,file,ext] = fileparts(pdb);
