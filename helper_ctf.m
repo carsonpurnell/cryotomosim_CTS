@@ -43,7 +43,6 @@ yl = binlength*2;
 
 k = sqrt(x.^2+y.^2);%+z.^2); %evaluate inverse distance, identical for all strips
 
-%k looks in the 1e9 range for a typical area for camk2 volumes
 cv = zeros(size(padded)); %pre-initialize output array
 
 %generate weights for overlapping portions of bins
