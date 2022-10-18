@@ -1,4 +1,5 @@
 function [param] = cts_param(guiinput,param)
+%[param] = cts_param(guiinput,param)
 %WIP help
 %  Inputs
 %
