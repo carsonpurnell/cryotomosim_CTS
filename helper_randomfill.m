@@ -193,27 +193,3 @@ end
 end
 
 end
-
-%{
-%superjanky internal function call that i will probably discard
-function [split, err, inarray, counts, loc] = fn_placement(inarray, split, particle, name, insize, vec, counts)
-    % nargin<6, vec = [0 0 0]; end
-    
-    randvec = rand(1,3); randang = randi(360);
-    rot = imrotate3(particle,randang,randvec);
-    
-    loc = round( rand(1,3).*size(inarray)-size(rot)/2 );
-    if sum(vec)~=0, loc= vec; end
-    
-    [inarray,err] = helper_arrayinsert(inarray,rot,loc,'nonoverlap');
-    
-    counts.f = counts.f + err;
-    if err==0
-        counts.s=counts.s+1;
-        split.(name) = helper_arrayinsert(split.(name),rot,loc);
-        if rem(counts.s,25)==0, fprintf('%i,',counts.s), end
-        if rem(counts.s,700)==0, fprintf('\n'), end
-    end
-    
-end
-%}
