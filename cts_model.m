@@ -1,5 +1,5 @@
 function [cts] = cts_model(targets,vol,pix,opt)
-%[ts] = tomosim_model(particleset,vol,pix,opt)
+%[cts] = cts_model(targets,vol,pix,opt)
 %generates model information for a single tomographic acquisition, stored in output struct ts
 %works by iteratively placing input particles at random orientations in random locations without overlap
 %
@@ -63,7 +63,7 @@ arguments
 end
 
 runtime = numel(vol)/60*1.2e-5; %for my laptop, doesn't really apply to anything else
-fprintf('Estimated model generation time: %g minutes\n',runtime)
+fprintf('Estimated model generation time with hamster laptop: %g minutes\n',runtime)
 if runtime>30 %if >30 mins force manual input start
     txt = input('Runtime is long, verify inputs. ctlr+C to end, or enter "proceed" to run anyway: ','s');
     if ~strcmp(txt,'proceed')
