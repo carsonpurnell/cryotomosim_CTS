@@ -59,5 +59,4 @@ for i=1:size(tilt,3)
 end
 
 detect = detect(:,:,ixr); %reverse the sort so the output tiltseries is a continuous rotation
-
 end
