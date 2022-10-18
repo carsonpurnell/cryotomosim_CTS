@@ -38,13 +38,13 @@ function [noised, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param,o
 %each unique target ID counts as a class, as well as beads (if any)
 
 arguments
-    sampleMRC (1,1) string %full path to input mrc/ts, more realistically 'gui' for browser
+    sampleMRC (1,1) string %full path to input mrc/ts, or 'gui' for browser
     param = {} %input a cts_param call, or within {} to send to it
     opt.suffix string = ''
     opt.atlasindividual = 0
     opt.dynamotable = 0
 end
-if iscell(param), param = cts_param(param{:}); end
+if iscell(param), param = cts_param(param{:}); end %parse params if given as argument input
 
 if strcmp(sampleMRC,'gui') %load model via GUI or specific filename
     [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat',getenv('HOME')); 
