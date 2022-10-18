@@ -19,14 +19,13 @@ if strcmp(ext,'.mat') %if .mat, load the data from the file
     catch warning('Input is not a pdb2vol-generated .mat file'); end %#ok<SEPEX>
 elseif ismember(ext,{'.cif','.mmcif'})
     data = internal_cifparse(pdb);
-elseif ismember(ext,{'.pdb','.pdb1'}) %if .pdb, parse the file into a data variable
+elseif ismember(ext,{'.pdb','.pdb1'})
     data = internal_pdbparse(pdb);
 end
 vol = internal_volbuild(data,pix,trim);
 
 if savemat==1
     outsave = fullfile(path,append(file,'.mat'));
-   % a2 = strrep(pdb,'.pdb','.mat'); %using strrep because fullfile was slower for unknown reason
     if isfile(outsave)
         fprintf(' .mat exists, '); 
     else
