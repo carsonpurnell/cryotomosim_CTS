@@ -1,5 +1,4 @@
 function [noised, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param,opt)
-%{ help block
 %[noised, convolved, tiltseries] = tomosim_simulate(sampleMRC, param, opt)
 %simulates tomographic data as if collected from a sample and reconstructs a tomogram
 %
@@ -37,12 +36,11 @@ function [noised, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param,o
 %5_recon   reconstruction of a tomogram
 %if the input was a ts .mat from tomosim_model, also outputs individual models for each constituent class
 %each unique target ID counts as a class, as well as beads (if any)
-%}
+
 arguments
     sampleMRC (1,1) string %full path to input mrc/ts, more realistically 'gui' for browser
     param = {} %input a cts_param call, or within {} to send to it
     opt.suffix string = ''
-    %opt.bin = 1 %by default binarize individual model outputs
     opt.atlasindividual = 0
     opt.dynamotable = 0
 end
