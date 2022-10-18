@@ -24,7 +24,7 @@ elseif ismember(ext,{'.pdb','.pdb1'})
 end
 vol = internal_volbuild(data,pix,trim);
 
-if savemat==1
+if savemat==1 %.mat saving and check if file already exists
     outsave = fullfile(path,append(file,'.mat'));
     if isfile(outsave)
         fprintf(' .mat exists, '); 
