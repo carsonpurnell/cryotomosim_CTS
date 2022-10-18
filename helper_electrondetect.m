@@ -14,9 +14,6 @@ end
 if param.dose<=0, detect=tilt; return; end %if dose 0, skip detection and return perfect detection/original
 tiltangs = param.tilt; %unfortunately similar name to tilt 
 
-%arb = 4;%/param.pix^2; %arbitrary scaling factor to make contrast look normal
-%what are the new good values? is this scale working well?
-
 DQE = .84*4; % gatan camera lists 84% maximum detection, so that'll work for now
 %4 is arbitrary scalar to make contrast look 'normal' with the CTF modulation
 %doesn't change with tilts, not sure how to implement fourier space falloff without merging with CTFsim
