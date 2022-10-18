@@ -6,7 +6,7 @@ function [param] = cts_param(guiinput,param)
 %if guiinput == 'gui', then a GUI dialogue will be shown for manual inputs. The GUI will use any paramter
 %values that were supplied, and otherwise have defaults.
 %
-%name-value pair inputs:
+%name-value pair inputs (param):
 %voltage -  in KeV
 %aberration - in mm
 %sigma - arbitrary value of the CTF envelope function
