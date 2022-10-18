@@ -80,7 +80,6 @@ ctf = ( (1-q)*sin(eq) + (1)*q*cos(eq) ) .*env; %evaluate phase and amp component
 out = real(ifft2(ifftshift(fftshift(fft2(in)).*ctf))); %fft stack to translate from ctf fourier to realspace
 end
 
-
 function L = relativistic_electrons(V) %for calculating relativistic wavelengths of electrons
 m = 9.1093837e-31; %mass of electron Kg
 c = 299792458;  %speed of light m/s
