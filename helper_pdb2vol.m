@@ -36,7 +36,6 @@ end
 
 end
 
-
 function [data] = internal_pdbparse(pdb)
 fid = fileread(pdb); 
 text = textscan(fid,'%s','delimiter','\n'); %slightly faster to not parse remarks at all
