@@ -1,6 +1,6 @@
 function detect = helper_electrondetect(tilt,param)
 %detect = helper_electrondetect(tilt,param)
-%
+%simulates electron detection by camera of a CTF-convolved tiltseries
 %
 %
 %lazy temporary help
