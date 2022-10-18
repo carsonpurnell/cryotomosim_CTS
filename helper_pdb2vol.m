@@ -12,9 +12,7 @@ arguments
     trim = 0 %by default, don't trim (singles still automatically trimmed)
     savemat = 1 %by default, save a .mat file if possible as a much faster alternative
 end
-%if nargin<2, error('requires both pdb and pixel size inputs'), end
 
-%pdb to atoms
 [path,file,ext] = fileparts(pdb);
 if strcmp(ext,'.mat') %if .mat, load the data from the file
     try q = load(pdb); data = q.data;
