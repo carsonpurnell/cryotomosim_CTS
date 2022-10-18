@@ -1,6 +1,5 @@
 function [param] = cts_param(guiinput,param)
 %[param] = cts_param(guiinput,param)
-%WIP help
 %  Inputs
 %
 %guiinput        default 0
