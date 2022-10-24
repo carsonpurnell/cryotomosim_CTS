@@ -1,10 +1,9 @@
 function [labelmask,fields] = helper_watershed(vol)
-%
-%
+
 %vol = trim;
 bin = imbinarize(rescale(vol));
 cl = imclose(bin,strel('sphere',2)); %close small holes to avoid chopping most particles up
-%cl = bwdist(cl)>1;
+cl = abs((bwdist(cl)>1)-1);
 %cl = imopen(cl,strel('sphere',2));
 %cl = imclose(cl,strel('sphere',2));
 %is there a better way to safely dilate, by smaller than whole pixels?
