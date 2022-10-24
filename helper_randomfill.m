@@ -178,6 +178,7 @@ for i=1:n
     slide = (rand-0.5)*len*vecfix; %random displacement along axis direction
     loc = round(initcenter-size(rot)/2-(radial+slide));
     
+    %[inarray,err] = helper_arrayinsert(inarray,rot,loc,'nonoverlap');
     [~,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
     if err==0
         [inarray] = helper_arrayinsert(inarray,rot,loc);
