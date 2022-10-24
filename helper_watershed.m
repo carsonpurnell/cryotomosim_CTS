@@ -1,4 +1,4 @@
-function labelmask = helper_watershed(vol)
+function [labelmask,fields] = helper_watershed(vol)
 %
 %
 %vol = riboseg;
@@ -8,11 +8,11 @@ cl = imerode(cl,strel('sphere',1));
 %is there a better way to safely dilate, by smaller than whole pixels?
 
 d = -bwdist(~cl); %calculate distances for watershed
-mask = imextendedmin(d,1); %generate extended minima mask from distance map (not sure why 2)
+mask = imextendedmin(d,2); %generate extended minima mask from distance map (not sure why 2)
 d2 = imimposemin(d,mask); %merge local minima to make segmentations less chopped
-w = watershed(d2); %w2 = w;
+w = watershed(d2); fields = single(w);
 w(~cl) = 0; %watershed the local minima and mask out non-particles
 
-labelmask = w;
+labelmask = single(w);
 
 end
