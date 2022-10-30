@@ -16,5 +16,4 @@ w = watershed(d2,26); fields = single(w);
 w(~bin) = 0; %watershed the local minima and mask out non-particles
 
 labelmask = single(w);
-
 end
