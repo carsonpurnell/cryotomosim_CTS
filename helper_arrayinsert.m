@@ -47,12 +47,12 @@ szi=sz(1); szf=sz(end);
 
 switch method
     case 'sum'
-        dest(dxi:dxf,dyi:dyf,dzi:dzf) = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); %32s
+        %dest(dxi:dxf,dyi:dyf,dzi:dzf) = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); %72s
         
         %tmp2 = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); dest(dxi:dxf,dyi:dyf,dzi:dzf) = tmp2;
-        %34
+        %71
         
-        %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %41
+        dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %41
         
         %tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %42
     case 'nonoverlap' %first test if there would be overlap to save time
