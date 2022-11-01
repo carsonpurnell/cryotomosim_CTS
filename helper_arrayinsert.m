@@ -47,14 +47,14 @@ szi=sz(1); szf=sz(end);
 
 switch method
     case 'sum'
-        dest(dxi:dxf,dyi:dyf,dzi:dzf) = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); %83s
+        %dest(dxi:dxf,dyi:dyf,dzi:dzf) = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); %33s
         
-        %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %89
+        %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %47
         
-        %tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %101
+        %tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %42
         
-        %tmp2 = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); %113
-        %dest(dxi:dxf,dyi:dyf,dzi:dzf) = tmp2;
+        tmp2 = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); dest(dxi:dxf,dyi:dyf,dzi:dzf) = tmp2;
+        %32
     case 'nonoverlap' %first test if there would be overlap to save time
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
