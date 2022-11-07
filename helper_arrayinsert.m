@@ -19,40 +19,55 @@ dx=max(1,coord(1)):min(d1,coord(1)+s1-1);
 dy=max(1,coord(2)):min(d2,coord(2)+s2-1);
 dz=max(1,coord(3)):min(d3,coord(3)+s3-1);
 
+%
 %linear index is slower than direct indexing, probably because it needs to reshape internally
-%s = [d1,d2,d3]; %size of array to index
-%index = dx.' + s(1)*(dy-1) + s(1)*s(2)*reshape(dz-1,1,1,numel(dz));
+s = [d1,d2,d3]; %size of array to index
+index = dx.' + s(1)*(dy-1) + s(1)*s(2)*reshape(dz-1,1,1,numel(dz));
 %if ~dest(index)==dest(dx,dy,dz), fprintf('xx'); end %test identity
+dd = dest(:);
+
+q1 = dd(index); %.21
+%q3 = dest(index); %.23
+%q2 = dest(dx,dy,dz); %.128
+%}
+%{
 dxi = max(1,  coord(1));
 dxf = min(d1, coord(1)+s1-1);
 dyi = max(1,  coord(2));
 dyf = min(d2, coord(2)+s2-1);
 dzi = max(1,  coord(3));
 dzf = min(d3, coord(3)+s3-1);
+%}
 %dlin = sub2ind(size(dest),dx,dy,dz); not 1x3 coords, doesn't work
 
 %compute indexes for the relevant region of the source
 sx=max(-coord(1)+2,1):min(d1-coord(1)+1,s1);
 sy=max(-coord(2)+2,1):min(d2-coord(2)+1,s2);
 sz=max(-coord(3)+2,1):min(d3-coord(3)+1,s3);
-sxi=sx(1); sxf=sx(end);
+%{
+try
+sxi=sx(1); sxf=sx(end); %causing index errors if no overlap? inconsistently generated, rng(1) working
 syi=sy(1); syf=sy(end);
 szi=sz(1); szf=sz(end);
+catch
+    disp([sx,sy,sz]) %doesn't fix it
+end
+%}
 %slin = sub2ind(size(source),sx,sy,sz);
 
-%is logical indexing faster?
+%is logical indexing faster? need to test again
 %is a loop faster by avoiding temporary array nonsense?
 %test with only top/bottom values to avoid bound checks?
 %avoid indexing on the right side somehow?
 
 switch method
     case 'sum'
-        dest(dxi:dxf,dyi:dyf,dzi:dzf) = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); %57s
+        %dest(dxi:dxf,dyi:dyf,dzi:dzf) = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); %57s
         
         %tmp2 = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); dest(dxi:dxf,dyi:dyf,dzi:dzf) = tmp2;
         %71
         
-        %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %75
+        dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %75
         
         %tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %78
     case 'nonoverlap' %first test if there would be overlap to save time
