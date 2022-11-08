@@ -14,7 +14,7 @@ end
 [d1, d2, d3]=size(dest);
 [s1, s2, s3]=size(source);
 
-%compute indexes for the relevant region of the dest
+%compute indexes for the target overlap region of the destination
 dx=max(1,coord(1)):min(d1,coord(1)+s1-1);
 dy=max(1,coord(2)):min(d2,coord(2)+s2-1);
 dz=max(1,coord(3)):min(d3,coord(3)+s3-1);
@@ -35,7 +35,7 @@ dzi = max(1,  coord(3));
 dzf = min(d3, coord(3)+s3-1);
 %}
 
-%compute indexes for the relevant region of the source
+%compute indexes for the target overlap region of the source
 sx=max(-coord(1)+2,1):min(d1-coord(1)+1,s1);
 sy=max(-coord(2)+2,1):min(d2-coord(2)+1,s2);
 sz=max(-coord(3)+2,1):min(d3-coord(3)+1,s3);
@@ -57,11 +57,6 @@ end
 
 switch method
     case 'sum'
-        %dest(dxi:dxf,dyi:dyf,dzi:dzf) = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); %57s
-        
-        %tmp2 = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); dest(dxi:dxf,dyi:dyf,dzi:dzf) = tmp2;
-        %71
-        
         dest(index) = source(sx,sy,sz) + dest(index); %43 66 65
         %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %44 70 64
         
