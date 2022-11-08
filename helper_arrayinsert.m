@@ -25,7 +25,6 @@ s = [d1,d2,d3]; %size of array to index
 index = dx.' + s(1)*(dy-1) + s(1)*s(2)*reshape(dz-1,1,1,numel(dz));
 %if ~dest(index)==dest(dx,dy,dz), fprintf('xx'); end %test identity
 %}
-%dd = dest(:);
 %{
 dxi = max(1,  coord(1));
 dxf = min(d1, coord(1)+s1-1);
