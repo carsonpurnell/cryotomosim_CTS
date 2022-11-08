@@ -74,10 +74,8 @@ switch method
             overlap = 0;
         end
     case 'overlaptest' %faster than nonoverlap by only testing for overlap, will not do operations
-        %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
         
-        %ow = dbin+sbin-1; ow = any(ow(:)); %is any() faster than max()?
         overlap = dbin+sbin; overlap = max(overlap(:)); %fastest method to find potential overlaps
         if overlap>1 %if overlap, record and output original
             overlap = 1; 
