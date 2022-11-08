@@ -59,7 +59,7 @@ switch method
     case 'sum'
         %dest(index) = source(sx,sy,sz) + dest(index); %
         %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %54 44 44
-        
+        %split assignment appears marginally faster
         tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %52 42 42
     case 'nonoverlap' %first test if there would be overlap to save time
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
