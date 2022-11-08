@@ -67,8 +67,8 @@ switch method
         %tmp2 = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); dest(dxi:dxf,dyi:dyf,dzi:dzf) = tmp2;
         %71
         
-        dest(index) = source(sx,sy,sz) + dest(index); %?
-        dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %?
+        dest(index) = source(sx,sy,sz) + dest(index); %82
+        %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %?45
         
         %tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %78
     case 'nonoverlap' %first test if there would be overlap to save time
