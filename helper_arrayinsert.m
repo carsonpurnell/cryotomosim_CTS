@@ -24,9 +24,9 @@ dz=max(1,coord(3)):min(d3,coord(3)+s3-1);
 s = [d1,d2,d3]; %size of array to index
 index = dx.' + s(1)*(dy-1) + s(1)*s(2)*reshape(dz-1,1,1,numel(dz));
 %if ~dest(index)==dest(dx,dy,dz), fprintf('xx'); end %test identity
-dd = dest(:);
+%dd = dest(:);
 
-q1 = dd(index); %.21
+%q1 = dd(index); %.21
 %q3 = dest(index); %.23
 %q2 = dest(dx,dy,dz); %.128
 %}
@@ -67,7 +67,8 @@ switch method
         %tmp2 = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); dest(dxi:dxf,dyi:dyf,dzi:dzf) = tmp2;
         %71
         
-        dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %75
+        dest(index) = source(sx,sy,sz) + dest(index); %?
+        dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %?
         
         %tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %78
     case 'nonoverlap' %first test if there would be overlap to save time
