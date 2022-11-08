@@ -57,10 +57,10 @@ end
 
 switch method
     case 'sum'
-        %dest(index) = source(sx,sy,sz) + dest(index); %
-        %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %43 44 44
+        %dest(index) = source(sx,sy,sz) + dest(index); %definitely slower
+        %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %slightly slower
         %split assignment appears marginally faster
-        tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %34 38 43
+        tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %slightly faster somehow
     case 'nonoverlap' %first test if there would be overlap to save time
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
@@ -68,7 +68,7 @@ switch method
         overlap = dbin+sbin; overlap = max(overlap(:)); %fastest method to find potential overlaps?
         %ow = dbin+sbin-1; ow = any(ow(:)); %is any() faster than max()?
         if overlap>1 %if overlap, record and output original
-            overlap = 1; 
+            overlap = 1;
         else %if no overlap, add the source to the destination
             dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz);
             overlap = 0;
