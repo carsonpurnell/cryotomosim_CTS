@@ -19,17 +19,13 @@ dx=max(1,coord(1)):min(d1,coord(1)+s1-1);
 dy=max(1,coord(2)):min(d2,coord(2)+s2-1);
 dz=max(1,coord(3)):min(d3,coord(3)+s3-1);
 
-%
-%linear index is slower than direct indexing, probably because it needs to reshape internally
+%{
+%linear index is slower than direct indexing, probably because of reshaping and indexing problems itself
 s = [d1,d2,d3]; %size of array to index
 index = dx.' + s(1)*(dy-1) + s(1)*s(2)*reshape(dz-1,1,1,numel(dz));
 %if ~dest(index)==dest(dx,dy,dz), fprintf('xx'); end %test identity
-%dd = dest(:);
-
-%q1 = dd(index); %.21
-%q3 = dest(index); %.23
-%q2 = dest(dx,dy,dz); %.128
 %}
+%dd = dest(:);
 %{
 dxi = max(1,  coord(1));
 dxf = min(d1, coord(1)+s1-1);
@@ -38,7 +34,6 @@ dyf = min(d2, coord(2)+s2-1);
 dzi = max(1,  coord(3));
 dzf = min(d3, coord(3)+s3-1);
 %}
-%dlin = sub2ind(size(dest),dx,dy,dz); not 1x3 coords, doesn't work
 
 %compute indexes for the relevant region of the source
 sx=max(-coord(1)+2,1):min(d1-coord(1)+1,s1);
@@ -53,7 +48,6 @@ catch
     disp([sx,sy,sz]) %doesn't fix it
 end
 %}
-%slin = sub2ind(size(source),sx,sy,sz);
 
 %is logical indexing faster? need to test again
 %is a loop faster by avoiding temporary array nonsense?
@@ -67,8 +61,8 @@ switch method
         %tmp2 = source(sxi:sxf,syi:syf,szi:szf) + dest(dxi:dxf,dyi:dyf,dzi:dzf); dest(dxi:dxf,dyi:dyf,dzi:dzf) = tmp2;
         %71
         
-        dest(index) = source(sx,sy,sz) + dest(index); %82
-        %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %?45
+        dest(index) = source(sx,sy,sz) + dest(index); %43 66 65
+        %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %44 70 64
         
         %tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %78
     case 'nonoverlap' %first test if there would be overlap to save time
