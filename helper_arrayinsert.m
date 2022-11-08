@@ -49,9 +49,10 @@ catch
 end
 %}
 
-%is logical indexing faster? need to test again
+%logical indexing is sometimes faster, but due to generating log/linear indexes is always slower
+%using top/bottom values instead of ranges can cause errors, cause unknown (impossibly empty)
+
 %is a loop faster by avoiding temporary array nonsense?
-%test with only top/bottom values to avoid bound checks?
 %avoid indexing on the right side somehow?
 
 switch method
