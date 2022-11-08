@@ -57,10 +57,10 @@ end
 
 switch method
     case 'sum'
-        %dest(index) = source(sx,sy,sz) + dest(index); %43 66 65
-        %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %44 70 64
+        %dest(index) = source(sx,sy,sz) + dest(index); %
+        dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %
         
-        tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %78
+        %tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %52 42 42
     case 'nonoverlap' %first test if there would be overlap to save time
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
