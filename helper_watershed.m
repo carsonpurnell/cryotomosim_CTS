@@ -1,4 +1,4 @@
-function [labelmask,fields] = helper_watershed(vol)
+function [labelmask,fields] = helper_watershed(vol,mask)
 
 %vol = trim;
 bin = imbinarize(rescale(vol));
@@ -12,7 +12,9 @@ cl = bin;
 %can i use an additional input as the mask/fieldshed?
 
 d = -bwdist(~cl); %calculate distances for watershed
+if nargin<2
 mask = imextendedmin(d,2); %generate extended minima mask from distance map (not sure why 2)
+end
 %mask = bwareaopen(imerode(cl,strel('sphere',2)),4); %might work better?
 d2 = imimposemin(d,mask); %merge local minima to make segmentations less chopped
 w = watershed(d2,26); fields = single(w);
