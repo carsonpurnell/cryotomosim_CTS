@@ -1,6 +1,5 @@
 function [labelmask,fields] = helper_watershed(vol,mask)
 
-%vol = trim;
 bin = imbinarize(rescale(vol));
 cl = imclose(bin,strel('sphere',1)); %close small holes to avoid chopping most particles up
 %cl = bin;
