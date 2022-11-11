@@ -13,7 +13,7 @@ cl = imclose(bin,strel('sphere',1)); %close small holes to avoid chopping most p
 
 d = -bwdist(~cl); %calculate distances for watershed
 if nargin<2
-mask = imextendedmin(d,2); %generate extended minima mask from distance map (not sure why 2)
+    mask = imextendedmin(d,2); %generate extended minima mask from distance map (not sure why 2)
 end
 %mask = bwareaopen(imerode(cl,strel('sphere',2)),4); %might work better?
 d2 = imimposemin(d,mask); %merge local minima to make segmentations less chopped
