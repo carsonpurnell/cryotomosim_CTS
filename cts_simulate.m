@@ -93,6 +93,7 @@ function [noised, convolved, tilt, ctf] = internal_sim(in,filename,param,type)
 pix = param.pix;
 
 base = append(filename,'.mrc'); 
+%do inversion differently to get better dose numbers?
 in = rescale(in*-1,min(in,[],'all'),max(in,[],'all')); %rescale to same range to avoid 0 and clamping
 prev = append('0_model_',base);
 WriteMRC(in,pix,prev) %write as initial model and for tiltprojection
