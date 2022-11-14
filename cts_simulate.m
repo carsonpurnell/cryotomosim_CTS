@@ -131,7 +131,7 @@ if order==2 %dose second, reduces pixel size effect so more generalized but valu
     [convolved,ctf] = helper_ctf(tilt,param); %per-tilt ctf convolution
     prev = append('3_ctf_',base);
     WriteMRC(convolved,pix,prev); %save the convolved image for review
-    convolved = rescale(convolved,min(tilt,[],'all'),max(tilt,[],'all')-0); %fix negative CTF
+    convolved = rescale(convolved,min(tilt,[],'all'),max(tilt,[],'all')); %fix negative CTF
     detected = helper_electrondetect(convolved,param);
     prev = append('4_dose_',base);
     WriteMRC(detected,pix,prev);
