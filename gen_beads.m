@@ -20,6 +20,7 @@ for j=1:numel(radius)
     
     gold = zeros(d,d,d);
     atoms = 2*round(density*numel(gold)*1); % double points at half mass for smoothness
+    %probably don't need this now? can make it worse on purpose?
     
     pts = rand(3,atoms).*size(gold)'; %pregenerate points
     atomdist = sqrt(sum( (pts-cen).^2, 1)); %marginally faster
