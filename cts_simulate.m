@@ -94,6 +94,7 @@ pix = param.pix;
 
 base = append(filename,'.mrc'); 
 %do inversion differently to get better dose numbers?
+%might use matlab imcomplement for simplicity
 in = rescale(in*-1,min(in,[],'all'),max(in,[],'all')); %rescale to same range to avoid 0 and clamping
 prev = append('0_model_',base);
 WriteMRC(in,pix,prev) %write as initial model and for tiltprojection
@@ -111,7 +112,8 @@ end
 
 %project the tiltseries
 tbase = append('1_tilt_',base);
-w = string(round(param.size(1)*1)); %default no shrinkage
+w = string(round(param.size(1)*0.4)); %need to make width useful for avoiding empty ends of tilt
+%better to use width or x/y min max extents?
 cmd = append('xyzproj -axis ', param.tiltax, ' -width ',w,' -tiltfile tiltangles.txt ',prev,' ',tbase);
 %-ray borks up smaller width completely, -constant makes beads slightly weird
 prev = tbase; disp(cmd); [~] = evalc('system(cmd)'); %run command, capture console spam
