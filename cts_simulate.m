@@ -112,8 +112,9 @@ end
 
 %project the tiltseries
 tbase = append('1_tilt_',base);
-w = string(round(param.size(1)*0.4)); %need to make width useful for avoiding empty ends of tilt
+w = string(round(param.size(1)*0.8)); %need to make width useful for avoiding empty ends of tilt
 %better to use width or x/y min max extents?
+%how to compute the width to use to avoid edge loss?
 cmd = append('xyzproj -axis ', param.tiltax, ' -width ',w,' -tiltfile tiltangles.txt ',prev,' ',tbase);
 %-ray borks up smaller width completely, -constant makes beads slightly weird
 prev = tbase; disp(cmd); [~] = evalc('system(cmd)'); %run command, capture console spam
