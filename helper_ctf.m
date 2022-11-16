@@ -70,7 +70,8 @@ for i=1:numel(param.tilt) %loop through tilts
         %fprintf('tiltangle %g ix %g to %g strip distance %g at defoc %g\n',...
             %param.tilt(i),six(1),six(2),sdist,Dzs)
     end
-    
+    %convolve with envelope over the whole tilt, might fix FFT of tomo
+    cv(:,:,i) = real(ifft2(ifftshift(fftshift(fft2(cv(:,:,i))).*exp(-(k./(B)).^2) )));
 end
 convolved = cv(1+edge:end-edge,1+pad:end-pad,:); %extract image area from padded dimensions
 fprintf('  - modulation done \n')
