@@ -147,7 +147,7 @@ prev = append('4_noised_',base);
 end
 end
 
-thick = string(round(param.size(3)*1)); %w = string(param.size(1));
+thick = string(round(param.size(3)*1)); w = string(param.size(1)-200);
 %reconstruct and rotate back into the proper space
 cmd = append('tilt -tiltfile tiltangles.txt -width ',w,' -thickness ',thick,' ',prev,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
