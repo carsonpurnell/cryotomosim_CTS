@@ -150,7 +150,7 @@ end
 thick = string(round(param.size(3)*1)); w = string(param.size(1)-200);
 %reconstruct and rotate back into the proper space
 %radial command for fourier filtering the output, no idea what normal runs use so random numbers
-%
+%first number radial cutoff, real tomos ~.35? cutoff slightly smoothes and increases contrast
 %lower second number sharper cutoff? or fill value past cutoff?
 %-hamminglikefilter should work similarly but only needs one input
 cmd = append('tilt -tiltfile tiltangles.txt -RADIAL 0.35,0.05 -width ',w,' -thickness ',thick,' ',prev,' temp.mrc'); 
