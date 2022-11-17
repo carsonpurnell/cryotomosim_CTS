@@ -153,7 +153,7 @@ thick = string(round(param.size(3)*1)); w = string(param.size(1)-200);
 %lower second number sharper cutoff?
 %untested first number, lower should be closer to center falloff start
 %-hamminglikefilter should work similarly but only needs one input
-cmd = append('tilt -tiltfile tiltangles.txt -RADIAL 0.4,0.3 -width ',w,' -thickness ',thick,' ',prev,' temp.mrc'); 
+cmd = append('tilt -tiltfile tiltangles.txt -RADIAL 0.35,0.05 -width ',w,' -thickness ',thick,' ',prev,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
 cmd = append('trimvol -rx temp.mrc ',append('5_recon_',base)); %#ok<NASGU>
 [~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
