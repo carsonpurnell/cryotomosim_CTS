@@ -149,7 +149,8 @@ end
 
 thick = string(round(param.size(3)*1)); w = string(param.size(1)-200);
 %reconstruct and rotate back into the proper space
-cmd = append('tilt -tiltfile tiltangles.txt -width ',w,' -thickness ',thick,' ',prev,' temp.mrc'); 
+%radial command for fourier filtering the output, no idea what normal runs use so random numbers
+cmd = append('tilt -tiltfile tiltangles.txt -RADIAL 0.4,0.3 -width ',w,' -thickness ',thick,' ',prev,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
 cmd = append('trimvol -rx temp.mrc ',append('5_recon_',base)); %#ok<NASGU>
 [~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
