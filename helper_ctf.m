@@ -46,10 +46,14 @@ yl = binlength*2;
 [x,y] = meshgrid(-Ny:2*Ny/xl:Ny-Ny/xl,-Ny:2*Ny/yl:Ny-Ny/yl);%,-Ny:2*Ny/zl:Ny-Ny/zl);
 k = sqrt(x.^2+y.^2);%+z.^2); %evaluate inverse distance, identical for all strips
 
+%{
 xf = size(padded,2);
 yf = size(padded,1);
 [w,u] = meshgrid(-Ny:2*Ny/xf:Ny-Ny/xf,-Ny:2*Ny/yf:Ny-Ny/yf);
 kf = sqrt(w.^2+u.^2);
+[r,c] = meshgrid(1:xf,1:yf);
+circfilt = sqrt((r-xf/2-0.5).^2+(c-yf/2-0.5).^2)<50;
+%}
 
 cv = zeros(size(padded)); %pre-initialize output array
 
@@ -76,7 +80,9 @@ for i=1:numel(param.tilt) %loop through tilts
     end
     %convolve with envelope over the whole tilt, might fix FFT of tomo
     %need a full-sized k value over the whole tilt though
-    cv(:,:,i) = real(ifft2(ifftshift(fftshift(fft2(cv(:,:,i))).*exp(-(kf./(B)).^2) )));
+    %cv(:,:,i) = real(ifft2(ifftshift(fftshift(fft2(cv(:,:,i))).*exp(-(kf./(B)).^2) )));
+    %hard highpass filter test
+    %cv(:,:,i) = real(ifft2(ifftshift(fftshift( fft2(cv(:,:,i)) ).*circfilt )));
 end
 convolved = cv(1+edge:end-edge,1+pad:end-pad,:); %extract image area from padded dimensions
 fprintf('  - modulation done \n')
