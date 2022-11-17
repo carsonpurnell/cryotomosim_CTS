@@ -112,7 +112,7 @@ end
 
 %project the tiltseries
 tbase = append('1_tilt_',base);
-w = string(round(param.size(1)*0.5)); %need to make width useful for avoiding empty ends of tilt
+w = string(round(param.size(1)*1)); %need to make width useful for avoiding empty ends of tilt
 %better to use width or x/y min max extents?
 %how to compute the width to use to avoid edge loss? also requires cropping the atlas to match
 cmd = append('xyzproj -axis ', param.tiltax, ' -width ',w,' -tiltfile tiltangles.txt ',prev,' ',tbase);
@@ -147,7 +147,7 @@ prev = append('4_noised_',base);
 end
 end
 
-thick = string(round(param.size(3)*1)); w = string(param.size(1)-50);
+thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
 %reconstruct and rotate back into the proper space
 %radial command for fourier filtering the output, no idea what normal runs use so random numbers
 %first number radial cutoff, real tomos ~.35? cutoff slightly smoothes and increases contrast
