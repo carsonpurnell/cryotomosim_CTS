@@ -55,6 +55,7 @@ kf = sqrt(w.^2+u.^2);
 circfilt = sqrt((r-xf/2-0.5).^2+(c-yf/2-0.5).^2)<50;
 %}
 
+
 cv = zeros(size(padded)); %pre-initialize output array
 
 %generate weights for overlapping portions of bins
