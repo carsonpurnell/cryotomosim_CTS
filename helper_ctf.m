@@ -78,9 +78,7 @@ for i=1:numel(param.tilt) %loop through tilts
         %fprintf('tiltangle %g ix %g to %g strip distance %g at defoc %g\n',...
             %param.tilt(i),six(1),six(2),sdist,Dzs)
     end
-    %convolve with envelope over the whole tilt, might fix FFT of tomo
-    %need a full-sized k value over the whole tilt though
-    %cv(:,:,i) = real(ifft2(ifftshift(fftshift(fft2(cv(:,:,i))).*exp(-(kf./(B)).^2) )));
+    
     %hard highpass filter test
     %cv(:,:,i) = real(ifft2(ifftshift(fftshift( fft2(cv(:,:,i)) ).*circfilt )));
 end
