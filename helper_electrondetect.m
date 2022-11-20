@@ -45,17 +45,19 @@ electronpath = thick*cosd(tiltangs).^-1; %corrected trig, very slightly better a
 thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not inelastically/lossly scattered
 %change IMFP to instead be per pixel, so more electrons are lost at high density AND thickness?
 
-radscale = .09*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
+radscale = .12*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
 dw = thickscatter.*dose*DQE;
 accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; %pre-initialize output array for speed during the loop
+rad = tilt*0;
 for i=1:size(tilt,3)
     irad = tilt(:,:,i)+randn(size(tilt(:,:,i)))*accum*radscale; %radiation as 0-center noise
     %need to do some procedure to mask/weight the noise near density rather than globally
     
     accum = accum+dw(i); %add to accumulated dose delivered
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad));
+    rad(:,:,i) = irad;
 end
 
 detect = detect(:,:,ixr); %reverse the sort so the output tiltseries is a continuous rotation
