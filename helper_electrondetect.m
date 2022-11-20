@@ -52,7 +52,7 @@ accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; %pre-initialize output array for speed during the loop
 rad = tilt*0;
 for i=1:size(tilt,3)
-    addrad = randn(size(tilt(:,:,i)))*accum*radscale.*(1+rescale(imgradient(tilt(:,:,i))));
+    addrad = randn(size(tilt(:,:,i)))*accum*radscale.*(1+rescale(imgradient(tilt(:,:,i)),0,param.pix));
     irad = tilt(:,:,i)+addrad; %radiation as 0-center noise
     %need to do some procedure to mask/weight the noise near density rather than globally
     
