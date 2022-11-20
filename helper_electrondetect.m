@@ -57,6 +57,7 @@ for i=1:size(tilt,3)
     
     accum = accum+dw(i); %add to accumulated dose delivered
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad));
+    
     rad(:,:,i) = irad;
 end
 
