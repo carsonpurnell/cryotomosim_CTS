@@ -1,4 +1,4 @@
-function [noised, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param,opt)
+function [detected, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param,opt)
 %[noised, convolved, tiltseries] = tomosim_simulate(sampleMRC, param, opt)
 %simulates tomographic data as if collected from a sample and reconstructs a tomogram
 %
@@ -80,7 +80,7 @@ else
 end
 
 %run the simulation itself within the subfunction. might extend 'real' to also 'ideal' later
-[noised, conv, tiltseries, ctf] = internal_sim(vol,filename,param,'real');
+[detected, conv, tiltseries, ctf] = internal_sim(vol,filename,param,'real');
 
 if isstruct(cts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
     atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable);
@@ -89,7 +89,7 @@ end
 cd(userpath) %return to the user directory
 end
 
-function [noised, convolved, tilt, ctf] = internal_sim(in,filename,param,type)
+function [detected, convolved, tilt, ctf] = internal_sim(in,filename,param,type)
 pix = param.pix;
 
 base = append(filename,'.mrc'); 
@@ -99,7 +99,7 @@ in = rescale(in*-1,min(in,[],'all'),max(in,[],'all')); %rescale to same range to
 prev = append('0_model_',base);
 WriteMRC(in,pix,prev) %write as initial model and for tiltprojection
 
-donoise = 0; convolved = 0; noised = 0;
+donoise = 0; convolved = 0; %noised = 0;
 if strcmp(type,'real')
 %future tilt randomization here?
 file = fopen('tiltangles.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(file);
