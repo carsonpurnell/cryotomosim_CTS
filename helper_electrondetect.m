@@ -52,13 +52,14 @@ accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; %pre-initialize output array for speed during the loop
 rad = tilt*0;
 for i=1:size(tilt,3)
-    irad = tilt(:,:,i)+randn(size(tilt(:,:,i)))*accum*radscale; %radiation as 0-center noise
+    addrad = randn(size(tilt(:,:,i)))*accum*radscale.*(1+rescale(imgradient(tilt(:,:,i))));
+    irad = tilt(:,:,i)+addrad; %radiation as 0-center noise
     %need to do some procedure to mask/weight the noise near density rather than globally
     
     accum = accum+dw(i); %add to accumulated dose delivered
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad));
     
-    rad(:,:,i) = irad;
+    rad(:,:,i) = addrad;
 end
 rad = rad(:,:,ixr);
 detect = detect(:,:,ixr); %reverse the sort so the output tiltseries is a continuous rotation
