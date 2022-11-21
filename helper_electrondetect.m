@@ -71,7 +71,7 @@ for i=1:size(tilt,3)
     proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',5); 
     testout(:,:,i) = proj;
     
-    irad = proj*1+tilt(:,:,i)*0+addrad*1; %radiation as 0-center noise
+    irad = proj*0+tilt(:,:,i)*1+addrad*1; %radiation as 0-center noise
     %need to do some procedure to mask/weight the noise near density rather than globally
     
     
