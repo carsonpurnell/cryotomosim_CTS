@@ -45,7 +45,7 @@ electronpath = thick*cosd(tiltangs).^-1; %corrected trig, very slightly better a
 thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not inelastically/lossly scattered
 %change IMFP to instead be per pixel, so more electrons are lost at high density AND thickness?
 
-radscale = .04*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
+radscale = .001*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
 dw = thickscatter.*dose*DQE;
 accum = 0; %initialize accumulated dose of irradiation to 0
@@ -67,11 +67,11 @@ for i=1:size(tilt,3)
     %appears to work, but adds noise rather than truly blurring the image
     addrad = randn(size(radmap))*accum*radscale.*(radmap+1);%.*(1+rescale(imgradient(tilt(:,:,i)),0,param.pix));
     
-    sigma = (accum)/100;
+    sigma = radscale*(accum)*1;
     proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',5); 
     testout(:,:,i) = proj;
     
-    irad = proj+addrad; %radiation as 0-center noise
+    irad = proj+addrad*0; %radiation as 0-center noise
     %need to do some procedure to mask/weight the noise near density rather than globally
     
     
