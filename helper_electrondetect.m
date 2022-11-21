@@ -52,16 +52,20 @@ accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; %pre-initialize output array for speed during the loop
 rad = tilt*0;
 for i=1:size(tilt,3)
+    %blur map for radiation
+    
+    radmap = imgaussfilt(rescale(-tilt(:,:,i),0,param.pix));
+    
     %increase magnitude of noise near gradients, so borders get more noise
     %appears to work, but adds noise rather than truly blurring the image
-    addrad = randn(size(tilt(:,:,i)))*accum*radscale.*(1+rescale(imgradient(tilt(:,:,i)),0,param.pix));
+    addrad = randn(size(tilt(:,:,i)))*accum*radscale;%.*(1+rescale(imgradient(tilt(:,:,i)),0,param.pix));
     irad = tilt(:,:,i)+addrad; %radiation as 0-center noise
     %need to do some procedure to mask/weight the noise near density rather than globally
     
     accum = accum+dw(i); %add to accumulated dose delivered
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad));
     
-    rad(:,:,i) = addrad; %store radiation maps for review
+    rad(:,:,i) = radmap; %store radiation maps for review
 end
 rad = rad(:,:,ixr);
 detect = detect(:,:,ixr); %reverse the sort so the output tiltseries is a continuous rotation
