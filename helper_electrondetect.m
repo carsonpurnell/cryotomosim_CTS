@@ -50,12 +50,12 @@ radscale = .04*param.raddamage;%/param.pix^2; %damage scaling calculation to rev
 dw = thickscatter.*dose*DQE;
 accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; %pre-initialize output array for speed during the loop
-rad = tilt*0;
+rad = tilt*0; testout = rad;
 %2d blur each angle outside loop for speed
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt );
 for i=1:size(tilt,3)
     
-    accum = accum+dw(i); %add to accumulated dose delivered
+    accum = accum+dw(i) %add to accumulated dose delivered
     %first tilt should be irradiated, it does happen instantly after all
     
     %blur map for radiation - should the blur be in 3d? would add some useful smearing of data
@@ -66,10 +66,14 @@ for i=1:size(tilt,3)
     %increase magnitude of noise near gradients, so borders get more noise
     %appears to work, but adds noise rather than truly blurring the image
     addrad = randn(size(radmap))*accum*radscale.*(radmap+1);%.*(1+rescale(imgradient(tilt(:,:,i)),0,param.pix));
-    irad = tilt(:,:,i)+addrad; %radiation as 0-center noise
+    
+    proj = imgaussfilt(tilt(:,:,i),sqrt(accum),'FilterSize',3); 
+    testout(:,:,i) = proj;
+    
+    irad = proj+addrad; %radiation as 0-center noise
     %need to do some procedure to mask/weight the noise near density rather than globally
     
-
+    
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad));
     
     rad(:,:,i) = addrad; %store radiation maps for review
