@@ -55,7 +55,7 @@ rad = tilt*0; testout = rad;
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt );
 for i=1:size(tilt,3)
     
-    accum = accum+dw(i) %add to accumulated dose delivered
+    accum = accum+dw(i); %add to accumulated dose delivered
     %first tilt should be irradiated, it does happen instantly after all
     
     %blur map for radiation - should the blur be in 3d? would add some useful smearing of data
@@ -67,7 +67,8 @@ for i=1:size(tilt,3)
     %appears to work, but adds noise rather than truly blurring the image
     addrad = randn(size(radmap))*accum*radscale.*(radmap+1);%.*(1+rescale(imgradient(tilt(:,:,i)),0,param.pix));
     
-    proj = imgaussfilt(tilt(:,:,i),sqrt(accum),'FilterSize',3); 
+    sigma = (accum)/100;
+    proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',5); 
     testout(:,:,i) = proj;
     
     irad = proj+addrad; %radiation as 0-center noise
@@ -76,7 +77,7 @@ for i=1:size(tilt,3)
     
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad));
     
-    rad(:,:,i) = addrad; %store radiation maps for review
+    rad(:,:,i) = proj; %store radiation maps for review
 end
 rad = rad(:,:,ixr);
 detect = detect(:,:,ixr); %reverse the sort so the output tiltseries is a continuous rotation
