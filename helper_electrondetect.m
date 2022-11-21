@@ -45,7 +45,7 @@ electronpath = thick*cosd(tiltangs).^-1; %corrected trig, very slightly better a
 thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not inelastically/lossly scattered
 %change IMFP to instead be per pixel, so more electrons are lost at high density AND thickness?
 
-radscale = .001*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
+radscale = .01*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
 dw = thickscatter.*dose*DQE;
 accum = 0; %initialize accumulated dose of irradiation to 0
@@ -61,17 +61,17 @@ for i=1:size(tilt,3)
     %blur map for radiation - should the blur be in 3d? would add some useful smearing of data
     %use the pre-CTF tilt for the rad map to avoid CTF impacts?
     %radmap = imgaussfilt(rescale(-tilt(:,:,i)));
-    radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %a bit hamfisted rescaling
+    radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*10; %a bit hamfisted rescaling
     
     %increase magnitude of noise near gradients, so borders get more noise
     %appears to work, but adds noise rather than truly blurring the image
     addrad = randn(size(radmap))*accum*radscale.*(radmap+1);%.*(1+rescale(imgradient(tilt(:,:,i)),0,param.pix));
     
-    sigma = radscale*(accum)*1;
+    sigma = radscale*(accum)*1; %scale filter size by pixel size somehow? low res need smaller filter
     proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',5); 
     testout(:,:,i) = proj;
     
-    irad = proj*0+tilt(:,:,i)*1+addrad*1; %radiation as 0-center noise
+    irad = proj*1+tilt(:,:,i)*0+addrad*1; %radiation as 0-center noise
     %need to do some procedure to mask/weight the noise near density rather than globally
     
     
