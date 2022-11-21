@@ -54,6 +54,10 @@ rad = tilt*0;
 %2d blur each angle outside loop for speed
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt );
 for i=1:size(tilt,3)
+    
+    accum = accum+dw(i); %add to accumulated dose delivered
+    %first tilt should be irradiated, it does happen instantly after all
+    
     %blur map for radiation - should the blur be in 3d? would add some useful smearing of data
     %use the pre-CTF tilt for the rad map to avoid CTF impacts?
     %radmap = imgaussfilt(rescale(-tilt(:,:,i)));
@@ -65,8 +69,7 @@ for i=1:size(tilt,3)
     irad = tilt(:,:,i)+addrad; %radiation as 0-center noise
     %need to do some procedure to mask/weight the noise near density rather than globally
     
-    accum = accum+dw(i); %add to accumulated dose delivered
-    %first tilt should be irradiated, it does happen instantly after all
+
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad));
     
     rad(:,:,i) = addrad; %store radiation maps for review
