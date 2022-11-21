@@ -58,6 +58,7 @@ for i=1:size(tilt,3)
     %use the pre-CTF tilt for the rad map to avoid CTF impacts?
     %radmap = imgaussfilt(rescale(-tilt(:,:,i)));
     radmap = rescale(blurmap(:,:,i))*1; %a bit hamfisted rescaling
+    
     %increase magnitude of noise near gradients, so borders get more noise
     %appears to work, but adds noise rather than truly blurring the image
     addrad = randn(size(radmap))*accum*radscale.*(radmap+1);%.*(1+rescale(imgradient(tilt(:,:,i)),0,param.pix));
