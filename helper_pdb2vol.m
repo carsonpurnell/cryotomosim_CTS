@@ -176,8 +176,9 @@ for i=1:models
     %}
     
     if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
-        em = em(:,any(em ~= 0,[1 3]),:); 
-        em = em(any(em ~= 0,[2 3]),:,:); 
+        %split lines inconsistent speed, faster with huge arrays, slower with small - stepwise shrinkage?
+        em = em(:,any(em ~= 0,[1 3]),:);
+        em = em(any(em ~= 0,[2 3]),:,:);
         em = em(:,:,any(em ~= 0,[1 2]));
     end
     emvol{i} = em;
