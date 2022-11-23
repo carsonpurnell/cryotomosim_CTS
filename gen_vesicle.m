@@ -61,9 +61,11 @@ for i=1:num
         tmp(x(j),y(j),z(j)) = tmp(x(j),y(j),z(j)) + lipid;
     end
     tmp = fntrim(tmp);
+    %{
     tmp = tmp(:,any(tmp ~= 0,[1 3]),:); 
     tmp = tmp(any(tmp ~= 0,[2 3]),:,:); 
     tmp = tmp(:,:,any(tmp ~= 0,[1 2]));
+    %}
     ves{i} = tmp; %#ok<AGROW> %store trimmed vesicle into output cell array
     
     for q=1:tries %try to place each vesicle N times, allows for duplicates
