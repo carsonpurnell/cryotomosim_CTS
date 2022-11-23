@@ -32,7 +32,8 @@ for j=1:numel(radius)
         gold(x,y,z) = gold(x,y,z) + Au/4; %reducing gold signal to prevent protein overlap, needs work
     end
     
-    gold = gold(any(gold ~= 0,[2 3]),any(gold ~= 0,[1 3]),any(gold ~= 0,[1 2])); 
+    gold = fntrim(gold);
+    %gold = gold(any(gold ~= 0,[2 3]),any(gold ~= 0,[1 3]),any(gold ~= 0,[1 2])); 
     %{
     gold = gold(:,any(gold ~= 0,[1 3]),:); 
     gold = gold(any(gold ~= 0,[2 3]),:,:); 
