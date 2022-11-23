@@ -43,6 +43,7 @@ WriteMRC(atlas,cts.pix,append('atlas_',ident,'.mrc'))
 end
 
 function generatetable(split,filename)
+%old watershed code reformulated to watershed function
 % cl = imclose(split,strel('sphere',2)); %close small holes to avoid chopping most particles up
 % 
 % d = -bwdist(~cl); %calculate distances for watershed
