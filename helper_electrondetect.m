@@ -55,6 +55,7 @@ rad = tilt*0; testout = rad;
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt );
 for i=1:size(tilt,3)
     
+    if param.raddamage~=0
     accum = accum+dw(i); %add to accumulated dose delivered
     %first tilt should be irradiated, it does happen instantly after all
     
@@ -70,14 +71,18 @@ for i=1:size(tilt,3)
     sigma = radscale*(accum)*1; %scale filter size by pixel size somehow? low res need smaller filter
     proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',5); 
     testout(:,:,i) = proj;
+    irad = proj*1+tilt(:,:,i)*0+addrad*1;
+    else
+        irad = tilt(:,:,i);
+    end
     
-    irad = proj*1+tilt(:,:,i)*0+addrad*1; %radiation as 0-center noise
+     %radiation as 0-center noise
     %need to do some procedure to mask/weight the noise near density rather than globally
     
     
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad));
     
-    rad(:,:,i) = proj; %store radiation maps for review
+    %rad(:,:,i) = proj; %store radiation maps for review
 end
 rad = rad(:,:,ixr);
 detect = detect(:,:,ixr); %reverse the sort so the output tiltseries is a continuous rotation
