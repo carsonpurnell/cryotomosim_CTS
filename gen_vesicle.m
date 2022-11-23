@@ -60,6 +60,7 @@ for i=1:num
     for j=1:numel(x) %loop through and add points as density to the shell
         tmp(x(j),y(j),z(j)) = tmp(x(j),y(j),z(j)) + lipid;
     end
+    tmp = fntrim(tmp);
     tmp = tmp(:,any(tmp ~= 0,[1 3]),:); 
     tmp = tmp(any(tmp ~= 0,[2 3]),:,:); 
     tmp = tmp(:,:,any(tmp ~= 0,[1 2]));
