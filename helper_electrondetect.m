@@ -75,10 +75,8 @@ for i=1:size(tilt,3)
     else
         irad = tilt(:,:,i);
     end
-    
-     %radiation as 0-center noise
+    %radiation as 0-center noise
     %need to do some procedure to mask/weight the noise near density rather than globally
-    
     
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad));
     
