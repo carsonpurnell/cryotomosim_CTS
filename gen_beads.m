@@ -12,6 +12,7 @@ if isempty(radius), radius=50; end
 density = (19/1e8^3)*6.022e23/197; %calculate atoms/A^3
 density = density*pix^2.7; %average atoms per pixel
 Au = 79; %atomic number of gold
+%probably don't need to do density/point tradeoff with mass/points being static across pixel sizes
 
 beadstrc(numel(radius)).id = {''};
 for j=1:numel(radius)
