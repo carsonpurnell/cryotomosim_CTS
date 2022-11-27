@@ -53,12 +53,12 @@ detect = tilt.*0; rad = tilt*0; %pre-initialize output arrays
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
 for i=1:size(tilt,3)
     
-    if param.raddamage~=0 %block for raadiation-induced noise and blurring
+    if param.raddamage>0 %block for raadiation-induced noise and blurring
     accum = accum+dw(i); %add to accumulated dose delivered, including first tilt
     
     %use the pre-CTF tilt for the rad map to avoid CTF impacts?
     radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins
-    addrad = randn(size(radmap))*accum*radscale.*(radmap+1); %scaled gaussian noise field
+    addrad = randn(size(radmap))*accum*radscale.*(radmap+1); %scaled gaussian 0-center noise field
     
     sigma = (radscale*(accum)*1); %might need to scale filter size with pixel size
     proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',5); 
@@ -66,10 +66,8 @@ for i=1:size(tilt,3)
     else
         irad = tilt(:,:,i);
     end
-    %radiation as 0-center noise
-    %need to do some procedure to mask/weight the noise near density rather than globally
     
-    detect(:,:,i) = poissrnd(irad*dw(i),size(irad));
+    detect(:,:,i) = poissrnd(irad*dw(i),size(irad)); %sample electrons from poisson distribution
     rad(:,:,i) = proj; %store radiation maps for review
 end
 rad = rad(:,:,ixr);
