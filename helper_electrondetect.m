@@ -50,8 +50,7 @@ radscale = .03*param.raddamage;%/param.pix^2; %damage scaling calculation to rev
 dw = thickscatter.*dose*DQE;
 accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; %pre-initialize output array for speed during the loop
-rad = tilt*0; 
-
+rad = tilt*0;
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
 for i=1:size(tilt,3)
     
@@ -73,7 +72,6 @@ for i=1:size(tilt,3)
     %need to do some procedure to mask/weight the noise near density rather than globally
     
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad));
-    
     rad(:,:,i) = proj; %store radiation maps for review
 end
 rad = rad(:,:,ixr);
