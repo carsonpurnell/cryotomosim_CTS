@@ -44,6 +44,7 @@ IMFP = 3800; %inelastic mean free path, average distance before inelastic electr
 electronpath = thick*cosd(tiltangs).^-1; %corrected trig, very slightly better appearance
 thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not inelastically/lossly scattered
 %change IMFP to instead be per pixel, so more electrons are lost at high density AND thickness?
+%scattering map inside the loop, using pixel intensities to scale the IMFP/path?
 
 radscale = .03*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
@@ -63,12 +64,12 @@ for i=1:size(tilt,3)
     sigma = (radscale*(accum)*1); %might need to scale filter size with pixel size
     proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',5); 
     irad = proj*1+tilt(:,:,i)*0+addrad*1;
+    rad(:,:,i) = proj; %store radiation maps for review
     else
         irad = tilt(:,:,i);
     end
     
     detect(:,:,i) = poissrnd(irad*dw(i),size(irad)); %sample electrons from poisson distribution
-    rad(:,:,i) = proj; %store radiation maps for review
 end
 rad = rad(:,:,ixr);
 detect = detect(:,:,ixr); %reverse the sort so the output tiltseries is a continuous rotation
