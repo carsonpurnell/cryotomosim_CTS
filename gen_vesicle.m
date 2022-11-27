@@ -35,7 +35,7 @@ for i=1:num
     shellvol = 4/8*pi*(rado^3-radi^3); %volume of shell in pixels
     ptnum = round( 0.2*shellvol*pix^3 )*2; %convert to angstroms, scale to some arbitrary working density
     frac = [ptnum,ptnum*sf(2),ptnum*sf(1)]; %get fractions of the total to distribute between inner and outer
-    rti = round(ptnum*sf(2)); rto = ptnum-rti; %partitian density between inner and outer radii
+    rti = round(ptnum*sf(2)); rto = ptnum-rti; %partition density between inner and outer radii
     
     %ptrad = rand(ptnum,1)*(rado-radi)+radi; %uniform - flat monolayer
     switch 1
@@ -56,7 +56,7 @@ for i=1:num
     %generate empty array and round points to positive coords
     tmp = zeros(offset*2,offset*2,offset*2);
     x = round(x+offset); y = round(y+offset); z = round(z+offset);
-    lipid = 6; %need to find the typical density of lipid membrane
+    lipid = 5; %need to find the typical density of lipid membrane
     for j=1:numel(x) %loop through and add points as density to the shell
         tmp(x(j),y(j),z(j)) = tmp(x(j),y(j),z(j)) + lipid;
     end
