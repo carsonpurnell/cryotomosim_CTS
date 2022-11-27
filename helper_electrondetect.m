@@ -30,7 +30,7 @@ tiltangs = tiltangs(ix); tilt = tilt(:,:,ix); %sort tilt angles and tilts
 ixr(ix) = 1:numel(ix); %generate reverse sorting index
 
 %dose weighting/distribution
-dose = param.dose;%.*param.pix^2; %convert dose in e/A^2 to e/pixel
+dose = param.dose; %.*param.pix^2; %convert dose in e/A^2 to e/pixel - currently deprecated
 if numel(param.dose)==1
     dose = dose/size(tilt,3); %single dose distributed across tilts evenly
 else
@@ -49,15 +49,13 @@ radscale = .03*param.raddamage;%/param.pix^2; %damage scaling calculation to rev
 
 dw = thickscatter.*dose*DQE; %correct distributed dose based on maximum DQE and inelastic scattering loss
 accum = 0; %initialize accumulated dose of irradiation to 0
-detect = tilt.*0; 
-rad = tilt*0;
+detect = tilt.*0; rad = tilt*0; %pre-initialize output arrays
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
 for i=1:size(tilt,3)
     
     if param.raddamage~=0 %block for raadiation-induced noise and blurring
     accum = accum+dw(i); %add to accumulated dose delivered, including first tilt
     
-    %blur map for radiation - should the blur be in 3d? would add some useful smearing of data
     %use the pre-CTF tilt for the rad map to avoid CTF impacts?
     radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins
     addrad = randn(size(radmap))*accum*radscale.*(radmap+1); %scaled gaussian noise field
