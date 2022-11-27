@@ -47,9 +47,9 @@ thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not i
 
 radscale = .03*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
-dw = thickscatter.*dose*DQE;
+dw = thickscatter.*dose*DQE; %correct distributed dose based on maximum DQE and inelastic scattering loss
 accum = 0; %initialize accumulated dose of irradiation to 0
-detect = tilt.*0; %pre-initialize output array for speed during the loop
+detect = tilt.*0; 
 rad = tilt*0;
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
 for i=1:size(tilt,3)
