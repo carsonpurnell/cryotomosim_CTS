@@ -46,7 +46,7 @@ thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not i
 %change IMFP to instead be per pixel, so more electrons are lost at high density AND thickness?
 %scattering map inside the loop, using pixel intensities to scale the IMFP/path?
 
-radscale = .03*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
+radscale = .01*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
 dw = thickscatter.*dose*DQE; %correct distributed dose based on maximum DQE and inelastic scattering loss
 accum = 0; %initialize accumulated dose of irradiation to 0
@@ -61,7 +61,7 @@ for i=1:size(tilt,3)
     radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins
     addrad = randn(size(radmap))*accum*radscale.*(radmap+1); %scaled gaussian 0-center noise field
     
-    sigma = (radscale*(accum)*1); %might need to scale filter size with pixel size
+    sigma = sqrt(radscale*(accum)*1); %might need to scale filter size with pixel size
     proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',5); 
     irad = proj*1+tilt(:,:,i)*0+addrad*1;
     rad(:,:,i) = proj; %store radiation maps for review
