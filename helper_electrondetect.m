@@ -14,7 +14,7 @@ end
 if param.dose<=0, detect=tilt; return; end %if dose 0, skip detection and return perfect detection/original
 tiltangs = param.tilt; %unfortunately similar name to tilt 
 
-DQE = .84*1; % gatan camera lists 84% maximum detection, so that'll work for now
+DQE = .84*3; % gatan camera lists 84% maximum detection, so that'll work for now
 %4 is arbitrary scalar to make contrast look 'normal' with the CTF modulation
 %DQE should not be angle dependent, but maybe easier to  implement if merged with CTF?
 
@@ -45,7 +45,7 @@ electronpath = thick*cosd(tiltangs).^-1; %corrected trig, very slightly better a
 thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not inelastically/lossly scattered
 %change IMFP to instead be per pixel, so more electrons are lost at high density AND thickness?
 
-radscale = .01*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
+radscale = .03*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
 dw = thickscatter.*dose*DQE;
 accum = 0; %initialize accumulated dose of irradiation to 0
