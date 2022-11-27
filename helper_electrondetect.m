@@ -50,9 +50,9 @@ radscale = .03*param.raddamage;%/param.pix^2; %damage scaling calculation to rev
 dw = thickscatter.*dose*DQE;
 accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; %pre-initialize output array for speed during the loop
-rad = tilt*0; testout = rad;
-%2d blur each angle outside loop for speed
-blurmap = imgaussfilt( max(tilt,[],'all')-tilt );
+rad = tilt*0; 
+
+blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
 for i=1:size(tilt,3)
     
     if param.raddamage~=0 %block for raadiation-induced noise and blurring
@@ -65,7 +65,6 @@ for i=1:size(tilt,3)
     
     sigma = (radscale*(accum)*1); %might need to scale filter size with pixel size
     proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',5); 
-    testout(:,:,i) = proj;
     irad = proj*1+tilt(:,:,i)*0+addrad*1;
     else
         irad = tilt(:,:,i);
