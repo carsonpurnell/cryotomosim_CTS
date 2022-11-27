@@ -20,7 +20,7 @@ DQE = .84*3; % gatan camera lists 84% maximum detection, so that'll work for now
 
 switch param.tiltscheme %organize tilt ordering, sort according to split if not symmetric
     case 'symmetric'
-        [~,ix] = sort(abs(tiltangs)); 
+        [~,ix] = sort(abs(tiltangs)); %straight sort, can't do grouped symmetric
     otherwise %find and sort the data from the split between tilt directions
         mdist = max(abs(tiltangs-(param.tiltscheme))); %max dist from start angle where phase will switch
         metric = abs(tiltangs-param.tiltscheme)+mdist.*(tiltangs<param.tiltscheme); %calculate sorting metric
