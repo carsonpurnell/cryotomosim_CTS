@@ -55,18 +55,13 @@ rad = tilt*0; testout = rad;
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt );
 for i=1:size(tilt,3)
     
-    if param.raddamage~=0
-    accum = accum+dw(i); %add to accumulated dose delivered
-    %first tilt should be irradiated, it does happen instantly after all
+    if param.raddamage~=0 %block for raadiation-induced noise and blurring
+    accum = accum+dw(i); %add to accumulated dose delivered, including first tilt
     
     %blur map for radiation - should the blur be in 3d? would add some useful smearing of data
     %use the pre-CTF tilt for the rad map to avoid CTF impacts?
-    %radmap = imgaussfilt(rescale(-tilt(:,:,i)));
-    radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %a bit hamfisted rescaling
-    
-    %increase magnitude of noise near gradients, so borders get more noise
-    %appears to work, but adds noise rather than truly blurring the image
-    addrad = randn(size(radmap))*accum*radscale.*(radmap+1);%.*(1+rescale(imgradient(tilt(:,:,i)),0,param.pix));
+    radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins
+    addrad = randn(size(radmap))*accum*radscale.*(radmap+1); %scaled gaussian noise field
     
     sigma = (radscale*(accum)*1); %scale filter size by pixel size somehow? low res need smaller filter
     proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',5); 
