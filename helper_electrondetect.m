@@ -62,16 +62,16 @@ for i=1:size(tilt,3)
     %blur map for radiation - should the blur be in 3d? would add some useful smearing of data
     %use the pre-CTF tilt for the rad map to avoid CTF impacts?
     %radmap = imgaussfilt(rescale(-tilt(:,:,i)));
-    radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*10; %a bit hamfisted rescaling
+    radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %a bit hamfisted rescaling
     
     %increase magnitude of noise near gradients, so borders get more noise
     %appears to work, but adds noise rather than truly blurring the image
     addrad = randn(size(radmap))*accum*radscale.*(radmap+1);%.*(1+rescale(imgradient(tilt(:,:,i)),0,param.pix));
     
-    sigma = radscale*(accum)*0.1; %scale filter size by pixel size somehow? low res need smaller filter
+    sigma = (radscale*(accum)*1); %scale filter size by pixel size somehow? low res need smaller filter
     proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',5); 
     testout(:,:,i) = proj;
-    irad = proj*1+tilt(:,:,i)*0+addrad*0.1;
+    irad = proj*1+tilt(:,:,i)*0+addrad*1;
     else
         irad = tilt(:,:,i);
     end
