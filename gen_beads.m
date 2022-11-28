@@ -9,12 +9,16 @@ end
 if isempty(radius), radius=50; end
 
 %calculate gold atomic density in atom/pix from 19g/cm^3
-density = (19/1e8^3)*6.022e23/197; %calculate atoms/A^3
+%atomdensity = d/(cm-A conv)*avagadro/mass
+density = (19/1e8^3)*6.022e23/197; %calculate atoms/A^3, ~.06
 density = density*pix^2.7; %average atoms per pixel
 Au = 79; %atomic number of gold
 %probably don't need to do density/point tradeoff with mass/points being static across pixel sizes
 
-beadstrc(numel(radius)).id = {''};
+%are real beads uniform density? hollow core might be from edge effect of uniform opacity
+%lower border density might help close the hole
+
+beadstrc(numel(radius)).type = 'single';
 for j=1:numel(radius)
     d = round(radius(j)*2/pix)+2; %rad in A, diam in pixels
     cen = radius(j)/pix+1;
@@ -29,13 +33,13 @@ for j=1:numel(radius)
     
     for i=1:size(pts,2)
         x = pts(1,i); y = pts(2,i);  z = pts(3,i);
-        gold(x,y,z) = gold(x,y,z) + Au/4; %reducing gold signal to prevent protein overlap, needs work
+        gold(x,y,z) = gold(x,y,z) + Au/2; %reducing gold signal to prevent protein overlap, needs work
     end
-    gold = fntrim(gold);
+    gold = ctsutil('trim',gold);
     
     beadstrc(j).vol{1} = gold;
     beadstrc(j).id = append('bead__',string(radius(j)));
-    beadstrc(j).type = 'single';
+    %beadstrc(j).type = 'single';
 end
 
 end
