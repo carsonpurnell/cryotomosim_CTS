@@ -8,8 +8,5 @@ switch op
         out = in(any(in ~= 0,[2 3]),any(in ~= 0,[1 3]),any(in ~= 0,[1 2]));
     case 'pad'
         out = padarray(in,[opt,opt,opt]);
-    case 'bin'
-        opt = max(2,round(opt)); %avoid bad bin value errors
-        
         
 end
