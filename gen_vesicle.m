@@ -60,7 +60,7 @@ for i=1:num
     for j=1:numel(x) %loop through and add points as density to the shell
         tmp(x(j),y(j),z(j)) = tmp(x(j),y(j),z(j)) + lipid;
     end
-    tmp = fntrim(tmp);
+    tmp = ctsutil('trim',tmp);
     ves{i} = tmp; %#ok<AGROW> %store trimmed vesicle into output cell array
     
     for q=1:tries %try to place each vesicle N times, allows for duplicates
