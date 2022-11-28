@@ -23,7 +23,7 @@ count.s = 0; count.f = 0;
 memvol = vol*0;
 for i=1:num
     radi = (rand*300+150)/pix; %randomly generate inner radius of vesicle (need better range)
-    rado = radi+32/pix; %get outer radius from inner, should be constant something (5nm-ish?)
+    rado = radi+(22+randi(10))/pix; %get outer radius from inner, should be constant something (7-9nm-ish?)
     %reduced outer radius distance for pearson, skew makes it wider
     offset = round(rado+20); %centroid offset to prevent negative values
     
