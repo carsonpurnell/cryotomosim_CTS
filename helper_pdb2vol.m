@@ -176,7 +176,7 @@ for i=1:models
     %}
     
     if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
-        em = fntrim(em);
+        em = ctsutil('trim',em);
     end
     emvol{i} = em;
 end
