@@ -58,7 +58,7 @@ for i=1:size(tilt,3)
     accum = accum+dw(i); %add to accumulated dose delivered, including first tilt
     
     %use the pre-CTF tilt for the rad map to avoid CTF impacts?
-    radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins
+    radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins - what is good scale?
     addrad = randn(size(radmap))*accum*radscale.*(radmap+1); %scaled gaussian 0-center noise field
     
     sigma = sqrt(radscale*(accum)*0.1); %might need to scale filter size with pixel size
