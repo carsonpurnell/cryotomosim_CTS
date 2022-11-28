@@ -12,7 +12,7 @@ call = 'binvol -binning ';
 root = strrep(input,'.mrc','');
 out = append(root,'_bin',num2str(binning),'.mrc'); %append _bin and binning to output filename
 
-cmd = append(call, num2str(binning), ' ', input, ' ', out);
+cmd = append(call,num2str(binning),' ',input,' ',out);
 fprintf('Command passed: %s\n',cmd) %display the passed command for validation
 dump = evalc('system(cmd)'); %capture imod output from displaying
 if verbose==1, disp(dump), end %display imod output with verbose option
