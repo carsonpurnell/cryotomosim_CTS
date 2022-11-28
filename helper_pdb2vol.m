@@ -158,7 +158,6 @@ for i=1:models
     [~,c] = ismember(atomid,elements); % get index for each atom indicating what reference it is
     
     atomint = op(c); %logical index the atom data relative to the atomic symbols
-    
     em = zeros(lim'); %initialize empty volume for the model
     
     for j=1:numel(atomint) %faster loop, use vectorized converted atomic info faster than struct reference
