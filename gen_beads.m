@@ -6,12 +6,10 @@ arguments
     pix (1,1) {mustBePositive}
     radius (1,:) = 50 %can use multiple as [40 60 120]
 end
-if isempty(radius), radius=50; end
-
 %calculate gold atomic density in atom/pix from 19g/cm^3
 %atomdensity = d/(cm-A conv)*avagadro/mass
-density = (19/1e8^3)*6.022e23/197; %calculate atoms/A^3, ~.06
-density = density*pix^2.7; %average atoms per pixel
+density = (19/1e8^3)*6e23/197; %calculate atoms/A^3, ~.06
+density = density*pix^3; %average atoms per pixel
 Au = 79; %atomic number of gold
 %probably don't need to do density/point tradeoff with mass/points being static across pixel sizes
 
@@ -24,7 +22,7 @@ for j=1:numel(radius)
     cen = radius(j)/pix+1;
     
     gold = zeros(d,d,d);
-    atoms = 2*round(density*numel(gold)*1); % double points at half mass for smoothness
+    atoms = 1*round(density*numel(gold)*1); % double points at half mass for smoothness
     %probably don't need this now? can make it worse on purpose?
     
     pts = rand(3,atoms).*size(gold)'; %pregenerate points
@@ -33,13 +31,12 @@ for j=1:numel(radius)
     
     for i=1:size(pts,2)
         x = pts(1,i); y = pts(2,i);  z = pts(3,i);
-        gold(x,y,z) = gold(x,y,z) + Au/2; %reducing gold signal to prevent protein overlap, needs work
+        gold(x,y,z) = gold(x,y,z) + Au/1; %reducing gold signal to prevent protein overlap, needs work
     end
     gold = ctsutil('trim',gold);
     
     beadstrc(j).vol{1} = gold;
     beadstrc(j).id = append('bead__',string(radius(j)));
-    %beadstrc(j).type = 'single';
 end
 
 end
