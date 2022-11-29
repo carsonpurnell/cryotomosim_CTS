@@ -3,10 +3,10 @@ w = 8+2; %atomic number total in water molecule, until i can get electron opacit
 %amorphous ice density ~.94g/cm^3, but unit vol of liquid h20 molecule is 29.7a^3, estimate 20-30
 %unit vol of water is 29.7a^3, dramatically larger than atoms, diameter ~2.75A.
 
-density = 0.90/(1e8)^3/18*6.022e23; %convert from cm3 to a3, then g to molecules via mol/dalton
-denspix = density*(pix^2.85);%/24; %^3 theoretical calculation correct, might be as low as 2.7
+%density = 0.90/(1e8)^3/18*6.022e23; %convert from cm3 to a3, then g to molecules via mol/dalton
+%denspix = density*(pix^2.85);%/24; %^3 theoretical calculation correct, might be as low as 2.7
 
-denspix = (.70*6e23/18)*(pix/1e8)^3; %d = (d*mol/mass)*(pixel/m-a conv)^3 average atom/pix for ice ~.90g/cm3
+denspix = (.94*6e23/18)*(pix/1e8)^3; %d = (d*mol/mass)*(pixel/m-a conv)^3 average atom/pix for ice ~.94g/cm3
 %corrected density is too high, losing quite a bit of protein under the water signal, models poor
 %need to test how terrible the simulations are
 %pretty bad, but not totally worthless
@@ -18,7 +18,7 @@ atomfrac = exp(-pix/3); %fraction as points rather than flat background
 mol = round(denspix*numel(vol)*atomfrac); % 20% of ice mass randomly distributed as molecules
 ice = round(vol*0+denspix*(1-atomfrac)*w); %80% of ice mass as flat background for speed
 
-densfrac = 20/(20+pix)*0+1;
+densfrac = 20/(20+pix)*1+0;
 mol = round(denspix*numel(vol)*atomfrac*densfrac);
 %ice = ice*0;
 w = w/densfrac;
@@ -31,5 +31,6 @@ end
 
 % how to make solvation layer?
 % take min of smoothed vol+ice for a halo?
+%solv = imgaussfilt3(vol);
 iced = max(ice,vol);
 end
