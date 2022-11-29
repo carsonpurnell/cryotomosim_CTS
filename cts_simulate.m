@@ -122,7 +122,7 @@ prev = tbase; disp(cmd); [~] = evalc('system(cmd)'); %run command, capture conso
 if strcmp(type,'real') %electron detection and CTF
 tilt = ReadMRC(prev); %load the projected tiltseries as a volume
 
-order = 2; %electron detection changable order thing because i still don't know which is better!
+order = 1; %electron detection changable order thing because i still don't know which is better!
 if order==1 %dose first, hackjob dose increase to get the scaling to work
     detected = helper_electrondetect(tilt,param);
     WriteMRC(detected,pix,append('2_dosetilt_',base));
