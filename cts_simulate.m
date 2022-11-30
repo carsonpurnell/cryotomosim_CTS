@@ -124,9 +124,9 @@ tilt = ReadMRC(prev); %load the projected tiltseries as a volume
 
 order = 1; %electron detection changable order thing because i still don't know which is better!
 if order==1 %dose first, hackjob dose increase to get the scaling to work
+    param.raddamage = param.raddamage*1; param.dose = param.dose*1; %adjust base values to work
     detected = helper_electrondetect(tilt,param);
     WriteMRC(detected,pix,append('2_dosetilt_',base));
-    param.raddamage = param.raddamage/pix; param.dose = param.dose*10*pix^2; %adjust base values to work
     [convolved,ctf] = helper_ctf(detected,param); %per-tilt ctf convolution
     prev = append('3_ctf_',base);
     WriteMRC(convolved,pix,prev); %save the convolved image for review
