@@ -1,20 +1,17 @@
 function [iced, ice] = gen_ice(vol,pix)
-%w = 8+2; %atomic number total in water molecule, until i can get electron opacity numbers
-%amorphous ice density ~.94g/cm^3?
-
+%is amorphous ice .94g/cm3? or is it lower density?
 denspix = (.94/18)*6e23*(pix/1e8)^3; %d = (d/mass)*mol*(pixel/m-a conv)^3 average atom/pix for ice ~.94g/cm3
 %computed density might be a bit high, vitreous may be lower than .94g/cm3.
 %without solvation exclusion, borders do get very hazy - good for rad damage
 
 atomfrac = exp(-pix/3); %fraction as points rather than flat background
 %does compressing it into fewer points of higher density work without screwing the noise?
-%mol = round(denspix*numel(vol)*atomfrac); % 20% of ice mass randomly distributed as molecules
-ice = round(vol*0+denspix*(1-atomfrac)*w); %80% of ice mass as flat background for speed
+%mol = round(denspix*numel(vol)*atomfrac); 
 
 densfrac = 20/(20+pix)*1;
-mol = round(denspix*numel(vol)*atomfrac*densfrac);
-%ice = ice*0;
-w = (8+2)/densfrac; %scaled intensity for water psuedo-molecules
+w = (8+2)/densfrac; %scaled intensity for water psuedo-molecules (atomic number until i find e- opacties)
+mol = round(denspix*numel(vol)*atomfrac*densfrac); % atomfrac% of ice mass randomly distributed as molecules
+ice = round(vol*0+denspix*(1-atomfrac)*w); % 1-atomfrac% of ice mass as flat background for speed
 
 pts = rand(3,mol).*size(vol)'; ix = round(pts+0.5); %fast pregeneration of all points
 for i=1:mol
