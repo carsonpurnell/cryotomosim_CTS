@@ -37,8 +37,8 @@ iced = max(ice,vol);
 
 %
 %new half-assed weighted combination, might make a good solv layer
-solv = imgaussfilt3(vol,20/(10+pix));
-map = (solv*-1)+max(solv,[],'all');
+solv = imgaussfilt3(vol,50/(10+pix));
+map = (solv*-1)+max(solv,[],'all'); map = map/(pix^3);
 %map = rescale(imcomplement(solv)); %rescaling nonviable, beads bork scaling hard
 ice = ice.*map;
 iced = vol+ice;%.*map;
