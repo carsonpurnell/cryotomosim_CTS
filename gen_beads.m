@@ -25,7 +25,8 @@ for j=1:numel(radius)
     pts = round(pts(:,atomdist<radius(j)/pix)+0.5); %remove atom points that would be outside sphere
     for i=1:size(pts,2)
         x = pts(1,i); y = pts(2,i);  z = pts(3,i);
-        gold(x,y,z) = gold(x,y,z) + Au/1; %add gold intensity for each generated atom in the bead
+        gold(x,y,z) = gold(x,y,z) + Au/2; %add gold intensity for each generated atom in the bead
+        %half density to avoid giant CTF hole (and sometimes also peak!) in high mag beads
     end
     beadstrc.vol{j} = ctsutil('trim',gold); %write vol and id to the struct to pass to cts_model
     beadstrc.id{j} = append('bead__',string(radius(j)));
