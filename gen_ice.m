@@ -37,14 +37,13 @@ iced = max(ice,vol);
 
 %
 %new half-assed weighted combination, might make a good solv layer
-solv = imgaussfilt3(vol,150/(10+pix),'FilterSize',17);
-map = (solv*-1)+max(solv,[],'all'); map = map/(pix^3);
+%solv = imgaussfilt3(vol,150/(10+pix),'FilterSize',17);
+%map = (solv*-1)+max(solv,[],'all'); map = map/(pix^3);
 
 %alternate maybe easier binarization method
 solv = imbinarize(rescale(vol)); map = imgaussfilt3(single(~solv),4);%,'FilterSize',3);
-%sigma of 0.5 is flat and noisy
-%for camk at 6A, ~2 sig, 3 too high and 1 maybe to little SNR (maybe radiation rescale?)
-%for actin at 13A, 
+%for camk at 6A, ~2 sig, 3 too high and 1 too little SNR. probably need more radiation effect
+%for actin at 13A, ~2 sig, 1 SNR is crap - =<2 needs more noise (maybe also more rad damage via noise)
 
 %just do a scaling binarization, maybe with dilation at high mag?
 %map = rescale(imcomplement(solv)); %rescaling nonviable, beads bork scaling hard
