@@ -31,6 +31,16 @@ end
 
 % how to make solvation layer?
 % take min of smoothed vol+ice for a halo?
-%solv = imgaussfilt3(vol);
+
+%orig straight up floor by ice globally
 iced = max(ice,vol);
+
+%
+%new half-assed weighted combination, might make a good solv layer
+solv = imgaussfilt3(vol,20/(10+pix));
+map = rescale(imcomplement(solv));
+ice = ice.*map;
+iced = vol+ice;%.*map;
+%}
+
 end
