@@ -16,7 +16,7 @@ if isstruct(list) && isfield(list,'type') %if the input is a formatted particle 
 end
 list = internal_load(list); %internal call to either uipickfiles or uigetfiles
 
-types = {'single','bundle','complex','cluster','group','assembly'};
+types = {'single','bundle','complex','cluster','group','assembly','memplex'};
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
 
 for i=1:numel(list)
@@ -26,7 +26,7 @@ for i=1:numel(list)
     id = strsplit(filename,{'__','.'}); %extract class IDs from filename, delimited by . or __
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
     if ismember(tmp.type,types)==0, tmp.type='single'; end %default to single with no type ID in name
-    trim=1; if ismember(tmp.type,{'complex','assembly'}), trim=0; end %trim anything except complex/assem
+    trim=1; if ismember(tmp.type,{'complex','assembly','memplex'}), trim=0; end %trim anything except complex/assem
     
     id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
     for j=1:numel(id) %loop through ID parts to make them functional for field names
