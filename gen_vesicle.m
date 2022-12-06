@@ -1,4 +1,4 @@
-function [memvol,count,ves,vescen] = gen_vesicle(vol,num,pix,tries)
+function [memvol,count,ves,vescen,vesvol] = gen_vesicle(vol,num,pix,tries)
 %randomly generates and places spherical vesicles into a volume without overlapping contents
 %
 %inputs:
@@ -21,8 +21,7 @@ end
 
 count.s = 0; count.f = 0;
 memvol = vol*0;
-vescen = [];
-%need to also store maps for each individual vesicle in a cell array corresponding to center
+vescen = []; vesvol = {}; %store centers and location vols for each placed vesicle for TMD operations
 for i=1:num
     radi = (rand*300+150)/pix; %randomly generate inner radius of vesicle (need better range)
     rado = radi+(20+randi(12))/pix; %get outer radius from inner, should be constant something (7-9nm-ish?)
@@ -71,6 +70,8 @@ for i=1:num
         count.f = count.f + err;
         if err==0
             [memvol] = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
+            %best way should be test placement, then adding to empty in empty vol for storage
+            vesvol{end+1} = helper_arrayinsert(memvol*0,tmp,loc); %#ok<AGROW>
             count.s = count.s+1; 
             vescen(end+1,:) = loc+round(size(tmp)/2); %#ok<AGROW>
         end
