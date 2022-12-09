@@ -156,17 +156,17 @@ for i=1:iters
                 counts.s = counts.s+1; %increment success, bad old way need to deprecate
                 %actually write to the split arrays
                 
-                %if strcmp(set(which).type,'memplex')
+                if strcmp(set(which).type,'memplex')
                     members = 1:numel(particle);
                     %assembly rejigger member nums here
                     for t=members %rotate and place each component of complex
                         %rot = imwarp(set(which).vol{t},tform);
                         split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,com);
                     end
-                %else
-                    %[split.(set(which).id{t})] = helper_arrayinsert(tdest,rot,com,'overlaptest');
+                else %membrane only designation
+                    split.(set(which).id{1}) = helper_arrayinsert(split.(set(which).id{1}),rot,com);
                     %just write the sumvol to the split array
-                %end
+                end
             end
             
             
