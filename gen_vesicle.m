@@ -57,7 +57,7 @@ for i=1:num
     %generate empty array and round points to positive coords
     tmp = zeros(offset*2,offset*2,offset*2);
     x = round(x+offset); y = round(y+offset); z = round(z+offset);
-    lipid = 6; %need to find the typical density of lipid membrane
+    lipid = 5.0; %need to find the typical density of lipid membrane
     for j=1:numel(x) %loop through and add points as density to the shell
         tmp(x(j),y(j),z(j)) = tmp(x(j),y(j),z(j)) + lipid;
     end
