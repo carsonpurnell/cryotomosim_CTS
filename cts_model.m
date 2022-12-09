@@ -87,7 +87,7 @@ end
 
 if opt.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
     fprintf('Generating vesicular membranes ')
-    [cts.model.mem,count] = gen_vesicle(cts.vol,round(opt.mem),pix);
+    [cts.model.mem,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(opt.mem),pix);
     cts.vol = cts.model.mem+cts.vol;
     fprintf('   complete,  %i placed, %i failed \n',count.s,count.f)
 end
@@ -114,8 +114,9 @@ end
 [cts.particles.targets] = helper_input(targets,pix); %load target particles
 iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
 [cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,cts.particles.targets,iters,...
-    opt.density,'type','target','graph',opt.graph); 
-cts.vol = cts.vol+cts.model.targets; 
+    vescen,vesvol,opt.density,'type','target','graph',opt.graph); 
+cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
+%cts.vol = cts.vol+cts.model.targets; %old sum without overlap fix
 cts.model.particles = cts.vol;
 
 if ~strcmp(opt.distract,'none') %DISTRACTORS
@@ -125,7 +126,7 @@ if ~strcmp(opt.distract,'none') %DISTRACTORS
 iters = round( iters*sqrt(numel(cts.particles.distractors(1,:))) ); %distractor iters
 [cts.model.distractors] = helper_randomfill(cts.vol+constraint,cts.particles.distractors,iters,...
     opt.density,'type','distractor','graph',opt.graph);
-cts.vol = cts.vol + cts.model.distractors; 
+cts.vol = max(cts.vol,cts.model.distractors); %fix for transmembrane overlaps
 cts.model.particles = cts.vol;
 end
 

@@ -1,13 +1,16 @@
-function [outarray, split] = helper_randomfill(inarray,set,iters,density,opt)
+function [outarray, split] = helper_randomfill(inarray,set,iters,vescen,vesvol,density,opt)
 %[outarray, split] = helper_randomfill(inarray,set,iters,density,opt)
 %shared function for adding particles randomly, used for generating models and adding distractors
 arguments
     inarray (:,:,:) double
     set struct
     iters
+    vescen = 0 %might get jank
+    vesvol = 0 %might get jank
     density = 0.4
     opt.type = 'object'
     opt.graph = 0
+    opt.memvol = 0
 end
 insize = size(inarray); counts = struct('s',0,'f',0); %initialize counts and get input size
 
@@ -27,6 +30,19 @@ for i=1:numel(namelist)
 end
 
 fprintf('Attempting %i %s placements:  ',iters,opt.type)
+
+% membrane setup stuff
+if iscell(vesvol) %prep skeleton point map if provided for TMprotein
+    memvol = sum( cat(4,vesvol{:}) ,4);
+    bw = bwdist(~memvol); %calculate distances inside the shape
+    mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
+    skel = (bw.*~mask)>max(bw,[],'all')/2-1; %apply the mask to the distance map and threshold edge noise
+    skel = ctsutil('edgeblank',skel,2);
+    memlocmap = bwareaopen(skel,20); %clean any remaining outlier points
+    init = [0 0 1]; %initial required orientation for memprots
+    %sliceViewer(skel); %it does work
+end
+% membrane setup stuff end
 
 for i=1:iters
     which = randi(numel(set)); 
@@ -98,6 +114,62 @@ for i=1:iters
                     end
                 end
             end
+            
+        case {'memplex','membrane'}
+            [particle] = ctsutil('trim',particle); %trims all vols according to their sum
+            %centered = centervol(molc); 
+            centered = ctsutil('centervol',particle); %centers all vols in cells to the COM of the first
+            sumvol = sum( cat(4,centered{:}) ,4); %get sum volume (should pregenerate in _input)
+            
+            [x,y,z] = ind2sub(size(memlocmap),find(memlocmap>0)); %don't need >0, minor speed loss
+            pts = [x,y,z]; %probably need to replace this block with something much faster
+            r = randi(size(pts,1));
+            loc = pts(r,:);
+            
+            [k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
+            
+            %[ax,theta] = sphrot(init,fin,ori)
+            targ = loc-vescen(k,:); %get target location as if from origin
+            targ=targ/norm(targ); init = init(:)/norm(init); %unitize for safety
+            
+            rotax=cross(init,targ); %compute the normal axis from the rotation angle
+            theta = acosd( dot(init,targ) );
+            %end
+            %[rotax,theta] = sphrot(init,loc,vescen(k,:));
+            
+            %sel = particles(randi(numel(particles))).tmvol;
+            sel = sumvol;
+            spin = imrotate3(sel,randi(180),init'); %rotate axially before transform to target location
+            rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
+            
+            tdest = inarray+memvol*0-vesvol{k}*1;
+            
+            %if i==500, sliceViewer(rescale(tdest)+skel*0+memlocmap); end
+            
+            com = round(loc-size(rot)/2);
+            [~,err] = helper_arrayinsert(tdest,rot,com,'overlaptest');
+            counts.f = counts.f+err; %counts.s = counts.s-err; %increment fails, should refactor s
+            
+            if err==0
+                [inarray] = helper_arrayinsert(inarray,rot,com); %write sum to working array
+                [memlocmap] = helper_arrayinsert(memlocmap,-imbinarize(rot),com); %reduce mem loc map
+                counts.s = counts.s+1; %increment success, bad old way need to deprecate
+                %actually write to the split arrays
+                
+                %if strcmp(set(which).type,'memplex')
+                    members = 1:numel(particle);
+                    %assembly rejigger member nums here
+                    for t=members %rotate and place each component of complex
+                        %rot = imwarp(set(which).vol{t},tform);
+                        split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,com);
+                    end
+                %else
+                    %[split.(set(which).id{t})] = helper_arrayinsert(tdest,rot,com,'overlaptest');
+                    %just write the sumvol to the split array
+                %end
+            end
+            
+            
             
     end
     
