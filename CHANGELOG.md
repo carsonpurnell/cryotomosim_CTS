@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [v0.0.9](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.9) - 2022-12-09 18:34:58
+
+implementation of preliminary support for integral membrane proteins
+
+### Feature
+
+- general:
+  - feat membrane protein basic functions ([f5a528f](https://github.com/carsonpurnell/cryotomosim_CTS/commit/f5a528fc2b87aa7360944285b0776d2faaa00600))
+  - feat ctsutil for cross-function utilities ([7a615a4](https://github.com/carsonpurnell/cryotomosim_CTS/commit/7a615a4761b351f99208ec49d048e4ce291b313e))
+
+### Bug Fixes
+
+- general:
+  - fix ice blending with beads ([72e7669](https://github.com/carsonpurnell/cryotomosim_CTS/commit/72e76699febf8d5f8b6051bd21d55cb112415754))
+
 ## [v0.0.8](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.8) - 2022-10-17 14:55:38
 
 *No description*
