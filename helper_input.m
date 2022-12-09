@@ -16,7 +16,7 @@ if isstruct(list) && isfield(list,'type') %if the input is a formatted particle 
 end
 list = internal_load(list); %internal call to either uipickfiles or uigetfiles
 
-types = {'single','bundle','complex','cluster','group','assembly','memplex'};
+types = {'single','bundle','complex','cluster','group','assembly','memplex','membrane'};
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
 
 for i=1:numel(list)
