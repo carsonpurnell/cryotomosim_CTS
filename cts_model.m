@@ -90,6 +90,8 @@ if opt.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
     [cts.model.mem,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(opt.mem),pix);
     cts.vol = cts.model.mem+cts.vol;
     fprintf('   complete,  %i placed, %i failed \n',count.s,count.f)
+else
+    vescen = 0; vesvol = 0;
 end
 
 constraint = zeros(size(cts.vol)); %constraints are a big ugly mess right now
