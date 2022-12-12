@@ -27,6 +27,7 @@ for i=1:num
     rado = radi+(16+randi(12))/pix; %get outer radius from inner, should be constant something (7-9nm-ish?)
     %reduced outer radius distance for pearson, skew makes it wider
     offset = round(rado+20); %centroid offset to prevent negative values
+    %still not sure how to do the radius and what the radial density curve should look like
     
     w = (rado-radi)/1.5; %deviation of the membrane distribution
     sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2; %factor to correct for excess inner density
