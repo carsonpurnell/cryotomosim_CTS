@@ -159,7 +159,7 @@ function [vol,names] = internal_volbuild(data,pix,trim)
 %mag = struct('H',0,'C',6+1.3,'N',7+1.1,'O',8+0.2,'P',15,'S',16+0.6);
 edat = {'H',0;'C',6+1.3;'N',7+1.1;'O',8+0.2;'P',15;'S',16+0.6};
 elements = edat(:,1);
-op = cell2mat(edat(:,2));
+atomdict = cell2mat(edat(:,2));
 
 %{
 %shang/sigworth numbers (HCNOSP): backwards C and N?
@@ -186,15 +186,20 @@ lim = round( (adj+b)/pix +1); %array size to place into, same initial box for al
 
 names = data(:,3);
 models = numel(data(:,2)); emvol = cell(models,1); %pre-allocate stuff
-if models==1, trim=1; end
+if models==1, trim=1; end %would break single-model memprots
 for i=1:models
     atomid = data{i,1}; %single column, hopefully for speed
-    coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
     
     %convert atomic labels into atom opacity information outside the loop for speed
     [~,c] = ismember(atomid,elements); % get index for each atom indicating what reference it is
+    
+    badentries = find(c<1); %find entries not in the element register
+    c(badentries)=[]; data{i,2}(:,badentries) = []; %remove bad entries
+
+    coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
+    %borktest = c(c<1)
     %disp(atomid')
-    atomint = op(c); %logical index the atom data relative to the atomic symbols
+    atomint = atomdict(c); %logical index the atom data relative to the atomic symbols
     em = zeros(lim'); %initialize empty volume for the model
     
     for j=1:numel(atomint) %faster loop, use vectorized converted atomic info faster than struct reference
