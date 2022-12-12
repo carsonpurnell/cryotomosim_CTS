@@ -1,4 +1,4 @@
-function [vol,data] = helper_pdb2vol(pdb,pix,trim,savemat)
+function [vol,names,data] = helper_pdb2vol(pdb,pix,trim,savemat)
 %[vol,data] = helper_pdb2vol(pdb,pix,trim,savemat)
 %generates a EM density map(s) from an atomic structure definition file
 %
@@ -45,21 +45,47 @@ text = textscan(fid,'%s','delimiter','\n'); %slightly faster to not parse remark
 %text = textscan(fid,'%s','delimiter','\n','CommentStyle',{'REMARK'}); %import each line individually
 text = text{1}; %fix being inside a 1x1 cell array
 
+%pdb appear to have no means of storing model names
+%mmcif DOES store model name, line is data_MODELNAME
+%can use to detect the number of models and their names for cleaner files
+
 %delete terminator and temperature/ANISOU records that mess with model reading and parsing
 ix = strncmp(text,'REMARK',6); text(ix) = []; %clear terminator lines
 ix = strncmp(text,'TER',3); text(ix) = []; %clear terminator lines
 ix = strncmp(text,'ANISOU',6); text(ix) = []; %delete temp records
-ix = strncmp(text,'HETATM',6); text(ix) = []; %delete heteroatoms for sanity
+ix = strncmp(text,'CONECT',6); text(ix) = []; %delete bond information for now
+%ix = strncmp(text,'HETATM',6); text(ix) = []; %delete heteroatoms for sanity
 
 modstart = find(strncmp(text,'MODEL ',6)); %find start of each model entry
 modend = find(strncmp(text,'ENDMDL',6)); %find the end of each model entry
 
 if isempty(modstart) %if single-model, extract start and end of atom lines
-    modstart = find(strncmp(text(1:round(end/2)),'ATOM  ',6)); modstart = modstart(1);
-    endatm = find(strncmp(text(modstart:end),'ATOM  ',6)); endatm = endatm(end);
-    endhet = find(strncmp(text(modstart:end),'HETATMjj',6)); %disabled by jj, hetatm currently ignored
-    if ~isempty(endhet), endhet = endhet(end); else endhet = 0; end %#ok<SEPEX>
-    modend = max(endatm,endhet)+modstart-1; %adjust for having searched only part of the list for speed
+    %new idea, doudble string search before find
+    %modelspan = strncmp(text(1:round(end/2)),'ATOM  ',6)+strncmp(text(1:round(end/2)),'HETATM',6);
+    modelspan = strncmp(text,'ATOM  ',6)+strncmp(text,'HETATM',6);
+    modelspan = find(modelspan); 
+    modstart = modelspan(1);
+    modend = modelspan(end);
+    %modspan = [modstart,modend]
+    %{
+    atomstart = find(strncmp(text(1:round(end/2)),'ATOM  ',6));
+    atomend = find(strncmp(text(modstart:end),'ATOM  ',6));
+    hetstart = find(strncmp(text(1:round(end/2)),'HETATM',6));
+    hetend = find(strncmp(text(modstart:end),'HETATM',6));
+    %modstart = find(strncmp(text(1:round(end/2)),'ATOM  ',6));
+    
+    try
+        modstart = min(modstart(1),hetstart(1));
+    catch
+        %modstart = 
+        atomend = atomend(end);
+    end
+    %}
+    %need to refactor to intelligently find atom/hetatm segments
+    %endhet = find(strncmp(text(modstart:end),'HETATM',6)); %disabled by jj, hetatm currently ignored
+    %if ~isempty(endhet), endhet = endhet(end); else endhet = 0; end %#ok<SEPEX>
+    %modend = max(atomend,endhet)+modstart-1; %adjust for having searched only part of the list for speed
+    
     model{1} = text(modstart:modend); models = 1;
 elseif numel(modstart)==numel(modend) %if counts match, populate model counts
     models = numel(modstart); model = cell(models,1);
@@ -82,6 +108,7 @@ for i=1:models
     coords = [str2num(chararray(:,1:8)),str2num(chararray(:,9:16)),str2num(chararray(:,17:24))]'; %#ok<ST2NM>
     %using str2num because str2double won't operate on 2d arrays, and can't add spaces while vectorized
     data{i,2} = coords; %store coordinates
+    data{i,3} = 'NA';
 end
 
 end
@@ -91,6 +118,11 @@ fid = fileread(pdb);
 text = textscan(fid,'%s','delimiter','\n'); %read in each line of the text file as strings
 %tst = readlines(fid); %readlines from 2020b, compat problems
 text = text{1}; %fix being inside a 1x1 cell array
+
+modnames = text(strncmp(text,'data_',5)); %retrieve lines storing model names
+for i=1:numel(modnames) 
+    modnames{i} = erase(modnames{i},'data_'); %clean name lines
+end
 
 ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
 
@@ -115,12 +147,13 @@ for i=1:numel(headstart)
     x = char(t.Cartn_x); y = char(t.Cartn_y); z = char(t.Cartn_z);
     coord = [str2num(x),str2num(y),str2num(z)]';  %#ok<ST2NM>
     
-    data{i,1} = atoms; data{i,2} = coord;
+    data{i,1} = atoms; data{i,2} = coord; data{i,3} = modnames{i};
 end
+
 
 end
 
-function vol = internal_volbuild(data,pix,trim)
+function [vol,names] = internal_volbuild(data,pix,trim)
 
 %initialize atomic magnitude information
 %mag = struct('H',0,'C',6+1.3,'N',7+1.1,'O',8+0.2,'P',15,'S',16+0.6);
@@ -143,11 +176,15 @@ interaction parameters for voltage 100=.92 200=.73 300=.65 mrad/(V*A) (multiply 
 %currently using atomic number, should use a more accurate scattering factor measure
 %}
 
+%dummy volume detector would go here to center stuff
+%get lim and adj based on largest distances from the dummy origin, then remove the dummy model
+
 %faster, vectorized adjustments and limits to coordinates and bounding box
 [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
 adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
 lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
 
+names = data(:,3);
 models = numel(data(:,2)); emvol = cell(models,1); %pre-allocate stuff
 if models==1, trim=1; end
 for i=1:models
@@ -156,7 +193,7 @@ for i=1:models
     
     %convert atomic labels into atom opacity information outside the loop for speed
     [~,c] = ismember(atomid,elements); % get index for each atom indicating what reference it is
-    
+    %disp(atomid')
     atomint = op(c); %logical index the atom data relative to the atomic symbols
     em = zeros(lim'); %initialize empty volume for the model
     
