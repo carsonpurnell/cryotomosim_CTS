@@ -23,7 +23,7 @@ end
 
 %orig straight up floor by ice globally
 iced = max(ice,vol); %for some reason the ice is much too dense with test TMD placement output
-%
+%{
 %alternate maybe easier binarization method
 solv = imbinarize(rescale(vol)); 
 map = imgaussfilt3(single(~solv),3);%,'FilterSize',3);
