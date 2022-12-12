@@ -156,11 +156,12 @@ for i=1:iters
                 counts.s = counts.s+1; %increment success, bad old way need to deprecate
                 %actually write to the split arrays
                 
-                if strcmp(set(which).type,'memplex')
+                if strcmp(set(which).type,'memplexNOTREALLY')
                     members = 1:numel(particle);
                     %assembly rejigger member nums here
                     for t=members %rotate and place each component of complex
                         %rot = imwarp(set(which).vol{t},tform);
+                        %need to do the rotation for each individual component
                         split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,com);
                     end
                 else %membrane only designation
