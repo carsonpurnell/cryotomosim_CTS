@@ -6,7 +6,7 @@ denspix = (.94/18)*6e23*(pix/1e8)^3; %d = (d/mass)*mol*(pixel/m-a conv)^3 averag
 
 atomfrac = exp(-pix/3); %fraction as points rather than flat background
 %does compressing it into fewer points of higher density work without screwing the noise?
-densfrac = 20/(20+pix)*1; %scalar to distribute extra intensity to particles to reduce number required
+densfrac = 20/(20+pix)*0+1; %scalar to distribute extra intensity to particles to reduce number required
 w = 8+2;
 mol = round(denspix*numel(vol)*atomfrac*densfrac); % atomfrac% of ice mass randomly distributed as molecules
 ice = round(vol*0+denspix*(1-atomfrac)*w); % 1-atomfrac% of ice mass as flat background for speed
