@@ -25,7 +25,7 @@ elseif ismember(ext,{'.cif','.mmcif'})
 elseif ismember(ext,{'.pdb','.pdb1'})
     data = internal_pdbparse(pdb);
 end
-vol = internal_volbuild(data,pix,trim);
+[vol,names] = internal_volbuild(data,pix,trim);
 
 if savemat==1 %.mat saving and check if file already exists
     outsave = fullfile(path,append(file,'.mat'));
