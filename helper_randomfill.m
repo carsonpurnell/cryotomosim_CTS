@@ -48,6 +48,9 @@ for i=1:iters
     which = randi(numel(set)); 
     particle = set(which).vol; 
     
+    %put split/group placement box after the type switch for efficiency and to make complex/memplex/assembly
+    %more general schemes
+    
     switch set(which).type
         case {'complex','assembly'} %all or multiple structured components of a protein complex
             sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
