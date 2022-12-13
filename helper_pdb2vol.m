@@ -184,12 +184,15 @@ names = data(:,3);
 %strfind([names{:}],'origin')';
 ix = find(contains(names,'origin')); %get the index, if any, of the name origin in the model
 %find(ix); %get the index of the actual name
-if ~isempty(ix) && 5==4
+if ~isempty(ix) %&& 5==4
     trim=0; %don't trim if a centroid is imposed, need to revise input options
-    origin = mean(data{ix,2},2); %get the origin coordinate to subtract if not already 0
-    
-    
-    
+    [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
+    origin = mean(data{ix,2},2)
+    origin = origin([2,1,3]) %get the origin coordinate to subtract if not already 0
+    span = max(origin-a,b-origin); %get spans measured from the origin
+    span = ceil(span/pix)*2+1; %get pixel box from span, always off to ensure origin perfect center
+    adj = -a+pix/2; %calculate the adjustment to apply to coordinates to put them into the box
+    lim = round( (adj+b)/pix +1);
 else
     %origin = mean(horzcat(data{:,2}),2); %get the geometric mean of atom coordinates
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
@@ -228,7 +231,8 @@ for i=1:models
     
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
     atomint = atomdict(c); %logical index the atom data relative to the atomic symbols
-    em = zeros(lim'); %initialize empty volume for the model
+    %em = zeros(lim'); %initialize empty volume for the model
+    em = zeros(span');
     
     for j=1:numel(atomint) %faster loop, use vectorized converted atomic info faster than struct reference
         x=coords(1,j); y=coords(2,j); z=coords(3,j);
