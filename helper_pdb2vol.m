@@ -1,4 +1,4 @@
-function [vol,names,data] = helper_pdb2vol(pdb,pix,trim,savemat)
+function [vol,sum,names,data] = helper_pdb2vol(pdb,pix,trim,savemat)
 %[vol,data] = helper_pdb2vol(pdb,pix,trim,savemat)
 %generates a EM density map(s) from an atomic structure definition file
 %
@@ -25,7 +25,7 @@ elseif ismember(ext,{'.cif','.mmcif'})
 elseif ismember(ext,{'.pdb','.pdb1'})
     data = internal_pdbparse(pdb);
 end
-[vol,names] = internal_volbuild(data,pix,trim);
+[vol,sum,names] = internal_volbuild(data,pix,trim);
 
 if savemat==1 %.mat saving and check if file already exists
     outsave = fullfile(path,append(file,'.mat'));
@@ -124,20 +124,21 @@ for i=1:numel(modnames)
     modnames{i} = erase(modnames{i},'data_'); %clean name lines
 end
 
-ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
+%ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
 
 headstart = find(strncmp(text,'_atom_site.group_PDB',20)); %header id start
 headend = find(strncmp(text,'_atom_site.pdbx_PDB_model_num',29)); %header id end
-loopend = find(strncmp(text,'loop_',5)); %all loop ends
+loopend = find(strncmp(text,'#',1)); %all loop ends
 
 data = cell(numel(headstart),2);
 for i=1:numel(headstart)
     loopend(loopend<headstart(i)) = []; %remove loop ends before current block
     header = text( headstart(i):headend(i) )'; %pull header lines
     header = replace(header,{'_atom_site.',' '},{'',''}); %clean bad chars from headers
-    model = text( headend(i)+1:loopend(1)-2 ); %pull model lines from after header to loop end
+    model = text( headend(i)+1:loopend(1)-1 ); %pull model lines from after header to loop end
+    q = strrep(model,'" "','1'); %replace quoted spaces with 1 to fix blankspace errors
     
-    q = textscan([model{:}],'%s','Delimiter',' ','MultipleDelimsAsOne',1); %read strings into cells
+    q = textscan([q{:}],'%s','Delimiter',' ','MultipleDelimsAsOne',1); %read strings into cells
     %qq = sscanf([model{:}],'%s',[numel(header) inf]) %lumps everything for some reason
     q = reshape(q{1},numel(header),[])'; %reshape cells to row per atom
     t = cell2table(q,'VariableNames',header); %generate table from atoms using extracted headers
@@ -153,7 +154,8 @@ end
 
 end
 
-function [vol,names] = internal_volbuild(data,pix,trim)
+function [vol,sum,names] = internal_volbuild(data,pix,trim)
+sum = 0; %stopgap until i implement centering and such things
 
 %initialize atomic magnitude information
 %mag = struct('H',0,'C',6+1.3,'N',7+1.1,'O',8+0.2,'P',15,'S',16+0.6);
