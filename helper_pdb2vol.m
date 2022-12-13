@@ -139,14 +139,12 @@ for i=1:numel(headstart)
     q = strrep(model,'" "','1'); %replace quoted spaces with 1 to fix blankspace errors
     
     q = textscan([q{:}],'%s','Delimiter',' ','MultipleDelimsAsOne',1); %read strings into cells
-    %qq = sscanf([model{:}],'%s',[numel(header) inf]) %lumps everything for some reason
     q = reshape(q{1},numel(header),[])'; %reshape cells to row per atom
     t = cell2table(q,'VariableNames',header); %generate table from atoms using extracted headers
     
-    atoms = t.type_symbol;
-    
+    atoms = t.type_symbol; %re-extract atom ID and coordinates from the temporary table
     x = char(t.Cartn_x); y = char(t.Cartn_y); z = char(t.Cartn_z);
-    coord = [str2num(x),str2num(y),str2num(z)]';  %#ok<ST2NM>
+    coord = [str2num(x),str2num(y),str2num(z)]';  %#ok<ST2NM> %merge coordinates into a single array
     
     data{i,1} = atoms; data{i,2} = coord; data{i,3} = modnames{i};
 end
