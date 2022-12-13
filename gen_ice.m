@@ -1,6 +1,6 @@
 function [iced, ice] = gen_ice(vol,pix)
 %is amorphous ice .94g/cm3? or is it lower density?
-denspix = (.94/18)*6e23*(pix/1e8)^3; %d = (d/mass)*mol*(pixel/m-a conv)^3 average atom/pix for ice ~.94g/cm3
+denspix = (.90/18)*6e23*(pix/1e8)^3; %d = (d/mass)*mol*(pixel/m-a conv)^3 average atom/pix for ice ~.94g/cm3
 %computed density might be a bit high, vitreous may be lower than .94g/cm3.
 %without solvation exclusion, borders do get very hazy - good for rad damage
 
@@ -22,8 +22,8 @@ end
 % take min of smoothed vol+ice for a halo?
 
 %orig straight up floor by ice globally
-iced = max(ice,vol); %for some reason the ice is much too dense with test TMD placement output
-%{
+iced = max(ice/2,vol); %for some reason the ice is much too dense with test TMD placement output
+%
 %alternate maybe easier binarization method
 solv = imbinarize(rescale(vol)); 
 map = imgaussfilt3(single(~solv),3);%,'FilterSize',3);
