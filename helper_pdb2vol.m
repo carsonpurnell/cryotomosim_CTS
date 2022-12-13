@@ -152,8 +152,8 @@ end
 
 end
 
-function [vol,sum,names] = internal_volbuild(data,pix,trim)
-sum = 0; %stopgap until i implement centering and such things
+function [vol,sumvol,names] = internal_volbuild(data,pix,trim)
+sumvol = 0; %stopgap until i implement centering and such things
 
 %initialize atomic magnitude information
 %mag = struct('H',0,'C',6+1.3,'N',7+1.1,'O',8+0.2,'P',15,'S',16+0.6);
@@ -185,16 +185,25 @@ names = data(:,3);
 ix = find(contains(names,'origin')); %get the index, if any, of the name origin in the model
 %find(ix); %get the index of the actual name
 if ~isempty(ix) && 5==4
-    trim=0; %don't trim if a centroid is imposed
+    trim=0; %don't trim if a centroid is imposed, need to revise input options
     origin = mean(data{ix,2},2); %get the origin coordinate to subtract if not already 0
+    
     
     
 else
     %origin = mean(horzcat(data{:,2}),2); %get the geometric mean of atom coordinates
-    [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
-    origin = (a+b)/2; %get the box center of the points
-    adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
-    lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
+    [a,b] = bounds(horzcat(data{:,2}),2) %bounds of all x/y/z in row order
+    origin = (a+b)/2 %get the box center of the points
+    %span max-min for total distance, +safety whole pix?
+    %adj value subtract min from values to shift centering to all positive?
+    %origin-a
+    span = max(origin-a,b-origin) %get spans measured from the origin
+    %span = b-a+pix;
+    %need to calculate span as largest distance in each dim from origin
+    span = ceil(span/pix)*2+1
+    adj = -a+pix/2;
+    %adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
+    lim = round( (adj+b)/pix +1) %array size to place into, same initial box for all models
     %faster, vectorized adjustments and limits to coordinates and bounding box
     
     trim = 1; %do trimming if origin not specified now that it won't break complexes
@@ -216,7 +225,7 @@ for i=1:models
     
     badentries = find(c<1); %find entries not in the element register
     c(badentries)=[]; data{i,2}(:,badentries) = []; %remove bad entries
-
+    
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
     atomint = atomdict(c); %logical index the atom data relative to the atomic symbols
     em = zeros(lim'); %initialize empty volume for the model
@@ -241,6 +250,7 @@ end
 if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
     emvol = ctsutil('trim',emvol);
 end
+sumvol = sum( cat(4,emvol{:}) ,4); %sum all volumes
 
 vol = reshape(emvol,1,numel(emvol)); %make list horizontal because specifying it initially doesn't work
 end
