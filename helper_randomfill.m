@@ -142,7 +142,8 @@ for i=1:iters
             
             %sel = particles(randi(numel(particles))).tmvol;
             sel = sumvol;
-            spin = imrotate3(sel,randi(180),init'); %rotate axially before transform to target location
+            spinang = randi(180);
+            spin = imrotate3(sel,spinang,init'); %rotate axially before transform to target location
             rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
             
             tdest = inarray+memvol*0-vesvol{k}*1;
@@ -163,7 +164,7 @@ for i=1:iters
                     members = 1:numel(particle);
                     %assembly rejigger member nums here
                     for t=members %rotate and place each component of complex
-                        spin = imrotate3(set(which).vol{t},randi(180),init'); 
+                        spin = imrotate3(centered{t},spinang,init'); 
                         rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
                         %rot = imwarp(set(which).vol{t},tform);
                         %need to do the rotation for each individual component
