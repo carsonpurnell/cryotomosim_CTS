@@ -179,6 +179,11 @@ interaction parameters for voltage 100=.92 200=.73 300=.65 mrad/(V*A) (multiply 
 %dummy volume detector would go here to center stuff
 %get lim and adj based on largest distances from the dummy origin, then remove the dummy model
 
+data{3,2}
+maxxes = max(abs(data{3,2}),[],2)
+mean(data{3,2},2)
+data(3,2)
+
 %faster, vectorized adjustments and limits to coordinates and bounding box
 [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
 adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
@@ -214,10 +219,11 @@ for i=1:models
     end
     %}
     
-    if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
-        em = ctsutil('trim',em);
-    end
     emvol{i} = em;
+end
+
+if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
+    emvol = ctsutil('trim',emvol);
 end
 
 vol = reshape(emvol,1,numel(emvol)); %make list horizontal because specifying it initially doesn't work
