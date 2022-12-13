@@ -185,6 +185,7 @@ names = data(:,3);
 ix = find(contains(names,'origin')); %get the index, if any, of the name origin in the model
 %find(ix); %get the index of the actual name
 if ~isempty(ix) && 5==4
+    trim=0; %don't trim if a centroid is imposed
     origin = mean(data{ix,2},2); %get the origin coordinate to subtract if not already 0
     
     
@@ -195,6 +196,8 @@ else
     adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
     lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
     %faster, vectorized adjustments and limits to coordinates and bounding box
+    
+    trim = 1; %do trimming if origin not specified now that it won't break complexes
 end
 
 %data{3,2}
@@ -203,10 +206,8 @@ end
 %data(3,2)
 %centroid = mean(horzcat(data{:,2}),2);
 
-
-
 models = numel(data(:,2)); emvol = cell(models,1); %pre-allocate stuff
-if models==1, trim=1; end %would break single-model memprots
+%if models==1, trim=1; end %would break single-model memprots
 for i=1:models
     atomid = data{i,1}; %single column, hopefully for speed
     
