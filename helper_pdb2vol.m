@@ -178,18 +178,33 @@ interaction parameters for voltage 100=.92 200=.73 300=.65 mrad/(V*A) (multiply 
 
 %dummy volume detector would go here to center stuff
 %get lim and adj based on largest distances from the dummy origin, then remove the dummy model
-
-data{3,2}
-maxxes = max(abs(data{3,2}),[],2)
-mean(data{3,2},2)
-data(3,2)
-
-%faster, vectorized adjustments and limits to coordinates and bounding box
-[a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
-adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
-lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
-
 names = data(:,3);
+%oriindex = ~cellfun('isempty',strfind(names,'origin'));
+%strfind(names,'origin')';
+%strfind([names{:}],'origin')';
+ix = find(contains(names,'origin')); %get the index, if any, of the name origin in the model
+%find(ix); %get the index of the actual name
+if ~isempty(ix) && 5==4
+    origin = mean(data{ix,2},2); %get the origin coordinate to subtract if not already 0
+    
+    
+else
+    %origin = mean(horzcat(data{:,2}),2); %get the geometric mean of atom coordinates
+    [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
+    origin = (a+b)/2; %get the box center of the points
+    adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
+    lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
+    %faster, vectorized adjustments and limits to coordinates and bounding box
+end
+
+%data{3,2}
+%maxxes = max(abs(data{3,2}),[],2)
+%mean(data{3,2},2)
+%data(3,2)
+%centroid = mean(horzcat(data{:,2}),2);
+
+
+
 models = numel(data(:,2)); emvol = cell(models,1); %pre-allocate stuff
 if models==1, trim=1; end %would break single-model memprots
 for i=1:models
