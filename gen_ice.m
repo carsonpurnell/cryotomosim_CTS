@@ -22,7 +22,7 @@ end
 % take min of smoothed vol+ice for a halo?
 
 %orig straight up floor by ice globally
-iced = max(ice/2,vol); %for some reason the ice is much too dense with test TMD placement output
+iced = max(ice,vol); %for some reason the ice is much too dense with test TMD placement output
 %
 %alternate maybe easier binarization method
 solv = imbinarize(rescale(vol)); 
