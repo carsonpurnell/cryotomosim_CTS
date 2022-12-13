@@ -192,18 +192,18 @@ if ~isempty(ix) && 5==4
     
 else
     %origin = mean(horzcat(data{:,2}),2); %get the geometric mean of atom coordinates
-    [a,b] = bounds(horzcat(data{:,2}),2) %bounds of all x/y/z in row order
-    origin = (a+b)/2 %get the box center of the points
+    [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
+    origin = (a+b)/2; %get the box center of the points
     %span max-min for total distance, +safety whole pix?
     %adj value subtract min from values to shift centering to all positive?
     %origin-a
-    span = max(origin-a,b-origin) %get spans measured from the origin
+    span = max(origin-a,b-origin); %get spans measured from the origin
     %span = b-a+pix;
     %need to calculate span as largest distance in each dim from origin
-    span = ceil(span/pix)*2+1
+    span = ceil(span/pix)*2+1; %get pixel box from span, always off to ensure origin perfect center
     adj = -a+pix/2;
     %adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
-    lim = round( (adj+b)/pix +1) %array size to place into, same initial box for all models
+    lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
     %faster, vectorized adjustments and limits to coordinates and bounding box
     
     trim = 1; %do trimming if origin not specified now that it won't break complexes
