@@ -199,8 +199,6 @@ for i=1:models
     c(badentries)=[]; data{i,2}(:,badentries) = []; %remove bad entries
 
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
-    %borktest = c(c<1)
-    %disp(atomid')
     atomint = atomdict(c); %logical index the atom data relative to the atomic symbols
     em = zeros(lim'); %initialize empty volume for the model
     
