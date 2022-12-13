@@ -186,13 +186,14 @@ ix = find(contains(names,'origin')); %get the index, if any, of the name origin 
 %find(ix); %get the index of the actual name
 if ~isempty(ix) %&& 5==4
     trim=0; %don't trim if a centroid is imposed, need to revise input options
-    [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
-    origin = mean(data{ix,2},2)
-    origin = origin([2,1,3]) %get the origin coordinate to subtract if not already 0
-    span = max(origin-a,b-origin); %get spans measured from the origin
-    span = ceil(span/pix)*2+1; %get pixel box from span, always off to ensure origin perfect center
-    adj = -a+pix/2; %calculate the adjustment to apply to coordinates to put them into the box
-    lim = round( (adj+b)/pix +1);
+    [a,b] = bounds(horzcat(data{:,2}),2) %bounds of all x/y/z in row order
+    origin = mean(data{ix,2},2);
+    %origin = origin([2,1,3]) %get the origin coordinate to subtract if not already 0
+    span = max(origin-a,b-origin) %get spans measured from the origin
+    lim = ceil(span/pix+0.5)*2+1 %get pixel box from span, always off to ensure origin perfect center
+    adj = (lim-1)/2+1
+    %adj = span+pix/2; %calculate the adjustment to apply to coordinates to put them into the box
+    %lim = round( (adj+b)/pix +1);
 else
     %origin = mean(horzcat(data{:,2}),2); %get the geometric mean of atom coordinates
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
@@ -203,10 +204,10 @@ else
     span = max(origin-a,b-origin); %get spans measured from the origin
     %span = b-a+pix;
     %need to calculate span as largest distance in each dim from origin
-    span = ceil(span/pix)*2+1; %get pixel box from span, always off to ensure origin perfect center
-    adj = -a+pix/2;
+    lim = ceil(span/pix)*2+1; %get pixel box from span, always off to ensure origin perfect center
+    adj = span/2+1.5
     %adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
-    lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
+    %lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
     %faster, vectorized adjustments and limits to coordinates and bounding box
     
     trim = 1; %do trimming if origin not specified now that it won't break complexes
@@ -232,10 +233,11 @@ for i=1:models
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
     atomint = atomdict(c); %logical index the atom data relative to the atomic symbols
     %em = zeros(lim'); %initialize empty volume for the model
-    em = zeros(span');
+    em = zeros(lim');
     
     for j=1:numel(atomint) %faster loop, use vectorized converted atomic info faster than struct reference
         x=coords(1,j); y=coords(2,j); z=coords(3,j);
+        [x,y,z]
         em(x,y,z) = em(x,y,z)+atomint(j);
     end
     
