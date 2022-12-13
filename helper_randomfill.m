@@ -39,7 +39,7 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     skel = (bw.*~mask)>max(bw,[],'all')/2-1; %apply the mask to the distance map and threshold edge noise
     skel = ctsutil('edgeblank',skel,2);
     memlocmap = bwareaopen(skel,20); %clean any remaining outlier points
-    init = [0 0 1]; %initial required orientation for memprots
+    init = [0;0;1]; %initial required orientation for memprots
     %sliceViewer(skel); %it does work
 end
 % membrane setup stuff end
@@ -139,7 +139,7 @@ for i=1:iters
             
             %sel = particles(randi(numel(particles))).tmvol;
             sel = sumvol;
-            spin = imrotate3(sel,randi(180),init'); %rotate axially before transform to target location
+            spin = imrotate3(sel,randi(180),init); %rotate axially before transform to target location
             rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
             
             tdest = inarray+memvol*0-vesvol{k}*1;
@@ -156,10 +156,12 @@ for i=1:iters
                 counts.s = counts.s+1; %increment success, bad old way need to deprecate
                 %actually write to the split arrays
                 
-                if strcmp(set(which).type,'memplexNOTREALLY')
+                if strcmp(set(which).type,'memplex')
                     members = 1:numel(particle);
                     %assembly rejigger member nums here
                     for t=members %rotate and place each component of complex
+                        spin = imrotate3(set(which).vol{t},randi(180),init); 
+                        rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
                         %rot = imwarp(set(which).vol{t},tform);
                         %need to do the rotation for each individual component
                         split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,com);
