@@ -1,4 +1,4 @@
-function [vol,sum,names,data] = helper_pdb2vol(pdb,pix,trim,savemat)
+function [vol,sumvol,names,data] = helper_pdb2vol(pdb,pix,trim,savemat)
 %[vol,data] = helper_pdb2vol(pdb,pix,trim,savemat)
 %generates a EM density map(s) from an atomic structure definition file
 %
@@ -27,7 +27,7 @@ elseif ismember(ext,{'.cif','.mmcif'})
 elseif ismember(ext,{'.pdb','.pdb1'})
     data = internal_pdbparse(pdb);
 end
-[vol,sum,names] = internal_volbuild(data,pix,trim);
+[vol,sumvol,names] = internal_volbuild(data,pix,trim);
 
 if savemat==1 %.mat saving and check if file already exists
     outsave = fullfile(path,append(file,'.mat'));
@@ -187,14 +187,14 @@ names = data(:,3);
 ix = find(contains(names,'origin')); %get the index, if any, of the name origin in the model
 %find(ix); %get the index of the actual name
 if ~isempty(ix) %&& 5==4
-    %trim=0; %don't trim if a centroid is imposed, need to revise input options
+    trim=0; %don't trim if a centroid is imposed, need to revise input options
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     origin = mean(data{ix,2},2);
     %origin = origin([2,1,3]) %get the origin coordinate to subtract if not already 0
     span = max(origin-a,b-origin); %get spans measured from the origin
     spanpix = ceil(span/pix)+1;
     lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
-    adj = spanpix*pix+pix*1;
+    adj = spanpix*pix+pix*1-origin;
     %adj = span+pix/2; %calculate the adjustment to apply to coordinates to put them into the box
     %lim = round( (adj+b)/pix +1);
 else
@@ -209,7 +209,7 @@ else
     %need to calculate span as largest distance in each dim from origin
     spanpix = ceil(span/pix)+1;
     lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
-    adj = spanpix*pix+pix*1;
+    adj = spanpix*pix+pix*1-origin;
     %adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
     %lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
     %faster, vectorized adjustments and limits to coordinates and bounding box
@@ -238,6 +238,7 @@ for i=1:models
     atomint = atomdict(c); %logical index the atom data relative to the atomic symbols
     %em = zeros(lim'); %initialize empty volume for the model
     em = zeros(lim');
+    %lim
     
     for j=1:numel(atomint) %faster loop, use vectorized converted atomic info faster than struct reference
         x=coords(1,j); y=coords(2,j); z=coords(3,j);
