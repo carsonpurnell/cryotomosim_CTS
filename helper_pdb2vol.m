@@ -12,7 +12,9 @@ function [vol,sum,names,data] = helper_pdb2vol(pdb,pix,trim,savemat)
 arguments
     pdb
     pix
+    %trim string {mustBeMember(trim,{'none','box','tube','sides'})} = 'sides'
     trim = 0 %by default, don't trim (singles still automatically trimmed)
+    %trim 0 for none, 1 for as a group, 2 for each individually?
     savemat = 1 %by default, save a .mat file if possible as a much faster alternative
 end
 
@@ -185,13 +187,14 @@ names = data(:,3);
 ix = find(contains(names,'origin')); %get the index, if any, of the name origin in the model
 %find(ix); %get the index of the actual name
 if ~isempty(ix) %&& 5==4
-    trim=0; %don't trim if a centroid is imposed, need to revise input options
-    [a,b] = bounds(horzcat(data{:,2}),2) %bounds of all x/y/z in row order
+    %trim=0; %don't trim if a centroid is imposed, need to revise input options
+    [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     origin = mean(data{ix,2},2);
     %origin = origin([2,1,3]) %get the origin coordinate to subtract if not already 0
-    span = max(origin-a,b-origin) %get spans measured from the origin
-    lim = ceil(span/pix+0.5)*2+1 %get pixel box from span, always off to ensure origin perfect center
-    adj = (lim-1)/2+1
+    span = max(origin-a,b-origin); %get spans measured from the origin
+    spanpix = ceil(span/pix)+1;
+    lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
+    adj = spanpix*pix+pix*1;
     %adj = span+pix/2; %calculate the adjustment to apply to coordinates to put them into the box
     %lim = round( (adj+b)/pix +1);
 else
@@ -204,8 +207,9 @@ else
     span = max(origin-a,b-origin); %get spans measured from the origin
     %span = b-a+pix;
     %need to calculate span as largest distance in each dim from origin
-    lim = ceil(span/pix)*2+1; %get pixel box from span, always off to ensure origin perfect center
-    adj = span/2+1.5
+    spanpix = ceil(span/pix)+1;
+    lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
+    adj = spanpix*pix+pix*1;
     %adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
     %lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
     %faster, vectorized adjustments and limits to coordinates and bounding box
@@ -237,7 +241,7 @@ for i=1:models
     
     for j=1:numel(atomint) %faster loop, use vectorized converted atomic info faster than struct reference
         x=coords(1,j); y=coords(2,j); z=coords(3,j);
-        [x,y,z]
+        %[x,y,z]
         em(x,y,z) = em(x,y,z)+atomint(j);
     end
     
@@ -249,14 +253,20 @@ for i=1:models
         em(x,y,z) = em(x,y,z)+opacity; %write mag to the model vol
     end
     %}
-    
+    if trim==2
+        em = ctsutil('trim',em);
+    end
     emvol{i} = em;
 end
 
 if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
     emvol = ctsutil('trim',emvol);
 end
-sumvol = sum( cat(4,emvol{:}) ,4); %sum all volumes
+if trim==0
+    sumvol = 0;
+else
+    sumvol = sum( cat(4,emvol{:}) ,4); %sum all volumes
+end
 
 vol = reshape(emvol,1,numel(emvol)); %make list horizontal because specifying it initially doesn't work
 end
