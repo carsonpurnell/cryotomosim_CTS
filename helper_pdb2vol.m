@@ -214,7 +214,7 @@ else
     %lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
     %faster, vectorized adjustments and limits to coordinates and bounding box
     
-    trim = 1; %do trimming if origin not specified now that it won't break complexes
+    %trim = 1; %do trimming if origin not specified now that it won't break complexes
 end
 
 %data{3,2}
@@ -262,7 +262,7 @@ end
 if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
     emvol = ctsutil('trim',emvol);
 end
-if trim==0
+if trim==2
     sumvol = 0;
 else
     sumvol = sum( cat(4,emvol{:}) ,4); %sum all volumes
