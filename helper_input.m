@@ -39,7 +39,7 @@ for i=1:numel(list)
     
     if iscellstr(list(i)) && ismember(ext,modelext)
         fprintf('read: %s ',filename)
-        tmp.vol = helper_pdb2vol(list{i},pixelsize,trim,sv); %read pdb and construct as volume at pixel size
+        [tmp.vol,sumvol,names] = helper_pdb2vol(list{i},pixelsize,trim,sv); %read pdb and construct as volume at pixel size
         fprintf('generating at %g A ',pixelsize)
     elseif iscellstr(list(i)) && strcmp(ext,'.mrc')
         fprintf('loading %s  ',filename)
