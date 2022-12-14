@@ -17,6 +17,7 @@ switch op
             out = cell(n,1);
             sumvol = sum( cat(4,in{:}) ,4);
             trimr = any(sumvol,[2 3]); trimc = any(sumvol,[1 3]); triml = any(sumvol,[1 2]);
+            %cuts out intervening empty space, can screw up individual trim operations potentially
             for i=1:n
                 out{i} = in{i}(trimr,trimc,triml);
             end
