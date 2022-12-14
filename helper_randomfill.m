@@ -121,8 +121,9 @@ for i=1:iters
         case {'memplex','membrane'}
             [particle] = ctsutil('trim',particle); %trims all vols according to their sum
             %centered = centervol(molc); 
-            centered = ctsutil('centervol',particle); %centers all vols in cells to the COM of the first
-            sumvol = sum( cat(4,centered{:}) ,4); %get sum volume (should pregenerate in _input)
+            %centered = ctsutil('centervol',particle); %centers all vols in cells to the COM of the first
+            %sumvol = sum( cat(4,centered{:}) ,4); %get sum volume (should pregenerate in _input)
+            sumvol = set(which).sumvol;
             
             [x,y,z] = ind2sub(size(memlocmap),find(memlocmap>0)); %don't need >0, minor speed loss
             pts = [x,y,z]; %probably need to replace this block with something much faster
@@ -164,7 +165,7 @@ for i=1:iters
                     members = 1:numel(particle);
                     %assembly rejigger member nums here
                     for t=members %rotate and place each component of complex
-                        spin = imrotate3(centered{t},spinang,init'); 
+                        spin = imrotate3(set(which).vol{t},spinang,init'); 
                         rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
                         %rot = imwarp(set(which).vol{t},tform);
                         %need to do the rotation for each individual component
