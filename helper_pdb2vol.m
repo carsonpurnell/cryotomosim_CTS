@@ -114,11 +114,6 @@ text = text{1}; %fix being inside a 1x1 cell array
 
 modnames = text(strncmp(text,'data_',5)); %retrieve lines storing model names
 modnames = strrep(modnames,'data_','');
-%{
-for i=1:numel(modnames) 
-    modnames{i} = erase(modnames{i},'data_'); %clean name lines
-end
-%}
 
 %ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
 
