@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [v0.1.0](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.0) - 2022-12-15 18:31:38
+
+Model generation now supports placement of membrane proteins in or on generated vesicles through the classes 'memplex' (functioning as a complex) and 'membrane'. Membrane proteins must be oriented with the external domain in the positive Z direction, and must be oriented around 0,0,0 as the transmembrane centroid.
+see https://opm.phar.umich.edu for an annotated database of membrane proteins, with structures that include membrane border models.
+
+To conform to these requirements using ChimeraX, you can use define to create a plane or axis from the TMD, and then align to orient it along the Z axis, using turn y 108 if it is reversed. If this does not center the TMD at 0,0,0 you can use the measure command to determine the offset and the move command to shift all models until the TMD centroid is at 0,0,0. Do not save relative to any model, that will shift coordinates.
+
+If you use an OPM structure or otherwise create a model annotation for the TMD, you can instead rename that TMD-defining model (such as the OPM planes) to something that includes 'origin' and save it as a .cif (as .pdb do not retain model names). CTS will detect the model name and use it to define the centroid. OPM models seem to already be aligned to this standard (and with the TMD centroid very close to 0,0,0) and so should be easier.
+Note that old chimera cannot save .cif files, and chimeraX does not load model names - it can only save them, so it will overwrite any model names if used to open and save the file again.
+
 ## [v0.0.9](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.0.9) - 2022-12-09 18:34:58
 
 implementation of preliminary support for integral membrane proteins
