@@ -30,7 +30,7 @@ elseif ismember(ext,{'.pdb','.pdb1'})
     data = internal_pdbparse(pdb);
 end
 %}
-switch ext
+switch ext %parse structure files depending on filetype
     case '.mat'
         try q = load(pdb); data = q.data;
         catch warning('Input is not a pdb2vol-generated .mat file'); end %#ok<SEPEX>
