@@ -74,7 +74,7 @@ modend = find(strncmp(text,'ENDMDL',6)); %find the end of each model entry
 if isempty(modstart) %if single-model, extract start and end of atom lines
     %new idea, doudble string search before find
     %modelspan = strncmp(text(1:round(end/2)),'ATOM  ',6)+strncmp(text(1:round(end/2)),'HETATM',6);
-    modelspan = strncmp(text,'ATOM  ',6)+strncmp(text,'HETATM',6);
+    modelspan = strncmp(text,'ATOM  ',6)+strncmp(text,'HETATM',6); %logical index all valid atom records
     modelspan = find(modelspan); 
     modstart = modelspan(1);
     modend = modelspan(end);
