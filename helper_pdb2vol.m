@@ -76,8 +76,7 @@ if isempty(modstart) %if single-model, extract start and end of atom lines
     %modelspan = strncmp(text(1:round(end/2)),'ATOM  ',6)+strncmp(text(1:round(end/2)),'HETATM',6);
     modelspan = strncmp(text,'ATOM  ',6)+strncmp(text,'HETATM',6); %logical index all valid atom records
     modelspan = find(modelspan); 
-    modstart = modelspan(1);
-    modend = modelspan(end);
+    modstart = modelspan(1); modend = modelspan(end);
     %modspan = [modstart,modend]
     %{
     atomstart = find(strncmp(text(1:round(end/2)),'ATOM  ',6));
