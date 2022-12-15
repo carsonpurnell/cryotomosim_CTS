@@ -58,7 +58,6 @@ fid = fileread(pdb);
 text = textscan(fid,'%s','delimiter','\n');%,'CommentStyle',{'REMARK'}); %import lines, ignoring comments slow
 text = text{1}; %fix being inside a 1x1 cell array
 
-%delete terminator and temperature/ANISOU records that mess with model reading and parsing
 %{
 ix = strncmp(text,'REMARK',6); text(ix) = []; %clear remark lines
 ix = strncmp(text,'ANISOU',6); text(ix) = []; %delete temp records
@@ -72,27 +71,10 @@ modstart = find(strncmp(text,'MODEL ',6)); %find start of each model entry
 modend = find(strncmp(text,'ENDMDL',6)); %find the end of each model entry
 
 if isempty(modstart) %if single-model, extract start and end of atom lines
-    %new idea, doudble string search before find
     %modelspan = strncmp(text(1:round(end/2)),'ATOM  ',6)+strncmp(text(1:round(end/2)),'HETATM',6);
-    modelspan = strncmp(text,'ATOM  ',6)+strncmp(text,'HETATM',6); %logical index all valid atom records
-    modelspan = find(modelspan); 
+    modelspan = find(strncmp(text,'ATOM  ',6)+strncmp(text,'HETATM',6)); %index all valid atom records
     modstart = modelspan(1); modend = modelspan(end);
-    %modspan = [modstart,modend]
-    %{
-    atomstart = find(strncmp(text(1:round(end/2)),'ATOM  ',6));
-    atomend = find(strncmp(text(modstart:end),'ATOM  ',6));
-    hetstart = find(strncmp(text(1:round(end/2)),'HETATM',6));
-    hetend = find(strncmp(text(modstart:end),'HETATM',6));
-    %modstart = find(strncmp(text(1:round(end/2)),'ATOM  ',6));
     
-    try
-        modstart = min(modstart(1),hetstart(1));
-    catch
-        %modstart = 
-        atomend = atomend(end);
-    end
-    %}
-    %need to refactor to intelligently find atom/hetatm segments
     %endhet = find(strncmp(text(modstart:end),'HETATM',6)); %disabled by jj, hetatm currently ignored
     %if ~isempty(endhet), endhet = endhet(end); else endhet = 0; end %#ok<SEPEX>
     %modend = max(atomend,endhet)+modstart-1; %adjust for having searched only part of the list for speed
