@@ -43,9 +43,9 @@ end
 
 if savemat==1 %.mat saving and check if file already exists
     outsave = fullfile(path,append(file,'.mat'));
-    if isfile(outsave)
+    if isfile(outsave) %don't overwrite an existing file
         fprintf(' .mat exists, '); 
-    else
+    else %save without compression if no .mat file exists
         fprintf(' saving .mat... '); save(outsave,'data','-nocompression');
     end
 end
