@@ -46,8 +46,7 @@ if savemat==1 %.mat saving and check if file already exists
     if isfile(outsave)
         fprintf(' .mat exists, '); 
     else
-        fprintf(' saving .mat... ')
-        save(outsave,'data','-nocompression'); %don't compress to save a bit of time saving+loading
+        fprintf(' saving .mat... '); save(outsave,'data','-nocompression');
     end
 end
 
