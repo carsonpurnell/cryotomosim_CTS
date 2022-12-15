@@ -58,10 +58,6 @@ text = textscan(fid,'%s','delimiter','\n'); %slightly faster to not parse remark
 text = textscan(fid,'%s','delimiter','\n');%,'CommentStyle',{'REMARK'}); %import lines, ignoring comments slow
 text = text{1}; %fix being inside a 1x1 cell array
 
-%pdb appear to have no means of storing model names
-%mmcif DOES store model name, line is data_MODELNAME
-%can use to detect the number of models and their names for cleaner files
-
 %delete terminator and temperature/ANISOU records that mess with model reading and parsing
 ix = strncmp(text,'REMARK',6); text(ix) = []; %clear terminator lines
 ix = strncmp(text,'TER',3); text(ix) = []; %clear terminator lines
