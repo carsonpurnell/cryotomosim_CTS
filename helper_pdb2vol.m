@@ -1,4 +1,4 @@
-function [vol,sumvol,names,data] = helper_pdb2vol(pdb,pix,trim,savemat)
+function [vol,sumvol,names,data] = helper_pdb2vol(pdb,pix,trim,centering,savemat)
 %[vol,data] = helper_pdb2vol(pdb,pix,trim,savemat)
 %generates a EM density map(s) from an atomic structure definition file
 %
@@ -15,6 +15,7 @@ arguments
     %trim string {mustBeMember(trim,{'none','box','tube','sides'})} = 'sides'
     trim = 0 %by default, don't trim (singles still automatically trimmed)
     %trim 0 for none, 1 for as a group, 2 for each individually?
+    centering = 0;
     savemat = 1 %by default, save a .mat file if possible as a much faster alternative
 end
 
@@ -27,7 +28,7 @@ elseif ismember(ext,{'.cif','.mmcif'})
 elseif ismember(ext,{'.pdb','.pdb1'})
     data = internal_pdbparse(pdb);
 end
-[vol,sumvol,names] = internal_volbuild(data,pix,trim);
+[vol,sumvol,names] = internal_volbuild(data,pix,trim,centering);
 
 if savemat==1 %.mat saving and check if file already exists
     outsave = fullfile(path,append(file,'.mat'));
@@ -154,7 +155,7 @@ end
 
 end
 
-function [vol,sumvol,names] = internal_volbuild(data,pix,trim)
+function [vol,sumvol,names] = internal_volbuild(data,pix,trim,centering)
 sumvol = 0; %stopgap until i implement centering and such things
 
 %initialize atomic magnitude information
@@ -186,10 +187,25 @@ names = data(:,3);
 %strfind([names{:}],'origin')';
 ix = find(contains(names,'origin')); %get the index, if any, of the name origin in the model
 %find(ix); %get the index of the actual name
-if ~isempty(ix) %&& 5==4
+%check to clear out other dummy submodels?
+if centering==1 && isempty(ix)
     trim=0; %don't trim if a centroid is imposed, need to revise input options
+    %origin = mean(data{ix,2},2);
+    origin = [0,0,0]';
+    %data(ix,:) = []; %remove the origin model for cleanliness
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
+    %origin = origin([2,1,3]) %get the origin coordinate to subtract if not already 0
+    span = max(origin-a,b-origin); %get spans measured from the origin
+    spanpix = ceil(span/pix)+1;
+    lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
+    adj = spanpix*pix+pix*1-origin;
+    %adj = span+pix/2; %calculate the adjustment to apply to coordinates to put them into the box
+    %lim = round( (adj+b)/pix +1);
+elseif centering==1 && ~isempty(ix) %&& 5==4
+    trim=0; %don't trim if a centroid is imposed, need to revise input options
     origin = mean(data{ix,2},2);
+    data(ix,:) = []; %remove the origin model for cleanliness
+    [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     %origin = origin([2,1,3]) %get the origin coordinate to subtract if not already 0
     span = max(origin-a,b-origin); %get spans measured from the origin
     spanpix = ceil(span/pix)+1;
