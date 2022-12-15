@@ -26,7 +26,15 @@ for i=1:numel(list)
     id = strsplit(filename,{'__','.'}); %extract class IDs from filename, delimited by . or __
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
     if ismember(tmp.type,types)==0, tmp.type='single'; end %default to single with no type ID in name
-    trim=1; if ismember(tmp.type,{'complex','assembly','memplex'}), trim=0; end %trim anything except complex/assem
+    trim=1; 
+    if ismember(tmp.type,{'complex','assembly','memplex'})
+        trim=0;
+    end %trim anything except complex/assem
+    if ismember(tmp.type,{'memplex','membrane'})
+        centering = 1;
+    else
+        centering = 0;
+    end
     
     id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
     for j=1:numel(id) %loop through ID parts to make them functional for field names
@@ -39,7 +47,8 @@ for i=1:numel(list)
     
     if iscellstr(list(i)) && ismember(ext,modelext)
         fprintf('read: %s ',filename)
-        [tmp.vol,sumvol,names] = helper_pdb2vol(list{i},pixelsize,trim,sv); %read pdb and construct as volume at pixel size
+        [tmp.vol,sumvol,names] = helper_pdb2vol(list{i},pixelsize,trim,centering,sv); 
+        %read pdb and construct as volume at pixel size
         fprintf('generating at %g A ',pixelsize)
     elseif iscellstr(list(i)) && strcmp(ext,'.mrc')
         fprintf('loading %s  ',filename)
@@ -57,6 +66,7 @@ for i=1:numel(list)
         postnum = {1:numel(tmp.vol)}; %because string doesn't work on cell arrays that are not variables
         tmp.id = append(tmp.id{1},'_',string(postnum{:}));
     end
+    tmp.sumvol = sumvol;
     
     %tmp.vol = helper_preproc(tmp.vol,proc);
     %need to filter mrc to make density maps clean, pdb are already good to go
