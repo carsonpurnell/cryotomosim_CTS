@@ -20,6 +20,7 @@ arguments
 end
 
 [path,file,ext] = fileparts(pdb);
+%{
 if strcmp(ext,'.mat') %if .mat, load the data from the file
     try q = load(pdb); data = q.data;
     catch warning('Input is not a pdb2vol-generated .mat file'); end %#ok<SEPEX>
@@ -27,6 +28,16 @@ elseif ismember(ext,{'.cif','.mmcif'})
     data = internal_cifparse(pdb);
 elseif ismember(ext,{'.pdb','.pdb1'})
     data = internal_pdbparse(pdb);
+end
+%}
+switch ext
+    case '.mat'
+        try q = load(pdb); data = q.data;
+        catch warning('Input is not a pdb2vol-generated .mat file'); end %#ok<SEPEX>
+    case {'.cif','.mmcif'}
+        data = internal_cifparse(pdb);
+    case {'.pdb','.pdb1'}
+        data = internal_pdbparse(pdb);
 end
 [vol,sumvol,names] = internal_volbuild(data,pix,trim,centering);
 
