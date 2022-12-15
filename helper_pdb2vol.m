@@ -54,15 +54,16 @@ end
 
 function [data] = internal_pdbparse(pdb)
 fid = fileread(pdb); 
-text = textscan(fid,'%s','delimiter','\n'); %slightly faster to not parse remarks at all
+%text = textscan(fid,'%s','delimiter','\n'); %slightly faster to not parse remarks at all
 text = textscan(fid,'%s','delimiter','\n');%,'CommentStyle',{'REMARK'}); %import lines, ignoring comments slow
 text = text{1}; %fix being inside a 1x1 cell array
 
 %delete terminator and temperature/ANISOU records that mess with model reading and parsing
-ix = strncmp(text,'REMARK',6); text(ix) = []; %clear terminator lines
+ix = strncmp(text,'REMARK',6); text(ix) = []; %clear remark lines
 ix = strncmp(text,'TER',3); text(ix) = []; %clear terminator lines
 ix = strncmp(text,'ANISOU',6); text(ix) = []; %delete temp records
 ix = strncmp(text,'CONECT',6); text(ix) = []; %delete bond information for now
+ix = contains(text,{'REMARK','ANISOU','CONECT'});
 %ix = strncmp(text,'HETATM',6); text(ix) = []; %delete heteroatoms for sanity
 
 modstart = find(strncmp(text,'MODEL ',6)); %find start of each model entry
