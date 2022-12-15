@@ -59,11 +59,13 @@ text = textscan(fid,'%s','delimiter','\n');%,'CommentStyle',{'REMARK'}); %import
 text = text{1}; %fix being inside a 1x1 cell array
 
 %delete terminator and temperature/ANISOU records that mess with model reading and parsing
+%{
 ix = strncmp(text,'REMARK',6); text(ix) = []; %clear remark lines
-ix = strncmp(text,'TER',3); text(ix) = []; %clear terminator lines
 ix = strncmp(text,'ANISOU',6); text(ix) = []; %delete temp records
 ix = strncmp(text,'CONECT',6); text(ix) = []; %delete bond information for now
-ix = contains(text,{'REMARK','ANISOU','CONECT'});
+%}
+ix = strncmp(text,'TER',3); text(ix) = []; %clear terminator lines
+ix = contains(text,{'REMARK','ANISOU','CONECT'}); %remove remark, temperature, and connectivity records
 %ix = strncmp(text,'HETATM',6); text(ix) = []; %delete heteroatoms for sanity
 
 modstart = find(strncmp(text,'MODEL ',6)); %find start of each model entry
