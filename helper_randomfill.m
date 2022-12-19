@@ -43,18 +43,19 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     %sliceViewer(skel); %it does work
     
     %inside/outside membrane localization maps
-    nonmem = bwdist(memvol)>3;
+    nonmem = bwdist(inarray)>3; %locmap for all available area
     sliceViewer(nonmem);
     
+    %find the largest component, assumed to be the background space
     CC = bwconncomp(nonmem);
     numPixels = cellfun(@numel,CC.PixelIdxList);
     [~,idx] = max(numPixels);
     mout = zeros(size(nonmem));
-    mout(CC.PixelIdxList{idx}) = 1;
+    mout(CC.PixelIdxList{idx}) = 1; %locmap for outside of vesicles
     
     figure(); sliceViewer(mout);
     
-    min = nonmem-mout;
+    min = nonmem-mout; %locmap for inside vesicles
     figure(); sliceViewer(min);
 end
 % membrane setup stuff end
