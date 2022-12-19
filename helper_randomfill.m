@@ -118,15 +118,16 @@ for i=1:iters
                 tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
                 rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
                 r = randi(size(pts,1)); loc = pts(r,:); %get a test point
+                com = round(loc-size(rot)/2); %shift to place by the COM
                 %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
-                [~,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
+                [~,err] = helper_arrayinsert(inarray,rot,com,'overlaptest');
                 if err==0, break; end
             end
             counts.f = counts.f + err;
             if err==0 %on success, place in splits and working array
                 counts.s=counts.s+1;
-                [inarray] = helper_arrayinsert(inarray,rot,loc);
-                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
+                [inarray] = helper_arrayinsert(inarray,rot,com);
+                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,com);
             end
             
             %loc = pts(r,:); %get the loc from the randomized points
