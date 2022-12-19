@@ -44,7 +44,7 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     
     %inside/outside membrane localization maps
     nonmem = bwdist(inarray)>3; %locmap for all available area
-    sliceViewer(nonmem);
+    %sliceViewer(nonmem);
     
     %find the largest component, assumed to be the background space
     CC = bwconncomp(nonmem);
@@ -53,10 +53,10 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     mout = zeros(size(nonmem));
     mout(CC.PixelIdxList{idx}) = 1; %locmap for outside of vesicles
     
-    figure(); sliceViewer(mout);
+    %figure(); sliceViewer(mout);
     
     min = nonmem-mout; %locmap for inside vesicles
-    figure(); sliceViewer(min);
+    %figure(); sliceViewer(min);
 end
 % membrane setup stuff end
 
@@ -104,6 +104,33 @@ for i=1:iters
                 [inarray] = helper_arrayinsert(inarray,rot,loc);
                 split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
             end
+            
+        case {'inmem','outmem'}
+            sub = randi(numel(particle));
+            if strcmp(set(which).type,'inmem') %get locmap depending on target location
+                [x,y,z] = ind2sub(size(min),find(min>0));
+            else
+                [x,y,z] = ind2sub(size(mout),find(mout>0));
+            end
+            pts = [x,y,z]; %r = randi(size(pts,1));
+            
+            for retry=1:3
+                tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
+                rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
+                r = randi(size(pts,1)); loc = pts(r,:); %get a test point
+                %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
+                [~,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
+                if err==0, break; end
+            end
+            counts.f = counts.f + err;
+            if err==0 %on success, place in splits and working array
+                counts.s=counts.s+1;
+                [inarray] = helper_arrayinsert(inarray,rot,loc);
+                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
+            end
+            
+            %loc = pts(r,:); %get the loc from the randomized points
+            %tform = randomAffine3d
             
         case 'cluster' %need to move into call to cluster function like bundle has
             sub = randi(numel(particle)); %get random selection from the group
