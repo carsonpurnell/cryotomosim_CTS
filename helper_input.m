@@ -17,6 +17,9 @@ end
 list = internal_load(list); %internal call to either uipickfiles or uigetfiles
 
 types = {'single','bundle','complex','cluster','group','assembly','memplex','membrane'};
+%need to change this so they are less silo'd, make them flags rather than different methods
+%complex one flag to make it place everything separately, rather than needing a complex for each type
+%location flag (space, membrane, inside/outside vesicles)
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
 
 for i=1:numel(list)
