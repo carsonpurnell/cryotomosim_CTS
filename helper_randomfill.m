@@ -41,6 +41,21 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     memlocmap = bwareaopen(skel,20); %clean any remaining outlier points
     init = [0,0,1]; %initial required orientation for memprots
     %sliceViewer(skel); %it does work
+    
+    %inside/outside membrane localization maps
+    nonmem = bwdist(memvol)>3;
+    sliceViewer(nonmem);
+    
+    CC = bwconncomp(nonmem);
+    numPixels = cellfun(@numel,CC.PixelIdxList);
+    [~,idx] = max(numPixels);
+    mout = zeros(size(nonmem));
+    mout(CC.PixelIdxList{idx}) = 1;
+    
+    figure(); sliceViewer(mout);
+    
+    min = nonmem-mout;
+    figure(); sliceViewer(min);
 end
 % membrane setup stuff end
 
