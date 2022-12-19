@@ -47,6 +47,7 @@ for i=1:num
             ptrad = radi+[betarnd(3.0,6,rti,1);betarnd(6,3.0,rto,1)]*(rado-radi)*3.5;
     end
     %pearson is very slow, calls beta to call gamma which takes most of the time
+    %need to reformulate the math so that density is hard-bound between ri/ro in angstroms
     %figure(); histogram(ptrad);
     
     ptaz = rand(ptnum,1)*pi*2; %random circular azimuth angles
