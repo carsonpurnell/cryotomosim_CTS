@@ -176,7 +176,7 @@ ix = find(contains(names,'origin')); %get the index, if any, of the name origin 
 %find(ix); %get the index of the actual name
 %check to clear out other dummy submodels?
 %very much need to condense the accumulated goblin code 
-
+%try-catch for the origin submodel?
 if centering==1 && isempty(ix)
     trim=0; %don't trim if a centroid is imposed, need to revise input options
     %origin = mean(data{ix,2},2);
