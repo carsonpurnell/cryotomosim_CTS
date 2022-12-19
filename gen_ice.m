@@ -3,6 +3,8 @@ function [iced, ice] = gen_ice(vol,pix)
 denspix = (.90/18)*6e23*(pix/1e8)^3; %d = (d/mass)*mol*(pixel/m-a conv)^3 average atom/pix for ice ~.94g/cm3
 %computed density might be a bit high, vitreous may be lower than .94g/cm3.
 %without solvation exclusion, borders do get very hazy - good for rad damage
+%test with lower exponent - might make SNR better at lower resolution, which would be great
+%solvation layer is just too much - is only anstroms deep in reality, not several NM
 
 atomfrac = exp(-pix/3); %fraction as points rather than flat background
 %does compressing it into fewer points of higher density work without screwing the noise?
