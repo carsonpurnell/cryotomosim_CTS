@@ -1,5 +1,6 @@
 function [out] = ctsutil(op,in,opt)
 %out = ctsutil(op,in,opt)
+%various utility functions that are used in multiple CTS functions
 %'trim' in=vol
 %'pad'  in=vol opt=padding, all dims
 
