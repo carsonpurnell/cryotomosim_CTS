@@ -38,7 +38,9 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
     skel = (bw.*~mask)>max(bw,[],'all')/2-1; %apply the mask to the distance map and threshold edge noise
     skel = ctsutil('edgeblank',skel,2);
-    memlocmap = bwareaopen(skel,20); %clean any remaining outlier points
+    skel = bwareaopen(skel,20); %clean any remaining outlier points
+    %can skel be used to find normal vectors without needing centroid stored array?
+    memlocmap = skel; %store map of valid locations inside the membrane
     init = [0,0,1]; %initial required orientation for memprots
     %sliceViewer(skel); %it does work
     
