@@ -185,7 +185,6 @@ if centering==1 %&& isempty(ix)
         origin = mean(data{ix(1),2},2);
         data(ix,:) = []; names(ix) = []; %remove dummy submodels and names
     end
-    
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     span = max(origin-a,b-origin); %get spans measured from the origin
     spanpix = ceil(span/pix)+1*0;
@@ -201,7 +200,6 @@ elseif centering==1 && 5==4 %&& ~isempty(ix) %&& 5==4
     lim = spanpix*2+1*1; %get pixel box from span, always off to ensure origin perfect center
     adj = spanpix*pix+pix*1-origin;
 else
-    %fprintf('should not be this one')
     %origin = mean(horzcat(data{:,2}),2); %get the geometric mean of atom coordinates
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     origin = (a+b)/2; %get the box center of the points
