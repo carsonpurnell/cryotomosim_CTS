@@ -181,30 +181,31 @@ if centering==1 && isempty(ix)
     trim=0; %don't trim if a centroid is imposed, need to revise input options
     %origin = mean(data{ix,2},2);
     origin = [0,0,0]';
-    disp('this one')
+    fprintf('this one')
     %data(ix,:) = []; %remove the origin model for cleanliness
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     %origin = origin([2,1,3]) %get the origin coordinate to subtract if not already 0
     span = max(origin-a,b-origin); %get spans measured from the origin
-    spanpix = ceil(span/pix)+1;
+    spanpix = ceil(span/pix)+1*0;
     lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
     adj = spanpix*pix+pix*1-origin;
     %adj = span+pix/2; %calculate the adjustment to apply to coordinates to put them into the box
     %lim = round( (adj+b)/pix +1);
 elseif centering==1 && ~isempty(ix) %&& 5==4
-    disp('second one')
+    fprintf('second one')
     trim=0; %don't trim if a centroid is imposed, need to revise input options
     origin = mean(data{ix,2},2);
     data(ix,:) = []; names(ix) = []; %remove the origin model for cleanliness
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     %origin = origin([2,1,3]) %get the origin coordinate to subtract if not already 0
     span = max(origin-a,b-origin); %get spans measured from the origin
-    spanpix = ceil(span/pix)+1;
-    lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
+    spanpix = ceil(span/pix)+1*0;
+    lim = spanpix*2+1*1; %get pixel box from span, always off to ensure origin perfect center
     adj = spanpix*pix+pix*1-origin;
     %adj = span+pix/2; %calculate the adjustment to apply to coordinates to put them into the box
     %lim = round( (adj+b)/pix +1);
 else
+    fprintf('should not be this one')
     %origin = mean(horzcat(data{:,2}),2); %get the geometric mean of atom coordinates
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     origin = (a+b)/2; %get the box center of the points
