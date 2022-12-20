@@ -177,11 +177,17 @@ ix = find(contains(names,'origin')); %get the index, if any, of the name origin 
 %check to clear out other dummy submodels?
 %very much need to condense the accumulated goblin code 
 %try-catch for the origin submodel?
-if centering==1 && isempty(ix)
+if centering==1 %&& isempty(ix)
     trim=0; %don't trim if a centroid is imposed, need to revise input options
     %origin = mean(data{ix,2},2);
-    origin = [0,0,0]';
-    fprintf('this one')
+    if isempty(ix)
+        origin = [0,0,0]';
+    else
+        origin = mean(data{ix(1),2},2);
+        data(ix,:) = []; names(ix) = []; %remove 
+    end
+    
+    %fprintf('this one')
     %data(ix,:) = []; %remove the origin model for cleanliness
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     %origin = origin([2,1,3]) %get the origin coordinate to subtract if not already 0
@@ -191,8 +197,8 @@ if centering==1 && isempty(ix)
     adj = spanpix*pix+pix*1-origin;
     %adj = span+pix/2; %calculate the adjustment to apply to coordinates to put them into the box
     %lim = round( (adj+b)/pix +1);
-elseif centering==1 && ~isempty(ix) %&& 5==4
-    fprintf('second one')
+elseif centering==1 && 5==4 %&& ~isempty(ix) %&& 5==4
+    %fprintf('second one')
     trim=0; %don't trim if a centroid is imposed, need to revise input options
     origin = mean(data{ix,2},2);
     data(ix,:) = []; names(ix) = []; %remove the origin model for cleanliness
@@ -205,7 +211,7 @@ elseif centering==1 && ~isempty(ix) %&& 5==4
     %adj = span+pix/2; %calculate the adjustment to apply to coordinates to put them into the box
     %lim = round( (adj+b)/pix +1);
 else
-    fprintf('should not be this one')
+    %fprintf('should not be this one')
     %origin = mean(horzcat(data{:,2}),2); %get the geometric mean of atom coordinates
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     origin = (a+b)/2; %get the box center of the points
