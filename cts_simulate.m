@@ -10,7 +10,7 @@ function [detected, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param
 %an input .mrc must be positive-scale density
 %
 %param          default = param_simulate == {}
-%see cts_param for arguments and their usage. to pass arguments to cts_param, {enclose in brackets}
+%see param_simulate for arguments and their usage. to pass arguments to param_simulate, {enclose in brackets}
 %controls most of the behavior of the simulation through name-value pairs. use {'gui'} for manual input.
 %
 %  name-val options:
