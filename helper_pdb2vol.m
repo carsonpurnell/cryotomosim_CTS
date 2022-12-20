@@ -191,32 +191,30 @@ if centering==1 %&& isempty(ix)
     lim = spanpix*2+1; %get pixel box from span from origin
     adj = spanpix*pix+pix*1-origin; %adjustment to apply to coordinates to place them into the pixel box
 elseif centering==1 && 5==4 %&& ~isempty(ix) %&& 5==4
+    if ~isempty(ix)
+        data(ix,:) = []; names(ix) = []; %remove dummy submodels and names
+    end
     trim=0; %don't trim if a centroid is imposed, need to revise input options
     origin = mean(data{ix,2},2);
     data(ix,:) = []; names(ix) = []; %remove the origin model for cleanliness
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     span = max(origin-a,b-origin); %get spans measured from the origin
     spanpix = ceil(span/pix)+1*0;
-    lim = spanpix*2+1*1; %get pixel box from span, always off to ensure origin perfect center
+    lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
     adj = spanpix*pix+pix*1-origin;
 else
-    %origin = mean(horzcat(data{:,2}),2); %get the geometric mean of atom coordinates
+    if ~isempty(ix)
+        data(ix,:) = []; names(ix) = []; %remove dummy submodels and names
+    end
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
-    origin = (a+b)/2; %get the box center of the points
+    origin = (a+b)/2; %get the geometric center of the points
     %span max-min for total distance, +safety whole pix?
     %adj value subtract min from values to shift centering to all positive?
     %origin-a
     span = max(origin-a,b-origin); %get spans measured from the origin
-    %span = b-a+pix;
-    %need to calculate span as largest distance in each dim from origin
-    spanpix = ceil(span/pix)+1;
+    spanpix = ceil(span/pix)+1*0;
     lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
     adj = spanpix*pix+pix*1-origin;
-    %adj = max(a*-1,0)+pix; %coordinate adjustment to avoid indexing below 1
-    %lim = round( (adj+b)/pix +1); %array size to place into, same initial box for all models
-    %faster, vectorized adjustments and limits to coordinates and bounding box
-    
-    %trim = 1; %do trimming if origin not specified now that it won't break complexes
 end
 
 %data{3,2}
