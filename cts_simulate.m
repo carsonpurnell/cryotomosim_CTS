@@ -9,7 +9,7 @@ function [detected, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param
 %'gui' option allows choosing the file with matlab's basic file browser utility
 %an input .mrc must be positive-scale density
 %
-%param          default = cts_param == {}
+%param          default = param_simulate == {}
 %see cts_param for arguments and their usage. to pass arguments to cts_param, {enclose in brackets}
 %controls most of the behavior of the simulation through name-value pairs. use {'gui'} for manual input.
 %
@@ -44,7 +44,7 @@ arguments
     opt.atlasindividual = 0
     opt.dynamotable = 0
 end
-if iscell(param), param = cts_param(param{:}); end %parse params if given as argument input
+if iscell(param), param = param_simulate(param{:}); end %parse params if given as argument input
 
 if strcmp(sampleMRC,'gui') %load model via GUI or specific filename
     [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat',getenv('HOME')); 
