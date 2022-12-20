@@ -28,6 +28,12 @@ for i=1:numel(list)
     fprintf('Loading input %i ',i)
     [~,filename,ext] = fileparts(list{i}); %get file name and extension
     
+    %do flag checks first
+    
+    %convert to vols and scrape names
+    
+    %assign names from file/filename
+    
     id = strsplit(filename,{'__','.'}); %extract class IDs from filename, delimited by . or __
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
     if ismember(tmp.type,types)==0, tmp.type='single'; end %default to single with no type ID in name
