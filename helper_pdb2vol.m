@@ -180,11 +180,11 @@ ix = find(contains(names,'origin')); %get the index, if any, of the name origin 
 if centering==1 %&& isempty(ix)
     trim=0; %don't trim if a centroid is imposed, need to revise input options
     %origin = mean(data{ix,2},2);
-    if isempty(ix)
+    if isempty(ix) %assert origin at 0,0,0 if no submodel providing one
         origin = [0,0,0]';
-    else
+    else %meaure the centroid of the origin submodel when provided
         origin = mean(data{ix(1),2},2);
-        data(ix,:) = []; names(ix) = []; %remove 
+        data(ix,:) = []; names(ix) = []; %remove dummy submodels and names
     end
     
     %fprintf('this one')
