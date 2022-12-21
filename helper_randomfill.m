@@ -70,12 +70,16 @@ for i=1:iters
     %more general schemes
     
     %locmap switch for getting randomized lists of potentially valid points
+    %might need to use if/else instead to fulfill multiple conditions - lacking membranes etc
     switch set(which).type
         case {'memplex','membrane'} %placement into membrane
+            locmap = memlocmap>0;
             
         case 'inmem' %inside vesicle volume
+            locmap = min>0;
                 
         case 'outmem' %only outside vesicles
+            locmap = mout>0;
             
         otherwise %everything else goes into the global locmap
             locmap = bwdist(inarray)>2; %can be generated again each time, faster than updating each placement
