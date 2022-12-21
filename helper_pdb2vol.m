@@ -169,14 +169,9 @@ interaction parameters for voltage 100=.92 200=.73 300=.65 mrad/(V*A) (multiply 
 %dummy volume detector would go here to center stuff
 %get lim and adj based on largest distances from the dummy origin, then remove the dummy model
 names = data(:,3);
-%oriindex = ~cellfun('isempty',strfind(names,'origin'));
-%strfind(names,'origin')';
-%strfind([names{:}],'origin')';
 ix = find(contains(names,'origin')); %get the index, if any, of the name origin in the model
-%find(ix); %get the index of the actual name
 %check to clear out other dummy submodels?
-%very much need to condense the accumulated goblin code 
-%try-catch for the origin submodel?
+%very much need to condense the accumulated goblin code
 if centering==1 %&& isempty(ix)
     trim=0; %don't trim if the modeled is centered, because that uncenters it
     if isempty(ix) %assert origin at 0,0,0 if no submodel providing one
@@ -208,9 +203,6 @@ else
     end
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     origin = (a+b)/2; %get the geometric center of the points
-    %span max-min for total distance, +safety whole pix?
-    %adj value subtract min from values to shift centering to all positive?
-    %origin-a
     span = max(origin-a,b-origin); %get spans measured from the origin
     spanpix = ceil(span/pix)+1*0;
     lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
