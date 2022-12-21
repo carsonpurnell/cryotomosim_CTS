@@ -33,6 +33,7 @@ fprintf('Attempting %i %s placements:  ',iters,opt.type)
 
 % membrane setup stuff
 if iscell(vesvol) %prep skeleton point map if provided for TMprotein
+    ismem = 1; 
     memvol = sum( cat(4,vesvol{:}) ,4);
     bw = bwdist(~memvol); %calculate distances inside the shape
     mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
@@ -46,7 +47,6 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     
     %inside/outside membrane localization maps
     nonmem = bwdist(inarray)>3; %locmap for all available area
-    %sliceViewer(nonmem);
     
     %find the largest component, assumed to be the background space
     CC = bwconncomp(nonmem);
@@ -55,10 +55,10 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     mout = zeros(size(nonmem));
     mout(CC.PixelIdxList{idx}) = 1; %locmap for outside of vesicles
     
-    %figure(); sliceViewer(mout);
-    
     min = nonmem-mout; %locmap for inside vesicles
-    %figure(); sliceViewer(min);
+    %sliceViewer(nonmem); figure(); sliceViewer(mout); figure(); sliceViewer(min);
+else
+    ismem = 0;
 end
 % membrane setup stuff end
 
@@ -71,6 +71,10 @@ for i=1:iters
     
     %locmap switch for getting randomized lists of potentially valid points
     %might need to use if/else instead to fulfill multiple conditions - lacking membranes etc
+    
+    %locmaps into a struct so they can be directly selected by flags name indexing?
+    %or use a funct for writing/reading the appropriate locmap? falls back to all when no membrane?
+    %{
     switch set(which).type
         case {'memplex','membrane'} %placement into membrane
             locmap = memlocmap>0;
@@ -82,10 +86,39 @@ for i=1:iters
             locmap = mout>0;
             
         otherwise %everything else goes into the global locmap
-            locmap = bwdist(inarray)>2; %can be generated again each time, faster than updating each placement
+            locmap = bwdist(inarray)>2; %surprisingly very slow, just skip it? or faster method?
+            %ind2sub not surprisingly is slow - fast vector replacement method?
             [x,y,z] = ind2sub(size(locmap),find(locmap>0)); %don't need >0, minor speed loss
             pts = [x,y,z];
     end
+    %}
+    if ismem==1 && ismember(set(which).type,{'memplex','membrane','inmem','outmem'})
+        switch set(which).type
+            case {'memplex','membrane'} %placement into membrane
+                locmap = memlocmap>0;
+                
+            case 'inmem' %inside vesicle volume
+                locmap = min>0;
+                
+            case 'outmem' %only outside vesicles
+                locmap = mout>0;
+                
+        end
+        
+        %do membrane stuff
+    else
+        %locmap = bwdist(inarray)>2; %surprisingly very slow, just skip it? or faster method?
+        %ind2sub not surprisingly is slow - fast vector replacement method?
+        locmap = ~inarray; %avoiding bwdist for speed here
+        
+        %do placement testing and verification here?, place into splits and working array separately
+    end
+    [x,y,z] = ind2sub(size(locmap),find(locmap>0)); %don't need >0, minor speed loss
+    pts = [x,y,z]; 
+    
+    %do final placement based on if there is a tform~=0 or theta/ax ~=0?
+    %fallthrough for complex/assembly too
+    %inherit complex/assembly/sum from some earlier check, assembly should check variable sumvol anyway
     
     %placement switch for each particle class
     switch set(which).type
