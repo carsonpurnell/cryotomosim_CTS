@@ -184,9 +184,6 @@ for i=1:iters
                 split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,com);
             end
             
-            %loc = pts(r,:); %get the loc from the randomized points
-            %tform = randomAffine3d
-            
         case 'cluster' %need to move into call to cluster function like bundle has
             sub = randi(numel(particle)); %get random selection from the group
             [rot,~,loc,err] = testplace(inarray,set(which).vol{sub},3);
