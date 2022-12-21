@@ -69,6 +69,21 @@ for i=1:iters
     %put split/group placement box after the type switch for efficiency and to make complex/memplex/assembly
     %more general schemes
     
+    %locmap switch for getting randomized lists of potentially valid points
+    switch set(which).type
+        case {'memplex','membrane'} %placement into membrane
+            
+        case 'inmem' %inside vesicle volume
+                
+        case 'outmem' %only outside vesicles
+            
+        otherwise %everything else goes into the global locmap
+            locmap = bwdist(inarray)>2; %can be generated again each time, faster than updating each placement
+            [x,y,z] = ind2sub(size(locmap),find(locmap>0)); %don't need >0, minor speed loss
+            pts = [x,y,z];
+    end
+    
+    %placement switch for each particle class
     switch set(which).type
         case {'complex','assembly'} %all or multiple structured components of a protein complex
             sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
