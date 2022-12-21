@@ -183,6 +183,7 @@ if centering==1 %&& isempty(ix)
     spanpix = ceil(span/pix)+1*0;
     lim = spanpix*2+1; %get pixel box from span from origin
     adj = spanpix*pix+pix*1-origin; %adjustment to apply to coordinates to place them into the pixel box
+    %{
 elseif centering==1 && 5==4 %&& ~isempty(ix) %&& 5==4
     if ~isempty(ix)
         data(ix,:) = []; names(ix) = []; %remove dummy submodels and names
@@ -195,6 +196,7 @@ elseif centering==1 && 5==4 %&& ~isempty(ix) %&& 5==4
     spanpix = ceil(span/pix)+1*0;
     lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
     adj = spanpix*pix+pix*1-origin;
+    %}
 else
     if ~isempty(ix)
         data(ix,:) = []; names(ix) = []; %remove dummy submodels and names
@@ -210,9 +212,7 @@ end
 models = numel(data(:,2)); emvol = cell(models,1); %pre-allocate stuff
 for i=1:models
     atomid = data{i,1}; %single column, hopefully for speed
-    
-    %convert atomic labels into atom opacity information outside the loop for speed
-    [~,c] = ismember(atomid,elements); % get index for each atom indicating what reference it is
+    [~,c] = ismember(atomid,elements); %index each atom entry with the associated e- magnitude dictionary
     
     badentries = find(c<1); %find entries not in the element register
     c(badentries)=[]; data{i,2}(:,badentries) = []; %remove bad entries
