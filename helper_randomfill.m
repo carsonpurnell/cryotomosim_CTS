@@ -122,6 +122,33 @@ for i=1:iters
     
     %placement switch for each particle class
     switch set(which).type
+        case {'inmem','outmem','single','group'} %universal for non-special non-complexes
+            sub = randi(numel(particle));
+            %{
+            if strcmp(set(which).type,'inmem') %get locmap depending on target location
+                [x,y,z] = ind2sub(size(min),find(min>0));
+            else
+                [x,y,z] = ind2sub(size(mout),find(mout>0));
+            end
+            pts = [x,y,z]; %r = randi(size(pts,1));
+            %}
+            
+            for retry=1:3
+                tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
+                rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
+                r = randi(size(pts,1)); loc = pts(r,:); %get a test point
+                com = round(loc-size(rot)/2); %shift to place by the COM
+                %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
+                [~,err] = helper_arrayinsert(inarray,rot,com,'overlaptest');
+                if err==0, break; end
+            end
+            counts.f = counts.f + err;
+            if err==0 %on success, place in splits and working array
+                counts.s=counts.s+1;
+                [inarray] = helper_arrayinsert(inarray,rot,com);
+                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,com);
+            end
+            
         case {'complex','assembly'} %all or multiple structured components of a protein complex
             sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
             [rot,tform,loc,err] = testplace(inarray,sumvol,3);
