@@ -20,7 +20,8 @@ types = {'single','bundle','complex','cluster','group','assembly','memplex','mem
     'inmem','outmem'};
 %need to change this so they are less silo'd, make them flags rather than different methods
 %complex one flag to make it place everything separately, rather than needing a complex for each type
-%location flag (space, membrane, inside/outside vesicles)
+%location flag (any/default, membrane, inside/outside vesicles) control locmaps
+%grouping/class flag (complex, assembly, random pick from group, sum of group) control split placement
 %class? flag for complex, centering complex, randomizing group, or set to sum
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
 
