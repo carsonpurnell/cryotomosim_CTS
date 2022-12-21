@@ -209,14 +209,7 @@ else
     adj = spanpix*pix+pix*1-origin;
 end
 
-%data{3,2}
-%maxxes = max(abs(data{3,2}),[],2)
-%mean(data{3,2},2)
-%data(3,2)
-%centroid = mean(horzcat(data{:,2}),2);
-
 models = numel(data(:,2)); emvol = cell(models,1); %pre-allocate stuff
-%if models==1, trim=1; end %would break single-model memprots
 for i=1:models
     atomid = data{i,1}; %single column, hopefully for speed
     
