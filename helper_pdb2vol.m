@@ -228,13 +228,10 @@ for i=1:models
     
     coords = round((data{i,2}+adj)./pix); %vectorized computing rounded atom bins outside the loop
     atomint = atomdict(c); %logical index the atom data relative to the atomic symbols
-    %em = zeros(lim'); %initialize empty volume for the model
-    em = zeros(lim');
-    %lim
+    em = zeros(lim'); %initialize empty volume for the model
     
     for j=1:numel(atomint) %faster loop, use vectorized converted atomic info faster than struct reference
-        x=coords(1,j); y=coords(2,j); z=coords(3,j);
-        %[x,y,z]
+        x=coords(1,j); y=coords(2,j); z=coords(3,j); %[x,y,z] %fetch individual coordinates
         em(x,y,z) = em(x,y,z)+atomint(j);
     end
     
