@@ -117,6 +117,8 @@ end
 [cts.particles.targets] = helper_input(targets,pix); %load target particles
 if opt.iters==0
     iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
+else
+    iters = opt.iters;
 end
 [cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,cts.particles.targets,iters,...
     vescen,vesvol,opt.density,'type','target','graph',opt.graph); 
