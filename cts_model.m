@@ -60,6 +60,7 @@ arguments
     opt.ice = 1 %0 to not add ice
     opt.mem = 0 %is now working, mostly! value is now the number of vesicles randomly generated
     opt.graph = 0
+    opt.iters = 0
 end
 
 runtime = numel(vol)/60*1.2e-5; %for my laptop, doesn't really apply to anything else
@@ -114,7 +115,9 @@ end
 
 %generate model and add (in case input vol had stuff in it)
 [cts.particles.targets] = helper_input(targets,pix); %load target particles
-iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
+if opt.iters==0
+    iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
+end
 [cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,cts.particles.targets,iters,...
     vescen,vesvol,opt.density,'type','target','graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
