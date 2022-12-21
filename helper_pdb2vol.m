@@ -145,7 +145,7 @@ end
 function [vol,sumvol,names] = internal_volbuild(data,pix,trim,centering)
 %sumvol = 0; %stopgap until i implement centering and such things
 
-%initialize atomic magnitude information
+%initialize atomic magnitude information in arrays - faster than accessing a struct dictionary
 %mag = struct('H',0,'C',6+1.3,'N',7+1.1,'O',8+0.2,'P',15,'S',16+0.6);
 edat = {'H',0;'C',6+1.3;'N',7+1.1;'O',8+0.2;'P',15;'S',16+0.6};
 elements = edat(:,1);
@@ -166,8 +166,6 @@ interaction parameters for voltage 100=.92 200=.73 300=.65 mrad/(V*A) (multiply 
 %currently using atomic number, should use a more accurate scattering factor measure
 %}
 
-%dummy volume detector would go here to center stuff
-%get lim and adj based on largest distances from the dummy origin, then remove the dummy model
 names = data(:,3);
 ix = find(contains(names,'origin')); %get the index, if any, of the name origin in the model
 %check to clear out other dummy submodels?
