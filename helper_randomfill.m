@@ -57,6 +57,8 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     
     min = nonmem-mout; %locmap for inside vesicles
     %sliceViewer(nonmem); figure(); sliceViewer(mout); figure(); sliceViewer(min);
+    
+    %numel(find(skel))/numel(skel) %check occupancy
 else
     ismem = 0;
 end
@@ -114,6 +116,9 @@ for i=1:iters
         %do placement testing and verification here?, place into splits and working array separately
     end
     [x,y,z] = ind2sub(size(locmap),find(locmap>0)); %don't need >0, minor speed loss
+    %ind2sub over the whole image is incredibly slow and cumbersome, instead randomize from indices
+    %locind = find(locmap>0); %even find is slow! might be the slower part
+    %may have to brute force randomize coordinates until getting a valid one
     pts = [x,y,z]; 
     
     %do final placement based on if there is a tform~=0 or theta/ax ~=0?
@@ -124,16 +129,8 @@ for i=1:iters
     switch set(which).type
         case {'inmem','outmem','single','group'} %universal for non-special non-complexes
             sub = randi(numel(particle));
-            %{
-            if strcmp(set(which).type,'inmem') %get locmap depending on target location
-                [x,y,z] = ind2sub(size(min),find(min>0));
-            else
-                [x,y,z] = ind2sub(size(mout),find(mout>0));
-            end
-            pts = [x,y,z]; %r = randi(size(pts,1));
-            %}
             
-            for retry=1:3
+            for retry=1:3 %implement as general tester again?
                 tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
                 rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
                 r = randi(size(pts,1)); loc = pts(r,:); %get a test point
@@ -175,6 +172,7 @@ for i=1:iters
             %increase iters by fraction of N to reduce runtime? can't modify i inside for loop
             end
             
+        %{    
         case {'single','group'} %randomly select one particle from the group (including single)
             sub = randi(numel(particle)); %get random selection from the group
             [rot,~,loc,err] = testplace(inarray,set(which).vol{sub},3);
@@ -210,7 +208,7 @@ for i=1:iters
                 [inarray] = helper_arrayinsert(inarray,rot,com);
                 split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,com);
             end
-            
+            %}
         case 'cluster' %need to move into call to cluster function like bundle has
             sub = randi(numel(particle)); %get random selection from the group
             [rot,~,loc,err] = testplace(inarray,set(which).vol{sub},3);
