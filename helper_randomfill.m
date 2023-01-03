@@ -98,11 +98,11 @@ for i=1:iters
     if ismem==1 && ismember(set(which).type,{'memplex','membrane','inmem','outmem'})
         switch set(which).type
             case {'memplex','membrane'} %placement into membrane
-                locmap = memlocmap>0;
+                locmap = memlocmap==1;
             case 'inmem' %inside vesicle volume
-                locmap = min>0;
+                locmap = min==1;
             case 'outmem' %only outside vesicles
-                locmap = mout>0;
+                locmap = mout==1;
                 
         end
         
@@ -149,6 +149,11 @@ for i=1:iters
                 counts.s=counts.s+1;
                 [inarray] = helper_arrayinsert(inarray,rot,com);
                 split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,com);
+                if ismem==1 && strcmp(set(which).type,'inmem')
+                    [min] = helper_arrayinsert(min,-rot,com);
+                elseif ismem==1 && strcmp(set(which).type,'outmem')
+                    [mout] = helper_arrayinsert(mout,-rot,com);
+                end
             end
             
         case {'complex','assembly'} %all or multiple structured components of a protein complex
@@ -309,13 +314,14 @@ for i=1:iters
                 end
             end
             
+            %update the locmaps at the end?
             
     end
     
     if rem(i,25)==0, fprintf('%i,',counts.s), end
     if rem(i,500)==0, fprintf('\n'), end
     
-    if rem(i,5)==0 && rem(counts.s,2)==0 %filter to prevent the slower IF from running so often
+    if rem(i,5)==0 && rem(counts.s,3)==0 %filter to prevent the slower IF from running so often
     if nnz(inarray)/numel(inarray)>density, fprintf('Density limit reached.'), break, end, end
     
     if opt.graph==1 %draw progress graph continuously when used
