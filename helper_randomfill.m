@@ -12,7 +12,8 @@ arguments
     opt.graph = 0
     opt.memvol = 0
 end
-insize = size(inarray); counts = struct('s',0,'f',0); %initialize counts and get input size
+%insize = size(inarray); 
+counts = struct('s',0,'f',0); %initialize counts and get input size
 
 if opt.graph==1 %graphical output of particles block
     try %first try to find a cts gui plot to ouput to
@@ -325,7 +326,7 @@ end
 fprintf('\nPlaced %i particles, failed %i attempted placements, final density %g\n',...
     counts.s,counts.f,nnz(inarray)/numel(inarray))
 
-outarray = zeros(insize); splitnames = fieldnames(split);
+outarray = zeros(size(inarray)); splitnames = fieldnames(split);
 for i=1:numel(splitnames)
     outarray = outarray+split.(splitnames{i});
 end
