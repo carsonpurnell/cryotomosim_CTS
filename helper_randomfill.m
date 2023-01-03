@@ -98,10 +98,8 @@ for i=1:iters
         switch set(which).type
             case {'memplex','membrane'} %placement into membrane
                 locmap = memlocmap>0;
-                
             case 'inmem' %inside vesicle volume
                 locmap = min>0;
-                
             case 'outmem' %only outside vesicles
                 locmap = mout>0;
                 
@@ -115,11 +113,13 @@ for i=1:iters
         
         %do placement testing and verification here?, place into splits and working array separately
     end
-    [x,y,z] = ind2sub(size(locmap),find(locmap>0)); %don't need >0, minor speed loss
+    
+    %can't do point listing outside, takes too long with ind2sub, need to randomly sample
+    %[x,y,z] = ind2sub(size(locmap),find(locmap>0)); %don't need >0, minor speed loss
     %ind2sub over the whole image is incredibly slow and cumbersome, instead randomize from indices
     %locind = find(locmap>0); %even find is slow! might be the slower part
     %may have to brute force randomize coordinates until getting a valid one
-    pts = [x,y,z]; 
+    %pts = [x,y,z]; 
     
     %do final placement based on if there is a tform~=0 or theta/ax ~=0?
     %fallthrough for complex/assembly too
@@ -133,7 +133,10 @@ for i=1:iters
             for retry=1:3 %implement as general tester again?
                 tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
                 rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
-                r = randi(size(pts,1)); loc = pts(r,:); %get a test point
+                
+                %r = randi(size(pts,1)); loc = pts(r,:); %get a test point
+                loc = ctsutil('findloc',locmap);
+                
                 com = round(loc-size(rot)/2); %shift to place by the COM
                 %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
                 [~,err] = helper_arrayinsert(inarray,rot,com,'overlaptest');
