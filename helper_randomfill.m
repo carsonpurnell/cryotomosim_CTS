@@ -277,7 +277,8 @@ for i=1:iters
             spin = imrotate3(sel,spinang,init'); %rotate axially before transform to target location
             rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
             
-            tdest = inarray+memvol*0-vesvol{k}*1;
+            %tdest = inarray+memvol*0-vesvol{k}*1; %slow
+            tdest = inarray-vesvol{k}; %
             
             %if i==500, sliceViewer(rescale(tdest)+skel*0+memlocmap); end
             
@@ -321,7 +322,7 @@ for i=1:iters
     end
 end
 
-fprintf('\nPlaced %i particles, failed %i attempted placements, density %g\n',...
+fprintf('\nPlaced %i particles, failed %i attempted placements, final density %g\n',...
     counts.s,counts.f,nnz(inarray)/numel(inarray))
 
 outarray = zeros(insize); splitnames = fieldnames(split);
