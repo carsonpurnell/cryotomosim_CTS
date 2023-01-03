@@ -109,7 +109,8 @@ for i=1:iters
     else
         %locmap = bwdist(inarray)>2; %surprisingly very slow, just skip it? or faster method?
         %ind2sub not surprisingly is slow - fast vector replacement method?
-        locmap = ~inarray; %avoiding bwdist for speed here
+        %locmap = ~inarray; %avoiding bwdist for speed here
+        locmap = inarray==0; %faster than logical somehow
         
         %do placement testing and verification here?, place into splits and working array separately
     end
@@ -216,7 +217,7 @@ for i=1:iters
             %}
         case 'cluster' %need to move into call to cluster function like bundle has
             sub = randi(numel(particle)); %get random selection from the group
-            [rot,~,loc,err] = testplace(inarray,set(which).vol{sub},3);
+            [rot,~,loc,err] = testplace2(inarray,locmap,set(which).vol{sub},3);
             counts.f = counts.f + err;
             if err==0 %on success, place in splits and working array
                 counts.s=counts.s+1;
