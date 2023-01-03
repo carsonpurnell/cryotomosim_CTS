@@ -5,8 +5,8 @@ arguments
     inarray (:,:,:) double
     set struct
     iters
-    vescen = 0 %might get jank
-    vesvol = 0 %might get jank
+    vescen = 0 %might get janky
+    vesvol = 0 %might get janky
     density = 0.4
     opt.type = 'object'
     opt.graph = 0
@@ -343,6 +343,8 @@ for retry=1:retry
 end
 end
 
+%updated testplace subfunct, need renaming. old one still needed for radial/cluster old stuff
+%replace again to get flag system working efficiently and neatly
 function [rot,tform,loc,err] = testplace2(inarray,locmap,particle,retry)
 for retry=1:retry
     tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
@@ -354,6 +356,7 @@ for retry=1:retry
 end
 end
 
+%need to update radial to start normally, then only call the subfunct for the radials
 %radial internal func
 function [inarray,split,counts] = radialfill(inarray,bundle,n,split,counts)
 which = randi(numel(bundle.vol));
