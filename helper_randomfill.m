@@ -248,10 +248,14 @@ for i=1:iters
             %sumvol = sum( cat(4,centered{:}) ,4); %get sum volume (should pregenerate in _input)
             sumvol = set(which).sumvol;
             
+            %{
             [x,y,z] = ind2sub(size(memlocmap),find(memlocmap>0)); %don't need >0, minor speed loss
             pts = [x,y,z]; %probably need to replace this block with something much faster
             r = randi(size(pts,1));
             loc = pts(r,:);
+            %}
+            
+            loc = ctsutil('findloc',locmap);
             
             [k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
             
@@ -299,7 +303,6 @@ for i=1:iters
                     %just write the sumvol to the split array
                 end
             end
-            
             
             
     end
