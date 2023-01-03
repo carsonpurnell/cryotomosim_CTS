@@ -131,7 +131,7 @@ for i=1:iters
         case {'inmem','outmem','single','group'} %universal for non-special non-complexes
             sub = randi(numel(particle));
             
-            for retry=1:3 %implement as general tester again?
+            for retry=1:4 %implement as general tester again?
                 tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
                 rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
                 
@@ -153,7 +153,7 @@ for i=1:iters
         case {'complex','assembly'} %all or multiple structured components of a protein complex
             sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
             
-            [rot,tform,loc,err] = testplace2(inarray,locmap,sumvol,3);
+            [rot,tform,loc,err] = testplace2(inarray,locmap,sumvol,4);
             %[rot,tform,loc,err] = testplace(inarray,sumvol,3);
             
             counts.f = counts.f + err;
@@ -257,7 +257,7 @@ for i=1:iters
             r = randi(size(pts,1));
             loc = pts(r,:);
             %}
-            
+            %need testplacing for membrane localization
             loc = ctsutil('findloc',locmap);
             
             [k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
