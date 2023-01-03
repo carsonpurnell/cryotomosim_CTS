@@ -44,4 +44,12 @@ switch op
         in(:,:,[1:opt,end-opt:end]) = 0;
         out = in;
         
+    case 'findloc'
+        out = randi(numel(in)); %random start
+        while in(out)~=1
+            out = randi(numel(in));
+        end
+        [r,c,l] = ind2sub(size(in),out);
+        out = [r,c,l];
+        
 end
