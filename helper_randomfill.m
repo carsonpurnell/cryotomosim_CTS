@@ -318,7 +318,8 @@ for i=1:iters
     end
 end
 
-fprintf('\nPlaced %i particles, failed %i attempted placements\n',counts.s,counts.f)
+fprintf('\nPlaced %i particles, failed %i attempted placements, density %g\n',...
+    counts.s,counts.f,nnz(inarray)/numel(inarray))
 
 outarray = zeros(insize); splitnames = fieldnames(split);
 for i=1:numel(splitnames)
