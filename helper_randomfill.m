@@ -278,7 +278,7 @@ for i=1:iters
             rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
             
             %tdest = inarray+memvol*0-vesvol{k}*1; %slow
-            tdest = inarray-vesvol{k}; %
+            tdest = inarray-vesvol{k}; %faster
             
             %if i==500, sliceViewer(rescale(tdest)+skel*0+memlocmap); end
             
