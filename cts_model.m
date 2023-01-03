@@ -64,6 +64,7 @@ arguments
 end
 
 runtime = numel(vol)/60*1.2e-5; %for my laptop, doesn't really apply to anything else
+%need to compute by iterations too, vol alone not that relevant
 fprintf('Estimated model generation time with hamster laptop: %g minutes\n',runtime)
 if runtime>30 %if >30 mins force manual input start
     txt = input('Runtime is long, verify inputs. ctlr+C to end, or enter "proceed" to run anyway: ','s');
