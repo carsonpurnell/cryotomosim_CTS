@@ -47,7 +47,7 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     %sliceViewer(skel); %it does work
     
     %inside/outside membrane localization maps
-    nonmem = bwdist(inarray)>3; %locmap for all available area
+    nonmem = bwdist(inarray)>2; %locmap for all available area
     
     %find the largest component, assumed to be the background space
     CC = bwconncomp(nonmem);
@@ -148,7 +148,10 @@ for i=1:iters
             if err==0 %on success, place in splits and working array
                 counts.s=counts.s+1;
                 [inarray] = helper_arrayinsert(inarray,rot,com);
-                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,com);
+                %tmp = split.(set(which).id{sub}); %negligible
+                %tmp = helper_arrayinsert(tmp,rot,com); %was ~25 with 506 iters? slower to split assignments
+                %split.(set(which).id{sub}) = tmp; %~6 s extra
+                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,com); %faster
                 if ismem==1 && strcmp(set(which).type,'inmem')
                     [min] = helper_arrayinsert(min,-rot,com);
                 elseif ismem==1 && strcmp(set(which).type,'outmem')
@@ -295,9 +298,13 @@ for i=1:iters
             if err==0
                 [inarray] = helper_arrayinsert(inarray,rot,com); %write sum to working array
                 [memlocmap] = helper_arrayinsert(memlocmap,-imbinarize(rot),com); %reduce mem loc map
+                if ismem==1 && strcmp(set(which).type,'inmem') %reduce inmem/outmem maps if present
+                    [min] = helper_arrayinsert(min,-rot,com);
+                elseif ismem==1 && strcmp(set(which).type,'outmem')
+                    [mout] = helper_arrayinsert(mout,-rot,com);
+                end
                 counts.s = counts.s+1; %increment success, bad old way need to deprecate
                 %actually write to the split arrays
-                
                 if strcmp(set(which).type,'memplex')
                     members = 1:numel(particle);
                     %assembly rejigger member nums here
