@@ -64,7 +64,7 @@ else
     ismem = 0;
 end
 % membrane setup stuff end
-
+diagout = zeros(size(inarray,1),size(inarray,2),0);
 for i=1:iters
     which = randi(numel(set)); 
     particle = set(which).vol; 
@@ -298,10 +298,10 @@ for i=1:iters
             if err==0
                 [inarray] = helper_arrayinsert(inarray,rot,com); %write sum to working array
                 [memlocmap] = helper_arrayinsert(memlocmap,-imbinarize(rot),com); %reduce mem loc map
-                if ismem==1 && strcmp(set(which).type,'inmem') %reduce inmem/outmem maps if present
+                if ismem==1 %&& strcmp(set(which).type,'inmem') %reduce inmem/outmem maps if present
                     [min] = helper_arrayinsert(min,-rot,com);
-                elseif ismem==1 && strcmp(set(which).type,'outmem')
                     [mout] = helper_arrayinsert(mout,-rot,com);
+                %elseif ismem==1 %&& strcmp(set(which).type,'outmem')
                 end
                 counts.s = counts.s+1; %increment success, bad old way need to deprecate
                 %actually write to the split arrays
@@ -334,7 +334,12 @@ for i=1:iters
     if opt.graph==1 %draw progress graph continuously when used
         plot(gui,counts.f,counts.s,'.'); drawnow;
     end
+    
+    %diagnostic filler image
+    diagout(:,:,end+1) = ~inarray(:,:,end/2);
 end
+
+WriteMRC(diagout,10,'diaglocmaptest.mrc');
 
 fprintf('\nPlaced %i particles, failed %i attempted placements, final density %g\n',...
     counts.s,counts.f,nnz(inarray)/numel(inarray))
