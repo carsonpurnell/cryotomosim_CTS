@@ -336,10 +336,14 @@ for i=1:iters
     end
     
     %diagnostic filler image
-    diagout(:,:,end+1) = ~inarray(:,:,end/2);
+    %{
+    if err==0
+        diagout(:,:,end+1) = inarray(:,:,end/2);
+    end
+    %}
 end
 
-WriteMRC(diagout,10,'diaglocmaptest.mrc');
+WriteMRC(diagout,10,'diagaccumarray.mrc');
 
 fprintf('\nPlaced %i particles, failed %i attempted placements, final density %g\n',...
     counts.s,counts.f,nnz(inarray)/numel(inarray))
