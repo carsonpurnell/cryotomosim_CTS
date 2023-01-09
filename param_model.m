@@ -1,14 +1,31 @@
-function param = param_model(in)
+function param = param_model(param)
 %param manager for cts_model
 
 arguments
-    in
+    %maybe GUI input dlg
+    
+    param.vol
+    param.pix
+    
+    param.targets = 'gui' %soft required?
+    param.distractors = 'none'
+    
+    param.density
+    param.iters
+    param.constraints
+    
+    param.grid
+    param.mem %need subcomponents
+    param.bead
+    
+    param.ice
+    
 end
 %make preliminary list of all the parameters
 
 %input volume
 %pixelsize
-%targets, distractors (change to just particle layers?
+%targets, distractors - change to just particle layers?
 %density, iterations
 %constraints
 %beads, grid, membrane
@@ -18,6 +35,5 @@ end
 
 %what are non-params? need suffix opt separately, that's not a model parameter.
 
-param = in;
 
 end
