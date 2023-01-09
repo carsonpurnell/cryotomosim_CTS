@@ -37,7 +37,7 @@ map = imgaussfilt3(single(~solv),3);%,'FilterSize',3);
 ice = ice.*map;
 iced = vol+ice;
 %}
-bb = imgaussfilt3(vol,2);
+bb = imgaussfilt3(vol,1);
 icesc = max(ice*0.5-(bb),ice*0.4);
 %iced = max(ice-sqrt(vol)-0*max(sqrt(vol)/4-pix*0,ice*0.8),vol);
 iced = max(vol,icesc);
