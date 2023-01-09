@@ -343,7 +343,7 @@ for i=1:iters
     %}
 end
 
-WriteMRC(diagout,10,'diagaccumarray.mrc');
+%WriteMRC(diagout,10,'diagaccumarray.mrc');
 
 fprintf('\nPlaced %i particles, failed %i attempted placements, final density %g\n',...
     counts.s,counts.f,nnz(inarray)/numel(inarray))
