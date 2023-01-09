@@ -59,8 +59,10 @@ arguments
     opt.grid = [15 2000] %[thick radius] both in nm [15 2000] our real grids
     opt.ice = 1 %0 to not add ice
     opt.mem = 0 %is now working, mostly! value is now the number of vesicles randomly generated
-    opt.graph = 0
     opt.iters = 0
+    
+    opt.graph = 0
+    %suffix or other indicator string
 end
 
 %{
