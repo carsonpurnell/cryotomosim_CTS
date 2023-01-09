@@ -127,6 +127,10 @@ cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between tr
 %cts.vol = cts.vol+cts.model.targets; %old sum without overlap fix
 cts.model.particles = cts.vol;
 
+%change targets/distractors into a single repeating loop of any number of sets of particles?
+%not sure how to implement a single opt to retrieve multiple sets of particles.
+%also need to fetch particles before grid/membrane for ease of use
+
 if ~strcmp(opt.distract,'none') %DISTRACTORS
 [cts.particles.distractors] = helper_input(opt.distract,pix); %load distractor particles
 
