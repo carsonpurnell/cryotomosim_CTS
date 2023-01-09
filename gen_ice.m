@@ -37,4 +37,5 @@ map = imgaussfilt3(single(~solv),3);%,'FilterSize',3);
 ice = ice.*map;
 iced = vol+ice;
 %}
+iced = max(ice-vol/2,vol);
 end
