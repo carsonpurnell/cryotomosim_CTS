@@ -5,8 +5,8 @@ arguments
     %maybe GUI input dlg
     %easy way to navigate to stored params? modifiable defaults?
     
-    param.vol
-    param.pix
+    param.vol (:,:,:) = zeros(400,400,50) %must be input?
+    param.pix (1,1) %must be input?
     
     param.targets = 'gui' %soft required?
     param.distractors = 'none'
@@ -16,11 +16,11 @@ arguments
     param.constraint string {mustBeMember(param.constraint,{'none','box','tube','sides'})} = 'sides'
     %change constraint to a more flexible x/y/z for different oriented tube/walls?
     
-    param.grid
-    param.mem %need subcomponents
-    param.bead
+    param.grid = [15 2000]
+    param.mem = 0 %need subcomponents
+    param.bead = 0
     
-    param.ice
+    param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
     
 end
 %make preliminary list of all the parameters
