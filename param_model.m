@@ -8,7 +8,7 @@ end
 
 %input volume
 %pixelsize
-%
+%targets, distractors (change to just particle layers?
 %density, iterations
 %constraints
 %beads, grid, membrane
