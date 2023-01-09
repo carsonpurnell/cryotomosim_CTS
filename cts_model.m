@@ -63,6 +63,7 @@ arguments
     opt.iters = 0
 end
 
+%{
 runtime = numel(vol)/60*1.2e-5; %for my laptop, doesn't really apply to anything else
 %need to compute by iterations too, vol alone not that relevant
 fprintf('Estimated model generation time with hamster laptop: %g minutes\n',runtime)
@@ -73,6 +74,7 @@ if runtime>30 %if >30 mins force manual input start
         return
     end
 end
+%}
 
 %initialize the struct so the order is invariant and fill with input information
 cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[],'inputs',[]);
