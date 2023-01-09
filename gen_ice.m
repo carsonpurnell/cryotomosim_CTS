@@ -38,5 +38,5 @@ ice = ice.*map;
 iced = vol+ice;
 %}
 bb = imgaussfilt3(vol);
-iced = max(ice-bb/2,vol);
+iced = max(ice-vol/3,vol);
 end
