@@ -12,7 +12,7 @@ arguments
     param.distractors = 'none'
     
     param.density = 0.4 %if moving to target loop, this needs to be able to be a vector
-    param.iters
+    param.iters = [] %auto calculate if not given, would also need to be vectorable
     param.constraint string {mustBeMember(param.constraint,{'none','box','tube','sides'})} = 'sides'
     %change constraint to a more flexible x/y/z for different oriented tube/walls?
     
