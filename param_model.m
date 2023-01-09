@@ -3,6 +3,7 @@ function param = param_model(param)
 
 arguments
     %maybe GUI input dlg
+    %easy way to navigate to stored params? modifiable defaults?
     
     param.vol
     param.pix
@@ -10,9 +11,10 @@ arguments
     param.targets = 'gui' %soft required?
     param.distractors = 'none'
     
-    param.density
+    param.density = 0.4 %if moving to target loop, this needs to be able to be a vector
     param.iters
-    param.constraints
+    param.constraint string {mustBeMember(param.constraint,{'none','box','tube','sides'})} = 'sides'
+    %change constraint to a more flexible x/y/z for different oriented tube/walls?
     
     param.grid
     param.mem %need subcomponents
