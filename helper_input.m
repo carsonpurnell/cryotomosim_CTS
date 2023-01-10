@@ -39,9 +39,11 @@ for i=1:numel(list)
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
     if ismember(tmp.type,types)==0, tmp.type='single'; end %default to single with no type ID in name
     trim=1; 
-    if ismember(tmp.type,{'complex','assembly','memplex','membrane'}) %don't trim complexes and membrane
+    if ismember(tmp.type,{'memplex','membrane'}) %don't trim complexes and membrane
         %redundant for memplex/mem, pdb2vol currently sets trim=0 for centering==1
         trim=0;
+    elseif ismember(tmp.type,{'complex','assembly'}) %could make the else/otherwise or leave blank if preset
+        trim=1;
     elseif ismember(tmp.type,{'single','group','cluster','bundle','inmem','outmem'}) %fully trim each subvol
         trim=2;
     end %trim anything except complex/assem
