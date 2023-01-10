@@ -11,7 +11,7 @@ arguments
     
     %input particles params
     param.targets = 'gui' %soft required?
-    param.distractors = 'none'
+    param.distract = 'none'
     
     %model run and limitations params
     param.density = 0.4 %if moving to target loop, this needs to be able to be a vector
@@ -22,7 +22,7 @@ arguments
     %objects and contents params
     param.grid = [15 2000]
     param.mem = 0 %need subcomponents
-    param.bead = 0
+    param.beads = 0
     param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
     
 end
