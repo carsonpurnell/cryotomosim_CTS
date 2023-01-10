@@ -41,6 +41,8 @@ for i=1:numel(list)
     trim=1; 
     if ismember(tmp.type,{'complex','assembly','memplex'})
         trim=0;
+    elseif ismember(tmp.type,{'single','group','cluster'})
+        trim=2;
     end %trim anything except complex/assem
     if ismember(tmp.type,{'memplex','membrane'})
         centering = 1;
