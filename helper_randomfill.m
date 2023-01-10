@@ -25,6 +25,7 @@ if opt.graph==1 %graphical output of particles block
     hold(gui,'off'); plot(gui,0,0,'.'); hold(gui,'on'); %clear any prior contents of the graph
 end
 
+%probably need to make this a double loop across cells of particle sets
 namelist = [set(:).id]; %vector collection of all ids instead of the former double loop
 for i=1:numel(namelist)
     split.(namelist{i}) = zeros(size(inarray)); %initialize split models of target ids
