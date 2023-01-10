@@ -68,6 +68,7 @@ arguments
     opt.graph = 0
     %suffix or other indicator string
 end
+if iscell(param), param = param_model(param{:}); end
 
 %{
 runtime = numel(vol)/60*1.2e-5; %for my laptop, doesn't really apply to anything else
@@ -95,7 +96,7 @@ if param.grid(1)~=0 % new carbon grid and hole generator
     cts.vol = cts.model.grid+cts.vol; fprintf('   complete \n')
 end
 
-if opt.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
+if param.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
     fprintf('Generating vesicular membranes ')
     [cts.model.mem,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(param.mem),pix);
     cts.vol = cts.model.mem+cts.vol;
@@ -124,7 +125,7 @@ end
 
 %generate model and add (in case input vol had stuff in it)
 [cts.particles.targets] = helper_input(param.targets,pix); %load target particles
-if opt.iters==0
+if param.iters==0
     iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
 else
     iters = param.iters;
@@ -139,26 +140,27 @@ cts.model.particles = cts.vol;
 %not sure how to implement a single opt to retrieve multiple sets of particles.
 %also need to fetch particles before grid/membrane for ease of use
 
-if ~strcmp(opt.distract,'none') %DISTRACTORS
-[cts.particles.distractors] = helper_input(opt.distract,pix); %load distractor particles
+if ~strcmp(param.distract,'none') %DISTRACTORS
+[cts.particles.distractors] = helper_input(param.distract,pix); %load distractor particles
 
 %generated distraction filler iterations and add to volume to generate the sample
 iters = round( iters*sqrt(numel(cts.particles.distractors(1,:))) ); %distractor iters
 [cts.model.distractors] = helper_randomfill(cts.vol+constraint,cts.particles.distractors,iters,...
-    opt.density,'type','distractor','graph',opt.graph);
+    param.density,'type','distractor','graph',opt.graph);
 cts.vol = max(cts.vol,cts.model.distractors); %fix for transmembrane overlaps
 cts.model.particles = cts.vol;
 end
 
-if opt.beads~=0 %bead generation and placement block
-    beadstrc = gen_beads(pix,opt.beads(2:end)); %external generation of varied beads
+if param.beads~=0 %bead generation and placement block
+    beadstrc = gen_beads(pix,param.beads(2:end)); %external generation of varied beads
     cts.particles.beads = beadstrc;
-    [cts.model.beads] = helper_randomfill(cts.vol+constraint,beadstrc,opt.beads(1),opt.density,'type','bead');
+    [cts.model.beads] = helper_randomfill(cts.vol+constraint,beadstrc,param.beads(1),param.density,...
+        'type','bead');
     cts.vol = cts.vol + cts.model.beads; 
     cts.model.particles = cts.vol;
 end
 
-if ~opt.ice==0 % vitreous ice generator, randomized molecular h2o throughout the volume
+if ~param.ice==0 % vitreous ice generator, randomized molecular h2o throughout the volume
     fprintf('Generating vitreous ice')
     [iced, ice] = gen_ice(cts.vol,pix);
     cts.model.ice = ice; cts.vol = iced; fprintf('   done \n')
