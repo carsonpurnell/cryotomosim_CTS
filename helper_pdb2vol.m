@@ -231,9 +231,11 @@ for i=1:models
         em(x,y,z) = em(x,y,z)+opacity; %write mag to the model vol
     end
     %}
+    %{
     if trim==2
         em = ctsutil('trim',em);
     end
+    %}
     emvol{i} = em;
 end
 
@@ -241,7 +243,11 @@ if trim==1 %trim empty planes from the border of the model (for everything excep
     emvol = ctsutil('trim',emvol);
 end
 sumvol = 0;
-if trim~=2 %don't sumvol unmatched vols, leave as 0
+if trim==2 %don't sumvol unmatched vols, leave as 0
+    for i=1:numel(emvol)
+        emvol{i} = ctsutil('trim',emvol{i});
+    end
+else
     sumvol = sum( cat(4,emvol{:}) ,4); %sum all volumes
 end
 
