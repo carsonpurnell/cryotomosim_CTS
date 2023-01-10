@@ -1,4 +1,4 @@
-function [cts] = cts_model(targets,vol,pix,opt)
+function [cts] = cts_model(vol,pix,param,opt)
 %[cts] = cts_model(targets,vol,pix,opt)
 %generates model information for a single tomographic acquisition, stored in output struct ts
 %works by iteratively placing input particles at random orientations in random locations without overlap
@@ -48,10 +48,13 @@ function [cts] = cts_model(targets,vol,pix,opt)
 %splitmodel has fields of each target id, containing a volume of only those particles from the model
 
 arguments
-    targets
+    %targets
     vol (:,:,:) double
     pix (1,1) double
+    param = param_model
+    opt.suffix = ''
     
+    %{
     opt.density = 0.4
     opt.constraint string {mustBeMember(opt.constraint,{'none','box','tube','sides'})} = 'sides'
     opt.distract = 'none'
@@ -60,6 +63,7 @@ arguments
     opt.ice = 1 %0 to not add ice
     opt.mem = 0 %is now working, mostly! value is now the number of vesicles randomly generated
     opt.iters = 0
+    %}
     
     opt.graph = 0
     %suffix or other indicator string
@@ -79,21 +83,21 @@ end
 %}
 
 %initialize the struct so the order is invariant and fill with input information
-cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[],'inputs',[]);
+cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[]);%,'inputs',[]);
 % cts.inputs.pix = pix;
 % cts.inputs.density = opt.density; cts.inputs.constraint = opt.constraint;
 % cts.inputs.beads = opt.beads; cts.inputs.grid = opt.grid; cts.inputs.mem = opt.mem;
 % cts.inputs.ice = opt.ice; 
 
-if opt.grid(1)~=0 % new carbon grid and hole generator
+if param.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
-    [cts.model.grid] = gen_carbongrid(vol,pix,opt.grid);
+    [cts.model.grid] = gen_carbongrid(vol,pix,param.grid);
     cts.vol = cts.model.grid+cts.vol; fprintf('   complete \n')
 end
 
 if opt.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
     fprintf('Generating vesicular membranes ')
-    [cts.model.mem,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(opt.mem),pix);
+    [cts.model.mem,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(param.mem),pix);
     cts.vol = cts.model.mem+cts.vol;
     fprintf('   complete,  %i placed, %i failed \n',count.s,count.f)
 else
@@ -101,7 +105,7 @@ else
 end
 
 constraint = zeros(size(cts.vol)); %constraints are a big ugly mess right now
-switch opt.constraint %write constraints to initial starting volume
+switch param.constraint %write constraints to initial starting volume
     case 'none'
     case 'box' %intensity is ^2.3 to better match protein and prevent bad binarizations/overlap
         constraint(1:end,1:end,[1 end]) = pix^2.5; %constraint(1:end,1:end,end) = 1; %z end panes
@@ -119,14 +123,14 @@ switch opt.constraint %write constraints to initial starting volume
 end
 
 %generate model and add (in case input vol had stuff in it)
-[cts.particles.targets] = helper_input(targets,pix); %load target particles
+[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
 if opt.iters==0
     iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
 else
-    iters = opt.iters;
+    iters = param.iters;
 end
 [cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,cts.particles.targets,iters,...
-    vescen,vesvol,opt.density,'type','target','graph',opt.graph); 
+    vescen,vesvol,param.density,'type','target','graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
 %cts.vol = cts.vol+cts.model.targets; %old sum without overlap fix
 cts.model.particles = cts.vol;
@@ -169,8 +173,8 @@ foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix)); %combine
 %move to output directory in user/tomosim
 cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
 mkdir(foldername); cd(foldername);
-WriteMRC(cts.vol,cts.pix(1),append(ident,'.mrc'))
-save(append(ident,'.mat'),'cts','-v7.3')
+WriteMRC(cts.vol,cts.pix(1),append(ident,opt.suffix,'.mrc'))
+save(append(ident,opt.suffix,'.mat'),'cts','-v7.3')
 
 %output text file of input informations?
 
