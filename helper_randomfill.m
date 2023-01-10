@@ -31,7 +31,7 @@ for i=1:numel(namelist)
     split.(namelist{i}) = zeros(size(inarray)); %initialize split models of target ids
 end
 
-fprintf('Attempting %i %s placements:  ',iters,opt.type)
+
 
 % membrane setup stuff
 if iscell(vesvol) %prep skeleton point map if provided for TMprotein
@@ -72,6 +72,8 @@ diagout = zeros(size(inarray,1),size(inarray,2),0);
 %make a double loop, possibly making the internal loop an internal function?
 %for ww=1:numel(layer)
 %set = layer{ww}
+%layeriters = iters(ww);
+fprintf('Layer 1, attempting %i %s placements:  \n',iters,opt.type)
 %etc
 for i=1:iters
     which = randi(numel(set)); 
@@ -338,8 +340,9 @@ for i=1:iters
             
     end
     
-    if rem(i,25)==0, fprintf('%i,',counts.s), end
-    if rem(i,500)==0, fprintf('\n'), end
+    %if rem(i,25)==0, fprintf('%i,',counts.s), end
+    if rem(i,round(iters/20))==0, fprintf('%i,',counts.s), end
+    %if rem(i,600)==0, fprintf('\n'), end
     
     if rem(i,5)==0 && rem(counts.s,3)==0 %filter to prevent the slower IF from running so often
     if nnz(inarray)/numel(inarray)>density, fprintf('Density limit reached.'), break, end, end
