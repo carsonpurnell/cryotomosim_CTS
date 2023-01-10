@@ -80,10 +80,10 @@ end
 
 %initialize the struct so the order is invariant and fill with input information
 cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[],'inputs',[]);
-cts.inputs.pix = pix;
-cts.inputs.density = opt.density; cts.inputs.constraint = opt.constraint;
-cts.inputs.beads = opt.beads; cts.inputs.grid = opt.grid; cts.inputs.mem = opt.mem;
-cts.inputs.ice = opt.ice; 
+% cts.inputs.pix = pix;
+% cts.inputs.density = opt.density; cts.inputs.constraint = opt.constraint;
+% cts.inputs.beads = opt.beads; cts.inputs.grid = opt.grid; cts.inputs.mem = opt.mem;
+% cts.inputs.ice = opt.ice; 
 
 if opt.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
