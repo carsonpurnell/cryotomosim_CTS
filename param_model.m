@@ -15,9 +15,7 @@ arguments
     
     %model run and limitations params
     param.density = 0.4 %if moving to target loop, this needs to be able to be a vector
-    param.iters = []
-    %
-    %auto calculate if not given, would also need to be vectorable
+    param.iters = [] %auto calculate if not given, would also need to be vectorable
     param.constraint string {mustBeMember(param.constraint,{'none','box','tube','sides'})} = 'sides'
     %change constraint to a more flexible x/y/z for different oriented tube/walls?
     
@@ -29,7 +27,7 @@ arguments
     
 end
 %{
-if isempty(param.iters) || param.iters==0
+if isempty(param.iters) || param.iters==0 %compute iters if not provided
     param.iters = round(param.pix*sqrt(numel(param.vol))/30);
 end
 %}
@@ -46,6 +44,5 @@ end
 %figure out the bounds of each and different use cases
 
 %what are non-params? need suffix opt separately, that's not a model parameter.
-
 
 end
