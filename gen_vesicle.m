@@ -19,6 +19,9 @@ arguments
 end
 %clipping out of the Z also conviniently how tomos actually look, but is maybe too random
 
+%use a linear index sparse matrix to store normal vectors
+%how to write vector info to the large array? precalculate, and use arrayinsert, convert to sparse at the end?
+
 count.s = 0; count.f = 0;
 memvol = vol*0;
 vescen = []; vesvol = {}; %store centers and location vols for each placed vesicle for TMD operations
