@@ -140,6 +140,7 @@ for i=1:iters
         case {'inmem','outmem','single','group'} %universal for non-special non-complexes
             sub = randi(numel(particle));
             
+            %{
             for retry=1:4 %implement as general tester again?
                 tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
                 rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
@@ -152,6 +153,9 @@ for i=1:iters
                 [~,err] = helper_arrayinsert(inarray,rot,com,'overlaptest');
                 if err==0, break; end
             end
+            %}
+            [rot,tform,loc,err] = testcyto(inarray,locmap,sub,4);
+            
             counts.f = counts.f + err;
             if err==0 %on success, place in splits and working array
                 counts.s=counts.s+1;
