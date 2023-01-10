@@ -15,7 +15,9 @@ arguments
     
     %model run and limitations params
     param.density = 0.4 %if moving to target loop, this needs to be able to be a vector
-    param.iters = [] %auto calculate if not given, would also need to be vectorable
+    param.iters = []
+    %
+    %auto calculate if not given, would also need to be vectorable
     param.constraint string {mustBeMember(param.constraint,{'none','box','tube','sides'})} = 'sides'
     %change constraint to a more flexible x/y/z for different oriented tube/walls?
     
@@ -26,6 +28,11 @@ arguments
     param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
     
 end
+%{
+if isempty(param.iters) || param.iters==0
+    param.iters = round(param.pix*sqrt(numel(param.vol))/30);
+end
+%}
 %make preliminary list of all the parameters
 
 %input volume

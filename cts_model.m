@@ -125,12 +125,12 @@ end
 
 %generate model and add (in case input vol had stuff in it)
 [cts.particles.targets] = helper_input(param.targets,pix); %load target particles
-if param.iters==0
-    iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
+if isempty(param.iters) || param.iters==0
+    param.iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
 else
-    iters = param.iters;
+    param.iters = param.iters;
 end
-[cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,cts.particles.targets,iters,...
+[cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,cts.particles.targets,param.iters,...
     vescen,vesvol,param.density,'type','target','graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
 %cts.vol = cts.vol+cts.model.targets; %old sum without overlap fix
@@ -144,7 +144,7 @@ if ~strcmp(param.distract,'none') %DISTRACTORS
 [cts.particles.distractors] = helper_input(param.distract,pix); %load distractor particles
 
 %generated distraction filler iterations and add to volume to generate the sample
-iters = round( iters*sqrt(numel(cts.particles.distractors(1,:))) ); %distractor iters
+iters = round( param.iters*sqrt(numel(cts.particles.distractors(1,:))) ); %distractor iters
 [cts.model.distractors] = helper_randomfill(cts.vol+constraint,cts.particles.distractors,iters,...
     param.density,'type','distractor','graph',opt.graph);
 cts.vol = max(cts.vol,cts.model.distractors); %fix for transmembrane overlaps
