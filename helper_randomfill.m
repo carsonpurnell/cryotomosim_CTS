@@ -363,6 +363,21 @@ end
 
 end
 
+%placement testing for cytosol proteins
+function [rot,tform,loc,err] = testcyto(inarray,locmap,particle,retry)
+for retry=1:retry
+    tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
+    rot = imwarp(particle,tform); %generated rotated particle
+    %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
+    loc = ctsutil('findloc',locmap);
+    [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
+    if err==0, break; end
+end
+end
+
+%placement testing for membrane proteins - TBD
+
+
 %preliminary internal function for initial placement testing
 function [rot,tform,loc,err] = testplace(inarray,particle,retry)
 for retry=1:retry
