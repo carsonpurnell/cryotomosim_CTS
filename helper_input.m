@@ -55,6 +55,7 @@ for i=1:numel(list)
         centering = 0;
     end
     
+    % parse names block, might go after parsing files
     id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
     for j=1:numel(id) %loop through ID parts to make them functional for field names
         id{j} = string(id{j}); %convert to string for consistency with other functions
