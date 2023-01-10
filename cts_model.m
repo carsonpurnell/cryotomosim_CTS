@@ -1,5 +1,5 @@
 function [cts] = cts_model(vol,pix,param,opt)
-%[cts] = cts_model(targets,vol,pix,opt)
+%[cts] = cts_model(vol,pix,param,opt)
 %generates model information for a single tomographic acquisition, stored in output struct ts
 %works by iteratively placing input particles at random orientations in random locations without overlap
 %
