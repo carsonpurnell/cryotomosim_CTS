@@ -240,9 +240,8 @@ end
 if trim==1 %trim empty planes from the border of the model (for everything except .complex models)
     emvol = ctsutil('trim',emvol);
 end
-if trim==2
-    sumvol = 0;
-else
+sumvol = 0;
+if trim~=2 %don't sumvol unmatched vols, leave as 0
     sumvol = sum( cat(4,emvol{:}) ,4); %sum all volumes
 end
 
