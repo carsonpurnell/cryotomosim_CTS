@@ -1,4 +1,4 @@
-function [out] = ctsutil(op,in,opt)
+function [out,out2] = ctsutil(op,in,opt)
 %out = ctsutil(op,in,opt)
 %various utility functions that are used in multiple CTS functions
 %'trim' in=vol
@@ -11,6 +11,7 @@ arguments
     in
     opt = 0
 end
+out2=0;
 switch op
     case 'trim' %& iscell(in)
         if iscell(in)
@@ -50,6 +51,6 @@ switch op
             out = randi(numel(in));
         end
         [r,c,l] = ind2sub(size(in),out);
-        out = [r,c,l];
+        out2 = out; out = [r,c,l];
         
 end
