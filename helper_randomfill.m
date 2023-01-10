@@ -148,26 +148,27 @@ for i=1:iters
                 %r = randi(size(pts,1)); loc = pts(r,:); %get a test point
                 loc = ctsutil('findloc',locmap);
                 
-                com = round(loc-size(rot)/2); %shift to place by the COM
+                loc = round(loc-size(rot)/2); %shift to place by the COM
                 %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
-                [~,err] = helper_arrayinsert(inarray,rot,com,'overlaptest');
+                [~,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
                 if err==0, break; end
             end
             %}
-            [rot,tform,loc,err] = testcyto(inarray,locmap,sub,4);
+            
+            [rot,~,loc,err] = testcyto(inarray,locmap,set(which).vol{sub},4);
             
             counts.f = counts.f + err;
             if err==0 %on success, place in splits and working array
                 counts.s=counts.s+1;
-                [inarray] = helper_arrayinsert(inarray,rot,com);
+                [inarray] = helper_arrayinsert(inarray,rot,loc);
                 %tmp = split.(set(which).id{sub}); %negligible
                 %tmp = helper_arrayinsert(tmp,rot,com); %was ~25 with 506 iters? slower to split assignments
                 %split.(set(which).id{sub}) = tmp; %~6 s extra
-                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,com); %faster
+                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc); %faster
                 if ismem==1 && strcmp(set(which).type,'inmem')
-                    [min] = helper_arrayinsert(min,-rot,com);
+                    [min] = helper_arrayinsert(min,-rot,loc);
                 elseif ismem==1 && strcmp(set(which).type,'outmem')
-                    [mout] = helper_arrayinsert(mout,-rot,com);
+                    [mout] = helper_arrayinsert(mout,-rot,loc);
                 end
             end
             
@@ -374,6 +375,7 @@ for retry=1:retry
     rot = imwarp(particle,tform); %generated rotated particle
     %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
     loc = ctsutil('findloc',locmap);
+    loc = round(loc-size(rot/2));
     [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
     if err==0, break; end
 end
@@ -401,6 +403,7 @@ for retry=1:retry
     rot = imwarp(particle,tform); %generated rotated particle
     %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
     loc = ctsutil('findloc',locmap);
+    loc = round(loc-size(rot/2));
     [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
     if err==0, break; end
 end
