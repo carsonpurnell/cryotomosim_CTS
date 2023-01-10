@@ -3,11 +3,11 @@ function [outarray, split] = helper_randomfill(inarray,set,iters,vescen,vesvol,d
 %shared function for adding particles randomly, used for generating models and adding distractors
 arguments
     inarray (:,:,:) double
-    set struct
+    set %either a single array struct or a cell array of array structs
     iters
     vescen = 0 %might get janky
     vesvol = 0 %might get janky
-    density = 0.4
+    density = 0.4 %either single val or vector 
     opt.type = 'object'
     opt.graph = 0
     opt.memvol = 0
@@ -65,7 +65,14 @@ else
     ismem = 0;
 end
 % membrane setup stuff end
+
+
 diagout = zeros(size(inarray,1),size(inarray,2),0);
+
+%make a double loop, possibly making the internal loop an internal function?
+%for ww=1:numel(layer)
+%set = layer{ww}
+%etc
 for i=1:iters
     which = randi(numel(set)); 
     particle = set(which).vol; 
