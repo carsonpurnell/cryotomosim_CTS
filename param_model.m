@@ -6,8 +6,8 @@ arguments
     %easy way to navigate to stored params? modifiable defaults?
     
     %required for function params
-    param.vol (:,:,:) = zeros(400,400,50) %must be input?
-    param.pix (1,1) %must be input?
+    %param.vol (:,:,:) = zeros(400,400,50) %must be input?
+    %param.pix (1,1) %must be input?
     
     %input particles params
     param.targets = 'gui' %soft required?
