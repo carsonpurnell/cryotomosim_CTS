@@ -130,16 +130,11 @@ for i=1:iters
         %do placement testing and verification here?, place into splits and working array separately
     end
     
-    %can't do point listing outside, takes too long with ind2sub, need to randomly sample
-    %[x,y,z] = ind2sub(size(locmap),find(locmap>0)); %don't need >0, minor speed loss
-    %ind2sub over the whole image is incredibly slow and cumbersome, instead randomize from indices
-    %locind = find(locmap>0); %even find is slow! might be the slower part
-    %may have to brute force randomize coordinates until getting a valid one
-    %pts = [x,y,z]; 
-    
     %do final placement based on if there is a tform~=0 or theta/ax ~=0?
     %fallthrough for complex/assembly too
     %inherit complex/assembly/sum from some earlier check, assembly should check variable sumvol anyway
+    %place the stuff at the end, either the final rot sumvol for non-plex and the tf/rots/ax/theta for plexes
+    
     
     %placement switch for each particle class
     switch set(which).type
