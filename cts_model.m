@@ -64,7 +64,7 @@ arguments
     opt.mem = 0 %is now working, mostly! value is now the number of vesicles randomly generated
     opt.iters = 0
     %}
-    opt.layers = 0
+    %opt.layers = 0
     opt.graph = 0
     %suffix or other indicator string
     %opt to save incremental models for each layer and component of model building
@@ -92,22 +92,31 @@ cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[]);%,'i
 % cts.inputs.beads = opt.beads; cts.inputs.grid = opt.grid; cts.inputs.mem = opt.mem;
 % cts.inputs.ice = opt.ice; 
 
-% block placeholder for loop input of particle set layers
-layers = cell(1,opt.layers);
-for i=1:opt.layers
-    fprintf('Loading layer %i structures',i)
-    layers{i} = helper_input(param.targets,pix); %load layer
-    
-end
-% block placeholder for loop input of particle set layers
-
-%load input targets
-[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
 if isempty(param.iters) || param.iters==0
     param.iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
 else
     param.iters = param.iters;
 end
+
+% block placeholder for loop input of particle set layers
+layers = cell(1,param.layers);
+for i=1:param.layers
+    fprintf('Loading layer %i structures \n',i)
+    layers{i} = helper_input(param.targets,pix); %load layer
+    %param.iters(i) = param.iters(min(i,end));
+    %param.density(i) = param.density(min(i,end));
+end
+%disp(param)
+% block placeholder for loop input of particle set layers
+
+%load input targets
+%[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
+cts.particles.targets = layers{1};
+% if isempty(param.iters) || param.iters==0
+%     param.iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
+% else
+%     param.iters = param.iters;
+% end
 
 
 if param.grid(1)~=0 % new carbon grid and hole generator
