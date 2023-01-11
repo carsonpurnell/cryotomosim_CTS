@@ -29,6 +29,7 @@ flaglist = ["membrane" "vesicle" "cytosol" "complex" "assembly" "cluster" "bundl
 %subpart flags: complex to place each subpart separately, assembly the same but not all subparts
 %grouping flags? randomly pick from group, either use that submodel ID or always use the group ID?
 %clustering flags: cluster for clumps and bundle for linear bundles, both separate class methods
+%retry flag that changes how many placement attempts are made to increase prevalence? or add to other flags?
 
 for i=1:numel(list)
     fprintf('Loading input %i ',i)
@@ -52,7 +53,6 @@ for i=1:numel(list)
     %flags = []; %will be empty if no flags detected, usually 1x0 empty
     tmp.flags = id(flagix); %id(flagix) = []; %remove flags from list when detected
     tmp.flags = unique(tmp.flags); %remove duplicate flag entries for cleanliness
-    
     
     %convert to vols and scrape names
     
