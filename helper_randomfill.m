@@ -5,10 +5,10 @@ arguments
     inarray (:,:,:) double
     set %either a single array struct or a cell array of array structs
     iters
-    vescen = 0 %might get janky
-    vesvol = 0 %might get janky
+    vescen = 0 %is definitely janky
+    vesvol = 0 %the other part of the jank
     density = 0.4 %either single val or vector 
-    opt.type = 'object'
+    opt.type = 'particle'
     opt.graph = 0
     opt.memvol = 0
 end
@@ -27,10 +27,12 @@ end
 
 %probably need to make this a double loop across cells of particle sets
 
+%for ii=1:numel(layers)
 namelist = [set(:).id]; %vector collection of all ids instead of the former double loop
 for i=1:numel(namelist)
     split.(namelist{i}) = zeros(size(inarray)); %initialize split models of target ids
 end
+%end
 
 
 
@@ -71,9 +73,10 @@ end
 diagout = zeros(size(inarray,1),size(inarray,2),0);
 
 %make a double loop, possibly making the internal loop an internal function?
-%for ww=1:numel(layer)
+%for ww=1:numel(layers)
 %set = layer{ww}
-%layeriters = iters(ww);
+%layeriters = iters(min(ww,end));
+%do minor cleanup of locmaps - removing islands, subtract the working array?
 fprintf('Layer 1, attempting %i %s placements:  \n',iters,opt.type)
 %etc
 for i=1:iters
