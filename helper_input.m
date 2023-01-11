@@ -47,7 +47,7 @@ for i=1:numel(list)
     flagix = find(matches(id,flaglist));
     %flags = []; %will be empty if no flags detected, usually 1x0 empty
     tmp.flags = id(flagix); id(flagix) = [];
-    tmp.flags = unique(tmp.flags);
+    tmp.flags = unique(tmp.flags); %remove duplicate flag entries for cleanliness
     
     
     %convert to vols and scrape names
@@ -105,7 +105,7 @@ for i=1:numel(list)
     for j=1:numel(names)
         %disp(names{j}); disp(id{j});
         if strcmp(names{j},'NA') %replace empty names with something parsed from the filename
-            names{j} = id{j};
+            names{j} = id{min(j,end)};
         end
         if ~isempty(sscanf(names{j},'%f')) %detect id that do not start with a letter
             names{j} = strcat('fix_',names{j}); %append a letter when necessary
@@ -117,8 +117,8 @@ for i=1:numel(list)
     %disp(names); disp(id);
     %disp(names)
     
-    %old id/name parser
     %{
+    %old id/name parser
     id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
     % parse names block, might go after loading files
     for j=1:numel(id) %loop through ID parts to make them functional for field names
@@ -129,12 +129,11 @@ for i=1:numel(list)
     end
     %}
     
-    
     tmp.file = {filename}; %tmp.id = id; %store filename and classification id of object
     
     
-    %id specification from filename
     %{
+    %id specification from filename
     if numel(tmp.vol)==1 || numel(tmp.vol)==numel(id)-2
         tmp.id = tmp.id(1:numel(tmp.vol));
     else
