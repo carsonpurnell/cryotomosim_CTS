@@ -24,18 +24,37 @@ types = {'single','bundle','complex','cluster','group','assembly','memplex','mem
 %grouping/class flag (complex, assembly, random pick from group, sum of group) control split placement
 %class? flag for complex, centering complex, randomizing group, or set to sum
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
+flaglist = ["membrane" "vesicle" "cytosol" "complex" "assembly" "cluster" "bundle"];
 
 for i=1:numel(list)
     fprintf('Loading input %i ',i)
     [~,filename,ext] = fileparts(list{i}); %get file name and extension
     
+    id = strsplit(filename,{'__','.'}); %extract class IDs from filename, delimited by . or __
+    
     %do flag checks first
+    %flagcheck = find(contains(id,'membrane'));
+    %flagcheck = find(contains(id,'vesicle'));
+    %flagcheck = find(contains(id,'cytosol'));
+    %else any
+    %would be a big sprawling mess of fallthroughs, need something better
+    
+    %or do a group-level find-contains for location flags etc?
+    
+    %do a single find-contains against all valid flags, collect them, remove from ids
+    %remove duplicates and keep them all as a string array in a flag field?
+    
+    flagix = find(matches(id,flaglist));
+    %flags = []; %will be empty if no flags detected, usually 1x0 empty
+    tmp.flags = id(flagix); id(flagix) = [];
+    tmp.flags = unique(tmp.flags);
+    
     
     %convert to vols and scrape names
     
     %assign names from file/filename
     
-    id = strsplit(filename,{'__','.'}); %extract class IDs from filename, delimited by . or __
+    
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
     if ismember(tmp.type,types)==0, tmp.type='single'; end %default to single with no type ID in name
     trim=1; 
@@ -82,6 +101,7 @@ for i=1:numel(list)
     %disp(names)
     %size(names)
     %class(names)
+    %names = string(names); %does not appear to be necessary
     for j=1:numel(names)
         %disp(names{j}); disp(id{j});
         if strcmp(names{j},'NA') %replace empty names with something parsed from the filename
@@ -95,7 +115,7 @@ for i=1:numel(list)
     names = reshape(names,1,[]); %reshape to single row to unbreak string/cell mismatch?
     tmp.id = names;
     %disp(names); disp(id);
-    disp(names)
+    %disp(names)
     
     %old id/name parser
     %{
@@ -114,12 +134,14 @@ for i=1:numel(list)
     
     
     %id specification from filename
+    %{
     if numel(tmp.vol)==1 || numel(tmp.vol)==numel(id)-2
         tmp.id = tmp.id(1:numel(tmp.vol));
     else
         postnum = {1:numel(tmp.vol)}; %because string doesn't work on cell arrays that are not variables
         tmp.id = append(tmp.id{1},'_',string(postnum{:}));
     end
+    %}
     
     %tmp.sumvol = sumvol;
     
