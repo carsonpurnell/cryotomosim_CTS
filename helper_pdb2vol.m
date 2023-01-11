@@ -33,7 +33,7 @@ switch ext %parse structure files depending on filetype
     case '.mat'
         try q = load(pdb); data = q.data;
         catch warning('Input is not a pdb2vol-generated .mat file'); end %#ok<SEPEX>
-    case {'.cif','.mmcif'}
+    case {'.cif','.mmcif'} %cif-parsed .mat files seem much larger than .pdb - what's happening?
         data = internal_cifparse(pdb);
     case {'.pdb','.pdb1'}
         data = internal_pdbparse(pdb);
