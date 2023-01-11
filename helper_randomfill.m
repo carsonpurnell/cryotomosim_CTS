@@ -27,7 +27,7 @@ end
 
 %probably need to make this a double loop across cells of particle sets
 
-set(:).id
+%set(:).id
 
 namelist = [set(:).id]; %vector collection of all ids instead of the former double loop
 for i=1:numel(namelist)
