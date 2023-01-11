@@ -55,15 +55,6 @@ for i=1:numel(list)
         centering = 0;
     end
     
-    % parse names block, might go after parsing files
-    id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
-    for j=1:numel(id) %loop through ID parts to make them functional for field names
-        id{j} = string(id{j}); %convert to string for consistency with other functions
-        if ~isempty(sscanf(id{1},'%f')) %detect id that do not start with a letter
-            id{1} = strcat('fix_',id{1}); %append a letter when necessary
-        end
-    end
-    tmp.file = {filename}; tmp.id = id; %store filename and classification id of object
     
     if iscellstr(list(i)) && ismember(ext,modelext)
         fprintf('read: %s ',filename)
@@ -80,6 +71,17 @@ for i=1:numel(list)
     elseif iscellstr(list(i)) %#ok<*ISCLSTR>
         error('Error: item %i in the input list is a string, but not a valid file type',i)
     end
+    
+    % parse names block, might go after parsing files
+    id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
+    for j=1:numel(id) %loop through ID parts to make them functional for field names
+        id{j} = string(id{j}); %convert to string for consistency with other functions
+        if ~isempty(sscanf(id{1},'%f')) %detect id that do not start with a letter
+            id{1} = strcat('fix_',id{1}); %append a letter when necessary
+        end
+    end
+    tmp.file = {filename}; tmp.id = id; %store filename and classification id of object
+    
     
     %id specification from filename
     if numel(tmp.vol)==1 || numel(tmp.vol)==numel(id)-2
