@@ -58,7 +58,7 @@ for i=1:numel(list)
     
     if iscellstr(list(i)) && ismember(ext,modelext)
         fprintf('read: %s ',filename)
-        [tmp.vol,sumvol,names] = helper_pdb2vol(list{i},pixelsize,trim,centering,sv); 
+        [tmp.vol,tmp.sumvol,names] = helper_pdb2vol(list{i},pixelsize,trim,centering,sv); 
         %read pdb and construct as volume at pixel size
         %pdb names read in as 'NA', cif are in column cell array of strings
         %fprintf('generating at %g A ',pixelsize)
@@ -73,8 +73,10 @@ for i=1:numel(list)
     end
     fprintf('generating at %g A ',pixelsize)
     
-    % parse names block, might go after loading files
+    disp(names); disp(id);
+    
     id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
+    % parse names block, might go after loading files
     for j=1:numel(id) %loop through ID parts to make them functional for field names
         id{j} = string(id{j}); %convert to string for consistency with other functions
         if ~isempty(sscanf(id{1},'%f')) %detect id that do not start with a letter
@@ -91,7 +93,8 @@ for i=1:numel(list)
         postnum = {1:numel(tmp.vol)}; %because string doesn't work on cell arrays that are not variables
         tmp.id = append(tmp.id{1},'_',string(postnum{:}));
     end
-    tmp.sumvol = sumvol;
+    
+    %tmp.sumvol = sumvol;
     
     %tmp.vol = helper_preproc(tmp.vol,proc);
     %need to filter mrc to make density maps clean, pdb are already good to go
