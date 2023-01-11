@@ -143,10 +143,41 @@ for i=1:iters
     
     %placement switch for each particle class
     switch set(which).type
+        %bundle first because it's going to break all the flags and needs an overhaul
         case 'bundle' %bundle placement got complicated, need to refactor the internal function
             if i<iters/5 || randi(numel(set(which).vol))==1 %have some scalable value to determine weight?
             [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
             %increase iters by fraction of N to reduce runtime? can't modify i inside for loop
+            end
+            
+        %cluster second because it also breaks flags and needs reworking
+        case 'cluster' %need to move into call to cluster function like bundle has
+            sub = randi(numel(particle)); %get random selection from the group
+            [rot,~,loc,err] = testplace2(inarray,locmap,set(which).vol{sub},3);
+            counts.f = counts.f + err;
+            if err==0 %on success, place in splits and working array
+                counts.s=counts.s+1;
+                [inarray] = helper_arrayinsert(inarray,rot,loc);
+                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
+                %generate list of random points near loc
+                num = 12;
+                r = randn(1,num).*mean(size(set(which).vol{sub}))/2+mean(size(set(which).vol{sub}));
+                az = rand(1,num)*360; el = rand(1,num)*360;
+                [x,y,z] = sph2cart(az,el,abs(r));
+                clusterpts = round([x;y;z])+loc';
+                
+                %loop through points and try to place them
+                for j=1:size(clusterpts,2)
+                    sub = randi(numel(particle)); %new random member
+                    
+                    tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
+                    rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
+                    [inarray,errc] = helper_arrayinsert(inarray,rot,clusterpts(:,j),'nonoverlap'); %test place
+                    if errc==0 %if nonoverlap record and add to split
+                        counts.s=counts.s+1;
+                        split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,clusterpts(:,j));
+                    end
+                end
             end
             
         case {'inmem','outmem','single','group'} %universal for non-special non-complexes
@@ -245,34 +276,7 @@ for i=1:iters
             end
         %}
         
-        case 'cluster' %need to move into call to cluster function like bundle has
-            sub = randi(numel(particle)); %get random selection from the group
-            [rot,~,loc,err] = testplace2(inarray,locmap,set(which).vol{sub},3);
-            counts.f = counts.f + err;
-            if err==0 %on success, place in splits and working array
-                counts.s=counts.s+1;
-                [inarray] = helper_arrayinsert(inarray,rot,loc);
-                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
-                %generate list of random points near loc
-                num = 12;
-                r = randn(1,num).*mean(size(set(which).vol{sub}))/2+mean(size(set(which).vol{sub}));
-                az = rand(1,num)*360; el = rand(1,num)*360;
-                [x,y,z] = sph2cart(az,el,abs(r));
-                clusterpts = round([x;y;z])+loc';
-                
-                %loop through points and try to place them
-                for j=1:size(clusterpts,2)
-                    sub = randi(numel(particle)); %new random member
-                    
-                    tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
-                    rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
-                    [inarray,errc] = helper_arrayinsert(inarray,rot,clusterpts(:,j),'nonoverlap'); %test place
-                    if errc==0 %if nonoverlap record and add to split
-                        counts.s=counts.s+1;
-                        split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,clusterpts(:,j));
-                    end
-                end
-            end
+        
             
         case {'memplex','membrane'}
             [particle] = ctsutil('trim',particle); %trims all vols according to their sum
