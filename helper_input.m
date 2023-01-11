@@ -44,9 +44,9 @@ for i=1:numel(list)
     %do a single find-contains against all valid flags, collect them, remove from ids
     %remove duplicates and keep them all as a string array in a flag field?
     
-    flagix = find(matches(id,flaglist));
+    flagix = matches(id,flaglist); %not using find due to being slower
     %flags = []; %will be empty if no flags detected, usually 1x0 empty
-    tmp.flags = id(flagix); id(flagix) = [];
+    tmp.flags = id(flagix); %id(flagix) = []; %remove flags from list when detected
     tmp.flags = unique(tmp.flags); %remove duplicate flag entries for cleanliness
     
     
