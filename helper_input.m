@@ -112,7 +112,7 @@ for i=1:numel(list)
         end
         names{j} = strrep(names{j},'-','_');
     end
-    names = reshape(names,1,[]); %reshape to single row to unbreak string/cell mismatch?
+    names = reshape(names,1,[]); %reshape to single row to unbreak concatenation in randomfill
     tmp.id = names;
     %disp(names); disp(id);
     %disp(names)
