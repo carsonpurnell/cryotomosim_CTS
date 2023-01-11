@@ -73,8 +73,11 @@ for i=1:numel(list)
     end
     fprintf('generating at %g A ',pixelsize)
     
-    disp(names); disp(id);
+    %disp(names); disp(id);
     
+    %new name parser, import from pdb2vol
+    
+    %old id/name parser
     id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
     % parse names block, might go after loading files
     for j=1:numel(id) %loop through ID parts to make them functional for field names
@@ -83,6 +86,8 @@ for i=1:numel(list)
             id{1} = strcat('fix_',id{1}); %append a letter when necessary
         end
     end
+    
+    
     tmp.file = {filename}; tmp.id = id; %store filename and classification id of object
     
     
