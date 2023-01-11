@@ -143,6 +143,12 @@ for i=1:iters
     
     %placement switch for each particle class
     switch set(which).type
+        case 'bundle' %bundle placement got complicated, need to refactor the internal function
+            if i<iters/5 || randi(numel(set(which).vol))==1 %have some scalable value to determine weight?
+            [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
+            %increase iters by fraction of N to reduce runtime? can't modify i inside for loop
+            end
+            
         case {'inmem','outmem','single','group'} %universal for non-special non-complexes
             sub = randi(numel(particle));
             
@@ -200,12 +206,6 @@ for i=1:iters
                 end
             end
             
-        case 'bundle' %bundle placement got complicated, need to refactor the internal function
-            if i<iters/5 || randi(numel(set(which).vol))==1 %have some scalable value to determine weight?
-            [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
-            %increase iters by fraction of N to reduce runtime? can't modify i inside for loop
-            end
-            
         %{    
         case {'single','group'} %randomly select one particle from the group (including single)
             sub = randi(numel(particle)); %get random selection from the group
@@ -217,7 +217,8 @@ for i=1:iters
                 [inarray] = helper_arrayinsert(inarray,rot,loc);
                 split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
             end
-            
+           %}
+        %{
         case {'inmem','outmem'}
             sub = randi(numel(particle));
             if strcmp(set(which).type,'inmem') %get locmap depending on target location
@@ -242,7 +243,8 @@ for i=1:iters
                 [inarray] = helper_arrayinsert(inarray,rot,com);
                 split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,com);
             end
-            %}
+        %}
+        
         case 'cluster' %need to move into call to cluster function like bundle has
             sub = randi(numel(particle)); %get random selection from the group
             [rot,~,loc,err] = testplace2(inarray,locmap,set(which).vol{sub},3);
