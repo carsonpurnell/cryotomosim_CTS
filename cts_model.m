@@ -64,7 +64,7 @@ arguments
     opt.mem = 0 %is now working, mostly! value is now the number of vesicles randomly generated
     opt.iters = 0
     %}
-    
+    opt.layers = 0
     opt.graph = 0
     %suffix or other indicator string
     %opt to save incremental models for each layer and component of model building
@@ -93,9 +93,12 @@ cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[]);%,'i
 % cts.inputs.ice = opt.ice; 
 
 % block placeholder for loop input of particle set layers
-
-
-
+layers = cell(1,opt.layers);
+for i=1:opt.layers
+    fprintf('Loading layer %i structures',i)
+    layers{i} = helper_input(param.targets,pix); %load layer
+    
+end
 % block placeholder for loop input of particle set layers
 
 %load input targets
