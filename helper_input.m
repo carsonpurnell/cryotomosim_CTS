@@ -75,20 +75,35 @@ for i=1:numel(list)
     
     %disp(names); disp(id);
     
-    %new name parser, import from pdb2vol
+    %new name parser, import from pdb2vol and replace when needed
+    %need to intelligently get group/single
+    for j=1:numel(names)
+        if strcmp(names{j},'NA') %replace empty names with something parsed from the filename
+            names{j} = id{j};
+        end
+        if ~isempty(sscanf(names{j},'%f')) %detect id that do not start with a letter
+            names{j} = strcat('fix_',names{j}); %append a letter when necessary
+        end
+        names{j} = strrep(names{j},'-','_');
+    end
+    tmp.id = names;
+    %disp(names); disp(id);
+    disp(names)
     
     %old id/name parser
+    %{
     id = strrep(id,'-','_'); %change dashes to underscore, field names can't have dashes
     % parse names block, might go after loading files
     for j=1:numel(id) %loop through ID parts to make them functional for field names
         id{j} = string(id{j}); %convert to string for consistency with other functions
-        if ~isempty(sscanf(id{1},'%f')) %detect id that do not start with a letter
-            id{1} = strcat('fix_',id{1}); %append a letter when necessary
+        if ~isempty(sscanf(id{j},'%f')) %detect id that do not start with a letter
+            id{j} = strcat('fix_',id{j}); %append a letter when necessary
         end
     end
+    %}
     
     
-    tmp.file = {filename}; tmp.id = id; %store filename and classification id of object
+    tmp.file = {filename}; %tmp.id = id; %store filename and classification id of object
     
     
     %id specification from filename
