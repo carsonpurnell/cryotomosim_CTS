@@ -10,8 +10,8 @@ arguments
     %param.pix (1,1) %must be input?
     
     %input particles params
-    param.targets = 'gui' %soft required?
-    param.distract = 'none'
+    param.layers = 'gui' %soft required?
+    %param.distract = 'none'
     
     %model run and limitations params
     param.density = 0.4 %if moving to target loop, this needs to be able to be a vector
