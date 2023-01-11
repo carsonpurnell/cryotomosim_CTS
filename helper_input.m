@@ -77,7 +77,13 @@ for i=1:numel(list)
     
     %new name parser, import from pdb2vol and replace when needed
     %need to intelligently get group/single
+    %disp(names)
+    %names = mat2cell(names,numel(names));
+    %disp(names)
+    %size(names)
+    %class(names)
     for j=1:numel(names)
+        %disp(names{j}); disp(id{j});
         if strcmp(names{j},'NA') %replace empty names with something parsed from the filename
             names{j} = id{j};
         end
@@ -86,6 +92,7 @@ for i=1:numel(list)
         end
         names{j} = strrep(names{j},'-','_');
     end
+    names = reshape(names,1,[]); %reshape to single row to unbreak string/cell mismatch?
     tmp.id = names;
     %disp(names); disp(id);
     disp(names)
