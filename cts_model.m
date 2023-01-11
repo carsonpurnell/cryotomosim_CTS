@@ -67,6 +67,8 @@ arguments
     
     opt.graph = 0
     %suffix or other indicator string
+    %opt to save incremental models for each layer and component of model building
+    %save the splitmodels in another file to reduce bloat in cts?
 end
 if iscell(param), param = param_model(param{:}); end
 
@@ -89,6 +91,21 @@ cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[]);%,'i
 % cts.inputs.density = opt.density; cts.inputs.constraint = opt.constraint;
 % cts.inputs.beads = opt.beads; cts.inputs.grid = opt.grid; cts.inputs.mem = opt.mem;
 % cts.inputs.ice = opt.ice; 
+
+% block placeholder for loop input of particle set layers
+
+
+
+% block placeholder for loop input of particle set layers
+
+%load input targets
+[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
+if isempty(param.iters) || param.iters==0
+    param.iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
+else
+    param.iters = param.iters;
+end
+
 
 if param.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
@@ -123,13 +140,8 @@ switch param.constraint %write constraints to initial starting volume
         %ts.model.constraintsides = constraint;
 end
 
+
 %generate model and add (in case input vol had stuff in it)
-[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
-if isempty(param.iters) || param.iters==0
-    param.iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
-else
-    param.iters = param.iters;
-end
 [cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,cts.particles.targets,param.iters,...
     vescen,vesvol,param.density,'type','target','graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
@@ -137,7 +149,7 @@ cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between tr
 cts.model.particles = cts.vol;
 
 %change targets/distractors into a single repeating loop of any number of sets of particles?
-%not sure how to implement a single opt to retrieve multiple sets of particles.
+%not sure how to implement a single opt to retrieve multiple sets of particles. loop to helper?
 %also need to fetch particles before grid/membrane for ease of use
 
 if ~strcmp(param.distract,'none') %DISTRACTORS
