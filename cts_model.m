@@ -102,7 +102,9 @@ end
 layers = cell(1,param.layers);
 for i=1:param.layers
     fprintf('Loading layer %i structures \n',i)
-    layers{i} = helper_input(param.targets,pix); %load layer
+    %need a check or something for when a layer is already parsed files? or just let input return by itself?
+    %more likely need to be able to load a saved list of layers
+    layers{i} = helper_input('gui',pix); %load layer
     %param.iters(i) = param.iters(min(i,end));
     %param.density(i) = param.density(min(i,end));
 end
@@ -164,6 +166,7 @@ cts.model.particles = cts.vol;
 %not sure how to implement a single opt to retrieve multiple sets of particles. loop to helper?
 %also need to fetch particles before grid/membrane for ease of use
 
+%{
 if ~strcmp(param.distract,'none') %DISTRACTORS
 [cts.particles.distractors] = helper_input(param.distract,pix); %load distractor particles
 
@@ -174,6 +177,7 @@ iters = round( param.iters*sqrt(numel(cts.particles.distractors(1,:))) ); %distr
 cts.vol = max(cts.vol,cts.model.distractors); %fix for transmembrane overlaps
 cts.model.particles = cts.vol;
 end
+%}
 
 if param.beads~=0 %bead generation and placement block
     beadstrc = gen_beads(pix,param.beads(2:end)); %external generation of varied beads
