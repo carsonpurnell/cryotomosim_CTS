@@ -54,14 +54,20 @@ for i=1:numel(list)
     tmp.flags = id(flagix); %id(flagix) = []; %remove flags from list when detected
     tmp.flags = unique(tmp.flags); %remove duplicate flag entries for cleanliness
     
-    %convert to vols and scrape names
+    %figure out the relevant trimming/centering for vol loading
+    %trim = 2;
+    %if plex trim=1?
+    %if mem trim =0?
+    
+    %convert to vols and get names
     
     %assign names from file/filename
-    
+    %if lumper, use first id string for all names
+    %if splitting, run through and replace NA names with same ID name
     
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
     if ismember(tmp.type,types)==0, tmp.type='single'; end %default to single with no type ID in name
-    trim=1; 
+    trim=1;
     if ismember(tmp.type,{'memplex','membrane'}) %don't trim complexes and membrane
         %redundant for memplex/mem, pdb2vol currently sets trim=0 for centering==1
         trim=0;
