@@ -69,12 +69,14 @@ for i=1:numel(list)
         fprintf('read: %s ',filename)
         [tmp.vol,sumvol,names] = helper_pdb2vol(list{i},pixelsize,trim,centering,sv); 
         %read pdb and construct as volume at pixel size
+        %pdb names read in as 'NA', cif are in column cell array of strings
         fprintf('generating at %g A ',pixelsize)
     elseif iscellstr(list(i)) && strcmp(ext,'.mrc')
         fprintf('loading %s  ',filename)
         [tmp, head] = ReadMRC(list{i});
         fprintf('resizing from %g to %g pixel size',head.pixA,pixelsize)
         tmp.vol = imresize3(tmp,head.pixA/pixelsize);
+        names = {'NA'};
     elseif iscellstr(list(i)) %#ok<*ISCLSTR>
         error('Error: item %i in the input list is a string, but not a valid file type',i)
     end
