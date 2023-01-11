@@ -25,6 +25,10 @@ types = {'single','bundle','complex','cluster','group','assembly','memplex','mem
 %class? flag for complex, centering complex, randomizing group, or set to sum
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
 flaglist = ["membrane" "vesicle" "cytosol" "complex" "assembly" "cluster" "bundle"];
+%loc flags: membrane embedded, vesicle inside, cytosol outside - otherwise anywhere
+%subpart flags: complex to place each subpart separately, assembly the same but not all subparts
+%grouping flags? randomly pick from group, either use that submodel ID or always use the group ID?
+%clustering flags: cluster for clumps and bundle for linear bundles, both separate class methods
 
 for i=1:numel(list)
     fprintf('Loading input %i ',i)
