@@ -112,6 +112,10 @@ text = text{1}; %fix being inside a 1x1 cell array
 
 modnames = text(strncmp(text,'data_',5)); %retrieve lines storing model names
 modnames = strrep(modnames,'data_','');
+%need to remove trailing numbers
+%disp(modnames)
+modnames = regexprep(modnames,'\_\d$','');
+%disp(modnames)
 
 %ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
 
