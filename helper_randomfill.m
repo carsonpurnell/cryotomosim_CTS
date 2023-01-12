@@ -224,10 +224,22 @@ for i=1:iters
             if err==0 %on success, place in splits and working array
                 counts.s=counts.s+1;
                 [inarray] = helper_arrayinsert(inarray,rot,loc);
-                %tmp = split.(set(which).id{sub}); %negligible
-                %tmp = helper_arrayinsert(tmp,rot,com); %was ~25 with 506 iters? slower to split assignments
-                %split.(set(which).id{sub}) = tmp; %~6 s extra
-                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc); %faster
+                if sub~=0
+                    split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
+                else
+                    members = 2:numel(set(which).vol);
+                    if any(ismember(rflags,'assembly'))
+                        members = members(randperm(length(members)));
+                        if numel(members)>1, members = members(randi(numel(members)+1):end); end
+                    end
+                    %loop through and place members
+                    members = [1,members]; %#ok<AGROW>
+                    for t=members %rotate and place each component of complex
+                        rot = imwarp(set(which).vol{t},tform);
+                        split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
+                    end
+                    
+                end
                 if ismem==1 && strcmp(set(which).type,'vesicle')
                     [min] = helper_arrayinsert(min,-rot,loc);
                 elseif ismem==1 && strcmp(set(which).type,'cytosol')
@@ -237,12 +249,11 @@ for i=1:iters
             
     end
     
+    %switch for plex vs single placement somewhere below
+    %needs to get the relevant tform for non-mem, and spin+theta+ax for membrane
+    %loop through the relevant vols, also inherited from above 
+    %can placement into splits be made a subfunct?
     
-    
-    
-    
-    
-    %switch or if to fallthrough for placing either sumvol or individuals and with rot, tform, or ax/theta
     
     %placement switch for each particle class
     switch classtype %set(which).type
@@ -286,7 +297,7 @@ for i=1:iters
                 end
             end
         %}
-            
+        %{
         case {'inmem','outmem','single','group'} %universal for non-special non-complexes
             sub = randi(numel(particle));
             %{
@@ -319,6 +330,7 @@ for i=1:iters
                     [mout] = helper_arrayinsert(mout,-rot,loc);
                 end
             end
+        %}
             
         case {'complex','assembly'} %all or multiple structured components of a protein complex
             %sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
