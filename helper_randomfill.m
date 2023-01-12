@@ -69,7 +69,6 @@ else
 end
 % membrane setup stuff end
 
-
 diagout = zeros(size(inarray,1),size(inarray,2),0);
 
 %make a double loop, possibly making the internal loop an internal function?
@@ -150,7 +149,7 @@ for i=1:iters
     if ismem==1 && matches(locpick,{'membrane','vesicle','cytosol'})
         %this switch needs a better expression, multiple locations should work (for membrane+else)
         %membrane-centering not placed inside membrane does a neat near-membrane localization
-        locpick = rflags(locpick); locpick = locpick{1};
+        %locpick = rflags(locpick); locpick = locpick{1};
         switch locpick
             case 'membrane' %placement into membrane
                 locmap = memlocmap==1;
@@ -164,17 +163,22 @@ for i=1:iters
     end
     
     %switch for group class (bundle, cluster, or single) for placing - also need one for mem?
-    %thing to catch whichever flag is relevant?
-    if any(matches(rflags,{'bundle','cluster'}))
-        specialflag = rflags{matches(rflags,{'bundle','cluster'})};
+    %specialflag = fnflag(rflags,{'bundle','cluster'});
+    
+    
+    %temporary catch to use flags to run the old placement types
+    classtype = fnflag(rflags,{'membrane','bundle'});
+    if strcmp(classtype,'NA')
+        classtype = 'single';
     end
     %specialflag = rflags(matches(rflags,{'bundle','cluster'}));
     %can be empty, if statement or fill with something?
     
+    
     %switch or if to fallthrough for placing either sumvol or individuals and with rot, tform, or ax/theta
     
     %placement switch for each particle class
-    switch set(which).type
+    switch classtype %set(which).type
         %bundle first because it's going to break all the flags and needs an overhaul
         case 'bundle' %bundle placement got complicated, need to refactor the internal function
             if i<iters/5 || randi(numel(set(which).vol))==1 %have some scalable value to determine weight?
