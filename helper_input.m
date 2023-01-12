@@ -57,9 +57,17 @@ for i=1:numel(list)
     tmp.flags = unique(tmp.flags); %remove duplicate flag entries for cleanliness
     
     %figure out the relevant trimming/centering for vol loading
-    %trim = 2;
+    %
+    trim = 2; centering = 0;
+    if ismember(tmp.flags,{'complex','assembly'})
+        trim = 1;
+    end
+    if ismember(tmp.flags,{'membrane'})
+        trim = 0; centering = 1;
+    end
     %if plex trim=1? ismember{x,{'complex','assembly'})
     %if mem trim =0 and center = 1?
+    %}
     
     %convert to vols and get names
     
