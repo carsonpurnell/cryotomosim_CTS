@@ -218,7 +218,7 @@ for i=1:iters
                 sumvol = set(which).vol{sub};
             end
             
-            [rot,~,loc,err] = testcyto(inarray,locmap,sumvol,4);
+            [rot,tform,loc,err] = testcyto(inarray,locmap,sumvol,4);
             
             counts.f = counts.f + err;
             if err==0 %on success, place in splits and working array
@@ -256,7 +256,7 @@ for i=1:iters
     
     
     %placement switch for each particle class
-    switch classtype %set(which).type
+    switch 1%classtype %set(which).type
         %{
         %bundle first because it's going to break all the flags and needs an overhaul
         case 'bundle' %bundle placement got complicated, need to refactor the internal function
