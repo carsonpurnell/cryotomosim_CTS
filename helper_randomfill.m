@@ -288,8 +288,6 @@ for i=1:iters
             end
         %}
         
-        
-            
         case {'memplex','membrane'}
             [particle] = ctsutil('trim',particle); %trims all vols according to their sum
             %centered = centervol(molc); 
