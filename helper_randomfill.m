@@ -117,7 +117,6 @@ for i=1:iters
                 locmap = min==1;
             case 'outmem' %only outside vesicles
                 locmap = mout==1;
-                
         end
         
         %do membrane stuff
@@ -135,6 +134,23 @@ for i=1:iters
     %inherit complex/assembly/sum from some earlier check, assembly should check variable sumvol anyway
     %place the stuff at the end, either the final rot sumvol for non-plex and the tf/rots/ax/theta for plexes
     
+    %org for new flag-based system:
+    %switch for placement location to get locmap (mem,ves,cytosol, or any)
+    if ismem==1 && any(ismember(set(which).flags,{'membrane','vesicle','cytosol'}))
+        switch set(which).flags{matches(set(which).flags,{'membrane','vesicle','cytosol'})}
+            case 'membrane' %placement into membrane
+                locmap = memlocmap==1;
+            case 'vesicle' %inside vesicle volume
+                locmap = min==1;
+            case 'cytosol' %only outside vesicles
+                locmap = mout==1;
+        end
+    else
+        locmap = inarray==0; %faster than logical somehow
+    end
+            
+    %switch for group class (bundle, cluster, or single) for placing - also need one for mem?
+    %switch or if to fallthrough for placing either sumvol or individuals and with rot, tform, or ax/theta
     
     %placement switch for each particle class
     switch set(which).type
@@ -211,7 +227,8 @@ for i=1:iters
             end
             
         case {'complex','assembly'} %all or multiple structured components of a protein complex
-            sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
+            %sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
+            sumvol = set(which).sumvol;
             
             [rot,tform,loc,err] = testplace2(inarray,locmap,sumvol,4);
             %[rot,tform,loc,err] = testplace(inarray,sumvol,3);
