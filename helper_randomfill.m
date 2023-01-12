@@ -85,7 +85,9 @@ for i=1:iters
     %precall more things so structs aren't called into so many times
     vols = set(which).vol; 
     flags = set(which).flags; 
-    rflags = (flags(randperm(length(flags)))); % instead write to flags? why would i need unrand flags?
+    rflags = (flags(randperm(length(flags)))); %randomize flag order for mixed usage
+    % instead write to flags? why would i need unrand flags?
+    %flag is an existing function, so DO NOT USE
     
     
     %put split/group placement box after the type switch for efficiency and to make complex/memplex/assembly
@@ -143,9 +145,9 @@ for i=1:iters
     
     %org for new flag-based system:
     %switch for placement location to get locmap (mem,ves,cytosol, or any)
-     %randomize flag order for multiloc usage
-    locpick = matches(rflags,{'membrane','vesicle','cytosol'}); %check if any special loc found
-    if ismem==1 && any(locpick)
+    locpick = fnflag(rflags,{'membrane','vesicle','cytosol'}); %check if any special loc found
+    %need a subfunct for parsing relevant flags and returning the first valid one
+    if ismem==1 && matches(locpick,{'membrane','vesicle','cytosol'})
         %this switch needs a better expression, multiple locations should work (for membrane+else)
         %membrane-centering not placed inside membrane does a neat near-membrane localization
         locpick = rflags(locpick); locpick = locpick{1};
@@ -160,7 +162,7 @@ for i=1:iters
     else
         locmap = inarray==0; %faster than logical somehow
     end
-            
+    
     %switch for group class (bundle, cluster, or single) for placing - also need one for mem?
     %thing to catch whichever flag is relevant?
     if any(matches(rflags,{'bundle','cluster'}))
@@ -409,6 +411,14 @@ for i=1:numel(splitnames)
 end
 
 end
+
+
+function [flag] = fnflag(flag,set)
+hits = flag(matches(flag,set));
+hits{end+1} = 'NA'; %fill with string to avoid empty vector errors and make clear no flag found
+flag = hits{1};
+end
+
 
 %placement testing for cytosol proteins
 function [rot,tform,loc,err] = testcyto(inarray,locmap,particle,retry)
