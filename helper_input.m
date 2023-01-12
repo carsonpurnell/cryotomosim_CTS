@@ -31,6 +31,8 @@ flaglist = ["membrane" "vesicle" "cytosol" "complex" "assembly" "cluster" "bundl
 %clustering flags: cluster for clumps and bundle for linear bundles, both separate class methods
 %retry flag that changes how many placement attempts are made to increase prevalence? or add to other flags?
 
+%does assembly imply complex, or should it add complex to the flags?
+
 for i=1:numel(list)
     fprintf('Loading input %i ',i)
     [~,filename,ext] = fileparts(list{i}); %get file name and extension
@@ -56,8 +58,8 @@ for i=1:numel(list)
     
     %figure out the relevant trimming/centering for vol loading
     %trim = 2;
-    %if plex trim=1?
-    %if mem trim =0?
+    %if plex trim=1? ismember{x,{'complex','assembly'})
+    %if mem trim =0 and center = 1?
     
     %convert to vols and get names
     
