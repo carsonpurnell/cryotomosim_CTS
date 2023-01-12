@@ -179,9 +179,9 @@ for i=1:iters
         case 'cluster'
         sub = randi(numel(particle)); %get random selection from the group
         [rot,~,loc,err] = testplace2(inarray,locmap,set(which).vol{sub},3);
-        counts.f = counts.f + err;
+        counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
         if err==0 %on success, place in splits and working array
-            counts.s=counts.s+1;
+            %counts.s=counts.s+1;
             [inarray] = helper_arrayinsert(inarray,rot,loc);
             split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
             %generate list of random points near loc
@@ -219,10 +219,9 @@ for i=1:iters
             end
             
             [rot,tform,loc,err] = testcyto(inarray,locmap,sumvol,4);
+            counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
-            counts.f = counts.f + err;
             if err==0 %on success, place in splits and working array
-                counts.s=counts.s+1;
                 [inarray] = helper_arrayinsert(inarray,rot,loc);
                 if sub~=0
                     split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
@@ -331,7 +330,7 @@ for i=1:iters
                 end
             end
         %}
-            
+        %{ 
         case {'complex','assembly'} %all or multiple structured components of a protein complex
             %sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
             sumvol = set(which).sumvol;
@@ -354,7 +353,7 @@ for i=1:iters
                     split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
                 end
             end
-            
+            %}
         %{    
         case {'single','group'} %randomly select one particle from the group (including single)
             sub = randi(numel(particle)); %get random selection from the group
@@ -393,7 +392,7 @@ for i=1:iters
                 split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,com);
             end
         %}
-        
+        %}
         case {'memplex','membrane'}
             [particle] = ctsutil('trim',particle); %trims all vols according to their sum
             %centered = centervol(molc); 
@@ -434,7 +433,8 @@ for i=1:iters
             
             com = round(loc-size(rot)/2);
             [~,err] = helper_arrayinsert(tdest,rot,com,'overlaptest');
-            counts.f = counts.f+err; %counts.s = counts.s-err; %increment fails, should refactor s
+            %counts.f = counts.f+err; %counts.s = counts.s-err; %increment fails, should refactor s
+            counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
             if err==0
                 [inarray] = helper_arrayinsert(inarray,rot,com); %write sum to working array
@@ -444,7 +444,7 @@ for i=1:iters
                     [mout] = helper_arrayinsert(mout,-rot,com);
                 %elseif ismem==1 %&& strcmp(set(which).type,'outmem')
                 end
-                counts.s = counts.s+1; %increment success, bad old way need to deprecate
+                %counts.s = counts.s-1; %increment success, bad old way need to deprecate
                 %actually write to the split arrays
                 if strcmp(set(which).type,'memplex')
                     members = 1:numel(particle);
@@ -498,10 +498,10 @@ end
 end
 
 
-function [flag] = fnflag(flag,set)
-hits = flag(matches(flag,set));
+function [flags] = fnflag(flags,set)
+hits = flags(matches(flags,set));
 hits{end+1} = 'NA'; %fill with string to avoid empty vector errors and make clear no flag found
-flag = hits{1};
+flags = hits{1};
 end
 
 
@@ -520,6 +520,32 @@ end
 
 %placement testing for membrane proteins - TBD
 
+
+%placement into splitvols
+function [split] = fnsplitplace(split,vols,id,flags,loc,op)
+%one vol neeeds one name, places to the given split
+%otherwise needs all the vols and names, then does complex/assembly member stuff
+%for normals, op needs to be a tform
+%for mem, opt needs to be [spin ax theta]
+if numel(vols)==1
+    split.(id) = helper_arrayinsert(split.(id),vols,loc);
+else
+    %if plex, need to loop through and place
+    members = 2:numel(vols);
+    flags = fnflag(flags,{'assembly','complex'});
+    if strcmp(flags,'assembly')
+        members = members(randperm(length(members)));
+        if numel(members)>1, members = members(randi(numel(members)+1):end); end
+    end
+    %loop through and place members
+    members = [1,members]; 
+    for t=members %rotate and place each component of complex
+        rot = imwarp(vols{t},op{1});
+        split.(id{t}) = helper_arrayinsert(split.(id{t}),rot,loc);
+    end
+end
+
+end
 
 %preliminary internal function for initial placement testing
 function [rot,tform,loc,err] = testplace(inarray,particle,retry)
