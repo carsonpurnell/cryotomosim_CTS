@@ -59,10 +59,10 @@ for i=1:numel(list)
     %figure out the relevant trimming/centering for vol loading
     %
     trim = 2; centering = 0;
-    if ismember(tmp.flags,{'complex','assembly'})
+    if any(ismember(tmp.flags,{'complex','assembly'}))
         trim = 1;
     end
-    if ismember(tmp.flags,{'membrane'})
+    if any(ismember(tmp.flags,{'membrane'}))
         trim = 0; centering = 1;
     end
     %if plex trim=1? ismember{x,{'complex','assembly'})
@@ -75,7 +75,11 @@ for i=1:numel(list)
     %if lumper, use first id string for all names
     %if splitting, run through and replace NA names with same ID name
     
+    
+    % old janky class parser and loader thing
+    %
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
+    %{
     if ismember(tmp.type,types)==0, tmp.type='single'; end %default to single with no type ID in name
     trim=1;
     if ismember(tmp.type,{'memplex','membrane'}) %don't trim complexes and membrane
@@ -93,7 +97,7 @@ for i=1:numel(list)
     else
         centering = 0;
     end
-    
+    %}
     
     if iscellstr(list(i)) && ismember(ext,modelext)
         fprintf('read: %s ',filename)
