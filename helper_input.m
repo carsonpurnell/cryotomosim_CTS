@@ -55,6 +55,7 @@ for i=1:numel(list)
     %flags = []; %will be empty if no flags detected, usually 1x0 empty
     tmp.flags = id(flagix); %id(flagix) = []; %remove flags from list when detected
     tmp.flags = unique(tmp.flags); %remove duplicate flag entries for cleanliness
+    %kind of a mess in randomfill, checking partial flags. split them up or make a sorter funct?
     
     %figure out the relevant trimming/centering for vol loading
     %
