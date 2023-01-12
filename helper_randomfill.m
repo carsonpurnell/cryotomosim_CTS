@@ -115,7 +115,7 @@ for i=1:iters
             pts = [x,y,z];
     end
     %}
-    %
+    %{
     if ismem==1 && ismember(set(which).type,{'memplex','membrane','inmem','outmem'})
         switch set(which).type
             case {'memplex','membrane'} %placement into membrane
@@ -171,6 +171,9 @@ for i=1:iters
     if strcmp(classtype,'NA')
         classtype = 'single';
     end
+    if strcmp(classtype,'bundle')
+        [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
+    end
     %specialflag = rflags(matches(rflags,{'bundle','cluster'}));
     %can be empty, if statement or fill with something?
     
@@ -180,14 +183,17 @@ for i=1:iters
     %placement switch for each particle class
     switch classtype %set(which).type
         %bundle first because it's going to break all the flags and needs an overhaul
+        %{
         case 'bundle' %bundle placement got complicated, need to refactor the internal function
             if i<iters/5 || randi(numel(set(which).vol))==1 %have some scalable value to determine weight?
             [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
             %increase iters by fraction of N to reduce runtime? can't modify i inside for loop
             end
+            %}
             
         %cluster second because it also breaks flags and needs reworking
         case 'cluster' %need to move into call to cluster function like bundle has
+            %cluster should be more like a normal class method, needs to be able to do complexes
             sub = randi(numel(particle)); %get random selection from the group
             [rot,~,loc,err] = testplace2(inarray,locmap,set(which).vol{sub},3);
             counts.f = counts.f + err;
