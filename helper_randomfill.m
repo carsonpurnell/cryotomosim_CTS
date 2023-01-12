@@ -82,6 +82,10 @@ fprintf('Layer 1, attempting %i %s placements:  \n',iters,opt.type)
 for i=1:iters
     which = randi(numel(set)); 
     particle = set(which).vol; 
+    %precall more things so structs aren't called into so many times
+    vols = set(which).vol; 
+    flags = set(which).flags; 
+    
     
     %put split/group placement box after the type switch for efficiency and to make complex/memplex/assembly
     %more general schemes
@@ -109,6 +113,7 @@ for i=1:iters
             pts = [x,y,z];
     end
     %}
+    %
     if ismem==1 && ismember(set(which).type,{'memplex','membrane','inmem','outmem'})
         switch set(which).type
             case {'memplex','membrane'} %placement into membrane
@@ -128,6 +133,7 @@ for i=1:iters
         
         %do placement testing and verification here?, place into splits and working array separately
     end
+    %}
     
     %do final placement based on if there is a tform~=0 or theta/ax ~=0?
     %fallthrough for complex/assembly too
@@ -136,8 +142,13 @@ for i=1:iters
     
     %org for new flag-based system:
     %switch for placement location to get locmap (mem,ves,cytosol, or any)
-    if ismem==1 && any(ismember(set(which).flags,{'membrane','vesicle','cytosol'}))
-        switch set(which).flags{matches(set(which).flags,{'membrane','vesicle','cytosol'})}
+    rflags = (flags(randperm(length(flags)))); %randomize flag order for multiloc usage
+    locpick = matches(rflags,{'membrane','vesicle','cytosol'});
+    if ismem==1 && any(locpick)
+        %this switch needs a better expression, multiple locations should work (for membrane+else)
+        %membrane-centering not placed inside membrane does a neat near-membrane localization
+        locpick = rflags(locpick); locpick = locpick{1};
+        switch locpick
             case 'membrane' %placement into membrane
                 locmap = memlocmap==1;
             case 'vesicle' %inside vesicle volume
