@@ -143,7 +143,7 @@ for i=1:iters
     %org for new flag-based system:
     %switch for placement location to get locmap (mem,ves,cytosol, or any)
     rflags = (flags(randperm(length(flags)))); %randomize flag order for multiloc usage
-    locpick = matches(rflags,{'membrane','vesicle','cytosol'});
+    locpick = matches(rflags,{'membrane','vesicle','cytosol'}); %check if any special loc found
     if ismem==1 && any(locpick)
         %this switch needs a better expression, multiple locations should work (for membrane+else)
         %membrane-centering not placed inside membrane does a neat near-membrane localization
