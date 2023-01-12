@@ -85,6 +85,7 @@ for i=1:iters
     %precall more things so structs aren't called into so many times
     vols = set(which).vol; 
     flags = set(which).flags; 
+    rflags = (flags(randperm(length(flags)))); % instead write to flags? why would i need unrand flags?
     
     
     %put split/group placement box after the type switch for efficiency and to make complex/memplex/assembly
@@ -142,7 +143,7 @@ for i=1:iters
     
     %org for new flag-based system:
     %switch for placement location to get locmap (mem,ves,cytosol, or any)
-    rflags = (flags(randperm(length(flags)))); %randomize flag order for multiloc usage
+     %randomize flag order for multiloc usage
     locpick = matches(rflags,{'membrane','vesicle','cytosol'}); %check if any special loc found
     if ismem==1 && any(locpick)
         %this switch needs a better expression, multiple locations should work (for membrane+else)
