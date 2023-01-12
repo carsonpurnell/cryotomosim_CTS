@@ -10,7 +10,7 @@ arguments
     %param.pix (1,1) %must be input?
     
     %input particles params
-    param.layers = 'gui' %soft required?
+    param.layers = 1 %soft required?
     %param.distract = 'none'
     
     %model run and limitations params
