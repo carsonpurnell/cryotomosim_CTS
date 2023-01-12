@@ -144,7 +144,7 @@ for i=1:iters
     
     %org for new flag-based system:
     %switch for placement location to get locmap (mem,ves,cytosol, or any)
-    locpick = fnflag(rflags,{'membrane','vesicle','cytosol'}); %check if any special loc found
+    locpick = fnflag(rflags,{'membrane','vesicle','cytosol','any'}); %check if any special loc found
     %need a subfunct for parsing relevant flags and returning the first valid one
     if ismem==1 && matches(locpick,{'membrane','vesicle','cytosol'})
         %this switch needs a better expression, multiple locations should work (for membrane+else)
@@ -158,7 +158,7 @@ for i=1:iters
             case 'cytosol' %only outside vesicles
                 locmap = mout==1;
         end
-    else
+    else %either when no mem or when special loc flag not taken ('any' used to allow mem+any placement)
         locmap = inarray==0; %faster than logical somehow
     end
     
