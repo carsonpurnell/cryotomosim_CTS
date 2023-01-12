@@ -149,7 +149,6 @@ for i=1:iters
     if ismem==1 && matches(locpick,{'membrane','vesicle','cytosol'})
         %this switch needs a better expression, multiple locations should work (for membrane+else)
         %membrane-centering not placed inside membrane does a neat near-membrane localization
-        %locpick = rflags(locpick); locpick = locpick{1};
         switch locpick
             case 'membrane' %placement into membrane
                 locmap = memlocmap==1;
@@ -171,10 +170,13 @@ for i=1:iters
     if strcmp(classtype,'NA')
         classtype = 'single';
     end
-    if strcmp(classtype,'bundle')
+    switch classtype
+    %if strcmp(classtype,'bundle')
+        case 'bundle'
         [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
-    end
-    if strcmp(classtype,'cluster')
+    %if strcmp(classtype,'cluster')
+        
+        case 'cluster'
         sub = randi(numel(particle)); %get random selection from the group
         [rot,~,loc,err] = testplace2(inarray,locmap,set(which).vol{sub},3);
         counts.f = counts.f + err;
@@ -202,7 +204,40 @@ for i=1:iters
                 end
             end
         end
+        
+        case 'membrane'
+            %need a more efficient tester subfunct
+            
+        case 'single'
+            %distinguish between group/single/complex? sumvol missing could bork stuff
+            if any(ismember(rflags,{'complex','assembly'}))
+                sub = 0; %how to do subvol stuff?
+                sumvol = set(which).sumvol;
+            else
+                sub = randi(numel(particle));
+                sumvol = set(which).vol{sub};
+            end
+            
+            [rot,~,loc,err] = testcyto(inarray,locmap,sumvol,4);
+            
+            counts.f = counts.f + err;
+            if err==0 %on success, place in splits and working array
+                counts.s=counts.s+1;
+                [inarray] = helper_arrayinsert(inarray,rot,loc);
+                %tmp = split.(set(which).id{sub}); %negligible
+                %tmp = helper_arrayinsert(tmp,rot,com); %was ~25 with 506 iters? slower to split assignments
+                %split.(set(which).id{sub}) = tmp; %~6 s extra
+                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc); %faster
+                if ismem==1 && strcmp(set(which).type,'vesicle')
+                    [min] = helper_arrayinsert(min,-rot,loc);
+                elseif ismem==1 && strcmp(set(which).type,'cytosol')
+                    [mout] = helper_arrayinsert(mout,-rot,loc);
+                end
+            end
+            
     end
+    
+    
     
     
     
@@ -218,8 +253,7 @@ for i=1:iters
             [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
             %increase iters by fraction of N to reduce runtime? can't modify i inside for loop
             end
-            %}
-            
+            %} 
         %{
         %cluster second because it also breaks flags and needs reworking
         case 'cluster' %need to move into call to cluster function like bundle has
@@ -255,7 +289,6 @@ for i=1:iters
             
         case {'inmem','outmem','single','group'} %universal for non-special non-complexes
             sub = randi(numel(particle));
-            
             %{
             for retry=1:4 %implement as general tester again?
                 tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
@@ -270,7 +303,6 @@ for i=1:iters
                 if err==0, break; end
             end
             %}
-            
             [rot,~,loc,err] = testcyto(inarray,locmap,set(which).vol{sub},4);
             
             counts.f = counts.f + err;
@@ -468,7 +500,7 @@ for retry=1:retry
     rot = imwarp(particle,tform); %generated rotated particle
     %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
     loc = ctsutil('findloc',locmap);
-    loc = round(loc-size(rot/2));
+    loc = round(loc-size(rot)/2);
     [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
     if err==0, break; end
 end
@@ -496,7 +528,7 @@ for retry=1:retry
     rot = imwarp(particle,tform); %generated rotated particle
     %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
     loc = ctsutil('findloc',locmap);
-    loc = round(loc-size(rot/2));
+    loc = round(loc-size(rot)/2);
     [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
     if err==0, break; end
 end
