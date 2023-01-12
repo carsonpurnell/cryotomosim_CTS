@@ -161,6 +161,13 @@ for i=1:iters
     end
             
     %switch for group class (bundle, cluster, or single) for placing - also need one for mem?
+    %thing to catch whichever flag is relevant?
+    if any(matches(rflags,{'bundle','cluster'}))
+        specialflag = rflags{matches(rflags,{'bundle','cluster'})};
+    end
+    %specialflag = rflags(matches(rflags,{'bundle','cluster'}));
+    %can be empty, if statement or fill with something?
+    
     %switch or if to fallthrough for placing either sumvol or individuals and with rot, tform, or ax/theta
     
     %placement switch for each particle class
