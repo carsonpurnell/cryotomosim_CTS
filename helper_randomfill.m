@@ -76,7 +76,7 @@ diagout = zeros(size(inarray,1),size(inarray,2),0);
 %set = layer{ww}
 %layeriters = iters(min(ww,end));
 %do minor cleanup of locmaps - removing islands, subtract the working array?
-fprintf('Layer 1, attempting %i %s placements:  \n',iters,opt.type)
+fprintf('Layer 1, attempting %i %s placements up to density %g:  \n',iters,opt.type,density(1))
 %etc
 for i=1:iters
     which = randi(numel(set)); 
@@ -563,32 +563,25 @@ end
 
 %placement testing for membrane proteins - TBD
 function [rot,com,op,err] = testmem(inarray,locmap,particle,vescen,vesvol,retry)
+init = [0,0,1]'; %not imported from top-level function
+%init = init(:)/norm(init); %unitize for safety
 for retry=1:retry
-    init = [0,0,1]; %not imported from top-level function
     loc = ctsutil('findloc',locmap);
-    
     [k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
     
-    %[ax,theta] = sphrot(init,fin,ori) %old deprec, simplified down to just the cross function
-    targ = loc-vescen(k,:); %get target location as if from origin
-    targ = targ/norm(targ); init = init(:)/norm(init); %unitize for safety
-    
+    targ = loc-vescen(k,:); targ = targ/norm(targ); %get target location as if from origin and unitize
     rotax=cross(init,targ); %compute the normal axis from the rotation angle
     theta = acosd( dot(init,targ) ); %compute angle between initial pos and final pos
     
-    sel = particle.sumvol;
     spinang = randi(180);
-    
-    spin = imrotate3(sel,spinang,init'); %rotate axially before transform to target location
+    spin = imrotate3(particle.sumvol,spinang,init'); %rotate axially before transform to target location
     rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]); %rotate to the final position
     
     tdest = inarray-vesvol{k}; %remove current membrane from the array to prevent overlap
-    
     com = round(loc-size(rot)/2);
     [~,err] = helper_arrayinsert(tdest,rot,com,'overlaptest');
     
     op = {spinang,theta,rotax}; %store operation vals for placing via complex
-    
     if err==0, break; end
 end
 end
