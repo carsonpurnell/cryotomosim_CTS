@@ -223,9 +223,14 @@ for i=1:iters
             
             if err==0 %on success, place in splits and working array
                 [inarray] = helper_arrayinsert(inarray,rot,loc);
+                
+                
+                %[split] = fnsplitplace(split,set(which).vol,set(which).id,rflags,loc,{tform});
                 if sub~=0
                     split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
                 else
+                    [split] = fnsplitplace(split,set(which).vol,set(which).id,rflags,loc,{tform});
+                    %{
                     members = 2:numel(set(which).vol);
                     if any(ismember(rflags,'assembly'))
                         members = members(randperm(length(members)));
@@ -237,7 +242,7 @@ for i=1:iters
                         rot = imwarp(set(which).vol{t},tform);
                         split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
                     end
-                    
+                    %}
                 end
                 if ismem==1 && strcmp(set(which).type,'vesicle')
                     [min] = helper_arrayinsert(min,-rot,loc);
@@ -394,10 +399,14 @@ for i=1:iters
         %}
         %}
         case {'memplex','membrane'}
-            [particle] = ctsutil('trim',particle); %trims all vols according to their sum
+            %[particle] = ctsutil('trim',particle); %trims all vols according to their sum
             %centered = centervol(molc); 
             %centered = ctsutil('centervol',particle); %centers all vols in cells to the COM of the first
             %sumvol = sum( cat(4,centered{:}) ,4); %get sum volume (should pregenerate in _input)
+            
+            %internal funct needs whole particle or just the vols?
+            %needs vescen map too
+            
             sumvol = set(which).sumvol;
             
             %{
@@ -447,7 +456,7 @@ for i=1:iters
                 %counts.s = counts.s-1; %increment success, bad old way need to deprecate
                 %actually write to the split arrays
                 if strcmp(set(which).type,'memplex')
-                    members = 1:numel(particle);
+                    members = 1:numel(set(which).vol);
                     %assembly rejigger member nums here
                     for t=members %rotate and place each component of complex
                         spin = imrotate3(set(which).vol{t},spinang,init'); 
@@ -519,7 +528,39 @@ end
 end
 
 %placement testing for membrane proteins - TBD
-
+function [rot,loc,spin,theta,rotax,err] = testmem(inarray,locmap,particle,vescen,vesvol,retry)
+for retry=1:retry
+    
+    %sumvol = particle.sumvol;
+    
+    %need testplacing for membrane localization
+    loc = ctsutil('findloc',locmap);
+    
+    [k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
+    
+    %[ax,theta] = sphrot(init,fin,ori)
+    targ = loc-vescen(k,:); %get target location as if from origin
+    targ = targ/norm(targ); init = init(:)/norm(init); %unitize for safety
+    
+    rotax=cross(init,targ); %compute the normal axis from the rotation angle
+    theta = acosd( dot(init,targ) );
+    %end
+    %[rotax,theta] = sphrot(init,loc,vescen(k,:));
+    
+    %sel = particles(randi(numel(particles))).tmvol;
+    sel = particle.sumvol;
+    spinang = randi(180);
+    spin = imrotate3(sel,spinang,init'); %rotate axially before transform to target location
+    rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
+    
+    tdest = inarray-vesvol{k}; %faster
+    
+    com = round(loc-size(rot)/2);
+    [~,err] = helper_arrayinsert(tdest,rot,com,'overlaptest');
+    
+    if err==0, break; end
+end
+end
 
 %placement into splitvols
 function [split] = fnsplitplace(split,vols,id,flags,loc,op)
