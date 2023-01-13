@@ -66,6 +66,7 @@ for i=1:numel(list)
     if any(ismember(tmp.flags,{'membrane'}))
         trim = 0; centering = 1;
     end
+    %'sum' flag to use the sumvol to make it easy to use a complex as a single class?
     %if plex trim=1? ismember{x,{'complex','assembly'})
     %if mem trim =0 and center = 1?
     %}
