@@ -15,7 +15,7 @@ arguments
 end
 %move other important particles to splitmodel if they exist, at the end for ease
 if isfield(cts.model,'beads'), cts.splitmodel.beads = cts.model.beads; end
-if isfield(cts.model,'mem'), cts.splitmodel.AAAAAmem = cts.model.mem; end %makes membrane first placement
+if isfield(cts.model,'mem'), cts.splitmodel.AAmem = cts.model.mem; end %makes membrane first placement
 if isfield(cts.model,'grid'), cts.splitmodel.grid = cts.model.grid; end
 cts.splitmodel = orderfields(cts.splitmodel);
 
