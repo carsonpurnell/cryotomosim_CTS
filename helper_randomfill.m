@@ -207,7 +207,7 @@ for i=1:iters
         
         case 'membrane'
             %need a more efficient tester subfunct
-            [rot,loc,op,err] = testmem(inarray,locmap,set(which),vescen,vesvol,3);
+            [rot,loc,op,err] = testmem(inarray,locmap,set(which),vescen,vesvol,5);
             counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
             if err==0
@@ -220,8 +220,9 @@ for i=1:iters
                 end
                 %counts.s = counts.s-1; %increment success, bad old way need to deprecate
                 %actually write to the split arrays
-                if strcmp(set(which).type,'memplex')
+                if strcmp(fnflag(rflags,{'complex','assembly'}),{'complex','assembly'})
                     members = 1:numel(set(which).vol);
+                    disp('thkjdsakjdsjk')
                     for t=members %rotate and place each component of complex
                         spinang = op{1}; theta = op{2}; rotax = op{3};
                         spin = imrotate3(set(which).vol{t},spinang,init');
@@ -230,12 +231,11 @@ for i=1:iters
                         %need to do the rotation for each individual component
                         split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
                     end
-                else %membrane only designation
+                else %membrane only designation, place the already rotated sumvol
                     split.(set(which).id{1}) = helper_arrayinsert(split.(set(which).id{1}),rot,loc);
                     %just write the sumvol to the split array
                 end
             end
-            
             
         case 'single'
             %distinguish between group/single/complex? sumvol missing could bork stuff
@@ -287,8 +287,8 @@ for i=1:iters
     %loop through the relevant vols, also inherited from above 
     %can placement into splits be made a subfunct?
     
-    
     %placement switch for each particle class
+    %
     switch 1%classtype %set(which).type
         %{
         %bundle first because it's going to break all the flags and needs an overhaul
@@ -427,6 +427,7 @@ for i=1:iters
             end
         %}
         %}
+        %{
         case {'memplex','membrane'}
             %[particle] = ctsutil('trim',particle); %trims all vols according to their sum
             %centered = centervol(molc); 
@@ -502,10 +503,11 @@ for i=1:iters
                     %just write the sumvol to the split array
                 end
             end
-            
-            %update the locmaps at the end?
+            %}
+        %update the locmaps at the end?
             
     end
+    %}
     
     %if rem(i,25)==0, fprintf('%i,',counts.s), end
     if rem(i,round(iters/20))==0, fprintf('%i,',counts.s), end
@@ -544,6 +546,7 @@ hits = flags(matches(flags,set));
 hits{end+1} = 'NA'; %fill with string to avoid empty vector errors and make clear no flag found
 flags = hits{1};
 end
+%need to make this either fetch the flag, or test if the flag is present and return a logical
 
 
 %placement testing for cytosol proteins
