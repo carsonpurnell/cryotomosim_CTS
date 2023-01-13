@@ -220,12 +220,11 @@ for i=1:iters
                 end
                 %counts.s = counts.s-1; %increment success, bad old way need to deprecate
                 %actually write to the split arrays
-                if strcmp(fnflag(rflags,{'complex','assembly'}),{'complex','assembly'})
+                if any(strcmp(fnflag(rflags,{'complex','assembly'}),{'complex','assembly'}))
                     members = 1:numel(set(which).vol);
-                    disp('thkjdsakjdsjk')
                     for t=members %rotate and place each component of complex
                         spinang = op{1}; theta = op{2}; rotax = op{3};
-                        spin = imrotate3(set(which).vol{t},spinang,init');
+                        spin = imrotate3(set(which).vol{t},spinang,init);
                         rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
                         %rot = imwarp(set(which).vol{t},tform);
                         %need to do the rotation for each individual component
