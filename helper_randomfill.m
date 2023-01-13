@@ -207,6 +207,35 @@ for i=1:iters
         
         case 'membrane'
             %need a more efficient tester subfunct
+            [rot,loc,op,err] = testmem(inarray,locmap,set(which),vescen,vesvol,3);
+            counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
+            
+            if err==0
+                [inarray] = helper_arrayinsert(inarray,rot,loc); %write sum to working array
+                [memlocmap] = helper_arrayinsert(memlocmap,-imbinarize(rot),loc); %reduce mem loc map
+                if ismem==1 %&& strcmp(set(which).type,'inmem') %reduce inmem/outmem maps if present
+                    [min] = helper_arrayinsert(min,-rot,loc);
+                    [mout] = helper_arrayinsert(mout,-rot,loc);
+                    %elseif ismem==1 %&& strcmp(set(which).type,'outmem')
+                end
+                %counts.s = counts.s-1; %increment success, bad old way need to deprecate
+                %actually write to the split arrays
+                if strcmp(set(which).type,'memplex')
+                    members = 1:numel(set(which).vol);
+                    for t=members %rotate and place each component of complex
+                        spinang = op{1}; theta = op{2}; rotax = op{3};
+                        spin = imrotate3(set(which).vol{t},spinang,init');
+                        rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
+                        %rot = imwarp(set(which).vol{t},tform);
+                        %need to do the rotation for each individual component
+                        split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
+                    end
+                else %membrane only designation
+                    split.(set(which).id{1}) = helper_arrayinsert(split.(set(which).id{1}),rot,loc);
+                    %just write the sumvol to the split array
+                end
+            end
+            
             
         case 'single'
             %distinguish between group/single/complex? sumvol missing could bork stuff
@@ -406,7 +435,7 @@ for i=1:iters
             
             %internal funct needs whole particle or just the vols?
             %needs vescen map too
-            
+            %{
             sumvol = set(which).sumvol;
             
             %{
@@ -442,15 +471,17 @@ for i=1:iters
             
             com = round(loc-size(rot)/2);
             [~,err] = helper_arrayinsert(tdest,rot,com,'overlaptest');
+            %}
+            %[rot,loc,op,err] = testmem(inarray,locmap,particle,vescen,vesvol,retry);
             %counts.f = counts.f+err; %counts.s = counts.s-err; %increment fails, should refactor s
             counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
             if err==0
-                [inarray] = helper_arrayinsert(inarray,rot,com); %write sum to working array
-                [memlocmap] = helper_arrayinsert(memlocmap,-imbinarize(rot),com); %reduce mem loc map
+                [inarray] = helper_arrayinsert(inarray,rot,loc); %write sum to working array
+                [memlocmap] = helper_arrayinsert(memlocmap,-imbinarize(rot),loc); %reduce mem loc map
                 if ismem==1 %&& strcmp(set(which).type,'inmem') %reduce inmem/outmem maps if present
-                    [min] = helper_arrayinsert(min,-rot,com);
-                    [mout] = helper_arrayinsert(mout,-rot,com);
+                    [min] = helper_arrayinsert(min,-rot,loc);
+                    [mout] = helper_arrayinsert(mout,-rot,loc);
                 %elseif ismem==1 %&& strcmp(set(which).type,'outmem')
                 end
                 %counts.s = counts.s-1; %increment success, bad old way need to deprecate
@@ -459,14 +490,15 @@ for i=1:iters
                     members = 1:numel(set(which).vol);
                     %assembly rejigger member nums here
                     for t=members %rotate and place each component of complex
+                        spinang = op{1}; theta = op{2}; rotax = op{3};
                         spin = imrotate3(set(which).vol{t},spinang,init'); 
                         rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
                         %rot = imwarp(set(which).vol{t},tform);
                         %need to do the rotation for each individual component
-                        split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,com);
+                        split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
                     end
                 else %membrane only designation
-                    split.(set(which).id{1}) = helper_arrayinsert(split.(set(which).id{1}),rot,com);
+                    split.(set(which).id{1}) = helper_arrayinsert(split.(set(which).id{1}),rot,loc);
                     %just write the sumvol to the split array
                 end
             end
@@ -528,35 +560,32 @@ end
 end
 
 %placement testing for membrane proteins - TBD
-function [rot,loc,spin,theta,rotax,err] = testmem(inarray,locmap,particle,vescen,vesvol,retry)
+function [rot,com,op,err] = testmem(inarray,locmap,particle,vescen,vesvol,retry)
 for retry=1:retry
-    
-    %sumvol = particle.sumvol;
-    
-    %need testplacing for membrane localization
+    init = [0,0,1]; %not imported from top-level function
     loc = ctsutil('findloc',locmap);
     
     [k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
     
-    %[ax,theta] = sphrot(init,fin,ori)
+    %[ax,theta] = sphrot(init,fin,ori) %old deprec, simplified down to just the cross function
     targ = loc-vescen(k,:); %get target location as if from origin
     targ = targ/norm(targ); init = init(:)/norm(init); %unitize for safety
     
     rotax=cross(init,targ); %compute the normal axis from the rotation angle
-    theta = acosd( dot(init,targ) );
-    %end
-    %[rotax,theta] = sphrot(init,loc,vescen(k,:));
+    theta = acosd( dot(init,targ) ); %compute angle between initial pos and final pos
     
-    %sel = particles(randi(numel(particles))).tmvol;
     sel = particle.sumvol;
     spinang = randi(180);
-    spin = imrotate3(sel,spinang,init'); %rotate axially before transform to target location
-    rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
     
-    tdest = inarray-vesvol{k}; %faster
+    spin = imrotate3(sel,spinang,init'); %rotate axially before transform to target location
+    rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]); %rotate to the final position
+    
+    tdest = inarray-vesvol{k}; %remove current membrane from the array to prevent overlap
     
     com = round(loc-size(rot)/2);
     [~,err] = helper_arrayinsert(tdest,rot,com,'overlaptest');
+    
+    op = {spinang,theta,rotax}; %store operation vals for placing via complex
     
     if err==0, break; end
 end
