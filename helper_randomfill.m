@@ -35,7 +35,6 @@ end
 %end
 
 
-
 % membrane setup stuff
 if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     ismem = 1; 
@@ -69,7 +68,7 @@ else
 end
 % membrane setup stuff end
 
-diagout = zeros(size(inarray,1),size(inarray,2),0);
+%diagout = zeros(size(inarray,1),size(inarray,2),0);
 
 %make a double loop, possibly making the internal loop an internal function?
 %for ww=1:numel(layers)
@@ -83,7 +82,7 @@ for i=1:iters
     particle = set(which).vol; 
     %precall more things so structs aren't called into so many times
     vols = set(which).vol; 
-    flags = set(which).flags; 
+    rflags = set(which).flags; 
     rflags = (flags(randperm(length(flags)))); %randomize flag order for mixed usage
     % instead write to flags? why would i need unrand flags?
     %flag is an existing function, so DO NOT USE
@@ -288,7 +287,7 @@ for i=1:iters
     
     %placement switch for each particle class
     %
-    switch 1%classtype %set(which).type
+    %switch 1%classtype %set(which).type
         %{
         %bundle first because it's going to break all the flags and needs an overhaul
         case 'bundle' %bundle placement got complicated, need to refactor the internal function
@@ -505,7 +504,7 @@ for i=1:iters
             %}
         %update the locmaps at the end?
             
-    end
+    %end
     %}
     
     %if rem(i,25)==0, fprintf('%i,',counts.s), end
@@ -519,9 +518,8 @@ for i=1:iters
         plot(gui,counts.f,counts.s,'.'); drawnow;
     end
     
-    %diagnostic filler image
     %{
-    if err==0
+    if err==0 %diagnostic incremental fill image through mid slice
         diagout(:,:,end+1) = inarray(:,:,end/2);
     end
     %}
@@ -586,7 +584,7 @@ for retry=1:retry
 end
 end
 
-%placement into splitvols
+%placement into splitvols - currently only solubles
 function [split] = fnsplitplace(split,vols,id,flags,loc,op)
 %one vol neeeds one name, places to the given split
 %otherwise needs all the vols and names, then does complex/assembly member stuff
