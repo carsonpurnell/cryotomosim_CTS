@@ -58,10 +58,13 @@ switch method
     case 'sum'
         %dest(index) = source(sx,sy,sz) + dest(index); %definitely slower
         %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %slightly slower
-        tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); dest(dx,dy,dz) = tmp1; %slightly faster somehow
+        tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); 
+        dest(dx,dy,dz) = tmp1; %slightly faster somehow
     case 'nonoverlap' %first test if there would be overlap to save time
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
-        dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
+        dbin = rescale(dest(dx,dy,dz));
+        dbin = imbinarize(dbin); 
+        sbin = imbinarize(rescale(source(sx,sy,sz)));
         
         overlap = dbin+sbin; overlap = max(overlap(:)); %fastest method to find potential overlaps?
         %ow = dbin+sbin-1; ow = any(ow(:)); %is any() faster than max()?
