@@ -84,7 +84,6 @@ for i=1:iters
     vols = set(which).vol; 
     flags = set(which).flags; 
     flags = (flags(randperm(length(flags)))); %randomize flag order for mixed usage
-    % instead write to flags? why would i need unrand flags?
     %flag is an existing function, so DO NOT USE
     
     
