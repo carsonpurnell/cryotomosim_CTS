@@ -82,8 +82,8 @@ for i=1:iters
     particle = set(which).vol; 
     %precall more things so structs aren't called into so many times
     vols = set(which).vol; 
-    rflags = set(which).flags; 
-    rflags = (flags(randperm(length(flags)))); %randomize flag order for mixed usage
+    flags = set(which).flags; 
+    flags = (flags(randperm(length(flags)))); %randomize flag order for mixed usage
     % instead write to flags? why would i need unrand flags?
     %flag is an existing function, so DO NOT USE
     
@@ -143,12 +143,12 @@ for i=1:iters
     
     %org for new flag-based system:
     %switch for placement location to get locmap (mem,ves,cytosol, or any)
-    locpick = fnflag(rflags,{'membrane','vesicle','cytosol','any'}); %check if any special loc found
+    locmap = fnflag(flags,{'membrane','vesicle','cytosol','any'}); %check if any special loc found
     %need a subfunct for parsing relevant flags and returning the first valid one
-    if ismem==1 && matches(locpick,{'membrane','vesicle','cytosol'})
+    if ismem==1 && matches(locmap,{'membrane','vesicle','cytosol'})
         %this switch needs a better expression, multiple locations should work (for membrane+else)
         %membrane-centering not placed inside membrane does a neat near-membrane localization
-        switch locpick
+        switch locmap
             case 'membrane' %placement into membrane
                 locmap = memlocmap==1;
             case 'vesicle' %inside vesicle volume
@@ -165,7 +165,7 @@ for i=1:iters
     
     
     %temporary catch to use flags to run the old placement types
-    classtype = fnflag(rflags,{'membrane','bundle','cluster'});
+    classtype = fnflag(flags,{'membrane','bundle','cluster'});
     if strcmp(classtype,'NA')
         classtype = 'single';
     end
@@ -219,7 +219,7 @@ for i=1:iters
                 end
                 %counts.s = counts.s-1; %increment success, bad old way need to deprecate
                 %actually write to the split arrays
-                if any(strcmp(fnflag(rflags,{'complex','assembly'}),{'complex','assembly'}))
+                if any(strcmp(fnflag(flags,{'complex','assembly'}),{'complex','assembly'}))
                     members = 1:numel(set(which).vol);
                     for t=members %rotate and place each component of complex
                         spinang = op{1}; theta = op{2}; rotax = op{3};
@@ -237,7 +237,7 @@ for i=1:iters
             
         case 'single'
             %distinguish between group/single/complex? sumvol missing could bork stuff
-            if any(ismember(rflags,{'complex','assembly'}))
+            if any(ismember(flags,{'complex','assembly'}))
                 sub = 0; %how to do subvol stuff?
                 sumvol = set(which).sumvol;
             else
@@ -256,7 +256,7 @@ for i=1:iters
                 if sub~=0
                     split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
                 else
-                    [split] = fnsplitplace(split,set(which).vol,set(which).id,rflags,loc,{tform});
+                    [split] = fnsplitplace(split,set(which).vol,set(which).id,flags,loc,{tform});
                     %{
                     members = 2:numel(set(which).vol);
                     if any(ismember(rflags,'assembly'))
