@@ -59,11 +59,10 @@ switch method
         %dest(index) = source(sx,sy,sz) + dest(index); %definitely slower
         %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %slightly slower
         tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); 
-        dest(dx,dy,dz) = tmp1; %slightly faster somehow
+        dest(dx,dy,dz) = tmp1; %rate-limiting step: writing to part of the array is super slow - memory realloc?
     case 'nonoverlap' %first test if there would be overlap to save time
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
-        dbin = rescale(dest(dx,dy,dz));
-        dbin = imbinarize(dbin); 
+        dbin = imbinarize(rescale(dest(dx,dy,dz))); 
         sbin = imbinarize(rescale(source(sx,sy,sz)));
         
         overlap = dbin+sbin; overlap = max(overlap(:)); %fastest method to find potential overlaps?
@@ -75,8 +74,7 @@ switch method
             overlap = 0;
         end
     case 'overlaptest' %faster than nonoverlap by only testing for overlap, will not do operations
-        dbin = rescale(dest(dx,dy,dz));
-        dbin = imbinarize(dbin); 
+        dbin = imbinarize(rescale(dest(dx,dy,dz))); 
         sbin = imbinarize(rescale(source(sx,sy,sz)));
         
         overlap = dbin+sbin; overlap = max(overlap(:)); %fastest method to find potential overlaps
