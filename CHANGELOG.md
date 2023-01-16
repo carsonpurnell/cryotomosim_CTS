@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## [v0.1.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.2) - 2023-01-16 02:12:14
+
+Implementation of a parameter manager for models that takes on all arguments other than the input volume, layered placement of particles to better control their relative quantity and to replace the inelegant use of the distractor argument, and preliminary implementation of a flag-based control scheme for modeling rather than exclusive classes.
+
+**Full Changelog**: https://github.com/carsonpurnell/cryotomosim_CTS/compare/v0.1.0...v0.1.2
+
+### Feature
+
+- general:
+  - feat model parameter manager ([a694136](https://github.com/carsonpurnell/cryotomosim_CTS/commit/a694136129b8644de867ad075d1265e1f5c5251a))
+  - feat particle layering implemented ([70ed8a6](https://github.com/carsonpurnell/cryotomosim_CTS/commit/70ed8a612a99fe7272de050d95781253be949bca))
+  - feat layer model filling preliminaries ([38dab9f](https://github.com/carsonpurnell/cryotomosim_CTS/commit/38dab9f7fac0a62a9a3f85f46a08042532723d5b))
+  - feat model parameter manager ([2d74d4b](https://github.com/carsonpurnell/cryotomosim_CTS/commit/2d74d4beb87c8f2cf19c205aa78a57e416cc53eb))
+
+### Bug Fixes
+
+- general:
+  - fix major speed increase by not using ind2sub ([7e3194c](https://github.com/carsonpurnell/cryotomosim_CTS/commit/7e3194c491f5b792012d209e44abe9cc5854e36d))
+
 ## [v0.1.0](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.0) - 2022-12-15 18:31:38
 
 Model generation now supports placement of membrane proteins in or on generated vesicles through the classes 'memplex' (functioning as a complex) and 'membrane'. Membrane proteins must be oriented with the external domain in the positive Z direction, and must be oriented around 0,0,0 as the transmembrane centroid.
