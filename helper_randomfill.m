@@ -73,7 +73,7 @@ end
 %make a double loop, possibly making the internal loop an internal function?
 for ww=1:numel(layers)
 set = layers{ww};
-layeriters = iters(ww);
+%layeriters = iters(ww);
 counts = struct('s',0,'f',0); %initialize counts and get input size
 % numel(layers)
 % iters
@@ -87,9 +87,9 @@ min(ww,numel(iters)) %this creates a 0 somehow even though that is impossible
 %iters( min(ww,numel(iters)) )
 %layeriters = iters( min(ww,numel(iters)) ); %end was breaking because it found 0, not because end didn't work
 %do minor cleanup of locmaps - removing islands, subtract the working array?
-fprintf('Layer %i, attempting %i %s placements up to density %g:  \n',ww,layeriters,opt.type,density(1))
+fprintf('Layer %i, attempting %i %s placements up to density %g:  \n',ww,iters(ww),opt.type,density(ww))
 %etc
-for i=1:layeriters
+for i=1:iters(ww)
     which = randi(numel(set)); 
     particle = set(which).vol; 
     %precall more things so structs aren't called into so many times
@@ -104,6 +104,10 @@ for i=1:layeriters
     
     %locmap switch for getting randomized lists of potentially valid points
     %might need to use if/else instead to fulfill multiple conditions - lacking membranes etc
+    
+    %do need to fix that i broke membrane placements defaulting to everywhere
+    %need some simple switch to ignore the membrane flag when no membrane exists
+    %when no mem, remove the membrane flag?
     
     %locmaps into a struct so they can be directly selected by flags name indexing?
     %or use a funct for writing/reading the appropriate locmap? falls back to all when no membrane?
@@ -156,7 +160,10 @@ for i=1:layeriters
     %switch for placement location to get locmap (mem,ves,cytosol, or any)
     locmap = fnflag(flags,{'membrane','vesicle','cytosol','any'}); %check if any special loc found
     %need a subfunct for parsing relevant flags and returning the first valid one
-    if ismem==1 && matches(locmap,{'membrane','vesicle','cytosol'})
+    if ismem==0
+        locmap = inarray==0; %faster than logical somehow
+        memix = matches(flags,'membrane'); flags(memix) = [];
+    elseif ismem==1 && matches(locmap,{'membrane','vesicle','cytosol'})
         %this switch needs a better expression, multiple locations should work (for membrane+else)
         %membrane-centering not placed inside membrane does a neat near-membrane localization
         switch locmap
@@ -519,7 +526,7 @@ for i=1:layeriters
     %}
     
     %if rem(i,25)==0, fprintf('%i,',counts.s), end
-    if rem(i,round(layeriters/25))==0, fprintf('%i,',counts.s), end
+    if rem(i,round(iters(ww)/25))==0, fprintf('%i,',counts.s), end
     %if rem(i,600)==0, fprintf('\n'), end
     
     if rem(i,5)==0 && rem(counts.s,3)==0 %filter to prevent the slower IF from running so often

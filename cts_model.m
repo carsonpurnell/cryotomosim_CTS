@@ -1,4 +1,4 @@
-function [cts] = cts_model(vol,pix,param,opt)
+function [cts] = cts_model(vol,param,opt)
 %[cts] = cts_model(vol,pix,param,opt)
 %generates model information for a single tomographic acquisition, stored in output struct ts
 %works by iteratively placing input particles at random orientations in random locations without overlap
@@ -50,7 +50,7 @@ function [cts] = cts_model(vol,pix,param,opt)
 arguments
     %targets
     vol (:,:,:) double
-    pix (1,1) double
+    %pix (1,1) double
     param = param_model
     opt.suffix = ''
     
@@ -71,7 +71,7 @@ arguments
     %save the splitmodels in another file to reduce bloat in cts?
 end
 if iscell(param), param = param_model(param{:}); end
-
+pix = param.pix;
 %{
 runtime = numel(vol)/60*1.2e-5; %for my laptop, doesn't really apply to anything else
 %need to compute by iterations too, vol alone not that relevant
@@ -101,6 +101,7 @@ end
 %}
 
 % block placeholder for loop input of particle set layers
+%{
 layers = cell(1,param.layers);
 for i=1:param.layers
     fprintf('Loading layer %i structures \n',i)
@@ -110,12 +111,13 @@ for i=1:param.layers
     %param.iters(i) = param.iters(min(i,end));
     %param.density(i) = param.density(min(i,end));
 end
+%}
 %disp(param)
 % block placeholder for loop input of particle set layers
 
 %load input targets
 %[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
-cts.particles.targets = layers;%{1};
+cts.particles.targets = param.layers;%{1};
 % if isempty(param.iters) || param.iters==0
 %     param.iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
 % else
