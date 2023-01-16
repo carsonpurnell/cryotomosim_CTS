@@ -25,7 +25,6 @@ s = [d1,d2,d3]; %size of array to index
 index = dx.' + s(1)*(dy-1) + s(1)*s(2)*reshape(dz-1,1,1,numel(dz));
 %if ~dest(index)==dest(dx,dy,dz), fprintf('xx'); end %test identity
 %}
-%index2 = sub2ind(size(dest),dx,dy,dz);
 %{
 dxi = max(1,  coord(1));
 dxf = min(d1, coord(1)+s1-1);
@@ -39,15 +38,6 @@ dzf = min(d3, coord(3)+s3-1);
 sx=max(-coord(1)+2,1):min(d1-coord(1)+1,s1);
 sy=max(-coord(2)+2,1):min(d2-coord(2)+1,s2);
 sz=max(-coord(3)+2,1):min(d3-coord(3)+1,s3);
-%{
-try
-sxi=sx(1); sxf=sx(end); %causing index errors if no overlap? inconsistently generated, rng(1) working
-syi=sy(1); syf=sy(end);
-szi=sz(1); szf=sz(end);
-catch
-    disp([sx,sy,sz]) %doesn't fix it
-end
-%}
 
 %logical indexing is sometimes faster, but due to generating log/linear indexes is always slower
 %using top/bottom values instead of ranges can cause errors, cause unknown (impossibly empty)
@@ -64,7 +54,6 @@ switch method
         sbin = imbinarize(rescale(source(sx,sy,sz)));
         
         overlap = dbin+sbin; overlap = max(overlap(:)); %fastest method to find potential overlaps?
-        %ow = dbin+sbin-1; ow = any(ow(:)); %is any() faster than max()?
         if overlap>1 %if overlap, record and output original
             overlap = 1;
         else %if no overlap, add the source to the destination
