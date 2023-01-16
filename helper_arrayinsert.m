@@ -75,7 +75,9 @@ switch method
             overlap = 0;
         end
     case 'overlaptest' %faster than nonoverlap by only testing for overlap, will not do operations
-        dbin = imbinarize(rescale(dest(dx,dy,dz))); sbin = imbinarize(rescale(source(sx,sy,sz)));
+        dbin = rescale(dest(dx,dy,dz));
+        dbin = imbinarize(dbin); 
+        sbin = imbinarize(rescale(source(sx,sy,sz)));
         
         overlap = dbin+sbin; overlap = max(overlap(:)); %fastest method to find potential overlaps
         if overlap>1 %if overlap, record and output original
