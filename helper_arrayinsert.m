@@ -25,6 +25,7 @@ s = [d1,d2,d3]; %size of array to index
 index = dx.' + s(1)*(dy-1) + s(1)*s(2)*reshape(dz-1,1,1,numel(dz));
 %if ~dest(index)==dest(dx,dy,dz), fprintf('xx'); end %test identity
 %}
+%index2 = sub2ind(size(dest),dx,dy,dz);
 %{
 dxi = max(1,  coord(1));
 dxf = min(d1, coord(1)+s1-1);
@@ -56,10 +57,7 @@ end
 
 switch method
     case 'sum'
-        %dest(index) = source(sx,sy,sz) + dest(index); %definitely slower
-        %dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %slightly slower
-        tmp1 = source(sx,sy,sz) + dest(dx,dy,dz); 
-        dest(dx,dy,dz) = tmp1; %rate-limiting step: writing to part of the array is super slow - memory realloc?
+        dest(dx,dy,dz) = source(sx,sy,sz) + dest(dx,dy,dz); %faster than temporary array, and linear indexing
     case 'nonoverlap' %first test if there would be overlap to save time
         %dl = logical(dest(dx,dy,dz)); sl = logical(source(sx,sy,sz)); %faster but too inclusive
         dbin = imbinarize(rescale(dest(dx,dy,dz))); 
