@@ -1,5 +1,10 @@
 function param = param_model(pix,param)
+%param = param_model(pix,param)
 %param manager for cts_model
+%
+%
+%
+%
 
 arguments
     %maybe GUI input dlg
