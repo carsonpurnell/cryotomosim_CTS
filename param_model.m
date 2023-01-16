@@ -9,6 +9,7 @@ function param = param_model(pix,param)
 %density - vector of maximum allowed densities. if there's more layers it will use the last provided density
 %iters - vector of iterations per layer. like density, it will use the last provided value if shot
 %constraint - sides/box/tube of walls to contain particles
+%grid/mem/bead/ice - same as old cts_model, help still should be there
 
 arguments
     %maybe GUI input dlg
