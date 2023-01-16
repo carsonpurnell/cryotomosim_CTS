@@ -2,9 +2,13 @@ function param = param_model(pix,param)
 %param = param_model(pix,param)
 %param manager for cts_model
 %
+%pix is required: defines the pixel size of generated structure volumes
 %
-%
-%
+%other arguments are name-value pairs:
+%layers - number of different particle layers that will be modeled
+%density - vector of maximum allowed densities. if there's more layers it will use the last provided density
+%iters - vector of iterations per layer. like density, it will use the last provided value if shot
+%constraint - sides/box/tube of walls to contain particles
 
 arguments
     %maybe GUI input dlg
