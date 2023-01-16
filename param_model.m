@@ -26,12 +26,21 @@ arguments
     param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
     
 end
-%{
+%
 if isempty(param.iters) || param.iters==0 %compute iters if not provided
     param.iters = round(param.pix*sqrt(numel(param.vol))/30);
 end
 %}
 %make preliminary list of all the parameters
+
+%move the file loading into here to make it easier to generate all the inputs needed on the fly?
+
+%also do iters/density length fixing here
+param.iters
+for i=1:param.iters
+    longiters(i) = iters( min(i,numel(param.iters)) );
+end
+param.iters = longiters;
 
 %input volume
 %pixelsize

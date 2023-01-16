@@ -1,4 +1,4 @@
-function [outarray, split] = helper_randomfill(inarray,set,iters,vescen,vesvol,density,opt)
+function [outarray, split] = helper_randomfill(inarray,layers,iters,vescen,vesvol,density,opt)
 %[outarray, split] = helper_randomfill(inarray,set,iters,density,opt)
 %shared function for adding particles randomly, used for generating models and adding distractors
 arguments
@@ -13,7 +13,7 @@ arguments
     opt.memvol = 0
 end
 %insize = size(inarray); 
-counts = struct('s',0,'f',0); %initialize counts and get input size
+
 
 if opt.graph==1 %graphical output of particles block
     try %first try to find a cts gui plot to ouput to
@@ -73,11 +73,23 @@ end
 %make a double loop, possibly making the internal loop an internal function?
 for ww=1:numel(layers)
 set = layers{ww};
-layeriters = iters(min(ww,end));
-do minor cleanup of locmaps - removing islands, subtract the working array?
-fprintf('Layer 1, attempting %i %s placements up to density %g:  \n',iters,opt.type,density(1))
+layeriters = iters(ww);
+counts = struct('s',0,'f',0); %initialize counts and get input size
+% numel(layers)
+% iters
+% density
+%{
+ww
+numel(iters)
+q = iters(min(1,end)) %also not working because there's a 0 that gets invented
+min(ww,numel(iters)) %this creates a 0 somehow even though that is impossible
+%}
+%iters( min(ww,numel(iters)) )
+%layeriters = iters( min(ww,numel(iters)) ); %end was breaking because it found 0, not because end didn't work
+%do minor cleanup of locmaps - removing islands, subtract the working array?
+fprintf('Layer %i, attempting %i %s placements up to density %g:  \n',ww,layeriters,opt.type,density(1))
 %etc
-for i=1:iters
+for i=1:layeriters
     which = randi(numel(set)); 
     particle = set(which).vol; 
     %precall more things so structs aren't called into so many times
@@ -507,7 +519,7 @@ for i=1:iters
     %}
     
     %if rem(i,25)==0, fprintf('%i,',counts.s), end
-    if rem(i,round(iters/20))==0, fprintf('%i,',counts.s), end
+    if rem(i,round(layeriters/25))==0, fprintf('%i,',counts.s), end
     %if rem(i,600)==0, fprintf('\n'), end
     
     if rem(i,5)==0 && rem(counts.s,3)==0 %filter to prevent the slower IF from running so often
@@ -523,12 +535,15 @@ for i=1:iters
     end
     %}
 end
+
+fprintf('\nPlaced %i particles, failed %i attempted placements, final density %g\n',...
+    counts.s,counts.f,nnz(inarray)/numel(inarray))
+
 end
 
 %WriteMRC(diagout,10,'diagaccumarray.mrc');
 
-fprintf('\nPlaced %i particles, failed %i attempted placements, final density %g\n',...
-    counts.s,counts.f,nnz(inarray)/numel(inarray))
+
 
 outarray = zeros(size(inarray)); splitnames = fieldnames(split);
 for i=1:numel(splitnames)

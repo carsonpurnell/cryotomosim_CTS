@@ -92,11 +92,13 @@ cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[]);%,'i
 % cts.inputs.beads = opt.beads; cts.inputs.grid = opt.grid; cts.inputs.mem = opt.mem;
 % cts.inputs.ice = opt.ice; 
 
+%{
 if isempty(param.iters) || param.iters==0
     param.iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
 else
     param.iters = param.iters;
 end
+%}
 
 % block placeholder for loop input of particle set layers
 layers = cell(1,param.layers);
