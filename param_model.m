@@ -34,25 +34,14 @@ if ~isfield(param,'pix')
 end
 %}
 param.pix = pix;
-%{
-if isempty(param.iters) || param.iters==0 %compute iters if not provided
-    %param.iters = round(param.pix*sqrt(numel(param.vol))/30);
-    param.iters = 800;
-end
-%}
-%make preliminary list of all the parameters
 
-%move the file loading into here to make it easier to generate all the inputs needed on the fly?
 layers = cell(1,param.layers);
 iters = zeros(1,numel(param.layers));
-for i=1:param.layers
+for i=1:param.layers %loop through layers to load particles and assign iterations/density vectors
     fprintf('Loading layer %i structures \n',i)
     %need a check or something for when a layer is already parsed files? or just let input return by itself?
     %more likely need to be able to load a saved list of layers
     layers{i} = helper_input('gui',param.pix); %load layer
-    %param.iters(i) = param.iters(min(i,end));
-    %param.density(i) = param.density(min(i,end));
-    
     param.density(i) = param.density(min(i,end));
     iters(i) = param.iters( min(i,numel(param.iters)) );
     if isempty(iters(i)) || iters(i)==0
@@ -60,14 +49,6 @@ for i=1:param.layers
     end
 end
 param.layers = layers;
-
-%also do iters/density length fixing here
-
-%{
-for i=1:numel(param.layers)
-    
-end
-%}
 param.iters = iters;
 
 %input volume
