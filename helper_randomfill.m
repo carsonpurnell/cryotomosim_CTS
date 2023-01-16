@@ -3,7 +3,7 @@ function [outarray, split] = helper_randomfill(inarray,set,iters,vescen,vesvol,d
 %shared function for adding particles randomly, used for generating models and adding distractors
 arguments
     inarray (:,:,:) double
-    set %either a single array struct or a cell array of array structs
+    layers %either a single array struct or a cell array of array structs
     iters
     vescen = 0 %is definitely janky
     vesvol = 0 %the other part of the jank
@@ -27,12 +27,12 @@ end
 
 %probably need to make this a double loop across cells of particle sets
 
-%for ii=1:numel(layers)
-namelist = [set(:).id]; %vector collection of all ids instead of the former double loop
+for ii=1:numel(layers)
+namelist = [layers{ii}(:).id]; %vector collection of all ids instead of the former double loop
 for i=1:numel(namelist)
     split.(namelist{i}) = zeros(size(inarray)); %initialize split models of target ids
 end
-%end
+end
 
 
 % membrane setup stuff
@@ -69,12 +69,12 @@ end
 % membrane setup stuff end
 
 %diagout = zeros(size(inarray,1),size(inarray,2),0);
-
+%layers = set;
 %make a double loop, possibly making the internal loop an internal function?
-%for ww=1:numel(layers)
-%set = layer{ww}
-%layeriters = iters(min(ww,end));
-%do minor cleanup of locmaps - removing islands, subtract the working array?
+for ww=1:numel(layers)
+set = layers{ww};
+layeriters = iters(min(ww,end));
+do minor cleanup of locmaps - removing islands, subtract the working array?
 fprintf('Layer 1, attempting %i %s placements up to density %g:  \n',iters,opt.type,density(1))
 %etc
 for i=1:iters
@@ -522,6 +522,7 @@ for i=1:iters
         diagout(:,:,end+1) = inarray(:,:,end/2);
     end
     %}
+end
 end
 
 %WriteMRC(diagout,10,'diagaccumarray.mrc');
