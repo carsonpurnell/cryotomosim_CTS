@@ -44,6 +44,7 @@ end
 
 %move the file loading into here to make it easier to generate all the inputs needed on the fly?
 layers = cell(1,param.layers);
+iters = zeros(1,numel(param.layers));
 for i=1:param.layers
     fprintf('Loading layer %i structures \n',i)
     %need a check or something for when a layer is already parsed files? or just let input return by itself?
@@ -51,18 +52,23 @@ for i=1:param.layers
     layers{i} = helper_input('gui',param.pix); %load layer
     %param.iters(i) = param.iters(min(i,end));
     %param.density(i) = param.density(min(i,end));
+    
+    param.density(i) = param.density(min(i,end));
+    iters(i) = param.iters( min(i,numel(param.iters)) );
+    if isempty(iters(i)) || iters(i)==0
+        iters(i) = 2000*param.density(i);
+    end
 end
 param.layers = layers;
 
 %also do iters/density length fixing here
+
+%{
 for i=1:numel(param.layers)
-    param.density(i) = param.density(min(i,end));
-    longiters(i) = param.iters( min(i,numel(param.iters)) );
-    if isempty(longiters(i)) || longiters(i)==0
-        longiters(i) = 2000*param.density(i);
-    end
+    
 end
-param.iters = longiters;
+%}
+param.iters = iters;
 
 %input volume
 %pixelsize
