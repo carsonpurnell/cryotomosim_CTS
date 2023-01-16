@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.1.3](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.3) - 2023-01-16 21:54:07
+
+*No description*
+
 ## [v0.1.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.2) - 2023-01-16 02:12:14
 
 Implementation of a parameter manager for models that takes on all arguments other than the input volume, layered placement of particles to better control their relative quantity and to replace the inelegant use of the distractor argument, and preliminary implementation of a flag-based control scheme for modeling rather than exclusive classes.
