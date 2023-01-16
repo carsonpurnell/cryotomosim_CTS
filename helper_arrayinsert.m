@@ -26,6 +26,7 @@ index = dx.' + s(1)*(dy-1) + s(1)*s(2)*reshape(dz-1,1,1,numel(dz));
 %if ~dest(index)==dest(dx,dy,dz), fprintf('xx'); end %test identity
 %}
 %{
+% generate end indexes, no faster beacause it still checks if they are valid and expands into the vector
 dxi = max(1,  coord(1));
 dxf = min(d1, coord(1)+s1-1);
 dyi = max(1,  coord(2));
