@@ -113,7 +113,7 @@ end
 
 %load input targets
 %[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
-cts.particles.targets = layers{1};
+cts.particles.targets = layers;%{1};
 % if isempty(param.iters) || param.iters==0
 %     param.iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
 % else
