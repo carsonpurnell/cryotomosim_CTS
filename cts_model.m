@@ -100,21 +100,6 @@ else
 end
 %}
 
-% block placeholder for loop input of particle set layers
-%{
-layers = cell(1,param.layers);
-for i=1:param.layers
-    fprintf('Loading layer %i structures \n',i)
-    %need a check or something for when a layer is already parsed files? or just let input return by itself?
-    %more likely need to be able to load a saved list of layers
-    layers{i} = helper_input('gui',pix); %load layer
-    %param.iters(i) = param.iters(min(i,end));
-    %param.density(i) = param.density(min(i,end));
-end
-%}
-%disp(param)
-% block placeholder for loop input of particle set layers
-
 %load input targets
 %[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
 cts.particles.targets = param.layers;%{1};
@@ -160,23 +145,6 @@ end
     vescen,vesvol,param.density,'type','target','graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
 cts.model.particles = cts.vol;
-
-%change targets/distractors into a single repeating loop of any number of sets of particles?
-%not sure how to implement a single opt to retrieve multiple sets of particles. loop to helper?
-%also need to fetch particles before grid/membrane for ease of use
-
-%{
-if ~strcmp(param.distract,'none') %DISTRACTORS
-[cts.particles.distractors] = helper_input(param.distract,pix); %load distractor particles
-
-%generated distraction filler iterations and add to volume to generate the sample
-iters = round( param.iters*sqrt(numel(cts.particles.distractors(1,:))) ); %distractor iters
-[cts.model.distractors] = helper_randomfill(cts.vol+constraint,cts.particles.distractors,iters,...
-    param.density,'type','distractor','graph',opt.graph);
-cts.vol = max(cts.vol,cts.model.distractors); %fix for transmembrane overlaps
-cts.model.particles = cts.vol;
-end
-%}
 
 if param.beads~=0 %bead generation and placement block
     beadstrc = gen_beads(pix,param.beads(2:end)); %external generation of varied beads
