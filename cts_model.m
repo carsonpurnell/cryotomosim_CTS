@@ -91,8 +91,7 @@ cts.param = param; %store parameters in the struct
 
 %load input targets
 %[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
-cts.particles.targets = param.layers;%{1};
-
+%cts.particles.targets = param.layers;%{1};
 
 if param.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
