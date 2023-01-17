@@ -87,23 +87,13 @@ end
 
 %initialize the struct so the order is invariant and fill with input information
 cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[]);%,'inputs',[]);
-% cts.inputs.pix = pix;
-% cts.inputs.density = opt.density; cts.inputs.constraint = opt.constraint;
-% cts.inputs.beads = opt.beads; cts.inputs.grid = opt.grid; cts.inputs.mem = opt.mem;
-% cts.inputs.ice = opt.ice; 
+cts.param = param; %store parameters in the struct
+%need a better storage organization
 
-%{
-if isempty(param.iters) || param.iters==0
-    param.iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
-else
-    param.iters = param.iters;
-end
-%}
 
 %load input targets
 %[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
 cts.particles.targets = param.layers;%{1};
-
 
 
 if param.grid(1)~=0 % new carbon grid and hole generator
