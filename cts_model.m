@@ -48,9 +48,7 @@ function [cts] = cts_model(vol,param,opt)
 %splitmodel has fields of each target id, containing a volume of only those particles from the model
 
 arguments
-    %targets
     vol (:,:,:) double
-    %pix (1,1) double
     param = param_model
     opt.suffix = ''
     
