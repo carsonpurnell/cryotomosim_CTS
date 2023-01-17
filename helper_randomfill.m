@@ -307,14 +307,6 @@ for i=1:iters(ww)
     %
     %switch 1%classtype %set(which).type
         %{
-        %bundle first because it's going to break all the flags and needs an overhaul
-        case 'bundle' %bundle placement got complicated, need to refactor the internal function
-            if i<iters/5 || randi(numel(set(which).vol))==1 %have some scalable value to determine weight?
-            [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
-            %increase iters by fraction of N to reduce runtime? can't modify i inside for loop
-            end
-            %} 
-        %{
         %cluster second because it also breaks flags and needs reworking
         case 'cluster' %need to move into call to cluster function like bundle has
             %cluster should be more like a normal class method, needs to be able to do complexes
@@ -573,7 +565,6 @@ function [rot,tform,loc,err] = testcyto(inarray,locmap,particle,retry)
 for retry=1:retry
     tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
     rot = imwarp(particle,tform); %generated rotated particle
-    %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
     loc = ctsutil('findloc',locmap);
     loc = round(loc-size(rot)/2);
     [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
