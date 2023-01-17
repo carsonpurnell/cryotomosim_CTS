@@ -117,14 +117,11 @@ switch param.constraint %write constraints to initial starting volume
         constraint(1:end,[1 end],1:end) = pix^2.5; %constraint(1:end,end,1:end) = 1; %y end panes
         constraint([1 end],1:end,1:end) = pix^2.5; %constraint(end,1:end,1:end) = 1; %x end panes
         disp('Warning: with a complete box, some particles may be impossible to place')
-        %ts.model.constraintbox = constraint;
     case 'tube'
         constraint(1:end,1:end,[1 end]) = pix^2.5; %constraint(1:end,1:end,end) = 1; %z end panes
         constraint(1:end,[1 end],1:end) = pix^2.5; %constraint(1:end,end,1:end) = 1; %y end panes
-        %ts.model.constrainttube = constraint;
     case 'sides'
         constraint(1:end,1:end,[1 end]) = pix^2.5; %constraint(1:end,1:end,end) = 1; %z end panes
-        %ts.model.constraintsides = constraint;
 end
 
 
