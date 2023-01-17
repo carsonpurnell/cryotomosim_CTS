@@ -50,19 +50,8 @@ function [cts] = cts_model(vol,param,opt)
 arguments
     vol (:,:,:) double
     param = param_model
-    opt.suffix = ''
     
-    %{
-    opt.density = 0.4
-    opt.constraint string {mustBeMember(opt.constraint,{'none','box','tube','sides'})} = 'sides'
-    opt.distract = 'none'
-    opt.beads = 0 %new beads [number radius1 radius2 ... radiusn]
-    opt.grid = [15 2000] %[thick radius] both in nm [15 2000] our real grids
-    opt.ice = 1 %0 to not add ice
-    opt.mem = 0 %is now working, mostly! value is now the number of vesicles randomly generated
-    opt.iters = 0
-    %}
-    %opt.layers = 0
+    opt.suffix = ''
     opt.graph = 0
     %suffix or other indicator string
     %opt to save incremental models for each layer and component of model building
