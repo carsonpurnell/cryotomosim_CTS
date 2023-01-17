@@ -14,6 +14,7 @@ function param = param_model(pix,param)
 arguments
     %maybe GUI input dlg
     %easy way to navigate to stored params? modifiable defaults?
+    %which params need more thorough validation?
     
     pix (1,1) %required input
     
@@ -57,15 +58,6 @@ end
 param.layers = layers;
 param.iters = iters;
 
-%input volume
-%pixelsize
-%targets, distractors - change to just particle layers?
-%density, iterations
-%constraints
-%beads, grid, membrane
-%ice
-
-%figure out the bounds of each and different use cases
 
 %what are non-params? need suffix opt separately, that's not a model parameter.
 end
