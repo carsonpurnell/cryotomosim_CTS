@@ -4,9 +4,9 @@ denspix = (.90/18)*6e23*(pix/1e8)^3; %d = (d/mass)*mol*(pixel/m-a conv)^3 averag
 %computed density might be a bit high, vitreous may be lower than .94g/cm3.
 %without solvation exclusion, borders do get very hazy - good for rad damage
 
-atomfrac = exp(-pix/5); %fraction as points rather than flat background
+atomfrac = exp(-pix/6); %fraction as points rather than flat background
 %does compressing it into fewer points of higher density work without screwing the noise?
-densfrac = 10/(20+pix)*1+0; %scalar to distribute extra intensity to particles to reduce number required
+densfrac = 10/(20+pix*2)*1+0; %scalar to distribute extra intensity to particles to reduce number required
 w = 8+2;
 mol = round(denspix*numel(vol)*atomfrac*densfrac); % atomfrac% of ice mass randomly distributed as molecules
 ice = round(vol*0+denspix*(1-atomfrac)*w); % 1-atomfrac% of ice mass as flat background for speed
@@ -36,7 +36,7 @@ ice = ice.*map;
 iced = vol+ice;
 %}
 bb = imgaussfilt3(vol,1);
-icesc = max(ice*0.9-(bb),ice*0.8);
+icesc = max(ice*0.75-(bb),ice*0.7);
 %iced = max(ice-sqrt(vol)-0*max(sqrt(vol)/4-pix*0,ice*0.8),vol);
 iced = max(vol,icesc);
 end
