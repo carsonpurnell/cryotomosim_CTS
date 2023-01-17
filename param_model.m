@@ -33,7 +33,6 @@ arguments
     param.mem = 0 %need subcomponents
     param.beads = 0
     param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
-    
 end
 %{
 if ~isfield(param,'pix')
@@ -69,5 +68,4 @@ param.iters = iters;
 %figure out the bounds of each and different use cases
 
 %what are non-params? need suffix opt separately, that's not a model parameter.
-
 end
