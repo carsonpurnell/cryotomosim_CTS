@@ -118,11 +118,7 @@ end
 %load input targets
 %[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
 cts.particles.targets = param.layers;%{1};
-% if isempty(param.iters) || param.iters==0
-%     param.iters = round(cts.pix(1)*sqrt(numel(cts.vol))/30); %modeling iters, maybe simplify
-% else
-%     param.iters = param.iters;
-% end
+
 
 
 if param.grid(1)~=0 % new carbon grid and hole generator
@@ -160,10 +156,9 @@ end
 
 
 %generate model and add (in case input vol had stuff in it)
-[cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,cts.particles.targets,param.iters,...
+[cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,param.layers,param.iters,...
     vescen,vesvol,param.density,'type','target','graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
-%cts.vol = cts.vol+cts.model.targets; %old sum without overlap fix
 cts.model.particles = cts.vol;
 
 %change targets/distractors into a single repeating loop of any number of sets of particles?
