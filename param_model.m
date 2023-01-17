@@ -47,8 +47,7 @@ iters = zeros(1,numel(param.layers));
 for i=1:param.layers %loop through layers to load particles and assign iterations/density vectors
     fprintf('Loading layer %i structures \n',i)
     %need a check or something for when a layer is already parsed files? or just let input return by itself?
-    %more likely need to be able to load a saved list of layers
-    layers{i} = helper_input('gui',param.pix); %load layer
+    layers{i} = helper_input('gui',param.pix); %load layer - how to deal with saved list of layers?
     param.density(i) = param.density(min(i,end));
     iters(i) = param.iters( min(i,numel(param.iters)) );
     if isempty(iters(i)) || iters(i)==0
