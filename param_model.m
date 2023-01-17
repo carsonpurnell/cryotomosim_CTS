@@ -19,11 +19,9 @@ arguments
     
     %required for function params
     %param.vol (:,:,:) = zeros(400,400,50) %must be input?
-    %param.pix (1,1) %must be input?
     
     %input particles params
     param.layers = 1 %soft required?
-    %param.distract = 'none'
     
     %model run and limitations params
     param.density = 0.4 %if moving to target loop, this needs to be able to be a vector
