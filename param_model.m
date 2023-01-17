@@ -19,9 +19,8 @@ arguments
     
     %required for function params
     %param.vol (:,:,:) = zeros(400,400,50) %must be input?
-    
     %input particles params
-    param.layers = 1 %soft required?
+    param.layers = 1 %number of different particle layers to load and place
     
     %model run and limitations params
     param.density = 0.4 %if moving to target loop, this needs to be able to be a vector
