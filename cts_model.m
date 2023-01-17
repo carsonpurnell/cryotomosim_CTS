@@ -159,6 +159,5 @@ WriteMRC(cts.vol,cts.pix(1),append(ident,opt.suffix,'.mrc'))
 save(append(ident,opt.suffix,'.mat'),'cts','-v7.3')
 
 %output text file of input informations?
-
 cd(userpath)
 end
