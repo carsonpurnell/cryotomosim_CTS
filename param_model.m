@@ -2,6 +2,35 @@ function param = param_model(pix,param)
 %param = param_model(pix,param)
 %param manager for cts_model
 %
+%pix            required
+%pixel size of the generated model and output .mrc, in angstroms
+%
+%param - name-value pair arguments in the format ...'name',value... (or in 2021+ ...name=value...)
+%density        default 0.4
+%    cutoff for occupancy of model-filling steps. rarely encountered unless particles are highly compact
+%constraint     default 'sides' (i.e. top and bottom of z)
+%    must be 'sides','box','tube', or 'none'. determines how many sides have borders that prevent clipping
+%distract       default 'none'
+%    usage is identical to particles, places additional non-target objects after the initial target model
+%beads          default [0 50], format [number radius1 radius2... radiusn]
+%    number of beads to place, from a set of beads generated based on the input radii (default 50A)
+%grid           default [0 0], author uses [15 2000]
+%    [thickness radius] of carbon film and grid hole, in nm.
+%ice            default 1
+%     change to 0 to not generate vitreous ice in the model
+%mem            default 0
+%    1 to generate a super janktastic not at all realistic fascimile of a cell membrane
+%graph          default 0
+%    1 to have a plot continuously update with particle placement success/failure numbers
+%
+%
+%particles      required, preferred input = 'gui'
+%cell array of filenames to load as the target particles, .pdb or .mrc, processed by helper_input
+%'gui' uses a GUI to select input files (uses uipickfiles from the FEX if possible)
+%if not using 'gui', need to specify files on path or full file paths as strings in a cell array
+%when loading, the class ID of an input is the leading string up to the first '__' or '.'
+%different objects with the same ID will get placed in the same class of splitmodel
+%
 %pix is required: defines the pixel size of generated structure volumes
 %
 %other arguments are name-value pairs:
