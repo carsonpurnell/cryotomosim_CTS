@@ -8,6 +8,7 @@ function param = param_model(pix,param)
 %param - name-value pair arguments in the format ...'name',value... (or in 2021+ ...name=value...)
 %density        default 0.4
 %    cutoff for occupancy of model-filling steps. rarely encountered unless particles are highly compact
+%new constraint: default '  &', 3-length char of & +- (that's a space) for both/no/top/bottom of each axis
 %constraint     default 'sides' (i.e. top and bottom of z)
 %    must be 'sides','box','tube', or 'none'. determines how many sides have borders that prevent clipping
 %distract       default 'none'
