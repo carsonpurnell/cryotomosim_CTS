@@ -97,6 +97,7 @@ else
     vescen = 0; vesvol = 0;
 end
 
+%change constraints to be dynamic with x/y/z input vector instead of fixed combinations
 constraint = zeros(size(cts.vol)); %constraints are a big ugly mess right now
 switch param.constraint %write constraints to initial starting volume
     case 'none'
