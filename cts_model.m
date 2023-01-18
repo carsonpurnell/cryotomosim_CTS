@@ -53,7 +53,7 @@ arguments
     
     opt.suffix = ''
     opt.graph = 0
-    %suffix or other indicator string
+    
     %opt to save incremental models for each layer and component of model building
     %save the splitmodels in another file to reduce bloat in cts?
 end
