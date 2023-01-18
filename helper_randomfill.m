@@ -97,7 +97,7 @@ for i=1:iters(ww)
     flags = set(which).flags; 
     flags = (flags(randperm(length(flags)))); %randomize flag order for mixed usage
     %flag is an existing function, so DO NOT USE
-    
+    figure(); sliceViewer(memlocmap);
     
     %put split/group placement box after the type switch for efficiency and to make complex/memplex/assembly
     %more general schemes

@@ -71,6 +71,8 @@ else
 end
 
 %change constraints to be dynamic with x/y/z input vector instead of fixed combinations
+constraint = helper_constraints(zeros(size(cts.vol)),param.constraint)*pix^2.5;
+%{
 constraint = zeros(size(cts.vol)); %constraints are a big ugly mess right now
 switch param.constraint %write constraints to initial starting volume
     case 'none'
@@ -85,6 +87,7 @@ switch param.constraint %write constraints to initial starting volume
     case 'sides'
         constraint(1:end,1:end,[1 end]) = pix^2.5; %constraint(1:end,1:end,end) = 1; %z end panes
 end
+%}
 
 
 %generate model and add (in case input vol had stuff in it)
