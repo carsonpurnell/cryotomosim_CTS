@@ -54,9 +54,7 @@ for i=1:param.layers %loop through layers to load particles and assign iteration
         iters(i) = 2000*param.density(i);
     end
 end
-param.layers = layers;
-param.iters = iters;
-
+param.layers = layers; param.iters = iters;
 
 %what are non-params? need suffix opt separately, that's not a model parameter.
 end
