@@ -77,11 +77,6 @@ cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[]);%,'i
 cts.param = param; %store parameters in the struct
 %need a better storage organization
 
-
-%load input targets
-%[cts.particles.targets] = helper_input(param.targets,pix); %load target particles
-%cts.particles.targets = param.layers;%{1};
-
 if param.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
     [cts.model.grid] = gen_carbongrid(vol,pix,param.grid);
