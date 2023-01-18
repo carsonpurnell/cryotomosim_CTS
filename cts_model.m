@@ -71,7 +71,7 @@ else
 end
 
 %change constraints to be dynamic with x/y/z input vector instead of fixed combinations
-constraint = helper_constraints(zeros(size(cts.vol)),param.constraint)*pix^2.5;
+constraint = helper_constraints(zeros(size(cts.vol)),param.constraint)*pix^2.5; %more flexible constraints
 %{
 constraint = zeros(size(cts.vol)); %constraints are a big ugly mess right now
 switch param.constraint %write constraints to initial starting volume
