@@ -1,5 +1,5 @@
 function [detected, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param,opt)
-%[noised, convolved, tiltseries] = tomosim_simulate(sampleMRC, param, opt)
+%[detected, conv, tiltseries, atlas, ctf] = tomosim_simulate(sampleMRC, param, opt)
 %simulates tomographic data as if collected from a sample and reconstructs a tomogram
 %
 %  Inputs
@@ -154,7 +154,8 @@ thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
 %lower second number sharper cutoff? or fill value past cutoff?
 %-hamminglikefilter should work similarly but only needs one input
 %-radial default 0.35 0.035
-cmd = append('tilt -tiltfile tiltangles.txt -RADIAL 0.35,0.035 -width ',w,' -thickness ',thick,' ',prev,' temp.mrc'); 
+cmd = append('tilt -tiltfile tiltangles.txt -RADIAL 0.35,0.035 -width ',w,...
+    ' -thickness ',thick,' ',prev,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
 cmd = append('trimvol -rx temp.mrc ',append('5_recon_',base)); %#ok<NASGU>
 [~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
