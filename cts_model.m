@@ -32,7 +32,7 @@ arguments
     opt.suffix = ''
     opt.graph = 0
     
-    %opt to save incremental models for each layer and component of model building
+    %opt to save incremental models for each layer and component of model building?
     %save the splitmodels in another file to reduce bloat in cts?
 end
 if iscell(param), param = param_model(param{:}); end
