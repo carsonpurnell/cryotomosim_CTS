@@ -76,20 +76,9 @@ end
 %make a double loop, possibly making the internal loop an internal function?
 for ww=1:numel(layers)
 set = layers{ww};
-%layeriters = iters(ww);
 counts = struct('s',0,'f',0); %initialize counts and get input size
 %figure(); sliceViewer(memlocmap);
-% numel(layers)
-% iters
-% density
-%{
-ww
-numel(iters)
-q = iters(min(1,end)) %also not working because there's a 0 that gets invented
-min(ww,numel(iters)) %this creates a 0 somehow even though that is impossible
-%}
-%iters( min(ww,numel(iters)) )
-%layeriters = iters( min(ww,numel(iters)) ); %end was breaking because it found 0, not because end didn't work
+
 %do minor cleanup of locmaps - removing islands, subtract the working array?
 fprintf('Layer %i, attempting %i %s placements up to density %g:  \n',ww,iters(ww),opt.type,density(ww))
 %etc
@@ -184,7 +173,6 @@ for i=1:iters(ww)
     
     %switch for group class (bundle, cluster, or single) for placing - also need one for mem?
     %specialflag = fnflag(rflags,{'bundle','cluster'});
-    
     
     %temporary catch to use flags to run the old placement types
     classtype = fnflag(flags,{'membrane','bundle','cluster'});
