@@ -171,8 +171,8 @@ for i=1:iters(ww)
         locmap = inarray==0; %faster than logical somehow
     end
     
-    sliceViewer(inarray);
-    figure(); sliceViewer(inarray>1);
+    %sliceViewer(inarray);
+    %figure(); sliceViewer(inarray>1);
     %unique(inarray);
     
     %switch for group class (bundle, cluster, or single) for placing - also need one for mem?
@@ -485,9 +485,9 @@ for i=1:iters(ww)
         plot(gui,counts.f,counts.s,'.'); drawnow;
     end
     
-    %{
+    %
     if err==0 %diagnostic incremental fill image through mid slice
-        diagout(:,:,end+1) = inarray(:,:,end/2);
+        diagout(:,:,end+1) = memlocmap(:,:,end/2);
     end
     %}
 end
@@ -496,7 +496,7 @@ fprintf('\nPlaced %i particles, failed %i attempted placements, final density %g
     counts.s,counts.f,nnz(inarray)/numel(inarray))
 
 end
-
+sliceViewer(diagout);
 %WriteMRC(diagout,10,'diagaccumarray.mrc');
 
 
