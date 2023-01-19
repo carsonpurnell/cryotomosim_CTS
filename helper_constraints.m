@@ -1,4 +1,3 @@
-%edge write for constraint generation function
 function vol = helper_constraints(vol,edges)
 
 %edges = '&&&';
@@ -24,8 +23,6 @@ for i=1:numel(edges)
             vec{i} = [];
     end
     vol(vec{1},vec{2},vec{3}) = 1;
-    %do the write thing
-    
 end
 
 end
