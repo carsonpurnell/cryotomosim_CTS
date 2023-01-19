@@ -58,6 +58,8 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     numPixels = cellfun(@numel,CC.PixelIdxList);
     [~,idx] = max(numPixels);
     mout = zeros(size(nonmem));
+    disp(numpixels)
+    disp(idx)
     mout(CC.PixelIdxList{idx}) = 1; %locmap for outside of vesicles
     
     min = nonmem-mout; %locmap for inside vesicles
