@@ -60,7 +60,7 @@ if param.grid(1)~=0 % new carbon grid and hole generator
     [cts.model.grid] = gen_carbongrid(vol,pix,param.grid);
     cts.vol = cts.model.grid+cts.vol; fprintf('   complete \n')
 end
-figure(); sliceViewer(cts.vol==0); return
+figure(); sliceViewer(cts.vol==0);
 if param.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
     fprintf('Generating vesicular membranes ')
     [cts.model.mem,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(param.mem),pix);
@@ -89,6 +89,8 @@ switch param.constraint %write constraints to initial starting volume
 end
 %}
 
+figure(); sliceViewer(cts.vol+constraint==0); 
+figure(); sliceViewer(constraint==0);
 
 %generate model and add (in case input vol had stuff in it)
 [cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,param.layers,param.iters,...
