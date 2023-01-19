@@ -54,13 +54,13 @@ end
 cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[]);%,'inputs',[]);
 cts.param = param; %store parameters in the struct
 %need a better storage organization
-sliceViewer(cts.vol==0);
+%sliceViewer(cts.vol==0);
 if param.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
     [cts.model.grid] = gen_carbongrid(vol,pix,param.grid);
     cts.vol = cts.model.grid+cts.vol; fprintf('   complete \n')
 end
-figure(); sliceViewer(cts.vol==0);
+%figure(); sliceViewer(cts.vol==0);
 if param.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
     fprintf('Generating vesicular membranes ')
     [cts.model.mem,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(param.mem),pix);
@@ -88,9 +88,6 @@ switch param.constraint %write constraints to initial starting volume
         constraint(1:end,1:end,[1 end]) = pix^2.5; %constraint(1:end,1:end,end) = 1; %z end panes
 end
 %}
-
-figure(); sliceViewer(cts.vol+constraint==0); 
-figure(); sliceViewer(constraint==0);
 
 %generate model and add (in case input vol had stuff in it)
 [cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,param.layers,param.iters,...
