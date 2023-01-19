@@ -172,7 +172,8 @@ for i=1:iters(ww)
     end
     
     sliceViewer(inarray);
-    figure(); sliceViewer(inarray==0);
+    figure(); sliceViewer(inarray>1);
+    %unique(inarray);
     
     %switch for group class (bundle, cluster, or single) for placing - also need one for mem?
     %specialflag = fnflag(rflags,{'bundle','cluster'});
