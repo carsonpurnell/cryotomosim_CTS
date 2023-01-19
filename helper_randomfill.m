@@ -39,7 +39,7 @@ end
 if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     ismem = 1; 
     memvol = sum( cat(4,vesvol{:}) ,4);
-    sliceViewer(memvol);
+    %sliceViewer(memvol);
     bw = bwdist(~memvol); %calculate distances inside the shape
     mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
     skel = (bw.*~mask)>max(bw,[],'all')/2-1; %apply the mask to the distance map and threshold edge noise
@@ -55,11 +55,11 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     
     %find the largest component, assumed to be the background space
     CC = bwconncomp(nonmem);
-    numPixels = cellfun(@numel,CC.PixelIdxList);
-    [~,idx] = max(numPixels);
+    numpixels = cellfun(@numel,CC.PixelIdxList); %count pixels in each component
+    [~,idx] = max(numpixels); %get the largest volume component from image
     mout = zeros(size(nonmem));
-    disp(numpixels)
-    disp(idx)
+    %disp(numpixels)
+    %disp(idx)
     mout(CC.PixelIdxList{idx}) = 1; %locmap for outside of vesicles
     
     min = nonmem-mout; %locmap for inside vesicles
