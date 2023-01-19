@@ -56,7 +56,7 @@ arguments
     %model run and limitations params
     param.density = 0.4 %if moving to target loop, this needs to be able to be a vector
     param.iters = 0 %auto calculate if not given, would also need to be vectorable
-    param.constraint string = '  &'
+    param.constraint char = '  &'
     %change constraint to a more flexible x/y/z for different oriented tube/walls?
     
     %objects and contents params
