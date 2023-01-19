@@ -39,6 +39,7 @@ end
 if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     ismem = 1; 
     memvol = sum( cat(4,vesvol{:}) ,4);
+    sliceViewer(memvol);
     bw = bwdist(~memvol); %calculate distances inside the shape
     mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
     skel = (bw.*~mask)>max(bw,[],'all')/2-1; %apply the mask to the distance map and threshold edge noise
@@ -75,6 +76,7 @@ for ww=1:numel(layers)
 set = layers{ww};
 %layeriters = iters(ww);
 counts = struct('s',0,'f',0); %initialize counts and get input size
+%figure(); sliceViewer(memlocmap);
 % numel(layers)
 % iters
 % density
@@ -97,7 +99,7 @@ for i=1:iters(ww)
     flags = set(which).flags; 
     flags = (flags(randperm(length(flags)))); %randomize flag order for mixed usage
     %flag is an existing function, so DO NOT USE
-    figure(); sliceViewer(memlocmap);
+    
     
     %put split/group placement box after the type switch for efficiency and to make complex/memplex/assembly
     %more general schemes
