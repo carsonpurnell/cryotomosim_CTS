@@ -1,9 +1,7 @@
 function vol = helper_constraints(vol,edges)
-
-%edges = '&&&';
-%vol = zeros(20,20,10);
-% + side, - side, neither, or & for both?
-%could instead do single char '&=- ' sort
+%vol = helper_constraints(vol,edges)
+%outputs an empty copy of vol, with 1s written on certain borders define by edgges input
+%1x3 char array as '&&&' in yxz(matlab) and xyz(IMOD) oreientation, + is top, - bottom, space none, & both
 
 %make the [1,end] vector into the needed version for each entry first then use them?
 %and empty [] vector writes nothing, usefully
