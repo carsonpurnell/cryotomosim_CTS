@@ -171,13 +171,6 @@ for i=1:iters(ww)
         locmap = inarray==0; %faster than logical somehow
     end
     
-    %sliceViewer(inarray);
-    %figure(); sliceViewer(inarray>1);
-    %unique(inarray);
-    
-    %switch for group class (bundle, cluster, or single) for placing - also need one for mem?
-    %specialflag = fnflag(rflags,{'bundle','cluster'});
-    
     %temporary catch to use flags to run the old placement types
     classtype = fnflag(flags,{'membrane','bundle','cluster'});
     if strcmp(classtype,'NA')
