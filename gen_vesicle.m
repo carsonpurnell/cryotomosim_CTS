@@ -29,8 +29,8 @@ count.s = 0; count.f = 0;
 memvol = vol*0;
 vescen = []; vesvol = {}; %store centers and location vols for each placed vesicle for TMD operations
 for i=1:num
-    radi = (rand*300+150)/pix; %randomly generate inner radius of vesicle (need better range)
-    rado = radi+(16+randi(12))/pix; %get outer radius from inner, should be constant something (7-9nm-ish?)
+    radi = (rand*700+150)/pix; %randomly generate inner radius of vesicle (need better range)
+    rado = radi+(14+randi(14))/pix; %get outer radius from inner, should be constant something (7-9nm-ish?)
     %reduced outer radius distance for pearson, skew makes it wider
     offset = round(rado+20); %centroid offset to prevent negative values
     %still not sure how to do the radius and what the radial density curve should look like
