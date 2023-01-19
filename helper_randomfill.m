@@ -71,14 +71,14 @@ else
 end
 % membrane setup stuff end
 
-%diagout = zeros(size(inarray,1),size(inarray,2),0);
+diagout = zeros(size(inarray,1),size(inarray,2),0);
 %layers = set;
 %make a double loop, possibly making the internal loop an internal function?
 for ww=1:numel(layers)
 set = layers{ww};
 counts = struct('s',0,'f',0); %initialize counts and get input size
 %figure(); sliceViewer(memlocmap);
-
+err=1;
 %do minor cleanup of locmaps - removing islands, subtract the working array?
 fprintf('Layer %i, attempting %i %s placements up to density %g:  \n',ww,iters(ww),opt.type,density(ww))
 %etc
@@ -300,182 +300,8 @@ for i=1:iters(ww)
     %loop through the relevant vols, also inherited from above 
     %can placement into splits be made a subfunct?
     
-    %switch 1%classtype %set(which).type
-        %{
-        %cluster second because it also breaks flags and needs reworking
-        case 'cluster' %need to move into call to cluster function like bundle has
-            %cluster should be more like a normal class method, needs to be able to do complexes
-            sub = randi(numel(particle)); %get random selection from the group
-            [rot,~,loc,err] = testplace2(inarray,locmap,set(which).vol{sub},3);
-            counts.f = counts.f + err;
-            if err==0 %on success, place in splits and working array
-                counts.s=counts.s+1;
-                [inarray] = helper_arrayinsert(inarray,rot,loc);
-                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
-                %generate list of random points near loc
-                num = 12;
-                r = randn(1,num).*mean(size(set(which).vol{sub}))/2+mean(size(set(which).vol{sub}));
-                az = rand(1,num)*360; el = rand(1,num)*360;
-                [x,y,z] = sph2cart(az,el,abs(r));
-                clusterpts = round([x;y;z])+loc';
-                
-                %loop through points and try to place them
-                for j=1:size(clusterpts,2)
-                    sub = randi(numel(particle)); %new random member
-                    
-                    tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
-                    rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
-                    [inarray,errc] = helper_arrayinsert(inarray,rot,clusterpts(:,j),'nonoverlap'); %test place
-                    if errc==0 %if nonoverlap record and add to split
-                        counts.s=counts.s+1;
-                        split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,clusterpts(:,j));
-                    end
-                end
-            end
-        %}
-        %{
-        case {'inmem','outmem','single','group'} %universal for non-special non-complexes
-            sub = randi(numel(particle));
-            %{
-            for retry=1:4 %implement as general tester again?
-                tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
-                rot = imwarp(set(which).vol{sub},tform); %generated rotated particle
-                
-                %r = randi(size(pts,1)); loc = pts(r,:); %get a test point
-                loc = ctsutil('findloc',locmap);
-                
-                loc = round(loc-size(rot)/2); %shift to place by the COM
-                %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
-                [~,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
-                if err==0, break; end
-            end
-            %}
-            [rot,~,loc,err] = testcyto(inarray,locmap,set(which).vol{sub},4);
-            
-            counts.f = counts.f + err;
-            if err==0 %on success, place in splits and working array
-                counts.s=counts.s+1;
-                [inarray] = helper_arrayinsert(inarray,rot,loc);
-                %tmp = split.(set(which).id{sub}); %negligible
-                %tmp = helper_arrayinsert(tmp,rot,com); %was ~25 with 506 iters? slower to split assignments
-                %split.(set(which).id{sub}) = tmp; %~6 s extra
-                split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc); %faster
-                if ismem==1 && strcmp(set(which).type,'inmem')
-                    [min] = helper_arrayinsert(min,-rot,loc);
-                elseif ismem==1 && strcmp(set(which).type,'outmem')
-                    [mout] = helper_arrayinsert(mout,-rot,loc);
-                end
-            end
-        %}
-        %{ 
-        case {'complex','assembly'} %all or multiple structured components of a protein complex
-            %sumvol = sum( cat(4,set(which).vol{:}) ,4); %vectorized sum of all vols within the group
-            sumvol = set(which).sumvol;
-            
-            [rot,tform,loc,err] = testplace2(inarray,locmap,sumvol,4);
-            %[rot,tform,loc,err] = testplace(inarray,sumvol,3);
-            
-            counts.f = counts.f + err;
-            if err==0 %on success, place in splits and working array
-                counts.s=counts.s+numel(set(which).vol);
-                [inarray] = helper_arrayinsert(inarray,rot,loc);
-                members = 2:numel(set(which).vol);
-                if strcmp(set(which).type,'assembly') 
-                    members = members(randperm(length(members))); 
-                    if numel(members)>1, members = members(randi(numel(members)+1):end); end
-                end
-                members = [1,members]; %#ok<AGROW>
-                for t=members %rotate and place each component of complex
-                    rot = imwarp(set(which).vol{t},tform);
-                    split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
-                end
-            end
-            %}
-        
-        %{
-        case {'memplex','membrane'}
-            %[particle] = ctsutil('trim',particle); %trims all vols according to their sum
-            %centered = centervol(molc); 
-            %centered = ctsutil('centervol',particle); %centers all vols in cells to the COM of the first
-            %sumvol = sum( cat(4,centered{:}) ,4); %get sum volume (should pregenerate in _input)
-            
-            %internal funct needs whole particle or just the vols?
-            %needs vescen map too
-            %{
-            sumvol = set(which).sumvol;
-            
-            %{
-            [x,y,z] = ind2sub(size(memlocmap),find(memlocmap>0)); %don't need >0, minor speed loss
-            pts = [x,y,z]; %probably need to replace this block with something much faster
-            r = randi(size(pts,1));
-            loc = pts(r,:);
-            %}
-            %need testplacing for membrane localization
-            loc = ctsutil('findloc',locmap);
-            
-            [k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
-            
-            %[ax,theta] = sphrot(init,fin,ori)
-            targ = loc-vescen(k,:); %get target location as if from origin
-            targ=targ/norm(targ); init = init(:)/norm(init); %unitize for safety
-            
-            rotax=cross(init,targ); %compute the normal axis from the rotation angle
-            theta = acosd( dot(init,targ) );
-            %end
-            %[rotax,theta] = sphrot(init,loc,vescen(k,:));
-            
-            %sel = particles(randi(numel(particles))).tmvol;
-            sel = sumvol;
-            spinang = randi(180);
-            spin = imrotate3(sel,spinang,init'); %rotate axially before transform to target location
-            rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
-            
-            %tdest = inarray+memvol*0-vesvol{k}*1; %slow
-            tdest = inarray-vesvol{k}; %faster
-            
-            %if i==500, sliceViewer(rescale(tdest)+skel*0+memlocmap); end
-            
-            com = round(loc-size(rot)/2);
-            [~,err] = helper_arrayinsert(tdest,rot,com,'overlaptest');
-            %}
-            %[rot,loc,op,err] = testmem(inarray,locmap,particle,vescen,vesvol,retry);
-            %counts.f = counts.f+err; %counts.s = counts.s-err; %increment fails, should refactor s
-            counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
-            
-            if err==0
-                [inarray] = helper_arrayinsert(inarray,rot,loc); %write sum to working array
-                [memlocmap] = helper_arrayinsert(memlocmap,-imbinarize(rot),loc); %reduce mem loc map
-                if ismem==1 %&& strcmp(set(which).type,'inmem') %reduce inmem/outmem maps if present
-                    [min] = helper_arrayinsert(min,-rot,loc);
-                    [mout] = helper_arrayinsert(mout,-rot,loc);
-                %elseif ismem==1 %&& strcmp(set(which).type,'outmem')
-                end
-                %counts.s = counts.s-1; %increment success, bad old way need to deprecate
-                %actually write to the split arrays
-                if strcmp(set(which).type,'memplex')
-                    members = 1:numel(set(which).vol);
-                    %assembly rejigger member nums here
-                    for t=members %rotate and place each component of complex
-                        spinang = op{1}; theta = op{2}; rotax = op{3};
-                        spin = imrotate3(set(which).vol{t},spinang,init'); 
-                        rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
-                        %rot = imwarp(set(which).vol{t},tform);
-                        %need to do the rotation for each individual component
-                        split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
-                    end
-                else %membrane only designation
-                    split.(set(which).id{1}) = helper_arrayinsert(split.(set(which).id{1}),rot,loc);
-                    %just write the sumvol to the split array
-                end
-            end
-            %}
-        %update the locmaps at the end?
-            
-    %end
-    %}
-    
     %if rem(i,25)==0, fprintf('%i,',counts.s), end
-    if rem(i,round(iters(ww)/25))==0, fprintf('%i,',counts.s), end
+    if rem(i,round(iters(ww)/25))==0, fprintf('%i,',counts.s), end %update placed in 5% iter increments
     %if rem(i,600)==0, fprintf('\n'), end
     
     if rem(i,5)==0 && rem(counts.s,3)==0 %filter to prevent the slower IF from running so often
@@ -485,7 +311,7 @@ for i=1:iters(ww)
         plot(gui,counts.f,counts.s,'.'); drawnow;
     end
     
-    %
+    %{
     if err==0 %diagnostic incremental fill image through mid slice
         diagout(:,:,end+1) = memlocmap(:,:,end/2);
     end
@@ -496,7 +322,7 @@ fprintf('\nPlaced %i particles, failed %i attempted placements, final density %g
     counts.s,counts.f,nnz(inarray)/numel(inarray))
 
 end
-sliceViewer(diagout);
+%sliceViewer(diagout>0);
 %WriteMRC(diagout,10,'diagaccumarray.mrc');
 
 
