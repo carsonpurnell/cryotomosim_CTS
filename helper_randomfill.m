@@ -90,7 +90,7 @@ for i=1:iters(ww)
     flags = set(which).flags; 
     flags = (flags(randperm(length(flags)))); %randomize flag order for mixed usage
     %flag is an existing function, so DO NOT USE
-    
+    %disp('something')
     
     %put split/group placement box after the type switch for efficiency and to make complex/memplex/assembly
     %more general schemes
@@ -170,6 +170,9 @@ for i=1:iters(ww)
     else %either when no mem or when special loc flag not taken ('any' used to allow mem+any placement)
         locmap = inarray==0; %faster than logical somehow
     end
+    
+    sliceViewer(inarray);
+    figure(); sliceViewer(inarray==0);
     
     %switch for group class (bundle, cluster, or single) for placing - also need one for mem?
     %specialflag = fnflag(rflags,{'bundle','cluster'});
