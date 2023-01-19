@@ -290,13 +290,12 @@ for i=1:iters(ww)
             
     end
     
+    %update locmaps in the classtype switch or after it?
     %switch for plex vs single placement somewhere below
     %needs to get the relevant tform for non-mem, and spin+theta+ax for membrane
     %loop through the relevant vols, also inherited from above 
     %can placement into splits be made a subfunct?
     
-    %placement switch for each particle class
-    %
     %switch 1%classtype %set(which).type
         %{
         %cluster second because it also breaks flags and needs reworking
