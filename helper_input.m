@@ -31,6 +31,8 @@ flaglist = ["membrane" "vesicle" "cytosol" "complex" "assembly" "cluster" "bundl
 %clustering flags: cluster for clumps and bundle for linear bundles, both separate class methods
 %retry flag that changes how many placement attempts are made to increase prevalence? or add to other flags?
 
+%instead of type, use label. first entry? use for generating filenames so complex are not bloated?
+
 %does assembly imply complex, or should it add complex to the flags?
 
 for i=1:numel(list)
