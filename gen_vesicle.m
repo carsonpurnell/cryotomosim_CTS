@@ -1,4 +1,4 @@
-function [memvol,count,ves,vescen,vesvol] = gen_vesicle(vol,num,pix,tries)
+function [memvol,count,ves,vescen,vesvol,skel] = gen_vesicle(vol,num,pix,tries)
 %randomly generates and places spherical vesicles into a volume without overlapping contents
 %
 %inputs:
@@ -90,12 +90,17 @@ for i=1:num
 end
 
 %generate skelmap here? 1st dim of 4d array?
-%better compute via some surface method with better smoothness?
-
+%better compute via some surface method with better smoothness? looks mostly fine though
+bw = bwdist(~memvol); %calculate distances inside the shape
+mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
+skel = (bw.*~mask)>max(bw,[],'all')/2-1; %apply the mask to the distance map and threshold edge noise
+skel = ctsutil('edgeblank',skel,2);
+skel = bwareaopen(skel,20);
 
 %also compute normals here based on the skelmap or a modified working version?
 %put normals in dim 2-4? maybe use a sparse array or linear array for normal vecs?
 
 %
+
 
 end
