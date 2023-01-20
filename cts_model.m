@@ -119,7 +119,7 @@ foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix)); %combine
 %move to output directory in user/tomosim
 cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
 mkdir(foldername); cd(foldername);
-WriteMRC(cts.vol,cts.pix(1),append(ident,opt.suffix,'.mrc'))
+WriteMRC(cts.vol,pix,append(ident,opt.suffix,'.mrc'))
 save(append(ident,opt.suffix,'.mat'),'cts','-v7.3')
 
 %output text file of input informations?
