@@ -3,16 +3,15 @@ function [outarray, split] = helper_randomfill(inarray,layers,iters,vescen,vesvo
 %shared function for adding particles randomly, used for generating models and adding distractors
 arguments
     inarray (:,:,:) double
-    layers %either a single array struct or a cell array of array structs
-    iters
+    layers %cell array of particle sets to be inserted
+    iters %vector of iters equal to that of layers
     vescen = 0 %is definitely janky
     vesvol = 0 %the other part of the jank
-    density = 0.4 %either single val or vector 
+    density = 0.4 %vector of max densities equal to that of layers
     opt.type = 'particle'
     opt.graph = 0
     opt.memvol = 0
 end
-%insize = size(inarray); 
 
 
 if opt.graph==1 %graphical output of particles block
