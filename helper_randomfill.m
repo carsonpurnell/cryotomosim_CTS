@@ -37,7 +37,7 @@ end
 % membrane setup stuff
 if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     ismem = 1; 
-    memvol = sum( cat(4,vesvol{:}) ,4);
+    memvol = sum( cat(4,vesvol{:}) ,4); %this is terrible, they need to be one volume
     %sliceViewer(memvol);
     bw = bwdist(~memvol); %calculate distances inside the shape
     mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
@@ -251,8 +251,6 @@ for i=1:iters(ww)
             if err==0 %on success, place in splits and working array
                 [inarray] = helper_arrayinsert(inarray,rot,loc);
                 
-                
-                %[split] = fnsplitplace(split,set(which).vol,set(which).id,rflags,loc,{tform});
                 if sub~=0
                     split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
                 else
