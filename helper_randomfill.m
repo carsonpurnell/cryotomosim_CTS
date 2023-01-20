@@ -78,6 +78,7 @@ counts = struct('s',0,'f',0); %initialize counts and get input size
 
 %do minor cleanup of locmaps - removing islands, subtract the working array?
 fprintf('Layer %i, attempting %i placements up to density %g:  \n',ww,iters(ww),density(ww))
+%list number of particles in the layer?
 for i=1:iters(ww)
     which = randi(numel(set)); 
     particle = set(which).vol; 
@@ -103,13 +104,10 @@ for i=1:iters(ww)
     switch set(which).type
         case {'memplex','membrane'} %placement into membrane
             locmap = memlocmap>0;
-            
         case 'inmem' %inside vesicle volume
             locmap = min>0;
-                
         case 'outmem' %only outside vesicles
             locmap = mout>0;
-            
         otherwise %everything else goes into the global locmap
             locmap = bwdist(inarray)>2; %surprisingly very slow, just skip it? or faster method?
             %ind2sub not surprisingly is slow - fast vector replacement method?
@@ -259,19 +257,6 @@ for i=1:iters(ww)
                     split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
                 else
                     [split] = fnsplitplace(split,set(which).vol,set(which).id,flags,loc,{tform});
-                    %{
-                    members = 2:numel(set(which).vol);
-                    if any(ismember(rflags,'assembly'))
-                        members = members(randperm(length(members)));
-                        if numel(members)>1, members = members(randi(numel(members)+1):end); end
-                    end
-                    %loop through and place members
-                    members = [1,members]; %#ok<AGROW>
-                    for t=members %rotate and place each component of complex
-                        rot = imwarp(set(which).vol{t},tform);
-                        split.(set(which).id{t}) = helper_arrayinsert(split.(set(which).id{t}),rot,loc);
-                    end
-                    %}
                 end
                 if ismem==1 && strcmp(set(which).type,'vesicle')
                     [min] = helper_arrayinsert(min,-rot,loc);
