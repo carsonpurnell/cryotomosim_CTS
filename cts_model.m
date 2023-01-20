@@ -1,6 +1,6 @@
 function [cts] = cts_model(vol,param,opt)
 %[cts] = cts_model(vol,pix,param,opt)
-%generates model information for a single tomographic acquisition, stored in output struct ts
+%generates model information for a single tomographic acquisition, stored in output struct cts
 %works by iteratively placing input particles at random orientations in random locations without overlap
 %
 %Inputs
@@ -22,7 +22,6 @@ function [cts] = cts_model(vol,param,opt)
 %model retains the separate classes of components - the isolated grid, the constraint borders, targets, or
 %distractors
 %targets is a struct array of each input particle grouping, including filename, id, volume, and type
-%distractors is equivalent to targets, but for any input distractors
 %splitmodel has fields of each target id, containing a volume of only those particles from the model
 
 arguments
@@ -51,7 +50,7 @@ end
 %}
 
 %initialize the struct so the order is invariant and fill with input information
-cts = struct('vol',vol,'pix',pix,'model',[],'particles',[],'splitmodel',[]);%,'inputs',[]);
+cts = struct('vol',vol,'model',[],'splitmodel',[]);%,'particles',[]);%,'inputs',[]);
 cts.param = param; %store parameters in the struct
 %need a better storage organization
 
