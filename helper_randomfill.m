@@ -154,7 +154,7 @@ for i=1:iters(ww)
     locmap = fnflag(flags,{'membrane','vesicle','cytosol','any'}); %check if any special loc found
     %need a subfunct for parsing relevant flags and returning the first valid one
     if ismem==0
-        locmap = ~inarray;%==0; %faster than logical? still relatively slow
+        locmap = inarray==0; %faster than logical? still relatively slow
         memix = matches(flags,'membrane'); flags(memix) = [];
     elseif ismem==1 && matches(locmap,{'membrane','vesicle','cytosol'})
         %this switch needs a better expression, multiple locations should work (for membrane+else)
