@@ -89,7 +89,7 @@ end
 
 %generate model and add (in case input vol had stuff in it)
 [cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,param.layers,param.iters,...
-    vescen,vesvol,param.density,'type','target','graph',opt.graph); 
+    vescen,vesvol,param.density,'graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
 cts.model.particles = cts.vol;
 
