@@ -154,7 +154,7 @@ for i=1:iters(ww)
     locmap = fnflag(flags,{'membrane','vesicle','cytosol','any'}); %check if any special loc found
     %need a subfunct for parsing relevant flags and returning the first valid one
     if ismem==0
-        locmap = inarray==0; %faster than logical somehow
+        locmap = ~inarray;%==0; %faster than logical? still relatively slow
         memix = matches(flags,'membrane'); flags(memix) = [];
     elseif ismem==1 && matches(locmap,{'membrane','vesicle','cytosol'})
         %this switch needs a better expression, multiple locations should work (for membrane+else)
@@ -318,8 +318,6 @@ end
 %sliceViewer(diagout>0);
 %WriteMRC(diagout,10,'diagaccumarray.mrc');
 
-
-
 outarray = zeros(size(inarray)); splitnames = fieldnames(split);
 for i=1:numel(splitnames)
     outarray = outarray+split.(splitnames{i});
@@ -327,14 +325,12 @@ end
 
 end
 
-
 function [flags] = fnflag(flags,set)
 hits = flags(matches(flags,set));
 hits{end+1} = 'NA'; %fill with string to avoid empty vector errors and make clear no flag found
 flags = hits{1};
 end
 %need to make this either fetch the flag, or test if the flag is present and return a logical
-
 
 %placement testing for cytosol proteins
 function [rot,tform,loc,err] = testcyto(inarray,locmap,particle,retry)
