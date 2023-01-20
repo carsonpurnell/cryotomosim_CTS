@@ -72,25 +72,21 @@ end
 % membrane setup stuff end
 
 diagout = zeros(size(inarray,1),size(inarray,2),0);
-%layers = set;
-%make a double loop, possibly making the internal loop an internal function?
+
 for ww=1:numel(layers)
-set = layers{ww};
+set = layers{ww}; err=1; %use the particles for the given layer, hopefully reduces indexing
 counts = struct('s',0,'f',0); %initialize counts and get input size
-%figure(); sliceViewer(memlocmap);
-err=1;
+
 %do minor cleanup of locmaps - removing islands, subtract the working array?
 fprintf('Layer %i, attempting %i %s placements up to density %g:  \n',ww,iters(ww),opt.type,density(ww))
-%etc
 for i=1:iters(ww)
     which = randi(numel(set)); 
     particle = set(which).vol; 
     %precall more things so structs aren't called into so many times
+    %prealloc anything else for speed?
     vols = set(which).vol; 
     flags = set(which).flags; 
     flags = (flags(randperm(length(flags)))); %randomize flag order for mixed usage
-    %flag is an existing function, so DO NOT USE
-    %disp('something')
     
     %put split/group placement box after the type switch for efficiency and to make complex/memplex/assembly
     %more general schemes
