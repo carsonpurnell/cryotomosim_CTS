@@ -8,7 +8,7 @@ arguments
     vescen = 0 %is definitely janky
     vesvol = 0 %the other part of the jank
     density = 0.4 %vector of max densities equal to that of layers
-    opt.type = 'particle'
+    %opt.type = 'particle'
     opt.graph = 0
     opt.memvol = 0
 end
@@ -77,7 +77,7 @@ set = layers{ww}; err=1; %use the particles for the given layer, hopefully reduc
 counts = struct('s',0,'f',0); %initialize counts and get input size
 
 %do minor cleanup of locmaps - removing islands, subtract the working array?
-fprintf('Layer %i, attempting %i %s placements up to density %g:  \n',ww,iters(ww),opt.type,density(ww))
+fprintf('Layer %i, attempting %i placements up to density %g:  \n',ww,iters(ww),density(ww))
 for i=1:iters(ww)
     which = randi(numel(set)); 
     particle = set(which).vol; 
