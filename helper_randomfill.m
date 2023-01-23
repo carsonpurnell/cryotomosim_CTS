@@ -236,6 +236,7 @@ for i=1:iters(ww)
             
         case 'single'
             %distinguish between group/single/complex? sumvol missing could bork stuff
+            %need a merge version so a complex-style model is placed into only a single split
             if any(ismember(flags,{'complex','assembly'}))
                 sub = 0; %how to do subvol stuff?
                 sumvol = set(which).sumvol;
