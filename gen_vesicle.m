@@ -30,13 +30,13 @@ end
 count.s = 0; count.f = 0;
 memvol = vol*0;
 vescen = []; vesvol = {}; %store centers and location vols for each placed vesicle for TMD operations
-%vesvol = zeros(size(vol,1),size(vol,2),size(vol,3),0);
+ves = cell(1,num);
 vesvol = memvol; skel = vesvol;
 label = 1;
 for i=1:num
     
     tmp = vesgen_sphere(pix); %generate spherical vesicles
-    ves{i} = tmp; %#ok<AGROW> %store trimmed vesicle into output cell array
+    ves{i} = tmp; %store trimmed vesicle into output cell array
     tmpskel = vesskeletonize(tmp);
     
     for q=1:tries %try to place each vesicle N times, allows for duplicates
