@@ -43,7 +43,7 @@ end
 
 ident = char(strjoin(roinames,'_'));
 if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
-WriteMRC(atlas,cts.pix,append('atlas_',ident,'.mrc'))
+WriteMRC(atlas,cts.param.pix,append('atlas_',ident,'.mrc'))
 end
 
 function generatetable(split,filename)
