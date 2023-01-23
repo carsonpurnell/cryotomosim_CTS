@@ -53,9 +53,8 @@ for i=1:num
     
 end
 
-%generate skelmap here? 1st dim of 4d array?
-%better compute via some surface method with better smoothness? looks mostly fine though
-skel = vesskeletonize(memvol);
+skel = vesskeletonize(memvol); %generate skeleton of the final membrane volume
+%possibly reimplement this per individual vesicle for speed, and to enable blobby ones
 
 %also compute normals here based on the skelmap or a modified working version?
 %put normals in dim 2-4? maybe use a sparse array or linear array for normal vecs?
