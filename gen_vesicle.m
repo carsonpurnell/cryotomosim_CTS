@@ -22,7 +22,7 @@ end
 %clipping out of the Z also conviniently how tomos actually look, but is maybe too random
 
 %use a linear index sparse matrix to store normal vectors
-%how to write vector info to the large array? precalculate, and use arrayinsert, convert to sparse at the end?
+%how to write vector info to the large array? precalculate, and use arrayinsert?
 
 %need more control options over thickness/radius and variability of both
 %cell array of inputs for each? or just vector?
@@ -46,8 +46,8 @@ for i=1:num
             [memvol] = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
             
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc);  %problematic memory bloat
+            vescen(label,:) = loc+round(size(tmp)/2); %#ok<AGROW>
             count.s = count.s+1; label = label+1;
-            vescen(i,:) = loc+round(size(tmp)/2); %#ok<AGROW>
         end
     end
     
@@ -64,7 +64,8 @@ pts = [x,y,z];
 %size(pts)
 %v = vertexNormal(pts);
 %surfnorm(x,y,z);
-
+%disp(vescen)
+%disp(count.s)
 %
 
 end
