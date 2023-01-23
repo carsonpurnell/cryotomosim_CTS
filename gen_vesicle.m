@@ -99,8 +99,14 @@ skel = bwareaopen(skel,20);
 
 %also compute normals here based on the skelmap or a modified working version?
 %put normals in dim 2-4? maybe use a sparse array or linear array for normal vecs?
+[x,y,z] = ind2sub(size(skel),find(skel>0));
+pts = [x,y,z];
+%size(pts)
+%v = vertexNormal(pts);
+%surfnorm(x,y,z);
 
 %
+
 
 
 end
