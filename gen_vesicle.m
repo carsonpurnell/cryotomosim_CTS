@@ -44,8 +44,8 @@ for i=1:num
         
         count.f = count.f + err;
         if err==0
-            [memvol] = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
-            [skel] = helper_arrayinsert(skel,tmpskel,loc); %write skeletons to the volume
+            memvol = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
+            skel = helper_arrayinsert(skel,tmpskel,loc); %write skeletons to the volume
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc);  %problematic memory bloat
             vescen(label,:) = loc+round(size(tmp)/2); %#ok<AGROW>
             count.s = count.s+1; label = label+1;
