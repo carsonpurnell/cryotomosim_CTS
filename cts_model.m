@@ -61,11 +61,12 @@ if param.grid(1)~=0 % new carbon grid and hole generator
 end
 if param.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
     fprintf('Generating vesicular membranes ')
-    [cts.model.mem,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(param.mem),pix);
+    [memvol,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(param.mem),pix);
+    cts.model.mem = memvol;
     cts.vol = cts.model.mem+cts.vol;
     fprintf('   complete,  %i placed, %i failed \n',count.s,count.f)
 else
-    vescen = 0; vesvol = 0;
+    vescen = 0; vesvol = 0; memvol = 0;
 end
 
 %apply constraints to indicated borders with helper function, scale by pixel size to prevent overlapping
@@ -89,7 +90,7 @@ end
 
 %generate model and add (in case input vol had stuff in it)
 [cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,param.layers,param.iters,...
-    vescen,vesvol,param.density,'graph',opt.graph); 
+    memvol,vescen,vesvol,param.density,'graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
 cts.model.particles = cts.vol;
 
