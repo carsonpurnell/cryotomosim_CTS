@@ -170,10 +170,8 @@ for i=1:iters(ww)
         classtype = 'single';
     end
     switch classtype
-    %if strcmp(classtype,'bundle')
         case 'bundle'
         [inarray, split, counts] = radialfill(inarray,set(which),18,split,counts);
-    %if strcmp(classtype,'cluster')
         
         case 'cluster'
         sub = randi(numel(particle)); %get random selection from the group
