@@ -9,10 +9,6 @@ function param = param_model(pix,param)
 %density        default 0.4
 %    cutoff for occupancy of model-filling steps. rarely encountered unless particles are highly compact
 %new constraint: default '  &', 3-length char of & +- (that's a space) for both/no/top/bottom of each axis
-%constraint     default 'sides' (i.e. top and bottom of z)
-%    must be 'sides','box','tube', or 'none'. determines how many sides have borders that prevent clipping
-%distract       default 'none'
-%    usage is identical to particles, places additional non-target objects after the initial target model
 %beads          default [0 50], format [number radius1 radius2... radiusn]
 %    number of beads to place, from a set of beads generated based on the input radii (default 50A)
 %grid           default [0 0], author uses [15 2000]
@@ -48,16 +44,12 @@ arguments
     
     pix (1,1) %required input
     
-    %required for function params
-    %param.vol (:,:,:) = zeros(400,400,50) %must be input?
-    %input particles params
     param.layers = 1 %number of different particle layers to load and place
     
     %model run and limitations params
     param.density = 0.4 %if moving to target loop, this needs to be able to be a vector
     param.iters = 0 %auto calculate if not given, would also need to be vectorable
-    param.constraint char = '  &'
-    %change constraint to a more flexible x/y/z for different oriented tube/walls?
+    param.constraint char = '  &' %use & +- to add borders to different axes
     
     %objects and contents params
     param.grid = [15 2000]
