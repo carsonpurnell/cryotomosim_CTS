@@ -31,20 +31,22 @@ count.s = 0; count.f = 0;
 memvol = vol*0;
 vescen = []; vesvol = {}; %store centers and location vols for each placed vesicle for TMD operations
 %vesvol = zeros(size(vol,1),size(vol,2),size(vol,3),0);
-vesvol = memvol;
+vesvol = memvol; skel = vesvol;
 label = 1;
 for i=1:num
     
     tmp = vesgen_sphere(pix); %generate spherical vesicles
     ves{i} = tmp; %#ok<AGROW> %store trimmed vesicle into output cell array
+    tmpskel = vesskeletonize(tmp);
     
     for q=1:tries %try to place each vesicle N times, allows for duplicates
         loc = round( rand(1,3).*size(vol)-size(tmp)/2 ); %randomly generate test position
         [vol,err] = helper_arrayinsert(vol,tmp,loc,'nonoverlap');
+        
         count.f = count.f + err;
         if err==0
             [memvol] = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
-            
+            [skel] = helper_arrayinsert(skel,tmpskel,loc); %write skeletons to the volume
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc);  %problematic memory bloat
             vescen(label,:) = loc+round(size(tmp)/2); %#ok<AGROW>
             count.s = count.s+1; label = label+1;
@@ -52,8 +54,9 @@ for i=1:num
     end
     
 end
-
-skel = vesskeletonize(memvol); %generate skeleton of the final membrane volume
+%sliceViewer(skel); %check skels in whole vol
+%figure(); sliceViewer(memvol);
+%skel = vesskeletonize(memvol); %generate skeleton of the final membrane volume
 %possibly reimplement this per individual vesicle for speed, and to enable blobby ones
 
 %also compute normals here based on the skelmap or a modified working version?
