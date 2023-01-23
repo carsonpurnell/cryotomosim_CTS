@@ -30,7 +30,9 @@ end
 count.s = 0; count.f = 0;
 memvol = vol*0;
 vescen = []; vesvol = {}; %store centers and location vols for each placed vesicle for TMD operations
-vesvol = zeros(size(vol,1),size(vol,2),size(vol,3),0);
+%vesvol = zeros(size(vol,1),size(vol,2),size(vol,3),0);
+vesvol = memvol;
+label = 1;
 for i=1:num
     
     tmp = vesgen_sphere(pix); %generate spherical vesicles
@@ -43,9 +45,9 @@ for i=1:num
         if err==0
             [memvol] = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
             
-            vesvol(:,:,:,end+1) = helper_arrayinsert(memvol*0,tmp,loc); %#ok<AGROW> %problematic memory bloat
-            count.s = count.s+1; 
-            vescen(end+1,:) = loc+round(size(tmp)/2); %#ok<AGROW>
+            vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc);  %problematic memory bloat
+            count.s = count.s+1; label = label+1;
+            vescen(i,:) = loc+round(size(tmp)/2); %#ok<AGROW>
         end
     end
     
@@ -53,13 +55,6 @@ end
 
 %generate skelmap here? 1st dim of 4d array?
 %better compute via some surface method with better smoothness? looks mostly fine though
-bw = bwdist(~memvol); %calculate distances inside the shape
-%{
-mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
-skel = (bw.*~mask)>max(bw,[],'all')/2-1; %apply the mask to the distance map and threshold edge noise
-skel = ctsutil('edgeblank',skel,2);
-skel = bwareaopen(skel,20);
-%}
 skel = vesskeletonize(memvol);
 
 %also compute normals here based on the skelmap or a modified working version?

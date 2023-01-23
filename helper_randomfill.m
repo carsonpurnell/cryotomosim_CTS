@@ -204,7 +204,7 @@ for i=1:iters(ww)
         
         case 'membrane'
             %need a more efficient tester subfunct
-            [rot,loc,op,err] = testmem(inarray,locmap,set(which),vescen,vesvol,5);
+            [rot,loc,op,err] = testmem(inarray,locmap,set(which),vescen,vesvol,memvol,5);
             counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
             if err==0
@@ -321,7 +321,7 @@ end
 end
 
 %placement testing for membrane proteins - TBD
-function [rot,com,op,err] = testmem(inarray,locmap,particle,vescen,vesvol,retry)
+function [rot,com,op,err] = testmem(inarray,locmap,particle,vescen,vesvol,memvol,retry)
 init = [0,0,1]'; %not imported from top-level function
 %init = init(:)/norm(init); %unitize for safety
 for retry=1:retry
@@ -336,7 +336,7 @@ for retry=1:retry
     spin = imrotate3(particle.sumvol,spinang,init'); %rotate axially before transform to target location
     rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]); %rotate to the final position
     
-    tdest = inarray-vesvol{k}; %remove current membrane from the array to prevent overlap
+    tdest = inarray-(vesvol==k)*memvol; %remove current membrane from the array to prevent overlap
     com = round(loc-size(rot)/2);
     [~,err] = helper_arrayinsert(tdest,rot,com,'overlaptest');
     
