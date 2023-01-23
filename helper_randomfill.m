@@ -1,10 +1,11 @@
-function [outarray, split] = helper_randomfill(inarray,layers,iters,vescen,vesvol,density,opt)
+function [outarray, split] = helper_randomfill(inarray,layers,iters,memvol,vescen,vesvol,density,opt)
 %[outarray, split] = helper_randomfill(inarray,set,iters,density,opt)
 %shared function for adding particles randomly, used for generating models and adding distractors
 arguments
     inarray (:,:,:) double
     layers %cell array of particle sets to be inserted
     iters %vector of iters equal to that of layers
+    memvol = 0
     vescen = 0 %is definitely janky
     vesvol = 0 %the other part of the jank
     density = 0.4 %vector of max densities equal to that of layers
@@ -35,9 +36,9 @@ end
 
 
 % membrane setup stuff
-if iscell(vesvol) %prep skeleton point map if provided for TMprotein
+if any(vescen~=0,'all') %prep skeleton point map if provided for TMprotein
     ismem = 1; 
-    memvol = sum( cat(4,vesvol{:}) ,4); %this is terrible, they need to be one volume
+    %memvol = sum( cat(4,vesvol{:}) ,4); %this is terrible, they need to be one volume
     %sliceViewer(memvol);
     bw = bwdist(~memvol); %calculate distances inside the shape
     mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
@@ -62,7 +63,7 @@ if iscell(vesvol) %prep skeleton point map if provided for TMprotein
     mout(CC.PixelIdxList{idx}) = 1; %locmap for outside of vesicles
     
     min = nonmem-mout; %locmap for inside vesicles
-    %sliceViewer(nonmem); figure(); sliceViewer(mout); figure(); sliceViewer(min);
+    %sliceViewer(skel); figure(); sliceViewer(nonmem); figure(); sliceViewer(mout); figure(); sliceViewer(min);
     
     %numel(find(skel))/numel(skel) %check occupancy
 else
@@ -204,7 +205,7 @@ for i=1:iters(ww)
         
         case 'membrane'
             %need a more efficient tester subfunct
-            [rot,loc,op,err] = testmem(inarray,locmap,set(which),vescen,vesvol,memvol,5);
+            [rot,loc,op,err] = testmem(inarray,locmap,set(which),vescen,vesvol,memvol,4);
             counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
             if err==0
@@ -336,7 +337,7 @@ for retry=1:retry
     spin = imrotate3(particle.sumvol,spinang,init'); %rotate axially before transform to target location
     rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]); %rotate to the final position
     
-    tdest = inarray-(vesvol==k)*memvol; %remove current membrane from the array to prevent overlap
+    tdest = inarray-(vesvol==k).*memvol; %remove current membrane from the array to prevent overlap
     com = round(loc-size(rot)/2);
     [~,err] = helper_arrayinsert(tdest,rot,com,'overlaptest');
     
