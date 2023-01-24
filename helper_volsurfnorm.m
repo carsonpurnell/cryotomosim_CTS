@@ -1,0 +1,48 @@
+function norm4d = helper_volsurfnorm(skel)
+%norm4d = helper_volsurfnorm(skel)
+%creates a 4d array that contains the normal vectors across the 4th dimension for each point in skel, a 3d vol
+%skel should be a 3d 'skeleton' - single-pixel thickness for best results. use bwperim to get a shape surface
+
+perim = bwperim(bwdist(skel)<4); %dilate the skeleton
+CC = bwconncomp(perim); %get the pixel arrays for each of the borders
+numpixels = cellfun(@numel,CC.PixelIdxList); %count pixels in each component
+[~,idx] = max(numpixels); %get the largest volume component from image
+outer = perim*0;
+outer(CC.PixelIdxList{idx}) = 1; %extract outer boundary
+inner = perim-outer; %get inner boundary
+
+% convert to an array of points
+[x,y,z] = ind2sub(size(skel),find(skel==1)); skelpts = [x,y,z];
+[x,y,z] = ind2sub(size(skel),find(inner==1)); ptsin = [x,y,z];
+[x,y,z] = ind2sub(size(skel),find(outer==1)); ptsout = [x,y,z];
+
+n = 9; %nearest n voxels on inner and outer surfaces to calculate vectors
+%mskel = KDTreeSearcher(skelpts); 
+mdin = KDTreeSearcher(ptsin); [ixin] = knnsearch(mdin,skelpts,'K',n); 
+mdout = KDTreeSearcher(ptsout); [ixout] = knnsearch(mdout,skelpts,'K',n);
+%[ixself] = knnsearch(skelpts,skelpts,'K',5);
+
+norm4d = zeros(size(skel,1),size(skel,2),size(skel,3),3);
+%normmat = zeros(size(idx,1),3); %normmat2=normmat1;
+%get nearest points on the dilation, draw a vector between inner and outer
+%check that vector (maybe against the plane patch version)
+q = ptsout(ixout(:,:),:); q = reshape(q,[],3,9); wout = sum(q,3)/9;
+q = ptsin(ixin(:,:),:); q = reshape(q,[],3,9); win = sum(q,3)/9;
+%vectorize means by summing along a different dimension?
+for i=1:size(ixin,1)
+    %V=skelpts(idx(i,:),[2,1,3]); %stack relevant points into vector
+    skelcen = skelpts(i,:); incen = win(i,:); outcen = wout(i,:); 
+    %outcen = mean(ptsout(ixout(i,:),:),1); %average of nearby outside points
+    %incen = mean(ptsin(ixin(i,:),:),1); %average of nearby interior points - slow in loop
+    long = outcen-incen; long = long/norm(long);
+    under = skelcen-incen; under = under/norm(under);
+    over = outcen-skelcen; over = over/norm(over); %average over and under, then average with long to refine?
+    refined = (over+under)/2; refined = refined/norm(refined);
+    refined = (refined+long)/2; refined = refined/norm(refined);
+    
+    vx = skelpts(i,1); vy = skelpts(i,2); vz = skelpts(i,3); %recover subscript data for the current point
+    norm4d(vx,vy,vz,[1,2,3]) = refined; %write normals to 4d storage array
+
+end
+
+end
