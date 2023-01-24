@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [v0.1.4](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.4) - 2023-01-24 18:37:45
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix bypass memory leak with vesicle generation ([015d6b6](https://github.com/carsonpurnell/cryotomosim_CTS/commit/015d6b653f208f197c57c85571efcdc4e646630a))
+
 ## [v0.1.3](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.3) - 2023-01-16 21:54:07
 
 *No description*
