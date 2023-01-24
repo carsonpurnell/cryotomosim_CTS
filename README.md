@@ -6,7 +6,7 @@ requirements:
 
 MATLAB version 2019b or later
 
-image processing toolbox
+Matlab toolboxes: image processing, statistics and machine learning
 
 EMIODist tools for .mrc read/write functions from https://github.com/rbehrouzi/emtoolbox
 
