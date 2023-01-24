@@ -1,7 +1,9 @@
-function norm4d = helper_volsurfnorm(skel)
+function norm4d = helper_volsurfnorm(skel,n)
 %norm4d = helper_volsurfnorm(skel)
 %creates a 4d array that contains the normal vectors across the 4th dimension for each point in skel, a 3d vol
 %skel should be a 3d 'skeleton' - single-pixel thickness for best results. use bwperim to get a shape surface
+%n is the number of points above/below the skeleton to use for estimating the vector. default 9 each
+if nargin<2, n=9; end
 
 perim = bwperim(bwdist(skel)<4); %dilate the skeleton
 CC = bwconncomp(perim); %get the pixel arrays for each of the borders
@@ -11,12 +13,12 @@ outer = perim*0;
 outer(CC.PixelIdxList{idx}) = 1; %extract outer boundary
 inner = perim-outer; %get inner boundary
 
-% convert to an array of points
+% convert each volume to an array of points
 [x,y,z] = ind2sub(size(skel),find(skel==1)); skelpts = [x,y,z];
 [x,y,z] = ind2sub(size(skel),find(inner==1)); ptsin = [x,y,z];
 [x,y,z] = ind2sub(size(skel),find(outer==1)); ptsout = [x,y,z];
 
-n = 9; %nearest n voxels on inner and outer surfaces to calculate vectors
+%n = 9; %nearest n voxels on inner and outer surfaces to calculate vectors
 %mskel = KDTreeSearcher(skelpts); 
 mdin = KDTreeSearcher(ptsin); [ixin] = knnsearch(mdin,skelpts,'K',n); 
 mdout = KDTreeSearcher(ptsout); [ixout] = knnsearch(mdout,skelpts,'K',n);
@@ -30,7 +32,6 @@ q = ptsout(ixout(:,:),:); q = reshape(q,[],3,9); wout = sum(q,3)/9;
 q = ptsin(ixin(:,:),:); q = reshape(q,[],3,9); win = sum(q,3)/9;
 %vectorize means by summing along a different dimension?
 for i=1:size(ixin,1)
-    %V=skelpts(idx(i,:),[2,1,3]); %stack relevant points into vector
     skelcen = skelpts(i,:); incen = win(i,:); outcen = wout(i,:); 
     %outcen = mean(ptsout(ixout(i,:),:),1); %average of nearby outside points
     %incen = mean(ptsin(ixin(i,:),:),1); %average of nearby interior points - slow in loop
