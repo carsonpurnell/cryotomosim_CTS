@@ -4,6 +4,8 @@ denspix = (.90/18)*6e23*(pix/1e8)^3; %d = (d/mass)*mol*(pixel/m-a conv)^3 averag
 %computed density might be a bit high, vitreous may be lower than .94g/cm3.
 %without solvation exclusion, borders do get very hazy - good for rad damage
 
+%ice too thick/noisy at very high resolution?
+
 atomfrac = exp(-pix/6); %fraction as points rather than flat background
 %does compressing it into fewer points of higher density work without screwing the noise?
 densfrac = 10/(20+pix*2)*1+0; %scalar to distribute extra intensity to particles to reduce number required
