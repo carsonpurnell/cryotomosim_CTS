@@ -19,17 +19,32 @@ inner = perim-outer; %get inner boundary
 [x,y,z] = ind2sub(size(skel),find(outer==1)); ptsout = [x,y,z];
 
 %n = 9; %nearest n voxels on inner and outer surfaces to calculate vectors
-%mskel = KDTreeSearcher(skelpts); 
+%mskel = KDTreeSearcher(skelpts); %[ixself] = knnsearch(skelpts,skelpts,'K',5);
 mdin = KDTreeSearcher(ptsin); [ixin] = knnsearch(mdin,skelpts,'K',n); 
 mdout = KDTreeSearcher(ptsout); [ixout] = knnsearch(mdout,skelpts,'K',n);
-%[ixself] = knnsearch(skelpts,skelpts,'K',5);
 
 norm4d = zeros(size(skel,1),size(skel,2),size(skel,3),3);
 %normmat = zeros(size(idx,1),3); %normmat2=normmat1;
-%get nearest points on the dilation, draw a vector between inner and outer
-%check that vector (maybe against the plane patch version)
-q = ptsin(ixin(:,:),:); q = reshape(q,[],3,n); win = sum(q,3)/n;
-q = ptsout(ixout(:,:),:); q = reshape(q,[],3,n); wout = sum(q,3)/n;
+
+%vectorization to calculate vector targets for each point of skel
+q = ptsin(ixin,:); q2 = reshape(q,[],3,n); win = sum(q2,3)/n;
+q = ptsout(ixout,:); q2 = reshape(q,[],3,n); wout = sum(q2,3)/n;
+%might need to change how points are initially generated to make it easier to reshape to something useful
+ss = ixout(1:2,:)
+skelpts(1,:)
+size(q)
+q(1:n,:)
+dd = ptsout(ss,:)
+%zz = reshape(dd,[],n,3)
+%ff = permute(dd,[3,2,1])
+%q2(1,:,:) %oriented wrong, sum across dims going between coordinate
+wout(1,:)
+%{
+size(ptsout)
+size(ixout)
+size(q)
+size(wout)
+%}
 %vectorize means by summing along a different dimension?
 for i=1:size(ixin,1)
     skelcen = skelpts(i,:); incen = win(i,:); outcen = wout(i,:); 
@@ -41,16 +56,21 @@ for i=1:size(ixin,1)
     %refined = ((over+under)/2+long)/2; refined = refined/norm(refined);
     %refined = (over+under)/2; refined = refined/norm(refined);
     %refined = (refined+long)/2; refined = refined/norm(refined);
+    %{
     if isnan(long)
         disp(long)
         disp(skelcen)
         disp(incen)
         disp(outcen)
     end
+    %}
     
     vx = skelpts(i,1); vy = skelpts(i,2); vz = skelpts(i,3); %recover subscript data for the current point
     norm4d(vx,vy,vz,[1,2,3]) = long; %write normals to 4d storage array
 end
+nanchk = isnan(norm4d(:,:,:,1)); %find the NaNs
+stack = nanchk+skel+outer+inner;
+%sliceViewer(stack);
 
 
 end
