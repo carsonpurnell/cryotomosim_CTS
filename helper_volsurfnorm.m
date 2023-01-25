@@ -28,13 +28,18 @@ norm4d = zeros(size(skel,1),size(skel,2),size(skel,3),3);
 
 %vectorization to calculate vector targets for each point of skel
 q = ptsin(ixin,:); q2 = reshape(q,[],3,n); win = sum(q2,3)/n;
-q = ptsout(ixout,:); q2 = reshape(q,[],3,n); wout = sum(q2,3)/n;
+q = ptsout(ixout',:); q2 = reshape(q,[],3,n); wout = sum(q2,3)/n;
 %might need to change how points are initially generated to make it easier to reshape to something useful
+%instead get the xyz coords individually to make reshaping easier?
 ss = ixout(1:2,:)
-skelpts(1,:)
-size(q)
-q(1:n,:)
-dd = ptsout(ss,:)
+%skelpts(1,:)
+%size(q)
+q(1:n*2,:)' %q transposed to make order work the same as ss - breaks again if multiple rows
+dd = ptsout(ss,:)' %ss already works as column 
+%dd is running through indices in column order, q runs through the indices in row order
+%q2(:,:,1)
+%ptsout(ixout(1,:),:)'
+%ptsout(ss,:)'
 %zz = reshape(dd,[],n,3)
 %ff = permute(dd,[3,2,1])
 %q2(1,:,:) %oriented wrong, sum across dims going between coordinate
