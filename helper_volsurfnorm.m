@@ -28,8 +28,8 @@ norm4d = zeros(size(skel,1),size(skel,2),size(skel,3),3);
 %normmat = zeros(size(idx,1),3); %normmat2=normmat1;
 %get nearest points on the dilation, draw a vector between inner and outer
 %check that vector (maybe against the plane patch version)
-q = ptsout(ixout(:,:),:); q = reshape(q,[],3,9); wout = sum(q,3)/9;
-q = ptsin(ixin(:,:),:); q = reshape(q,[],3,9); win = sum(q,3)/9;
+q = ptsin(ixin(:,:),:); q = reshape(q,[],3,n); win = sum(q,3)/n;
+q = ptsout(ixout(:,:),:); q = reshape(q,[],3,n); wout = sum(q,3)/n;
 %vectorize means by summing along a different dimension?
 for i=1:size(ixin,1)
     skelcen = skelpts(i,:); incen = win(i,:); outcen = wout(i,:); 
@@ -38,12 +38,19 @@ for i=1:size(ixin,1)
     long = outcen-incen; long = long/norm(long);
     under = skelcen-incen; under = under/norm(under);
     over = outcen-skelcen; over = over/norm(over); %average over and under, then average with long to refine?
-    refined = (over+under)/2; refined = refined/norm(refined);
-    refined = (refined+long)/2; refined = refined/norm(refined);
+    %refined = ((over+under)/2+long)/2; refined = refined/norm(refined);
+    %refined = (over+under)/2; refined = refined/norm(refined);
+    %refined = (refined+long)/2; refined = refined/norm(refined);
+    if isnan(long)
+        disp(long)
+        disp(skelcen)
+        disp(incen)
+        disp(outcen)
+    end
     
     vx = skelpts(i,1); vy = skelpts(i,2); vz = skelpts(i,3); %recover subscript data for the current point
-    norm4d(vx,vy,vz,[1,2,3]) = refined; %write normals to 4d storage array
-
+    norm4d(vx,vy,vz,[1,2,3]) = long; %write normals to 4d storage array
 end
+
 
 end
