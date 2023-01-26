@@ -36,7 +36,7 @@ vesvol = memvol; skel = vesvol;
 nvecs = zeros(size(memvol,1),size(memvol,2),size(memvol,3),3);
 label = 1;
 for i=1:num
-    switch 2%randi(2)
+    switch randi(2)
         case 1
             tmp = vesgen_sphere(pix); %generate spherical vesicles
             ves{i} = tmp; %store trimmed vesicle into output cell array
@@ -112,7 +112,7 @@ sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2; %factor to correct for excess inne
 %fill space between radii with tons of points
 %ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
 shellvol = 4/8*pi*(rado^3-radi^3); %volume of shell in pixels
-ptnum = round( 0.2*shellvol*pix^3 )*2; %convert to angstroms, scale to some arbitrary working density
+ptnum = round( 0.4*shellvol*pix^3 )*1; %convert to angstroms, scale to some arbitrary working density
 frac = [ptnum,ptnum*sf(2),ptnum*sf(1)]; %get fractions of the total to distribute between inner and outer
 rti = round(ptnum*sf(2)); rto = ptnum-rti; %partition density between inner and outer radii
 
@@ -180,6 +180,7 @@ sm2 = smmask.*mask;
 
 memnoise = rand(size(skel))*0.3.*sm2;
 %sliceViewer(memnoise+sm2);
-blob = memnoise+sm2;
+dens = 0.3*pix^3;
+blob = (memnoise+sm2)*dens;
 
 end
