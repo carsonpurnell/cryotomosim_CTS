@@ -42,10 +42,16 @@ for i=1:num
             ves{i} = tmp; %store trimmed vesicle into output cell array
             tmpskel = vesskeletonize(tmp);
         case 2
-            sz = [60+randi(140),60+randi(140),60+randi(140)];
+            
             %thick = 20;
             %lower pixel size can create empty blobs regularly
-            [tmp,tmpskel] = vesgen_blob(sz,24,pix,6);
+            tmp=0; rs = 1;
+            while ~any(tmp==1,'all')
+                sz = [60+randi(140),60+randi(140),60+randi(140)];
+                [tmp,tmpskel] = vesgen_blob(sz,24,pix,6);
+                rs = rs+1;
+            end
+            disp(rs)
     end
     
     for q=1:tries %try to place each vesicle N times, allows for duplicates
