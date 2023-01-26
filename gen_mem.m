@@ -57,7 +57,7 @@ for i=1:num
             skel = helper_arrayinsert(skel,tmpskel,loc); %write skeletons to the volume
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc); %label image of binary membranes
             
-            norm4d = helper_volsurfnorm(tmpskel,9);
+            norm4d = helper_volsurfnorm(tmpskel,vecpts);
             for j=1:3 
                 nvecs(:,:,:,j) = helper_arrayinsert(nvecs(:,:,:,j),norm4d(:,:,:,j),loc); 
             end
@@ -180,7 +180,8 @@ sm2 = smmask.*mask;
 
 memnoise = rand(size(skel))*0.3.*sm2;
 %sliceViewer(memnoise+sm2);
-dens = 0.3*pix^3;
+%need to compute density more precisely (variable component?) - also need control variables
+dens = 0.35*pix^3;
 blob = (memnoise+sm2)*dens;
 
 end
