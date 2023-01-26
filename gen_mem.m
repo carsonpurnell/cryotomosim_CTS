@@ -42,10 +42,10 @@ for i=1:num
             ves{i} = tmp; %store trimmed vesicle into output cell array
             tmpskel = vesskeletonize(tmp);
         case 2
-            sz = [80+randi(80),80+randi(80),80+randi(80)];
+            sz = [60+randi(140),60+randi(140),60+randi(140)];
             %thick = 20;
             %lower pixel size can create empty blobs regularly
-            [tmp,tmpskel] = vesgen_blob(sz,20,pix,6);
+            [tmp,tmpskel] = vesgen_blob(sz,24,pix,6);
     end
     
     for q=1:tries %try to place each vesicle N times, allows for duplicates
@@ -66,6 +66,7 @@ for i=1:num
             
             %vescen(label,:) = loc+round(size(tmp)/2); %#ok<AGROW>
             count.s = count.s+1; label = label+1;
+            %break
         end
     end
     
@@ -148,8 +149,9 @@ end
 
 function [blob,skel] = vesgen_blob(sz,thick,pix,beta)
 ptvol = zeros(sz); 
+if numel(thick)==1, thick(end+1)=10; end
 %thickness as 1x2 vector of min,max membrane thickness?
-thickness = thick+randi(10); d = thickness/pix;
+thickness = thick(1)+randi(thick(2)); d = thickness/pix; %actually computing the radius, not the diam
 
 n = round(sqrt(sum(sz))); 
 %beta 3 is pretty good for quite round membrane bodies
