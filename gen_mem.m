@@ -44,6 +44,7 @@ for i=1:num
         case 2
             sz = [80+randi(80),80+randi(80),80+randi(80)];
             %thick = 20;
+            %lower pixel size can create empty blobs regularly
             [tmp,tmpskel] = vesgen_blob(sz,20,pix,6);
     end
     
@@ -147,6 +148,7 @@ end
 
 function [blob,skel] = vesgen_blob(sz,thick,pix,beta)
 ptvol = zeros(sz); 
+%thickness as 1x2 vector of min,max membrane thickness?
 thickness = thick+randi(10); d = thickness/pix;
 
 n = round(sqrt(sum(sz))); 
@@ -160,9 +162,9 @@ for i=1:size(pts,1)
     x = pts(i,1); y = pts(i,2); z = pts(i,3);
     ptvol(x,y,z) = 1;
 end
-blobvol = bwdist(ptvol)<min(sz)/10;
+blobvol = bwdist(ptvol)<min(sz)/d/2;
 for i=1:3
-    smoothvol = imgaussfilt3(single(blobvol),d*3-i*1); %smooth out towards a rounder overall shape
+    smoothvol = imgaussfilt3(single(blobvol),d*2-i*1); %smooth out towards a rounder overall shape
     blobvol = smoothvol>0.2;
 end
 memvol = ctsutil('trim',smoothvol>0.1); %trim vol to save space
