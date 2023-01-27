@@ -12,7 +12,6 @@ function [vol,sumvol,names,data] = helper_pdb2vol(pdb,pix,trim,centering,savemat
 arguments
     pdb
     pix
-    %trim string {mustBeMember(trim,{'none','box','tube','sides'})} = 'sides'
     trim = 0 %0 none, 1 by sum, 2 each individually
     centering = 0;
     savemat = 1 %by default, save a .mat file if possible as a much faster alternative
