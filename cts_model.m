@@ -1,5 +1,5 @@
 function [cts] = cts_model(vol,param,opt)
-%[cts] = cts_model(vol,pix,param,opt)
+%[cts] = cts_model(vol,param,opt)
 %generates model information for a single tomographic acquisition, stored in output struct cts
 %works by iteratively placing input particles at random orientations in random locations without overlap
 %
@@ -24,7 +24,7 @@ function [cts] = cts_model(vol,param,opt)
 %targets is a struct array of each input particle grouping, including filename, id, volume, and type
 %splitmodel has fields of each target id, containing a volume of only those particles from the model
 %
-%see also param_model
+%see also param_model for defining model parameters
 
 arguments
     vol (:,:,:) double
