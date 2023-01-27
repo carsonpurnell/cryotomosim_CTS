@@ -15,7 +15,7 @@ function param = param_model(pix,param)
 %    [thickness radius] of carbon film and grid hole, in nm.
 %ice            default 1
 %     change to 0 to not generate vitreous ice in the model
-%mem            default 0
+%mem            default 0, otherwise an integer
 %    1 to generate a super janktastic not at all realistic fascimile of a cell membrane
 %graph          default 0
 %    1 to have a plot continuously update with particle placement success/failure numbers
@@ -59,6 +59,7 @@ arguments
     param.beads = 0
     param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
 end
+param.mem = round(param.mem);
 %{
 if ~isfield(param,'pix')
     error('A pixel size is required as input')
