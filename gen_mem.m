@@ -45,13 +45,16 @@ for i=1:num
             
             %thick = 20;
             %lower pixel size can create empty blobs regularly
-            tmp=0; rs = 1;
-            while ~any(tmp==1,'all')
-                sz = [60+randi(140),60+randi(140),60+randi(140)];
-                [tmp,tmpskel] = vesgen_blob(sz,24,pix,6);
-                rs = rs+1;
+            tmpskel=0; %rs = 1;
+            while ~any(tmpskel==1,'all')
+                l = round(300/pix+20);
+                sz = [l+randi(l*2),l+randi(l*2),l+randi(l*2)];
+                thick = 25;%-rs;
+                [tmp,tmpskel] = vesgen_blob(sz,thick,pix,6);
+                %figure(); sliceViewer(tmp);
+                %rs = rs+1;
             end
-            disp(rs)
+            %disp(rs)
     end
     
     for q=1:tries %try to place each vesicle N times, allows for duplicates
