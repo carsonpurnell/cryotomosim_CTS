@@ -34,7 +34,7 @@ vesvol = memvol; skel = vesvol;
 nvecs = zeros(size(memvol,1),size(memvol,2),size(memvol,3),3);
 label = 1;
 for i=1:num
-    switch randi(2)
+    switch 2%randi(2)
         case 1
             tmp = vesgen_sphere(pix); %generate spherical vesicles
             ves{i} = tmp; %store trimmed vesicle into output cell array
@@ -64,6 +64,8 @@ for i=1:num
             memvol = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
             skel = helper_arrayinsert(skel,tmpskel,loc); %write skeletons to the volume
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc); %label image of binary membranes
+            
+            close all; sliceViewer(tmp); figure(); sliceViewer(tmpskel);
             
             norm4d = helper_volsurfnorm(tmpskel,vecpts);
             for j=1:3 
