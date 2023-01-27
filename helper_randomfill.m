@@ -341,7 +341,7 @@ for retry=1:retry
     
     rotax=cross(init,targ); %compute the normal axis from the rotation angle
     theta = acosd( dot(init,targ) ); %compute angle between initial pos and final pos
-
+    
     spinang = randi(180);
     spin = imrotate3(particle.sumvol,spinang,init'); %rotate axially before transform to target location
     rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]); %rotate to the final position
