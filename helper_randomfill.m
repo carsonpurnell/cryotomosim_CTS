@@ -1,4 +1,4 @@
-function [outarray, split] = helper_randomfill(inarray,layers,iters,memvol,vescen,vesvol,density,opt)
+function [outarray, split] = helper_randomfill(inarray,layers,iters,memvol,vesvec,memskel,vesvol,density,opt)
 %[outarray, split] = helper_randomfill(inarray,set,iters,density,opt)
 %shared function for adding particles randomly, used for generating models and adding distractors
 arguments
@@ -6,7 +6,8 @@ arguments
     layers %cell array of particle sets to be inserted
     iters %vector of iters equal to that of layers
     memvol = 0
-    vescen = 0 %is definitely janky
+    vesvec = 0 %is definitely janky
+    memskel = 0 %4d array for membrane normal vectors
     vesvol = 0 %the other part of the jank
     density = 0.4 %vector of max densities equal to that of layers
     %opt.type = 'particle'
@@ -36,17 +37,19 @@ end
 
 
 % membrane setup stuff
-if any(vescen~=0,'all') %prep skeleton point map if provided for TMprotein
+if any(vesvec~=0,'all') %prep skeleton point map if provided for TMprotein
     ismem = 1; 
     %memvol = sum( cat(4,vesvol{:}) ,4); %this is terrible, they need to be one volume
     %sliceViewer(memvol);
+    %{
     bw = bwdist(~memvol); %calculate distances inside the shape
     mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
     skel = (bw.*~mask)>max(bw,[],'all')/2-1; %apply the mask to the distance map and threshold edge noise
     skel = ctsutil('edgeblank',skel,2);
     skel = bwareaopen(skel,20); %clean any remaining outlier points
     %can skel be used to find normal vectors without needing centroid stored array?
-    memlocmap = skel; %store map of valid locations inside the membrane
+    %}
+    memlocmap = memskel; %store map of valid locations inside the membrane
     init = [0,0,1]; %initial required orientation for memprots
     %sliceViewer(skel); %it does work
     
@@ -205,7 +208,7 @@ for i=1:iters(ww)
         
         case 'membrane'
             %need a more efficient tester subfunct
-            [rot,loc,op,err] = testmem(inarray,locmap,set(which),vescen,vesvol,memvol,4);
+            [rot,loc,op,err] = testmem(inarray,locmap,set(which),vesvec,vesvol,memvol,4);
             counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
             if err==0
@@ -325,12 +328,17 @@ end
 %placement testing for membrane proteins - TBD
 function [rot,com,op,err] = testmem(inarray,locmap,particle,vescen,vesvol,memvol,retry)
 init = [0,0,1]'; %not imported from top-level function
+%vesvec currently being used to bring in 4d membrane nvecs
 %init = init(:)/norm(init); %unitize for safety
 for retry=1:retry
     loc = ctsutil('findloc',locmap);
-    [k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
     
-    targ = loc-vescen(k,:); targ = targ/norm(targ); %get target location as if from origin and unitize
+    %[k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
+    
+    %targ = loc-vescen(k,:); targ = targ/norm(targ); %get target location as if from origin and unitize
+    k = vesvol(loc(1),loc(2),loc(3));
+    targ = [vescen(loc(1),loc(2),loc(3),1),vescen(loc(1),loc(2),loc(3),2),vescen(loc(1),loc(2),loc(3),3)]';
+    
     rotax=cross(init,targ); %compute the normal axis from the rotation angle
     theta = acosd( dot(init,targ) ); %compute angle between initial pos and final pos
 
