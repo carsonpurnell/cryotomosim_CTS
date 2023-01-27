@@ -23,6 +23,8 @@ function [cts] = cts_model(vol,param,opt)
 %distractors
 %targets is a struct array of each input particle grouping, including filename, id, volume, and type
 %splitmodel has fields of each target id, containing a volume of only those particles from the model
+%
+%see also param_model
 
 arguments
     vol (:,:,:) double
