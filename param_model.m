@@ -72,7 +72,7 @@ for i=1:param.layers %loop through layers to load particles and assign iteration
     param.density(i) = param.density(min(i,end));
     iters(i) = param.iters( min(i,numel(param.iters)) );
     if isempty(iters(i)) || iters(i)==0
-        iters(i) = 2000*param.density(i);
+        iters(i) = 2500*param.density(i);
     end
 end
 param.layers = layers; param.iters = iters;
