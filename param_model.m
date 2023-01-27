@@ -41,7 +41,6 @@ arguments
     %maybe GUI input dlg
     %easy way to navigate to stored params? modifiable defaults?
     %which params need more thorough validation?
-    
     pix (1,1) %required input
     
     param.layers = 1 %number of different particle layers to load and place
