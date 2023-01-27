@@ -1,7 +1,7 @@
 function [cts] = cts_model(vol,param,opt)
 %[cts] = cts_model(vol,param,opt)
-%generates model information for a single tomographic acquisition, stored in output struct cts
-%works by iteratively placing input particles at random orientations in random locations without overlap
+%models a tomographic field of view at protein-level resolutions
+%iteratively places input particles into the model field without overlapping
 %
 %Inputs
 %
