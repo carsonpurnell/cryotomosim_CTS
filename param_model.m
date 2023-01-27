@@ -8,7 +8,7 @@ function param = param_model(pix,param)
 %param - name-value pair arguments in the format ...'name',value... (or in 2021+ ...name=value...)
 %density        default 0.4
 %    cutoff for occupancy of model-filling steps. rarely encountered unless particles are highly compact
-%new constraint: default '  &', 3-length char of & +- (that's a space) for both/no/top/bottom of each axis
+%constraint     default '  &' - 1x3 char defining edge borders. uses helper_constraints
 %beads          default [0 50], format [number radius1 radius2... radiusn]
 %    number of beads to place, from a set of beads generated based on the input radii (default 50A)
 %grid           default [0 0], author uses [15 2000]
@@ -37,7 +37,8 @@ function param = param_model(pix,param)
 %constraint - sides/box/tube of walls to contain particles
 %grid/mem/bead/ice - same as old cts_model, help still should be there
 %
-% see also helper_constraints
+% see also helper_constraints, helper_input, helper_pdb2vol
+% gen_carbongrid, gen_ice, and gen_beads
 
 arguments
     %maybe GUI input dlg
