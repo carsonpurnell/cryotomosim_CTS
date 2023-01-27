@@ -22,6 +22,7 @@ arguments
 end
 %clipping out of the Z also conviniently how tomos actually look, but is maybe too random
 
+%pixel size <3 seems to infinite loop due to creating only empty blob vols - too much smoothing/dilating?
 
 %need more control options over thickness/radius and variability of both
 %cell array of inputs for each? or just vector?
@@ -47,7 +48,7 @@ for i=1:num
             while ~any(tmpskel==1,'all')
                 l = round(300/pix+20);
                 sz = [l+randi(l*2),l+randi(l*2),l+randi(l*2)];
-                thick = [24,12];%-rs;
+                thick = [24,24];%-rs;
                 [tmp,tmpskel] = vesgen_blob(sz,thick,pix,6);
                 %figure(); sliceViewer(tmp);
                 %rs = rs+1;
@@ -65,7 +66,7 @@ for i=1:num
             skel = helper_arrayinsert(skel,tmpskel,loc); %write skeletons to the volume
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc); %label image of binary membranes
             
-            close all; sliceViewer(tmp); figure(); sliceViewer(tmpskel);
+            %close all; sliceViewer(tmp); figure(); sliceViewer(tmpskel);
             
             norm4d = helper_volsurfnorm(tmpskel,vecpts);
             for j=1:3 
