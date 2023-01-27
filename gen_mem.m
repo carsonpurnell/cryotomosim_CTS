@@ -48,7 +48,7 @@ for i=1:num
             while ~any(tmpskel==1,'all')
                 l = round(300/pix+20);
                 sz = [l+randi(l*2),l+randi(l*2),l+randi(l*2)];
-                thick = [24,24];%-rs;
+                thick = [28,12];%-rs;
                 [tmp,tmpskel] = vesgen_blob(sz,thick,pix,6);
                 %figure(); sliceViewer(tmp);
                 %rs = rs+1;
