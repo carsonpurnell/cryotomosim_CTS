@@ -23,13 +23,14 @@ end
 %clipping out of the Z also conviniently how tomos actually look, but is maybe too random
 
 %pixel size <3 seems to infinite loop due to creating only empty blob vols - too much smoothing/dilating?
+% future feature: nested membranes with shrinking/smoothing
 
 %need more control options over thickness/radius and variability of both
 %cell array of inputs for each? or just vector?
 
 count.s = 0; count.f = 0;
 memvol = vol*0;
-vescen = []; 
+%vescen = []; 
 ves = cell(1,num);
 vesvol = memvol; skel = vesvol;
 nvecs = zeros(size(memvol,1),size(memvol,2),size(memvol,3),3);
@@ -41,14 +42,12 @@ for i=1:num
             ves{i} = tmp; %store trimmed vesicle into output cell array
             tmpskel = vesskeletonize(tmp);
         case 2
-            
-            %thick = 20;
             %lower pixel size can create empty blobs regularly
             tmpskel=0; %rs = 1;
+            thick = [28,12];%-rs;
             while ~any(tmpskel==1,'all')
                 l = round(300/pix+20);
                 sz = [l+randi(l*3),l+randi(l*3),l+randi(l*3)];
-                thick = [28,12];%-rs;
                 [tmp,tmpskel] = vesgen_blob(sz,thick,pix,6);
                 %figure(); sliceViewer(tmp);
                 %rs = rs+1;
