@@ -47,7 +47,7 @@ for i=1:num
             tmpskel=0; %rs = 1;
             while ~any(tmpskel==1,'all')
                 l = round(300/pix+20);
-                sz = [l+randi(l*2),l+randi(l*2),l+randi(l*2)];
+                sz = [l+randi(l*3),l+randi(l*3),l+randi(l*3)];
                 thick = [28,12];%-rs;
                 [tmp,tmpskel] = vesgen_blob(sz,thick,pix,6);
                 %figure(); sliceViewer(tmp);
@@ -75,7 +75,7 @@ for i=1:num
             
             %vescen(label,:) = loc+round(size(tmp)/2); %#ok<AGROW>
             count.s = count.s+1; label = label+1;
-            %break
+            break
         end
     end
     

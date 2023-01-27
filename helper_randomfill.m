@@ -334,9 +334,9 @@ for retry=1:retry
     loc = ctsutil('findloc',locmap);
     
     %[k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
-    
     %targ = loc-vescen(k,:); targ = targ/norm(targ); %get target location as if from origin and unitize
-    k = vesvol(loc(1),loc(2),loc(3));
+    
+    k = vesvol(loc(1),loc(2),loc(3)); %extract vesicle label ID and normal vector from storage arrays
     targ = [vescen(loc(1),loc(2),loc(3),1),vescen(loc(1),loc(2),loc(3),2),vescen(loc(1),loc(2),loc(3),3)]';
     
     rotax=cross(init,targ); %compute the normal axis from the rotation angle
