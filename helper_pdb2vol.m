@@ -152,7 +152,6 @@ function [vol,sumvol,names] = internal_volbuild(data,pix,trim,centering)
 
 %initialize atomic magnitude information in arrays - faster than accessing a struct dictionary
 %mag = struct('H',0,'C',6+1.3,'N',7+1.1,'O',8+0.2,'P',15,'S',16+0.6); %atomic number+fractional H counts
-%mag = struct('H',0,'C',6+1.3,'N',7+1.1,'O',8+0.2,'P',15,'S',16+0.6); %computed electron scattering
 %H=1;
 %edat = {'H',0;'C',6+1.3;'N',7+1.1;'O',8+0.2;'P',15;'S',16+0.6;...
 %    'MG',12;'ZN',30;'MN',25;'F',9;'CL',17;'CA',20};
