@@ -17,7 +17,8 @@ arguments
     savemat = 1 %by default, save a .mat file if possible as a much faster alternative
 end
 %need to add a solvated surface of reasonable water to avoid post-hoc solvation shenanigans
-
+%calculate the scattering potentials in a subfunction? sum them over 2-4 angstroms?
+%
 
 [path,file,ext] = fileparts(pdb);
 %{
