@@ -18,7 +18,8 @@ arguments
 end
 %need to add a solvated surface of reasonable water to avoid post-hoc solvation shenanigans
 %calculate the scattering potentials in a subfunction? sum them over 2-4 angstroms?
-%
+%probably too low-res for specific angstrom distributions of signal to matter
+%DO need to get a reasonable value for each voxel, rather than hamfisting by Z
 
 [path,file,ext] = fileparts(pdb);
 %{
