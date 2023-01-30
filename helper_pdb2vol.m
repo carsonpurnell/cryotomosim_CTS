@@ -16,6 +16,8 @@ arguments
     centering = 0;
     savemat = 1 %by default, save a .mat file if possible as a much faster alternative
 end
+%need to add a solvated surface of reasonable water to avoid post-hoc solvation shenanigans
+
 
 [path,file,ext] = fileparts(pdb);
 %{
