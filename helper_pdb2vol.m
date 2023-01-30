@@ -20,6 +20,8 @@ end
 %calculate the scattering potentials in a subfunction? sum them over 2-4 angstroms?
 %probably too low-res for specific angstrom distributions of signal to matter
 %DO need to get a reasonable value for each atom/voxel, rather than hamfisting by Z
+%E ai * exp(bi * s) seems to work, but is frequency dependent? on the E freq, or otherwise?
+%sum over a spectrum of S values somehow for total signal? values far lower than even z
 
 [path,file,ext] = fileparts(pdb);
 %{
