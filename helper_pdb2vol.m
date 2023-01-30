@@ -158,6 +158,7 @@ function [vol,sumvol,names] = internal_volbuild(data,pix,trim,centering)
 %    'MG',12;'ZN',30;'MN',25;'F',9;'CL',17;'CA',20};
 H = 25;
 edat = {'H',0;'C',108+1.28*H;'N',130+1.13*H;'O',97+0.08*H;'P',267;'S',100+0.41*H};
+%need to reformulate these into vectors, too annoying to work with as cell and refactored anyway
 elements = edat(:,1); atomdict = cell2mat(edat(:,2));
 
 %{
