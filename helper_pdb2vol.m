@@ -161,6 +161,7 @@ H = 25;
 edat = {'H',0;'C',108+1.28*H;'N',130+1.13*H;'O',97+0.08*H;'P',267;'S',100+0.41*H};
 %need to reformulate these into vectors, too annoying to work with as cell and refactored anyway
 elements = edat(:,1); atomdict = cell2mat(edat(:,2));
+[elements,atomdict] = atomdictfn;
 
 %{
 %shang/sigworth numbers (HCNOSP): backwards C and N?
@@ -271,8 +272,8 @@ end
 vol = reshape(emvol,1,numel(emvol)); %make list horizontal because specifying it initially doesn't work
 end
 
-function [el,sc] = atomdict
-el = {H,C,N,O,P,S,F,Na,Mg,Cl,K,Ca,Mn,Fe}; %element symbols to use for lookup
+function [el,sc] = atomdictfn
+el = {'H','C','N','O','P','S','F','Na','Mg','Cl','K','Ca','Mn','Fe'}; %element symbols to use for lookup
 sc = [0.5288,2.5088,2.2135,1.9834,5.4876,5.1604,1.8012,4.7758,5.2078,4.8577,8.9834,9.9131,7.5062,7.1637];
 %scattering potentials computed as sum of first 5 parameters of atom form factor, holding s=0
 end
