@@ -60,11 +60,6 @@ arguments
     param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
 end
 param.mem = round(param.mem);
-%{
-if ~isfield(param,'pix')
-    error('A pixel size is required as input')
-end
-%}
 param.pix = pix;
 
 layers = cell(1,param.layers);
