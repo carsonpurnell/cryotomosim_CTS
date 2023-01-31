@@ -100,5 +100,5 @@ m = 9.1093837e-31; %mass of electron Kg
 c = 299792458;  %speed of light m/s
 e = 1.60217663e-19; %charge of an electron coulombs
 h = 6.62607015e-34; %planck constant m^2 Kg/s
-L = h*c/sqrt(e*V*(2*m*c^2+e*V)); %calculation of wavelength L from voltage and constants
+L = h*c/sqrt(e*V*(2*m*c^2+e*V)); %calculation of wavelength L from accelerating voltage and constants
 end
