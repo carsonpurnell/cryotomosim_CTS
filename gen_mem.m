@@ -50,7 +50,7 @@ for i=1:num
             while ~any(tmpskel==1,'all')
                 l = round(300/pix+20);
                 sz = [l+randi(l*3),l+randi(l*3),l+randi(l*3)];
-                [tmp,tmpskel] = vesgen_blob(sz,memthick,pix,3);
+                [tmp,tmpskel] = vesgen_blob(sz,memthick,pix,6);
                 %figure(); sliceViewer(tmp);
                 %rs = rs+1;
             end
@@ -95,7 +95,6 @@ pts = [x,y,z];
 %surfnorm(x,y,z);
 %disp(vescen)
 %disp(count.s)
-
 end
 
 
@@ -162,6 +161,9 @@ if numel(thick)==1, thick(end+1)=10; end
 thickness = thick(1)+rand*thick(2); r = (thickness/2)/pix; %actually computing the radius, not the diam
 
 n = round(sqrt(sum(sz))); 
+%might need to change to using points and generating an interpoland for better scaling
+%keeping things on a fixed grid makes sizing difficult
+
 %beta 3 is pretty good for quite round membrane bodies
 %beta = 5; %1 = uniform, lower is U, higher is increasingly sharp peak
 %can decrease for wilder shapes, increase for nearer sphere
