@@ -30,6 +30,7 @@ L = relativistic_electrons(V); %compute wavelength from voltage, correcting for 
 Ny = 1/(2*pix); B = param.sigma*Ny; q = 0.07*1; %nyquist, envelope, and amplitude contrast values
 %envelope/amplitude still needs validation and corroboration to our real data
 
+
 k = 1:size(input,1); divs = k(rem(size(input,1),k)==0); %find divisible factors from volume size
 
 binspacing = divs(round(end/2)); %use the middle divisor as the spacing
