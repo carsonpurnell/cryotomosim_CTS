@@ -64,7 +64,7 @@ end
 if param.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
     fprintf('Generating vesicular membranes ')
     %[memvol,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(param.mem),pix);
-    [memvol,memskel,nvecs,vesvol,count,~] = gen_mem(cts.vol,param.mem,pix,3);
+    [memvol,memskel,nvecs,vesvol,count,~] = gen_memvol(cts.vol,param.mem,pix,3);
     cts.model.mem = memvol;
     cts.vol = cts.model.mem+cts.vol;
     fprintf('   complete,  %i placed, %i failed \n',count.s,count.f)
