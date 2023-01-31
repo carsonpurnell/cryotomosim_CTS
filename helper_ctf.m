@@ -46,7 +46,6 @@ yl = binlength*2;
 [x,y] = meshgrid(-Ny:2*Ny/xl:Ny-Ny/xl,-Ny:2*Ny/yl:Ny-Ny/yl);%,-Ny:2*Ny/zl:Ny-Ny/zl);
 k = sqrt(x.^2+y.^2);%+z.^2); %evaluate inverse distance, identical for all strips
 
-
 %{
 whole-tilt envelope setup stuff - deprecated
 xf = size(padded,2); yf = size(padded,1);
