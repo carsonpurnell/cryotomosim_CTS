@@ -50,7 +50,7 @@ for i=1:num
             while ~any(tmpskel==1,'all')
                 l = round(300/pix+20);
                 sz = [l+randi(l*3),l+randi(l*3),l+randi(l*3)];
-                [tmp,tmpskel] = vesgen_blob(sz,memthick,pix,6);
+                [tmp,tmpskel] = vesgen_blob(sz,memthick,pix,3);
                 %figure(); sliceViewer(tmp);
                 %rs = rs+1;
             end
