@@ -1,4 +1,4 @@
-function [memvol,skel,nvecs,vesvol,count,ves] = gen_mem(vol,num,pix,tries,vecpts)
+function [memvol,skel,nvecs,vesvol,count,ves] = gen_mem(vol,num,pix,tries,vecpts,memthick,memsize)
 %randomly generates and places spherical vesicles into a volume without overlapping contents
 %
 %inputs:
@@ -19,6 +19,8 @@ arguments
     pix
     tries = 2
     vecpts = 9
+    memthick = [60 24]
+    memsize = 0
 end
 %clipping out of the Z also conviniently how tomos actually look, but is maybe too random
 
@@ -44,11 +46,11 @@ for i=1:num
         case 2
             %lower pixel size can create empty blobs regularly
             tmpskel=0; %rs = 1;
-            thick = [28,12];%-rs;
+            %thick = [28,12];%-rs;
             while ~any(tmpskel==1,'all')
                 l = round(300/pix+20);
                 sz = [l+randi(l*3),l+randi(l*3),l+randi(l*3)];
-                [tmp,tmpskel] = vesgen_blob(sz,thick,pix,6);
+                [tmp,tmpskel] = vesgen_blob(sz,memthick,pix,6);
                 %figure(); sliceViewer(tmp);
                 %rs = rs+1;
             end
@@ -157,7 +159,7 @@ function [blob,skel] = vesgen_blob(sz,thick,pix,beta)
 ptvol = zeros(sz); 
 if numel(thick)==1, thick(end+1)=10; end
 %thickness as 1x2 vector of min,max membrane thickness?
-thickness = thick(1)+randi(thick(2)); d = thickness/pix; %actually computing the radius, not the diam
+thickness = thick(1)+rand*thick(2); r = (thickness/2)/pix; %actually computing the radius, not the diam
 
 n = round(sqrt(sum(sz))); 
 %beta 3 is pretty good for quite round membrane bodies
@@ -170,20 +172,20 @@ for i=1:size(pts,1)
     x = pts(i,1); y = pts(i,2); z = pts(i,3);
     ptvol(x,y,z) = 1;
 end
-blobvol = bwdist(ptvol)<min(sz)/d/2;
+blobvol = bwdist(ptvol)<min(sz)/r/2;
 for i=1:3
-    smoothvol = imgaussfilt3(single(blobvol),d*2-i*1); %smooth out towards a rounder overall shape
+    smoothvol = imgaussfilt3(single(blobvol),r*2-i*1); %smooth out towards a rounder overall shape
     blobvol = smoothvol>0.2;
 end
 memvol = ctsutil('trim',smoothvol>0.1); %trim vol to save space
-p = round(d*2);
+p = round(r*2);
 memvol = padarray(memvol,[p p p]); %pad to prevent anything from clipping into edges
 %trim and pad the vol to center and make sure nothing is touching the edge
 
 skel = bwperim(memvol);
 
 distmap = bwdist(skel); 
-mask = distmap<d;
+mask = distmap<r;
 
 smmask = imgaussfilt(single(mask),2);
 sm2 = smmask.*mask;
