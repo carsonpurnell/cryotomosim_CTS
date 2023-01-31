@@ -32,7 +32,6 @@ B = param.sigma*Ny; %envelope factor from nyquist frequency - also incorporates 
 q = 0.07*1; %amplitude contrast value - 7% is standard
 %envelope/amplitude still needs validation and corroboration to our real data
 
-
 k = 1:size(input,1); divs = k(rem(size(input,1),k)==0); %find divisible factors from volume size
 
 binspacing = divs(round(end/2)); %use the middle divisor as the spacing
