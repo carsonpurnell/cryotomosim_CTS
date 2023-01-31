@@ -28,7 +28,7 @@ Dz = param.defocus/1e6; %convert from microns to m
 L = relativistic_electrons(V); %compute wavelength from voltage, correcting for relativistic speed
 
 Ny = 1/(2*pix); %nyquist frequency calculation - functionalize?
-B = param.sigma*Ny; %envelope factor from nyquist frequency
+B = param.sigma*Ny; %envelope factor from nyquist frequency - also incorporates the MTF signal dropoff (approx)
 q = 0.07*1; %amplitude contrast value - 7% is standard
 %envelope/amplitude still needs validation and corroboration to our real data
 
