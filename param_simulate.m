@@ -29,7 +29,7 @@ arguments
     %microscope parameters
     param.voltage {mustBePositive} = 3e2
     param.aberration {mustBePositive} = 2.7
-    param.sigma {mustBePositive} = 1
+    param.sigma {mustBePositive} = 0.9
     
     %scan/session parameters
     param.defocus = -5
