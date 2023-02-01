@@ -23,6 +23,7 @@ end
 %E ai * exp(bi * s^2) seems to work, but is frequency dependent? on the E freq, or otherwise?
 %sum over a spectrum of S values somehow for total signal? values far lower than even z
 
+
 [path,file,ext] = fileparts(pdb);
 %{
 if strcmp(ext,'.mat') %if .mat, load the data from the file
