@@ -174,8 +174,6 @@ from creighton 1993 - c1.28, n1.13, o.08, p0, s.41
 https://books.google.com/books?hl=en&lr=&id=hu8T_kI1LrkC&oi=fnd&pg=PR11&ots=jLzwwqkY-h&sig=9WhfbpfFd0mj61ErskgnxWSeGHY#v=onepage&q&f=false
 
 %messy heteroatom version
-%mag = struct('H',0,'C',6,'N',7,'O',8,'P',15,'S',16,...
-%    'MG',12,'ZN',30,'MN',25,'F',9,'CL',17,'CA',20);
 
 %hydrogen intensity instead shifted onto average H per organic atom, because PDB inconsistently use H records
 %currently using atomic number, should use a more accurate scattering factor measure
