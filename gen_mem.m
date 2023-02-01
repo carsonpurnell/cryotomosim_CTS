@@ -30,7 +30,6 @@ memvol = padarray(memvol,[p p p]); %pad to prevent anything from clipping into e
 %trim and pad the vol to center and make sure nothing is touching the edge
 
 skel = bwperim(memvol);
-
 distmap = bwdist(skel); 
 mask = distmap<r;
 
@@ -42,5 +41,4 @@ memnoise = rand(size(skel))*0.3.*sm2;
 %need to compute density more precisely (variable component?) - also need control variables
 dens = 0.35*pix^3;
 blob = (memnoise+sm2)*dens;
-
 end
