@@ -233,7 +233,7 @@ for i=1:models
     em = zeros(lim'); %initialize empty volume for the model
     
     for j=1:numel(atomint) %faster loop, use vectorized converted atomic info faster than struct reference
-        x=coords(1,j); y=coords(2,j); z=coords(3,j); %[x,y,z] %fetch individual coordinates
+        x=coords(1,j); y=coords(2,j); z=coords(3,j); %fetch individual coordinates
         em(x,y,z) = em(x,y,z)+atomint(j);
     end
     
