@@ -35,7 +35,6 @@ for i=1:numel(namelist)
 end
 end
 
-
 % membrane setup stuff
 if any(vesvec~=0,'all') %prep skeleton point map if provided for TMprotein
     ismem = 1; 
