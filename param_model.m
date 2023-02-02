@@ -39,7 +39,6 @@ function param = param_model(pix,param)
 %
 % see also helper_constraints, helper_input, helper_pdb2vol
 % gen_carbongrid, gen_ice, and gen_beads
-
 arguments
     %maybe GUI input dlg
     %easy way to navigate to stored params? modifiable defaults?
@@ -59,8 +58,7 @@ arguments
     param.beads = 0
     param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
 end
-param.mem = round(param.mem);
-param.pix = pix;
+param.mem = round(param.mem); param.pix = pix;
 
 layers = cell(1,param.layers);
 iters = zeros(1,numel(param.layers));
