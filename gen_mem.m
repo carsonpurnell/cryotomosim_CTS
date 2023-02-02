@@ -1,6 +1,5 @@
 function [blob,skel] = gen_mem(sz,thick,pix,beta)
-sz = sz*pix;
-ptvol = zeros(sz,sz,sz); 
+sz = sz*pix; ptvol = zeros(sz,sz,sz); 
 if numel(thick)==1, thick(end+1)=10; end
 %thickness as 1x2 vector of min,max membrane thickness?
 thickness = thick(1)+rand*thick(2); r = (thickness/2)/pix; %actually computing the radius, not the diam
@@ -9,8 +8,7 @@ n = round(sz+sqrt(beta));
 %might need to change to using points and generating an interpoland for better scaling
 %keeping things on a fixed grid makes sizing difficult
 
-%beta 3 is pretty good for quite round membrane bodies
-%beta = 5; %1 = uniform, lower is U, higher is increasingly sharp peak
+%beta 3 is pretty good for quite round membrane bodies, 1 uniform, lower is U-shaped, high increases peak
 %can decrease for wilder shapes, increase for nearer sphere
 minl = sz*0.25; maxl = sz*0.75; %min and max of points for use as blob origins
 pts = minl+(maxl-minl).*betarnd(beta,beta,n,3); %generate beta dist points to allow center/siding
