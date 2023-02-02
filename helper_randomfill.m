@@ -329,10 +329,8 @@ end
 function [rot,com,op,err] = testmem(inarray,locmap,particle,vescen,vesvol,memvol,retry)
 init = [0,0,1]'; %not imported from top-level function
 %vesvec currently being used to bring in 4d membrane nvecs
-%init = init(:)/norm(init); %unitize for safety
 for retry=1:retry
     loc = ctsutil('findloc',locmap);
-    
     %[k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
     %targ = loc-vescen(k,:); targ = targ/norm(targ); %get target location as if from origin and unitize
     
