@@ -245,11 +245,6 @@ for i=1:models
         em(x,y,z) = em(x,y,z)+opacity; %write mag to the model vol
     end
     %}
-    %{
-    if trim==2
-        em = ctsutil('trim',em);
-    end
-    %}
     emvol{i} = em;
 end
 
