@@ -15,7 +15,6 @@ arguments
     opt.memvol = 0
 end
 
-
 if opt.graph==1 %graphical output of particles block
     try %first try to find a cts gui plot to ouput to
         gui = findall(0,'Name','ctsgui').RunningAppInstance.UIAxes;
