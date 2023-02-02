@@ -337,8 +337,9 @@ for retry=1:retry
     %targ = loc-vescen(k,:); targ = targ/norm(targ); %get target location as if from origin and unitize
     
     k = vesvol(loc(1),loc(2),loc(3)); %extract vesicle label ID and normal vector from storage arrays
-    targ = [vescen(loc(1),loc(2),loc(3),1),vescen(loc(1),loc(2),loc(3),2),vescen(loc(1),loc(2),loc(3),3)]';
+    %targ = [vescen(loc(1),loc(2),loc(3),1),vescen(loc(1),loc(2),loc(3),2),vescen(loc(1),loc(2),loc(3),3)]';
     %shrink by a 1:3 in 4th dim, and do a linear->vector replace?
+    targ = vescen(loc(1),loc(2),loc(3),1:3); targ = targ(:);
     
     rotax=cross(init,targ); %compute the normal axis from the rotation angle
     theta = acosd( dot(init,targ) ); %compute angle between initial pos and final pos
