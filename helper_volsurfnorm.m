@@ -34,9 +34,6 @@ norm4d = zeros(size(skel,1),size(skel,2),size(skel,3),3);
 q = ptsin(ixin(:),:); q2 = reshape(q',3,n,[]); win = permute(mean(q2,2),[1,3,2])';
 q = ptsout(ixout(:),:); q2 = reshape(q',3,n,[]); wout = permute(mean(q2,2),[1,3,2])';
 
-%sliceViewer(skel);
-
-
 %{
 %giant pile of testing jank from figuring out how to trick reshape into working
 %might need to change how points are initially generated to make it easier to reshape to something useful
