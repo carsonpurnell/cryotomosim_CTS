@@ -34,8 +34,7 @@ mask = distmap<r;
 smmask = imgaussfilt(single(mask),2);
 sm2 = smmask.*mask;
 
-memnoise = rand(size(skel))*0.3.*sm2;
-%sliceViewer(memnoise+sm2);
+memnoise = rand(size(skel))*0.3.*sm2; %sliceViewer(memnoise+sm2);
 %need to compute density more precisely (variable component?) - also need control variables
 dens = 0.35*pix^3;
 blob = (memnoise+sm2)*dens;
