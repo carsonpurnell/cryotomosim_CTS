@@ -237,14 +237,6 @@ for i=1:models
         em(x,y,z) = em(x,y,z)+atomint(j);
     end
     
-    %{
-    for j=1:numel(atomid) %slower loop, key-value struct is slow (but almost the fastest method)
-        opacity = mag.(atomid{j}); %get atom mag from record - this is the slow step (faster than inline though)
-        x=coords(1,j); y=coords(2,j); z=coords(3,j); %parse coords manually, no method to split vector
-        %tmp = num2cell(coords(:,j)); [x1,y1,z1] = tmp{:}; %works but is much slower
-        em(x,y,z) = em(x,y,z)+opacity; %write mag to the model vol
-    end
-    %}
     emvol{i} = em;
 end
 
