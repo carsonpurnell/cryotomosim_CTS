@@ -4,6 +4,7 @@ if numel(thick)==1, thick(end+1)=10; end
 %thickness as 1x2 vector of min,max membrane thickness?
 thickness = thick(1)+rand*thick(2); r = (thickness/2)/pix; %actually computing the radius, not the diam
 
+
 n = round(sz+sqrt(beta)); 
 %might need to change to using points and generating an interpoland for better scaling
 %keeping things on a fixed grid makes sizing difficult
