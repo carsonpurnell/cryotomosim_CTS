@@ -10,7 +10,6 @@ CC = bwconncomp(perim); %get the pixel arrays for each of the borders
 numpixels = cellfun(@numel,CC.PixelIdxList); %count pixels in each component
 [~,idx] = max(numpixels); %get the largest volume component from image
 outer = perim*0;
-%sliceViewer(perim);
 outer(CC.PixelIdxList{idx}) = 1; %extract outer boundary
 inner = perim-outer; %get inner boundary
 
