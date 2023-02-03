@@ -1,7 +1,7 @@
 function [blob,skel] = gen_mem(sz,thick,pix,beta)
 sz = sz*pix; ptvol = zeros(sz,sz,sz); 
 if numel(thick)==1, thick(end+1)=10; end
-%thickness as 1x2 vector of min,max membrane thickness?
+%thickness as nx2 vector of min,max membrane thickness?
 thickness = thick(1)+rand*thick(2); r = (thickness/2)/pix; %actually computing the radius, not the diam
 
 
