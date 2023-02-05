@@ -31,7 +31,6 @@ solv = imbinarize(rescale(vol));
 map = imgaussfilt3(single(~solv),3);%,'FilterSize',3);
 %for camk at 6A, ~2 sig, 3 too high and 1 too little SNR. probably need more radiation effect
 %for actin at 13A, ~2 sig, 1 SNR is crap - =<2 needs more noise (maybe also more rad damage via noise)
-
 %just do a scaling binarization, maybe with dilation at high mag?
 %map = rescale(imcomplement(solv)); %rescaling nonviable, beads bork scaling hard
 ice = ice.*map;
