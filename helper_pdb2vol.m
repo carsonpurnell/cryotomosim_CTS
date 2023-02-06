@@ -233,7 +233,6 @@ for i=1:models
         x=coords(1,j); y=coords(2,j); z=coords(3,j); %fetch individual coordinates
         em(x,y,z) = em(x,y,z)+atomint(j);
     end
-    
     emvol{i} = em;
 end
 
