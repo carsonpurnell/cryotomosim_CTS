@@ -15,7 +15,7 @@ Au = 79; %atomic number of gold, until atom opacities figured out
 %are real beads uniform density? hollow core might be from edge effect of uniform opacity
 %lower border density might help close the hole
 
-beadstrc.type = 'single';
+beadstrc.type = 'single'; beadstrc.flags = {'cytosol'};
 for j=1:numel(radius)
     d = round(radius(j)*2/pix)+2; %generate empty volume for bead points
     cen = radius(j)/pix+2.5; %center for distance to be calculated from

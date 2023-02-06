@@ -24,6 +24,7 @@ if opt.graph==1 %graphical output of particles block
     end
     hold(gui,'off'); plot(gui,0,0,'.'); hold(gui,'on'); %clear any prior contents of the graph
 end
+if isstruct(layers), layers = {layers}; end
 
 %probably need to make this a double loop across cells of particle sets
 
