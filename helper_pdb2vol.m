@@ -26,8 +26,6 @@ end
 [path,file,ext] = fileparts(pdb);
 %{
 if strcmp(ext,'.mat') %if .mat, load the data from the file
-    try q = load(pdb); data = q.data;
-    catch warning('Input is not a pdb2vol-generated .mat file'); end %#ok<SEPEX>
 elseif ismember(ext,{'.cif','.mmcif'})
     data = internal_cifparse(pdb);
 elseif ismember(ext,{'.pdb','.pdb1'})
