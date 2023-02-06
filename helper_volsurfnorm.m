@@ -81,14 +81,6 @@ for i=1:size(skelpts,1)
     refined = ((over+under)/2+long)/2; refined = refined/norm(refined);
     %refined = (over+under)/2; refined = refined/norm(refined);
     %refined = (refined+long)/2; refined = refined/norm(refined);
-    %{
-    if isnan(long)
-        disp(long)
-        disp(skelcen)
-        disp(incen)
-        disp(outcen)
-    end
-    %}
     
     vx = skelpts(i,1); vy = skelpts(i,2); vz = skelpts(i,3); %recover subscript data for the current point
     norm4d(vx,vy,vz,[1,2,3]) = refined; %write normals to 4d storage array
