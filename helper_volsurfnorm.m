@@ -73,8 +73,6 @@ for i=1:size(skelpts,1)
     skelcen = skelpts(i,:);
     incen = win(i,:);
     outcen = wout(i,:);
-    %outcen = mean(ptsout(ixout(i,:),:),1); %average of nearby outside points
-    %incen = mean(ptsin(ixin(i,:),:),1); %average of nearby interior points - slow in loop
     long = outcen-incen; long = long/norm(long);
     under = skelcen-incen; under = under/norm(under);
     over = outcen-skelcen; over = over/norm(over); %average over and under, then average with long to refine?
@@ -85,8 +83,5 @@ for i=1:size(skelpts,1)
     vx = skelpts(i,1); vy = skelpts(i,2); vz = skelpts(i,3); %recover subscript data for the current point
     norm4d(vx,vy,vz,[1,2,3]) = refined; %write normals to 4d storage array
 end
-%nanchk = isnan(norm4d(:,:,:,1)); %find the NaNs
-%stack = nanchk+skel+outer+inner;
-%sliceViewer(stack);
 
 end
