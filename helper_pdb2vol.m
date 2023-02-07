@@ -22,6 +22,7 @@ end
 %DO need to get a reasonable value for each atom/voxel, rather than hamfisting by Z
 %E ai * exp(bi * s^2) seems to work, but is frequency dependent? on the E freq, or otherwise?
 %sum over a spectrum of S values somehow for total signal? values far lower than even z
+%data not centered, only happens in the pts2vol subfunct
 
 [path,file,ext] = fileparts(pdb);
 %{
