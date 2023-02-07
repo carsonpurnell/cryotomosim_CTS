@@ -20,7 +20,7 @@ arguments
     tries = 2
     vecpts = 9
     memthick = [60 24]
-    memsize = 0
+    memsize = 3
 end
 %clipping out of the Z also conviniently how tomos actually look, but is maybe too random
 
@@ -49,7 +49,7 @@ for i=1:num
             %thick = [28,12];%-rs;
             while ~any(tmpskel==1,'all')
                 l = round(300/pix+20);
-                sz = [l+randi(l*3),l+randi(l*3),l+randi(l*3)];
+                sz = [l+randi(l*memsize),l+randi(l*memsize),l+randi(l*memsize)];
                 [tmp,tmpskel] = vesgen_blob(sz,memthick,pix,6);
                 %figure(); sliceViewer(tmp);
                 %rs = rs+1;
