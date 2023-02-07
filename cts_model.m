@@ -61,10 +61,11 @@ if param.grid(1)~=0 % new carbon grid and hole generator
     [cts.model.grid] = gen_carbongrid(vol,pix,param.grid);
     cts.vol = cts.model.grid+cts.vol; fprintf('   complete \n')
 end
-if param.mem~=0 %new membrane gen, makes spherical vesicles and places randomly
+if ~iscell(param.mem); param.mem = {param.mem}; end
+if param.mem{1}~=0 %new membrane gen, makes spherical vesicles and places randomly
     fprintf('Generating vesicular membranes ')
     %[memvol,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(param.mem),pix);
-    [memvol,memskel,nvecs,vesvol,count,~] = gen_memvol(cts.vol,pix,param.mem,3);
+    [memvol,memskel,nvecs,vesvol,count,~] = gen_memvol(cts.vol,pix,param.mem{:});%,3);
     cts.model.mem = memvol;
     cts.vol = cts.model.mem+cts.vol;
     fprintf('   complete,  %i placed, %i failed \n',count.s,count.f)
