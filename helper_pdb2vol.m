@@ -115,7 +115,7 @@ text = textscan(fid,'%s','delimiter','\n'); %read in each line of the text file 
 text = text{1}; %fix being inside a 1x1 cell array
 
 modnames = text(strncmp(text,'data_',5)); %retrieve lines storing model names
-modnames = strrep(modnames,'data_','');
+modnames = strrep(modnames,'data_',''); %remove the leading line identifier from names
 %need to remove trailing numbers
 %disp(modnames)
 modnames = regexprep(modnames,'\_\d$',''); %remove trailing numbers so submodels don't get split
