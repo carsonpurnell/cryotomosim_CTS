@@ -16,7 +16,6 @@ arguments
     centering = 0;
     savemat = 1 %by default, save a .mat file if possible as a much faster alternative
 end
-%need to add a solvated surface of reasonable water to avoid post-hoc solvation shenanigans
 %calculate the scattering potentials in a subfunction? sum them over 2-4 angstroms?
 %probably too low-res for specific angstrom distributions of signal to matter
 %DO need to get a reasonable value for each atom/voxel, rather than hamfisting by Z
@@ -27,6 +26,7 @@ end
 %make the new general-purpose loader - parse and generate names/flags, and output a struct of all data
 %source filename, group name, flags, sumvol, individual pts/vols/names/perim/shape? 
 %should directly load .mat as well, and just check the fields (also reproject the vols/sumvol
+%use knnsearch to find potential bonds? nearest 5 neighbors and check 2-5 to avoid self distance
 
 [path,file,ext] = fileparts(file);
 %{
