@@ -1,4 +1,4 @@
-function [vol,sumvol,names,data] = helper_pdb2vol(pdb,pix,trim,centering,savemat)
+function [vol,sumvol,names,data] = helper_pdb2dat(file,pix,trim,centering,savemat)
 %[vol,sumvol,names,data] = helper_pdb2vol(pdb,pix,trim,centering,savemat)
 %generates an EM density map(s) from an atomic structure definition file
 %
@@ -10,7 +10,7 @@ function [vol,sumvol,names,data] = helper_pdb2vol(pdb,pix,trim,centering,savemat
 %vol - cell array of EM density maps
 %data - cell array of atomic IDs and coordinates, equivalent to the saved .mat
 arguments
-    pdb
+    file
     pix
     trim = 1 %0 none, 1 by sum, 2 each individually
     centering = 0;
@@ -24,7 +24,11 @@ end
 %sum over a spectrum of S values somehow for total signal? values far lower than even z
 %data not centered, only happens in the pts2vol subfunct
 
-[path,file,ext] = fileparts(pdb);
+%make the new general-purpose loader - parse and generate names/flags, and output a struct of all data
+%source filename, group name, flags, sumvol, individual pts/vols/names/perim/shape? 
+%should directly load .mat as well, and just check the fields (also reproject the vols/sumvol
+
+[path,file,ext] = fileparts(file);
 %{
 if strcmp(ext,'.mat') %if .mat, load the data from the file
 elseif ismember(ext,{'.cif','.mmcif'})
@@ -35,12 +39,12 @@ end
 %}
 switch ext %parse structure files depending on filetype
     case '.mat'
-        try q = load(pdb); data = q.data;
+        try q = load(file); data = q.data;
         catch warning('Input is not a pdb2vol-generated .mat file'); end %#ok<SEPEX>
     case {'.cif','.mmcif'} %cif-parsed .mat files seem much larger than .pdb - what's happening?
-        data = internal_cifparse(pdb);
+        data = internal_cifparse(file);
     case {'.pdb','.pdb1'}
-        data = internal_pdbparse(pdb);
+        data = internal_pdbparse(file);
 end
 [vol,sumvol,names] = internal_volbuild(data,pix,trim,centering);
 
