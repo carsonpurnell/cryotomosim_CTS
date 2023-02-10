@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## [v0.1.6](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.6) - 2023-02-09 16:35:30
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix error from beads lacking flags ([d192646](https://github.com/carsonpurnell/cryotomosim_CTS/commit/d192646301204b647d61fa6b68c2b2a85321df48))
+
+## [v0.1.5](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.5) - 2023-01-31 17:25:49
+
+*No description*
+
+### Feature
+
+- general:
+  - feat membrane is now generated as nonspherical, blobby vesicles ([b256e6f](https://github.com/carsonpurnell/cryotomosim_CTS/commit/b256e6f48a2dd110b8caf363f2b48ae12d6a0d4d))
+
 ## [v0.1.4](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.4) - 2023-01-24 18:37:45
 
 *No description*
