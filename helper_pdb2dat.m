@@ -123,7 +123,7 @@ for i=1:models
     coords = [str2num(chararray(:,1:8)),str2num(chararray(:,9:16)),str2num(chararray(:,17:24))]; %#ok<ST2NM>
     
     %using str2num because str2double won't operate on 2d arrays, and can't add spaces while vectorized
-    data{i,2} = coords; %store coordinates
+    data{i,2} = single(coords); %store coordinates
     data{i,3} = 'NA';
 end
 
@@ -164,7 +164,7 @@ for i=1:numel(headstart)
     x = char(t.Cartn_x); y = char(t.Cartn_y); z = char(t.Cartn_z);
     coord = [str2num(x),str2num(y),str2num(z)]';  %#ok<ST2NM> %merge coordinates into a single array
     
-    data{i,1} = atoms; data{i,2} = coord; data{i,3} = modnames{i};
+    data{i,1} = atoms; data{i,2} = single(coord); data{i,3} = modnames{i};
 end
 
 
