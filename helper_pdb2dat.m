@@ -142,6 +142,7 @@ modnames = regexprep(modnames,'\_\d$',''); %remove trailing numbers so submodels
 modnames = erase(modnames,'.'); %remove periods that would break use as fieldnames
 %disp(modnames)
 %other special characters that would break fieldnames?
+%probably want to modularize this back into multiple functions for better access
 
 %ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
 
