@@ -141,6 +141,7 @@ modnames = strrep(modnames,'data_',''); %remove the leading line identifier from
 modnames = regexprep(modnames,'\_\d$',''); %remove trailing numbers so submodels don't get split
 modnames = erase(modnames,'.'); %remove periods that would break use as fieldnames
 %disp(modnames)
+%other special characters that would break fieldnames?
 
 %ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
 
