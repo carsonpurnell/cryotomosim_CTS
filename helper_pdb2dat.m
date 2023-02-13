@@ -52,6 +52,7 @@ particles.name = 'notimplemented';
 particles.flags = 'TODO';
 particles.pix = pix;
 particles.atomcoords = data(:,2)'; %hopefully vertical now
+%need to center on 0,0,0
 particles.atomid = data(:,1)';
 particles.modelnames = names';
 particles.bonds = 'notimplemented';
@@ -231,7 +232,7 @@ else
     if ~isempty(ix)
         data(ix,:) = []; names(ix) = []; %remove dummy submodels and names
     end
-    [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
+    [a,b] = bounds(vertcat(data{:,2}),1); %bounds of all x/y/z in row order
     origin = (a+b)/2; %get the geometric center of the points
     span = max(origin-a,b-origin); %get spans measured from the origin
     spanpix = ceil(span/pix)+1*0;
