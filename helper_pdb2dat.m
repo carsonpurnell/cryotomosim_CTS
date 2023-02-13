@@ -201,6 +201,7 @@ names = data(:,3);
 ix = find(contains(names,'origin')); %get the index, if any, of the name origin in the model
 %check to clear out other dummy submodels?
 %very much need to condense the accumulated goblin code
+%make the if switch only set the origin, everything else outside for less clutter
 if centering==1 %&& isempty(ix)
     trim=0; %don't trim if the modeled is centered, because that uncenters it
     if isempty(ix) %assert origin at 0,0,0 if no submodel providing one
