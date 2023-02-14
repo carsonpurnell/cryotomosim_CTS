@@ -3,6 +3,7 @@ function [iced, ice] = gen_ice(vol,pix)
 denspix = (.90/18)*6e23*(pix/1e8)^3; %d = (d/mass)*mol*(pixel/m-a conv)^3 average atom/pix for ice ~.94g/cm3
 %computed density might be a bit high, vitreous may be lower than .94g/cm3.
 %without solvation exclusion, borders do get very hazy - good for rad damage
+%~.03 water per A^3, or 33A^3 per H20, a bit more than a 3x3A cube
 
 %ice too thick/noisy at very high resolution?
 
