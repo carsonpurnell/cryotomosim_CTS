@@ -184,7 +184,7 @@ edat = {'H',0;'C',6+1.3;'N',7+1.1;'O',8+0.2;'P',15;'S',16+0.6;...
 %need to reformulate these into vectors, too annoying to work with as cell and refactored anyway
 elements = edat(:,1); atomdict = cell2mat(edat(:,2));
 %[elements,atomdict] = atomdictfn; %computed scattering values, mismatch against carbon/water/membrane
-atomint = atomdict2(edat{:,2});
+%atomint = atomdict2(edat{1,2});
 
 %{
 %shang/sigworth numbers (HCNOSP): backwards C and N?
