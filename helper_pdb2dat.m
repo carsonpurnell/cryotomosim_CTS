@@ -184,6 +184,7 @@ edat = {'H',0;'C',6+1.3;'N',7+1.1;'O',8+0.2;'P',15;'S',16+0.6;...
 %need to reformulate these into vectors, too annoying to work with as cell and refactored anyway
 elements = edat(:,1); atomdict = cell2mat(edat(:,2));
 %[elements,atomdict] = atomdictfn; %computed scattering values, mismatch against carbon/water/membrane
+atomint = atomdict2(edat{:,2});
 
 %{
 %shang/sigworth numbers (HCNOSP): backwards C and N?
@@ -211,10 +212,10 @@ if centering==1 %&& isempty(ix)
         data(ix,:) = []; names(ix) = []; %remove dummy submodels and names
     end
     [a,b] = bounds(vertcat(data{:,2}),1); %bounds of all x/y/z in row order
-    span = max(origin-a,b-origin); %get spans measured from the origin
-    spanpix = ceil(span/pix)+1*0;
-    lim = spanpix*2+1; %get pixel box from span from origin
-    adj = spanpix*pix+pix*1-origin; %adjustment to apply to coordinates to place them into the pixel box
+%     span = max(origin-a,b-origin); %get spans measured from the origin
+%     spanpix = ceil(span/pix)+1*0;
+%     lim = spanpix*2+1; %get pixel box from span from origin
+%     adj = spanpix*pix+pix*1-origin; %adjustment to apply to coordinates to place them into the pixel box
     %{
 elseif centering==1 && 5==4 %&& ~isempty(ix) %&& 5==4
     if ~isempty(ix)
@@ -235,11 +236,16 @@ else
     end
     [a,b] = bounds(vertcat(data{:,2}),1); %bounds of all x/y/z in row order
     origin = (a+b)/2; %get the geometric center of the points
-    span = max(origin-a,b-origin); %get spans measured from the origin
-    spanpix = ceil(span/pix)+1*0;
-    lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
-    adj = spanpix*pix+pix*1-origin;
+%     span = max(origin-a,b-origin); %get spans measured from the origin
+%     spanpix = ceil(span/pix)+1*0;
+%     lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
+%     adj = spanpix*pix+pix*1-origin;
 end
+span = max(origin-a,b-origin); %get spans measured from the origin
+spanpix = ceil(span/pix)+1*0;
+lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
+adj = spanpix*pix+pix*1-origin;
+
 
 models = numel(data(:,2)); emvol = cell(models,1); %pre-allocate stuff
 for i=1:models
@@ -279,4 +285,22 @@ function [el,sc] = atomdictfn
 el = {'H','C','N','O','P','S','F','Na','Mg','Cl','K','Ca','Mn','Fe'}; %element symbols to use for lookup
 sc = [0.5288,2.5088,2.2135,1.9834,5.4876,5.1604,1.8012,4.7758,5.2078,4.8577,8.9834,9.9131,7.5062,7.1637];
 %scattering potentials computed as sum of first 5 parameters of atom form factor, holding s=0
+end
+
+function atomint = atomdict2(atomid)
+el = {'H','C','N','O','P','S','F','Na','MG','Cl','K','Ca','Mn','Fe'}; %element symbols to use for lookup
+sc = [0.5288,2.5088,2.2135,1.9834,5.4876,5.1604,1.8012,4.7758,5.2078,4.8577,8.9834,9.9131,7.5062,7.1637,0];
+z = [1,6,7,8,15,16,9,11,12,17,19,20,25,26,0]; %15==0 for bad entries
+H = z(1);
+hp = [0,1.3,1.1,0.2,0,0.6,0,0,0,0,0,0,0,0,0];
+sc = sc+H*hp; %add hydrogen contributions
+%scattering potentials computed as sum of first 5 parameters of atom form factor, holding s=0
+
+%these do not include average H contributions
+
+[~,ix] = ismember(atomid,el);
+%errs = find(ix<1); ix(errs) = 15;
+ix(ix<1 | ix>15) = 15;
+atomint = single(z(ix));
+
 end
