@@ -188,14 +188,15 @@ skel = bwperim(memvol);
 
 distmap = bwdist(skel); 
 mask = distmap<r;
+leafperim = bwperim(mask); %sliceViewer(leafperim+mask);
 
-smmask = imgaussfilt(single(mask+skel*0.2),2);
+smmask = imgaussfilt3(single(mask*0.3+leafperim*1.5),2);
 sm2 = smmask.*mask;
 
-memnoise = rand(size(skel))*0.3.*sm2;
+memnoise = rand(size(skel))*0.4.*sm2;
 %sliceViewer(memnoise+sm2);
 %need to compute density more precisely (variable component?) - also need control variables
-dens = 0.34*pix^3;
+dens = 0.6*pix^3;
 blob = (memnoise+sm2)*dens;
 
 end
