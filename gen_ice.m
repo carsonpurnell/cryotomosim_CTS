@@ -39,7 +39,7 @@ iced = vol+ice;
 %}
 bb = imgaussfilt3(vol,1);
 %ice=ice*0.4;
-icesc = max(ice*0.6-(bb),ice*0.55);
+icesc = max(ice*0.6-(bb),ice*0.5);
 %iced = max(ice-sqrt(vol)-0*max(sqrt(vol)/4-pix*0,ice*0.8),vol);
 iced = max(vol,icesc);
 end
