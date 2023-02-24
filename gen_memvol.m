@@ -51,6 +51,7 @@ for i=1:num
                 l = round(300/pix+20);
                 sz = [l+randi(l*memsize),l+randi(l*memsize),l+randi(l*memsize)];
                 [tmp,tmpskel] = vesgen_blob(sz,memthick,pix,6);
+                ves{i} = tmp; %store trimmed vesicle into output cell array
                 %figure(); sliceViewer(tmp);
                 %rs = rs+1;
             end
@@ -152,7 +153,6 @@ end
 ves = ctsutil('trim',tmp);
 
 end
-
 
 function [blob,skel] = vesgen_blob(sz,thick,pix,beta)
 ptvol = zeros(sz); 
