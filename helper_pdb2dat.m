@@ -46,7 +46,10 @@ switch ext %parse structure files depending on filetype
     case {'.pdb','.pdb1'}
         data = internal_pdbparse(file);
 end
-[vol,sumvol,names] = internal_volbuild(data,pix,trim,centering);
+%[vol,sumvol,names] = internal_volbuild(data,pix,trim,centering);
+names = '';
+sumvol = 0;
+vol = {0};
 
 particles.name = 'notimplemented';
 particles.flags = 'TODO';
@@ -167,7 +170,7 @@ for i=1:numel(headstart)
     x = char(t.Cartn_x); y = char(t.Cartn_y); z = char(t.Cartn_z);
     coord = [str2num(x),str2num(y),str2num(z)]';  %#ok<ST2NM> %merge coordinates into a single array
     
-    data{i,1} = atoms; data{i,2} = single(coord); data{i,3} = modnames{i};
+    data{i,1} = atoms; data{i,2} = single(coord)'; data{i,3} = modnames{i};
 end
 
 
