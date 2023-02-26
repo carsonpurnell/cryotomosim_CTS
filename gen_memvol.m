@@ -191,13 +191,13 @@ mask = distmap<r;
 leafperim = bwperim(mask); %sliceViewer(leafperim+mask);
 
 blur = floor(60/pix)*2+1;
-smmask = imgaussfilt3(single(mask*0.3+leafperim*1.0),2,'FilterSize',blur);
+smmask = imgaussfilt3(single(mask*0.5+leafperim*1.0),2,'FilterSize',blur);
 sm2 = smmask.*mask;
 
 memnoise = rand(size(skel))*0.4.*sm2;
 %sliceViewer(memnoise+sm2);
 %need to compute density more precisely (variable component?) - also need control variables
-dens = 0.6*pix^3;
+dens = 0.5*pix^3;
 blob = (memnoise+sm2)*dens;
 
 end
