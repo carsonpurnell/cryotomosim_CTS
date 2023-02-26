@@ -190,7 +190,8 @@ distmap = bwdist(skel);
 mask = distmap<r;
 leafperim = bwperim(mask); %sliceViewer(leafperim+mask);
 
-smmask = imgaussfilt3(single(mask*0.3+leafperim*1.5),2);
+blur = floor(60/pix)*2+1;
+smmask = imgaussfilt3(single(mask*0.3+leafperim*1.0),2,'FilterSize',blur);
 sm2 = smmask.*mask;
 
 memnoise = rand(size(skel))*0.4.*sm2;
