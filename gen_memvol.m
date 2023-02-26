@@ -188,10 +188,10 @@ skel = bwperim(memvol);
 
 distmap = bwdist(skel); 
 mask = distmap<r;
-leafperim = bwperim(mask); %sliceViewer(leafperim+mask);
+leafperim = bwperim(mask); %sliceViewer(leafperim+mask); %head domain density
 
-blur = floor(60/pix)*2+1;
-smmask = imgaussfilt3(single(mask*0.5+leafperim*1.0),2,'FilterSize',blur);
+blur = floor(60/pix)*2+1; %rough blur distance from pixel size
+smmask = imgaussfilt3(single(mask*0.5+leafperim*1.0),2,'FilterSize',blur); %blend densities as bilayer
 sm2 = smmask.*mask;
 
 memnoise = rand(size(skel))*0.4.*sm2;
