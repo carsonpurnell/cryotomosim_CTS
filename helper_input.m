@@ -40,14 +40,14 @@ for i=1:numel(list)
     [~,filename,ext] = fileparts(list{i}); %get file name and extension
     
     id = strsplit(filename,{'__','.'}); %extract class IDs from filename, delimited by . or __
-    
+    %{
     %do flag checks first
     %flagcheck = find(contains(id,'membrane'));
     %flagcheck = find(contains(id,'vesicle'));
     %flagcheck = find(contains(id,'cytosol'));
     %else any
     %would be a big sprawling mess of fallthroughs, need something better
-    
+    %}
     %or do a group-level find-contains for location flags etc?
     
     %do a single find-contains against all valid flags, collect them, remove from ids
