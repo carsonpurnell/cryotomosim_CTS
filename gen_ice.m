@@ -24,8 +24,6 @@ end
 % how to make solvation layer?
 % take min of smoothed vol+ice for a halo?
 
-%orig straight up floor by ice globally
-iced = max(ice,vol); %for some reason the ice is much too dense with test TMD placement output
 %{
 %alternate maybe easier binarization method
 solv = imbinarize(rescale(vol)); 
@@ -37,6 +35,10 @@ map = imgaussfilt3(single(~solv),3);%,'FilterSize',3);
 ice = ice.*map;
 iced = vol+ice;
 %}
+%orig straight up floor by ice globally
+iced = max(ice,vol); %for some reason the ice is much too dense with test TMD placement output
+
+%new ice
 bb = imgaussfilt3(vol,1);
 %ice=ice*0.4;
 icesc = max(ice*0.6-(bb),ice*0.5);
