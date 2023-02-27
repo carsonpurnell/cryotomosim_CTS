@@ -75,7 +75,6 @@ if savemat==1 %.mat saving and check if file already exists
     end
 end
 
-
 end
 
 function [data] = internal_pdbparse(pdb)
