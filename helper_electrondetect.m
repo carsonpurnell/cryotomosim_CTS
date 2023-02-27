@@ -57,7 +57,7 @@ for i=1:size(tilt,3)
     if param.raddamage>0 %block for raadiation-induced noise and blurring
     accum = accum+dw(i); %add to accumulated dose delivered, including first tilt
     
-    %use the pre-CTF tilt for the rad map to avoid CTF impacts?
+    %need to use the pre-CTF tilt for the rad map to avoid CTF impacts
     radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins - what is good scale?
     addrad = randn(size(radmap))*accum*radscale.*(radmap+1); %scaled gaussian 0-center noise field
     
@@ -69,7 +69,7 @@ for i=1:size(tilt,3)
         irad = tilt(:,:,i);
     end
     
-    detect(:,:,i) = poissrnd(irad*dw(i),size(irad)); %sample electrons from poisson distribution
+    detect(:,:,i) = poissrnd(irad*dw(i),size(irad)); %sample electrons from scaled poisson distribution
 end
 rad = rad(:,:,ixr);
 detect = detect(:,:,ixr); %reverse the sort so the output tiltseries is a continuous rotation
