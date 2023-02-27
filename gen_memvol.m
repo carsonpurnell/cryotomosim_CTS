@@ -186,6 +186,7 @@ memvol = padarray(memvol,[p p p]); %pad to prevent anything from clipping into e
 
 skel = bwperim(memvol);
 
+
 distmap = bwdist(skel); 
 mask = distmap<r;
 leafperim = bwperim(mask); %sliceViewer(leafperim+mask); %head domain density
