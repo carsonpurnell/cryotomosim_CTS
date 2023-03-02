@@ -67,8 +67,6 @@ pts = [x,y,z];
 %surfnorm(x,y,z);
 %disp(vescen)
 %disp(count.s)
-%
-
 end
 
 function skel = vesskeletonize(memvol)
