@@ -1,5 +1,6 @@
 % script to test if atomistic model-building is viable
 pix = 10; clear particles;
+tic
 %particles(1) = helper_pdb2dat('Canhydrase_4xix_dimer.cif',pix,2,0,0);
 particles(1) = helper_pdb2dat('tric__tric__6nra-open_7lum-closed.group.pdb',pix,2,0,0);
 particles(2) = helper_pdb2dat('ribo__ribo__4ug0_4v6x.group.pdb',pix,2,0,0);
@@ -12,17 +13,19 @@ for i=1:numel(particles)
         %size(particles(i).atomcoords{j})
         %size([0,0,0])
         particles(i).radius{j} = max(pdist2(particles(i).atomcoords{j},single([0,0,0])));
-        alphat = alphaShape(double(particles(i).atomcoords{j}),pix*1.5); 
+        alphat = alphaShape(double(particles(i).atomcoords{j}),12); %surprisingly slow
         [~,p] = boundaryFacets(alphat);
         n = size(particles(i).atomcoords{j},1);
-        ix = randperm(n); ix = ix(1:round(n/500));
+        ix = randperm(n); ix = ix(1:round(n/300));
         pi = particles(i).atomcoords{j}(ix,:);
         p = single([p;pi]); %need to add back 1-3% or so of points to prevent inside placements
         particles(i).perim{j} = unique(p,'rows');
-        clear com alphat %p pi
+        %clear com alphat %p pi
     end
 end
+toc
 
+%{
 %% load some input data - ribos
 %{
 [vol,sumvol,names,data] = helper_pdb2vol('ribo__ribo__4ug0_4v6x.group.mat',pix,2,1,0);
@@ -60,15 +63,13 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %plot(alphat)
 %plot3(p(:,1),p(:,2),p(:,3),'.'); axis equal
 %}
-
+%}
 %% constraint border atoms on planes
 %first try just flat top/bottom z planes
 %might try wavy version, definitely figure out x/y implementation as well
 %obviates need for starting points in the model too
 boxsize = pix*[200,300,50];
 %edgedims = 3;
-
-
 
 %% randomly add to the points and concatenate them into a list
 boxsize = pix*[200,300,50];
