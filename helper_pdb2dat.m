@@ -241,7 +241,6 @@ spanpix = ceil(span/pix)+1*0;
 lim = spanpix*2+1; %get pixel box from span, always off to ensure origin perfect center
 adj = spanpix*pix+pix*1-origin;
 
-
 models = numel(data(:,2)); emvol = cell(models,1); %pre-allocate stuff
 for i=1:models
     atomid = data{i,1}; %single column, hopefully for speed
@@ -290,8 +289,6 @@ H = z(1);
 hp = [0,1.3,1.1,0.2,0,0.6,0,0,0,0,0,0,0,0,0];
 sc = sc+H*hp; %add hydrogen contributions
 %scattering potentials computed as sum of first 5 parameters of atom form factor, holding s=0
-
-%these do not include average H contributions
 
 [~,ix] = ismember(atomid,el);
 %errs = find(ix<1); ix(errs) = 15;
