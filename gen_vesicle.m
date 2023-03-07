@@ -63,8 +63,6 @@ end
 [x,y,z] = ind2sub(size(skel),find(skel>0));
 pts = [x,y,z];
 %size(pts)
-%v = vertexNormal(pts);
-%surfnorm(x,y,z);
 %disp(vescen)
 %disp(count.s)
 end
