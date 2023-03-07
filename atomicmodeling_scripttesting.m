@@ -77,7 +77,7 @@ boxsize = pix*[200,300,50];
 %modelpoints =  modelid = 0; modelid2=single(modelid); 
 dynpts = single([-100 -100 -100]); %dynid = single(0);
 %modeltree = KDTreeSearcher(modelpoints');
-%rng(5);
+rng(5);
 tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
 n = 3000; %ixcat = 2; %iscat 1 to erase the initial point
@@ -210,17 +210,18 @@ for i=1:n
         %make a bit more flexible by doubling the array size each hit? fewer expand steps, less overhead?
         %l = size(sel.atomint{sub},2); 
         
-        % inlined dyncat code % %
-        l = size(ovcheck,1); 
-        e = ixincat+l-1;
+        % % inlined dyncat code % %
+        l = size(ovcheck,1); e = ixincat+l-1;
         if e>size(dynpts,1)
             %dynid(:,ixincat:ixincat-1+l*10) = 0;
-            dynpts(ixincat:ixincat-1+l*10,:) = 0;
+            %dynpts(ixincat:ixincat-1+l*10,:) = 0; %47, 
+            dynpts(ixincat:size(dynpts,1)*2,:) = 0; %44,
+            %dynpts(ixincat:size(dynpts,1)*3,:) = 0; %43,156
         end
         %dynid(:,ixincat:e) = sel.atomint{sub};
         dynpts(ixincat:e,:) = ovcheck; %MUCH faster placing only perimeter points - need to prevent holing
         ixincat = ixincat+l;
-        % inlined dyncat code % %
+        % % inlined dyncat code % %
         
         %janky offset stuff, make 'background' a particle class? or prepend the 4d vol with a zero vol?
         %ice will be the index 1 class!
