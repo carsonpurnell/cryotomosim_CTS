@@ -25,14 +25,6 @@ end
 %data not centered, only happens in the pts2vol subfunct
 
 [path,file,ext] = fileparts(pdb);
-%{
-if strcmp(ext,'.mat') %if .mat, load the data from the file
-elseif ismember(ext,{'.cif','.mmcif'})
-    data = internal_cifparse(pdb);
-elseif ismember(ext,{'.pdb','.pdb1'})
-    data = internal_pdbparse(pdb);
-end
-%}
 switch ext %parse structure files depending on filetype
     case '.mat'
         try q = load(pdb); data = q.data;
