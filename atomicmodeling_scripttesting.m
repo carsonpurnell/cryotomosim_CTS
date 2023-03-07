@@ -16,7 +16,7 @@ for i=1:numel(particles)
         alphat = alphaShape(double(particles(i).atomcoords{j}),12); %surprisingly slow
         [~,p] = boundaryFacets(alphat);
         n = size(particles(i).atomcoords{j},1);
-        ix = randperm(n); ix = ix(1:round(n/300));
+        ix = randperm(n); ix = ix(1:round(n/400));
         pi = particles(i).atomcoords{j}(ix,:);
         p = single([p;pi]); %need to add back 1-3% or so of points to prevent inside placements
         particles(i).perim{j} = unique(p,'rows');
@@ -77,10 +77,10 @@ boxsize = pix*[200,300,50];
 %modelpoints =  modelid = 0; modelid2=single(modelid); 
 dynpts = single([-100 -100 -100]); dynid = single(0);
 %modeltree = KDTreeSearcher(modelpoints');
-rng(5);
+%rng(5);
 tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
-n = 1000; %ixcat = 2; %iscat 1 to erase the initial point
+n = 3000; %ixcat = 2; %iscat 1 to erase the initial point
 ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
 split = cell(numel(particles)+1,2); split{1,1} = single([0,0,0]); split{1,2} = 0;
 %zz = 0;
@@ -225,13 +225,6 @@ for i=1:n
         split{which+1,1} = [split{which+1,1};tpts]; %splitvol add
         split{which+1,2} = [split{which+1,2},sel.atomint{sub}];
         
-        %modelid = horzcat(modelid,sel.id);
-        %modelid = [modelid,atomid]; %is it slow because of being a string? might turn into index vector
-        %modelid = [modelid,atomid']; %60.1s
-        %modelpoints = horzcat(modelpoints,tpts); %3s for 76
-        %modelpoints = [modelpoints;tpts]; %2.8s for 76, slightly/inconsistently? faster
-        %modeltree = KDTreeSearcher(modelpoints'); %slow step - can the points be pruned somehow? or faster mod?
-        %modeltree = ExhaustiveSearcher(modelpoints'); %exhaustive is definitely slower, runs in the searcher
         count.s=count.s+1;
     else
         count.f=count.f+1;
