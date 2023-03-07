@@ -29,14 +29,6 @@ end
 %use knnsearch to find potential bonds? nearest 5 neighbors and check 2-5 to avoid self distance
 
 [path,filename,ext] = fileparts(file);
-%{
-if strcmp(ext,'.mat') %if .mat, load the data from the file
-elseif ismember(ext,{'.cif','.mmcif'})
-    data = internal_cifparse(pdb);
-elseif ismember(ext,{'.pdb','.pdb1'})
-    data = internal_pdbparse(pdb);
-end
-%}
 switch ext %parse structure files depending on filetype
     case '.mat'
         try q = load(file); data = q.data;
@@ -89,7 +81,8 @@ ix = strncmp(text,'ANISOU',6); text(ix) = []; %delete temp records
 ix = strncmp(text,'CONECT',6); text(ix) = []; %delete bond information for now
 %}
 ix = strncmp(text,'TER',3); text(ix) = []; %clear terminator lines
-ix = contains(text,{'REMARK','ANISOU','CONECT'}); %remove remark, temperature, and connectivity records
+ix = contains(text,{'REMARK','ANISOU','CONECT'}); text(ix) = []; 
+%remove remark, temperature, and connectivity records
 %ix = strncmp(text,'HETATM',6); text(ix) = []; %delete heteroatoms for sanity
 
 modstart = find(strncmp(text,'MODEL ',6)); %find start of each model entry
@@ -304,5 +297,4 @@ sc = sc+H*hp; %add hydrogen contributions
 %errs = find(ix<1); ix(errs) = 15;
 ix(ix<1 | ix>15) = 15;
 atomint = single(z(ix));
-
 end
