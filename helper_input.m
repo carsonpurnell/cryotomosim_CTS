@@ -18,7 +18,6 @@ list = internal_load(list); %internal call to either uipickfiles or uigetfiles
 
 types = {'single','bundle','complex','cluster','group','assembly','memplex','membrane',...
     'inmem','outmem'};
-%need to change this so they are less silo'd, make them flags rather than different methods
 %complex one flag to make it place everything separately, rather than needing a complex for each type
 %location flag (any/default, membrane, inside/outside vesicles) control locmaps
 %grouping/class flag (complex, assembly, random pick from group, sum of group) control split placement
@@ -32,7 +31,6 @@ flaglist = ["membrane" "vesicle" "cytosol" "complex" "assembly" "cluster" "bundl
 %retry flag that changes how many placement attempts are made to increase prevalence? or add to other flags?
 
 %instead of type, use label. first entry? use for generating filenames so complex are not bloated?
-
 %does assembly imply complex, or should it add complex to the flags?
 
 for i=1:numel(list)
