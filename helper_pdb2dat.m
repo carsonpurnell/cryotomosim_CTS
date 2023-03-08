@@ -54,6 +54,7 @@ for i=1:size(data,1)
     particles.adat{i} = [tmp,particles.atomint{i}'];
     alphat = alphaShape(double(unique(tmp,'rows')),12); %surprisingly slow
     [~,p] = boundaryFacets(alphat);
+    %boundary function might work?
     n = size(tmp,1);
     ix = randperm(n); ix = ix(1:round(n/400));
     pi = tmp(ix,1:3);
@@ -62,7 +63,7 @@ for i=1:size(data,1)
 end
 %data
 %need to center on 0,0,0
-particles.atomid = data(:,1)';
+%particles.atomid = data(:,1)';
 particles.modelnames = names';
 particles.bonds = 'notimplemented';
 %particles
