@@ -51,7 +51,7 @@ for i=1:size(data,1)
     com = mean(data{i,2},1); %need radius from geometric, not mass center
     tmp = data{i,2}-com;
     particles.atomint{i} = atomdict(data{i,1},'sc');
-    particles.adat{i} = [particles.atomcoords{i},particles.atomint{i}'];
+    particles.adat{i} = [tmp,particles.atomint{i}'];
     
     alphat = alphaShape(double(unique(tmp)),12); %surprisingly slow
     [~,p] = boundaryFacets(alphat);
