@@ -13,11 +13,11 @@ for i=1:numel(particles)
         %size(particles(i).atomcoords{j})
         %size([0,0,0])
         %particles(i).radius{j} = max(pdist2(particles(i).atomcoords{j},single([0,0,0])));
-        alphat = alphaShape(double(particles(i).atomcoords{j}),12); %surprisingly slow
+        alphat = alphaShape(double(particles(i).adat{j}(:,1:3)),12); %surprisingly slow
         [~,p] = boundaryFacets(alphat);
         n = size(particles(i).atomcoords{j},1);
         ix = randperm(n); ix = ix(1:round(n/400));
-        pi = particles(i).atomcoords{j}(ix,:);
+        pi = particles(i).atomcoords{j}(ix,1:3);
         p = single([p;pi]); %need to add back 1-3% or so of points to prevent inside placements
         particles(i).perim{j} = unique(p,'rows');
         %clear com alphat %p pi
