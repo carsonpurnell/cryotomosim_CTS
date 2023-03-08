@@ -49,15 +49,15 @@ particles.pix = pix;
 %particles.atomcoords = data(:,2)'; %hopefully vertical now
 for i=1:size(data,1)
     com = mean(data{i,2},1); %need radius from geometric, not mass center
-    tmp = data{i,2}-com;
-    particles.atomint{i} = atomdict(data{i,1},'sc');
-    particles.adat{i} = [tmp,particles.atomint{i}'];
-    alphat = alphaShape(double(unique(tmp,'rows')),12); %surprisingly slow
+    tmpco = data{i,2}-com;
+    tmpint = atomdict(data{i,1},'sc')';
+    particles.adat{i} = [tmpco,tmpint];
+    alphat = alphaShape(double(unique(tmpco,'rows')),12); %surprisingly slow
     [~,p] = boundaryFacets(alphat);
     %boundary function might work?
-    n = size(tmp,1);
+    n = size(tmpco,1);
     ix = randperm(n); ix = ix(1:round(n/400));
-    pi = tmp(ix,1:3);
+    pi = tmpco(ix,1:3);
     p = single([p;pi]); %need to add back 1-3% or so of points to prevent inside placements
     particles.perim{i} = unique(p,'rows');
 end
@@ -69,8 +69,8 @@ particles.bonds = 'notimplemented';
 %particles
 %most of this needs to go into the volparser
 %particles.radius = max(pdist2(particles.atomcoords,single([0,0,0])));
-particles.vol = vol;
-particles.sumvol = sumvol;
+%particles.vol = vol;
+%particles.sumvol = sumvol;
 %{
 for i=1:numel(particles.atomid)
     particles.atomint{i} = atomdict(particles.atomid{i},'sc');
