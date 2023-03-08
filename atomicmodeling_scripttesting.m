@@ -292,7 +292,7 @@ rng(7)
 tic
 allatoms = vertcat(split{2:end,1});
 distfrac = 0.5;
-[solv] = gen_solvate(allatoms,boxsize,distfrac,tol);
+[solv] = gen_solvate(allatoms(:,1:3),round(boxsize/3),distfrac,tol);
 toc
 %sliceViewer(em+solv);
 %{
@@ -337,12 +337,12 @@ modeltree = KDTreeSearcher(modpts,'Bucketsize',buck); %make model for all the ex
 %distfrac = 0.5; %would need to scale by pixel size, .5 appears fine for 10a
 %so very very slow. gets too rough with denser pseudoatoms though
 %shift density towards flat value, mask via atomic solv volgen?
-waters = prod(sz/4)/h20vol*distfrac*atomfrac/loops; %number of predicted waters to fill the box
+waters = prod(sz)/h20vol*distfrac*atomfrac/loops; %number of predicted waters to fill the box
 %pix = 10; flatd = (pix^3)/h20vol;
 %make a very slightly larger box for solvation placement to avoid edge effects - 5-10A
 solv = zeros(0,3);
 for i=1:loops
-tmp = rand(round(waters),3,'single').*sz/4; %~1.2-1.4G per 100 million coords
+tmp = rand(round(waters),3,'single').*sz; %~1.2-1.4G per 100 million coords
 %pad = 20; spacing = 3/distfrac;
 %[x,y,z] = meshgrid(1-pad:spacing:sz(1)/4+pad,1-pad:spacing:sz(2)/4+pad,1-pad:spacing:sz(3)/4+pad);
 %solv = [x(:),y(:),z(:)]; %weird grids due to interpolation/binning shenanigans
