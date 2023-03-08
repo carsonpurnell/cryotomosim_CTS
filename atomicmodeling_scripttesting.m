@@ -373,33 +373,23 @@ function [v,ix] = dyncathorz(ix,v,b)
     ix = ix+l;
 end
 
+%{
 function vol = helper_pt2vol(pix,pts,sz,offset)
 if nargin<4, offset=[0,0,0]; end
 if nargin<3, sz = max(pts,[],1)+pix; end
-if size(pts,2)<4, pts(:,end+1)=1; end
-%size(pts)
+if size(pts,2)<4, pts(:,end+1)=1; end %intensity==1 if not given by 4th column
 pts(:,1:3) = round((pts(:,1:3)-offset)/pix+0.5);
-%volpts = round((pts-offset)/pix+0.5); %shift so things round well
-%volpts=pts;
-%size(pts)
-%size(volpts)
 emsz = floor(sz/pix); vol = zeros(emsz);
 for i=1:3
-    %ix = find(pts(:,i) > emsz(i) | pts(:,i) < 1);
-    %pts(ix,:) = [];
-    ix = pts(:,i) < emsz(i) & pts(:,i) > 1;
-    pts = pts(ix,:);
-    %volpts = volpts(~ix,:); %atomint(:,ix) = [];
+    ix = pts(:,i) < emsz(i) & pts(:,i) > 1; %get points inside the box
+    pts = pts(ix,:); %drop points outside the box
 end
-%size(pts)
 for i=1:size(pts,1)
-    %x=volpts(1,i); y=volpts(2,i); z=volpts(3,i); %fetch individual coordinates
-    x=pts(i,1); y=pts(i,2); z=pts(i,3); mag = pts(i,4);
-    %d = volpts(i,:); %also slower
-    %c = volpts(:,i); x=c(1); y=c(2); z=c(3); %simultaneous pull is slower for some reason
+    x=pts(i,1); y=pts(i,2); z=pts(i,3); mag = pts(i,4); %fetch data per atom
     vol(x,y,z) = vol(x,y,z)+mag;
 end
 end
+%}
 function vol = fnpt2vol(pix,pts,atomint,sz,offset)
 if nargin<5, offset=[0,0,0]; end
 if nargin<4, sz = max(pts,[],1)+pix; end
