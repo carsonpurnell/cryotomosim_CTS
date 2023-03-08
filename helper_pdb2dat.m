@@ -52,17 +52,13 @@ for i=1:size(data,1)
     tmp = data{i,2}-com;
     particles.atomint{i} = atomdict(data{i,1},'sc');
     particles.adat{i} = [tmp,particles.atomint{i}'];
-    
-    alphat = alphaShape(double(unique(tmp)),12); %surprisingly slow
+    alphat = alphaShape(double(unique(tmp,'rows')),12); %surprisingly slow
     [~,p] = boundaryFacets(alphat);
     n = size(tmp,1);
     ix = randperm(n); ix = ix(1:round(n/400));
     pi = tmp(ix,1:3);
     p = single([p;pi]); %need to add back 1-3% or so of points to prevent inside placements
     particles.perim{i} = unique(p,'rows');
-    %for j=1:numel(particles.adat{i})
-        
-    %end
 end
 %data
 %need to center on 0,0,0
