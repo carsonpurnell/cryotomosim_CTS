@@ -80,7 +80,7 @@ dynpts = single([-100 -100 -100]); %dynid = single(0);
 rng(5);
 tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
-n = 3000; %ixcat = 2; %iscat 1 to erase the initial point
+n = 1000; %ixcat = 2; %iscat 1 to erase the initial point
 ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
 split = cell(numel(particles)+1,2); split{1,1} = single([0,0,0]); split{1,2} = 0;
 %zz = 0;
@@ -133,8 +133,9 @@ for i=1:n
     %ixlin = s<sel.radius{sub}^2; %linear index version, much faster compute (way larger array though)
     %ix = rangesearchnest(loc,sel.radius{sub},dynpts(1:ixincat,:),tol); %how is it faster! how!!!
     
-    ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %do the transform for the points
-    err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %31.9
+    ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %transform test points
+    err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
+    %need to replace either with mutable quadtree or short-circuit kdtree
     %inlined: 33.5
     %{
     %idxnew = proxfilt(dynpts(1:ixincat,:),ovcheck,tol); %unfortunately slower than the radial search, but only 3x
@@ -213,10 +214,10 @@ for i=1:n
         % % inlined dyncat code % %
         l = size(ovcheck,1); e = ixincat+l-1;
         if e>size(dynpts,1)
-            %dynid(:,ixincat:ixincat-1+l*10) = 0;
-            %dynpts(ixincat:ixincat-1+l*10,:) = 0; %47, 
-            dynpts(ixincat:size(dynpts,1)*2,:) = 0; %44,
-            %dynpts(ixincat:size(dynpts,1)*3,:) = 0; %43,156
+            %dynid(:,ixincat:ixincat-1+l*10) = 0; %not used, dyn is temporary only
+            %dynpts(ixincat:ixincat-1+l*10,:) = 0; %47,159
+            %dynpts(ixincat:size(dynpts,1)*2,:) = 0; %44,176
+            dynpts(ixincat:(size(dynpts,1)+l)*3,:) = 0; %43,153
         end
         %dynid(:,ixincat:e) = sel.atomint{sub};
         dynpts(ixincat:e,:) = ovcheck; %MUCH faster placing only perimeter points - need to prevent holing
