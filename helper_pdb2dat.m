@@ -46,7 +46,20 @@ vol = {0};
 particles.name = 'notimplemented';
 particles.flags = 'TODO';
 particles.pix = pix;
-particles.atomcoords = data(:,2)'; %hopefully vertical now
+%particles.atomcoords = data(:,2)'; %hopefully vertical now
+for i=1:size(data,1)
+    com = mean(data{i,2},1); %need radius from geometric, not mass center
+    tmp = data{i,2}-com;
+    particles.atomint{i} = atomdict(data{i,1},'sc');
+    particles.adat{i} = [particles.atomcoords{i},particles.atomint{i}'];
+    
+    
+    particles.perim{i} = 
+    %for j=1:numel(particles.adat{i})
+        
+    %end
+end
+%data
 %need to center on 0,0,0
 particles.atomid = data(:,1)';
 particles.modelnames = names';
@@ -56,9 +69,12 @@ particles.bonds = 'notimplemented';
 %particles.radius = max(pdist2(particles.atomcoords,single([0,0,0])));
 particles.vol = vol;
 particles.sumvol = sumvol;
+%{
 for i=1:numel(particles.atomid)
     particles.atomint{i} = atomdict(particles.atomid{i},'sc');
+    particles.adat{i} = [particles.atomcoords{i},particles.atomint{i}'];
 end
+%}
 
 if savemat==1 %.mat saving and check if file already exists
     outsave = fullfile(path,append(filename,'.mat'));
