@@ -5,11 +5,12 @@ tic
 particles(1) = helper_pdb2dat('tric__tric__6nra-open_7lum-closed.group.pdb',pix,2,0,0);
 particles(2) = helper_pdb2dat('ribo__ribo__4ug0_4v6x.group.pdb',pix,2,0,0);
 particles(3) = helper_pdb2dat('actin__6t1y_13x2.pdb',pix,2,0,0); %duplicate points warning
+%{
 for i=1:numel(particles)
     for j=1:numel(particles(i).atomid)
         %particles(i).atomint{j} = atomdict(particles(i).atomid{j},'sc');
-        com = mean(particles(i).atomcoords{j},1); %need radius from geometric, not mass center
-        particles(i).atomcoords{j} = particles(i).atomcoords{j}-com;
+        %com = mean(particles(i).atomcoords{j},1); %need radius from geometric, not mass center
+        %particles(i).atomcoords{j} = particles(i).atomcoords{j}-com;
         %size(particles(i).atomcoords{j})
         %size([0,0,0])
         %particles(i).radius{j} = max(pdist2(particles(i).atomcoords{j},single([0,0,0])));
@@ -23,6 +24,7 @@ for i=1:numel(particles)
         %clear com alphat %p pi
     end
 end
+%}
 toc
 
 %{
