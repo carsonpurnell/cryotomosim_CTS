@@ -66,11 +66,11 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %plot3(p(:,1),p(:,2),p(:,3),'.'); axis equal
 %}
 %}
-%% constraint border atoms on planes
+% constraint border atoms on planes
 %first try just flat top/bottom z planes
 %might try wavy version, definitely figure out x/y implementation as well
 %obviates need for starting points in the model too
-boxsize = pix*[200,300,50];
+%boxsize = pix*[200,300,50];
 %edgedims = 3;
 
 %% randomly add to the points and concatenate them into a list
@@ -92,7 +92,7 @@ for i=1:n
     
     which=randi(numel(particles));
     sel = particles(which);
-    sub = randi(numel(sel.atomcoords));
+    sub = randi(numel(sel.adat));
     %{
     pts = particles(which).pts;
     p = particles(which).perim;
@@ -204,7 +204,8 @@ for i=1:n
     %}
     
     if err==0
-        tpts = transformPointsForward(tform,sel.atomcoords{sub})+loc;
+        tpts = transformPointsForward(tform,sel.adat{sub}(:,1:3))+loc;
+        tpts = [tpts,sel.adat{sub}(:,4)]; %#ok<AGROW>
         %modelid = vertcat(modelid,atomid); %68.6s, slow overhead vertcat appears slower than horzcat
         %[modelid2,ixcat] = dyncathorz(ixcat,modelid2,sel.id); %slightly slower than hard cat in normal case
         %test out inline version to check if non-pass version is faster equiv to nested function
@@ -229,7 +230,7 @@ for i=1:n
         %janky offset stuff, make 'background' a particle class? or prepend the 4d vol with a zero vol?
         %ice will be the index 1 class!
         split{which+1,1} = [split{which+1,1};tpts]; %splitvol add
-        split{which+1,2} = [split{which+1,2},sel.atomint{sub}];
+        %split{which+1,2} = [split{which+1,2},sel.atomint{sub}];
         
         count.s=count.s+1;
     else
@@ -276,7 +277,8 @@ tic
 %need another option for changing the location of the box from starting at 0,0,0
 clear splitvol
 for i=1:size(split,1)
-    splitvol(:,:,:,i) = fnpt2vol(pix,split{i,1},split{i,2},boxsize,[0,0,0]);
+    %splitvol(:,:,:,i) = fnpt2vol(pix,split{i,1}(:,1:3),split{i,1}(:,4),boxsize,[0,0,0]);
+    splitvol(:,:,:,i) = helper_pt2vol(pix,split{i,1},boxsize,[0,0,0]);
 end
 [~,atlas] = max(splitvol,[],4); 
 em = sum(splitvol,4); %small difference with em in a few scattered points
@@ -371,6 +373,33 @@ function [v,ix] = dyncathorz(ix,v,b)
     ix = ix+l;
 end
 
+function vol = helper_pt2vol(pix,pts,sz,offset)
+if nargin<4, offset=[0,0,0]; end
+if nargin<3, sz = max(pts,[],1)+pix; end
+if size(pts,2)<4, pts(:,end+1)=1; end
+%size(pts)
+pts(:,1:3) = round((pts(:,1:3)-offset)/pix+0.5);
+%volpts = round((pts-offset)/pix+0.5); %shift so things round well
+%volpts=pts;
+%size(pts)
+%size(volpts)
+emsz = floor(sz/pix); vol = zeros(emsz);
+for i=1:3
+    %ix = find(pts(:,i) > emsz(i) | pts(:,i) < 1);
+    %pts(ix,:) = [];
+    ix = pts(:,i) < emsz(i) & pts(:,i) > 1;
+    pts = pts(ix,:);
+    %volpts = volpts(~ix,:); %atomint(:,ix) = [];
+end
+%size(pts)
+for i=1:size(pts,1)
+    %x=volpts(1,i); y=volpts(2,i); z=volpts(3,i); %fetch individual coordinates
+    x=pts(i,1); y=pts(i,2); z=pts(i,3); mag = pts(i,4);
+    %d = volpts(i,:); %also slower
+    %c = volpts(:,i); x=c(1); y=c(2); z=c(3); %simultaneous pull is slower for some reason
+    vol(x,y,z) = vol(x,y,z)+mag;
+end
+end
 function vol = fnpt2vol(pix,pts,atomint,sz,offset)
 if nargin<5, offset=[0,0,0]; end
 if nargin<4, sz = max(pts,[],1)+pix; end
