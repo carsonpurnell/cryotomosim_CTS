@@ -74,7 +74,7 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %edgedims = 3;
 
 %% randomly add to the points and concatenate them into a list
-boxsize = pix*[200,300,50];
+boxsize = pix*[300,400,50];
 %modelpoints = pts+boxsize/2; modelid = atomid;
 %modelpoints =  modelid = 0; modelid2=single(modelid); 
 dynpts = single([-100 -100 -100]); %dynid = single(0);
@@ -286,13 +286,16 @@ em = sum(splitvol,4); %small difference with em in a few scattered points
 toc
 sliceViewer(em);
 
+%% solvation op2: flat density+variance window
+%subtract volume from each voxel, estimate waters per voxel from remaining volume with random portion
 
 %% solvation testing
+%just too slow to prune millions of points.
 rng(7)
 tic
 allatoms = vertcat(split{2:end,1});
 distfrac = 0.5;
-[solv] = gen_solvate(allatoms(:,1:3),round(boxsize/3),distfrac,tol);
+[solv] = gen_solvate(allatoms(:,1:3),round(boxsize/1),distfrac,tol);
 toc
 %sliceViewer(em+solv);
 %{
