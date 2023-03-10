@@ -1,10 +1,11 @@
 function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
+
+
+
 if iscell(pts)
-    %catpts = vertcat(pts{:}); 
     s = numel(pts);
     if nargin<3, sz = max(vertcat(pts{:}(:,1:3)),[],1)+pix; end
 else
-    %catpts = pts; 
     s = 1;
     if nargin<3, sz = max(pts(:,1:3),[],1)+pix; end
 end
