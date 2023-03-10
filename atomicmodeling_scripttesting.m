@@ -281,7 +281,7 @@ end
 
 
 %% function for vol, atlas, and split generation
-[vol,solv,splitvol] = helper_atoms2vol(pix,split(2:end),boxsize);
+[vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split(2:end),boxsize);
 
 
 %% functionalized volume projection
