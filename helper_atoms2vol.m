@@ -1,4 +1,4 @@
-function [vol,solv,split] = helper_atoms2vol(pix,pts,sz,offset)
+function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 if iscell(pts)
     %catpts = vertcat(pts{:}); 
     s = numel(pts);
@@ -35,7 +35,7 @@ for j=1:s
     end
 end
 solv = max(solv,0)/32*h20; %compute waters in pixels from remaining volume
-tmp = cat(solv,split,4);
+tmp = cat(4,solv,split);
 [~,atlas] = max(split,[],4); 
 vol = sum(split,4);
 end
