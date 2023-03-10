@@ -52,8 +52,15 @@ for i=1:size(data,1)
     tmpco = data{i,2}-com;
     tmpint = atomdict(data{i,1},'sc')';
     particles.adat{i} = [tmpco,tmpint];
-    alphat = alphaShape(double(unique(tmpco,'rows')),12); %surprisingly slow
+    
+    tmpco = double(unique(tmpco,'rows'));
+    
+    alphat = alphaShape(tmpco,12); %surprisingly slow
     [~,p] = boundaryFacets(alphat);
+    
+    k = boundary(tmpco);
+    p2 = tmpco(k,:);
+    
     %boundary function might work?
     n = size(tmpco,1);
     ix = randperm(n); ix = ix(1:round(n/400));
