@@ -11,7 +11,6 @@ else
 end
 if nargin<4, offset=[0,0,0]; end
 %if nargin<3, sz = max(catpts(:,1:3),[],1)+pix; end
-
 %if size(pts,2)<4, pts(:,end+1)=1; end %intensity==1 if not given by 4th column
 %need rough estimate of average volume for organic atoms
 %very approximately 1.8a radii
@@ -24,6 +23,7 @@ solv = (rand(emsz)-0.5)*1*pix^2+(pix^3);
 split = zeros([emsz,s]);
 for j=1:s
     p = pts{j}; %split{j} = zeros(emsz);
+    if size(p,2)<4, p(:,4)=1; end %intensity==1 if not provided in 4th column
     p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5);
     for i=1:3
         ix = p(:,i) < emsz(i) & p(:,i) > 1; %get points inside the box
@@ -37,6 +37,6 @@ for j=1:s
 end
 solv = max(solv,0)/32*h20; %compute waters in pixels from remaining volume
 tmp = cat(4,zeros(emsz),split);
-[~,atlas] = max(tmp,[],4); 
+[~,atlas] = max(tmp,[],4); atlas = atlas-1;
 vol = sum(split,4);
 end
