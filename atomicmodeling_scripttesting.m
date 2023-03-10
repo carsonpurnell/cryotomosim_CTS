@@ -287,8 +287,8 @@ end
 %}
 
 %% function for vol, atlas, and split generation
-[vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split(2:end),boxsize);
-
+[vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
+sliceViewer(vol);
 
 %% functionalized volume projection
 tic
@@ -362,14 +362,13 @@ sliceViewer(em+watervol);
 %% internal functions
 
 function split = fn_modelgen(particles,boxsize,n)
-dynpts = single([-100 -100 -100]);
+%dynpts = single([-100 -100 -100]);
 dynpts = single(zeros(0,3));
-%modeltree = KDTreeSearcher(modelpoints');
 rng(5);
 tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
 ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
-split = cell(1,numel(particles)+1); split{1} = single([0,0,0,0]);
+split = cell(1,numel(particles)+0); split{1} = zeros(0,4);%single([0,0,0,0]);
 for i=1:n
     if rem(i,n/20)==0; fprintf('%i,',i); end
     
@@ -462,29 +461,20 @@ for i=1:n
         % % inlined dyncat code % %
         l = size(ovcheck,1); e = ixincat+l-1;
         if e>size(dynpts,1)
-            %dynid(:,ixincat:ixincat-1+l*10) = 0; %not used, dyn is temporary only
-            %dynpts(ixincat:ixincat-1+l*10,:) = 0; %47,159
-            %dynpts(ixincat:size(dynpts,1)*2,:) = 0; %44,176
-            dynpts(ixincat:(size(dynpts,1)+l)*3,:) = 0; %43,153
+            dynpts(ixincat:(size(dynpts,1)+l)*3,:) = 0; %43,153 %the slightly faster method
         end
-        %dynid(:,ixincat:e) = sel.atomint{sub};
-        dynpts(ixincat:e,:) = ovcheck; %MUCH faster placing only perimeter points - need to prevent holing
-        ixincat = ixincat+l;
+        dynpts(ixincat:e,:) = ovcheck; ixincat = ixincat+l;
         % % inlined dyncat code % %
         
         %janky offset stuff, make 'background' a particle class? or prepend the 4d vol with a zero vol?
-        %ice will be the index 1 class!
-        split{which+1} = [split{which+1};tpts]; %splitvol add
-        %split{which+1,2} = [split{which+1,2},sel.atomint{sub}];
-        
+        %ice will be the index 1 class?
+        split{which} = [split{which};tpts]; %add to splitvol
         count.s=count.s+1;
     else
         count.f=count.f+1;
     end
 end
-%dynid(ixincat:end) = []; %clear unused space from dynamic alloc vector
-%dynpts(ixincat:end,:) = [];
-disp(count)
+fprintf('  placed %i, failed %i \n',count.s,count.f);
 end
 
 
