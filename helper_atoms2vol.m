@@ -35,7 +35,7 @@ for j=1:s
     end
 end
 solv = max(solv,0)/32*h20; %compute waters in pixels from remaining volume
-tmp = cat(4,solv,split);
-[~,atlas] = max(split,[],4); 
+tmp = cat(4,solv/10,split);
+[~,atlas] = max(tmp,[],4); 
 vol = sum(split,4);
 end
