@@ -288,11 +288,11 @@ sliceViewer(em);
 
 %% solvation op2: flat density+variance window
 %subtract volume from each voxel, estimate waters per voxel from remaining volume with random portion
+%works well, need better values and improved randomization. should probably be built into helper_pt2vol
 tic
 allatoms = vertcat(split{2:end,1});
 solvvol = ifcn_solv(pix,allatoms(:,1:3),boxsize); %similar to helper_pt2vol
 sliceViewer(solvvol+em);
-
 toc
 
 %% solvation testing
@@ -347,7 +347,7 @@ if nargin<3, sz = max(pts,[],1)+pix; end
 avol = 4/3*pi*(1.8^3); %eyeballed volume of the average organic atom
 h20 = 2.1; %overrounded number for water magnitude
 pts(:,1:3) = round((pts(:,1:3)-offset)/pix+0.5);
-emsz = floor(sz/pix); vol = zeros(emsz)+(pix^3);
+emsz = floor(sz/pix); vol = (rand(emsz)-0.5)*1*pix^2+(pix^3);
 for i=1:3
     ix = pts(:,i) < emsz(i) & pts(:,i) > 1; %get points inside the box
     pts = pts(ix,:); %drop points outside the box
@@ -356,7 +356,7 @@ for i=1:size(pts,1)
     x=pts(i,1); y=pts(i,2); z=pts(i,3); %mag = pts(i,4); %fetch data per atom
     vol(x,y,z) = vol(x,y,z)-avol;
 end
-vol = max(vol,0)/35*h20;
+vol = max(vol,0)/32*h20;
 end
 
 function [tmp] = gen_solvate(modpts,sz,distfrac,tol)
