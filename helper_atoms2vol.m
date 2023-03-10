@@ -1,4 +1,4 @@
-function [split,solv,split] = helper_atoms2vol(pix,pts,sz,offset)
+function [vol,solv,split] = helper_atoms2vol(pix,pts,sz,offset)
 if iscell(pts)
     %catpts = vertcat(pts{:}); 
     s = numel(pts);
