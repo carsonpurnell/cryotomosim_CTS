@@ -291,7 +291,7 @@ sliceViewer(em);
 tic
 allatoms = vertcat(split{2:end,1});
 solvvol = ifcn_solv(pix,allatoms(:,1:3),boxsize); %similar to helper_pt2vol
-sliceViewer(em+solvvol);
+sliceViewer(solvvol);
 
 toc
 
@@ -346,7 +346,7 @@ if nargin<3, sz = max(pts,[],1)+pix; end
 %eventually might do individual vdw radii individually
 avol = 4/3*pi*(1.8^3); %eyeballed volume of the average organic atom
 pts(:,1:3) = round((pts(:,1:3)-offset)/pix+0.5);
-emsz = floor(sz/pix); vol = zeros(emsz);
+emsz = floor(sz/pix); vol = zeros(emsz)+(pix^3);
 for i=1:3
     ix = pts(:,i) < emsz(i) & pts(:,i) > 1; %get points inside the box
     pts = pts(ix,:); %drop points outside the box
@@ -355,7 +355,7 @@ for i=1:size(pts,1)
     x=pts(i,1); y=pts(i,2); z=pts(i,3); %mag = pts(i,4); %fetch data per atom
     vol(x,y,z) = vol(x,y,z)-avol;
 end
-vol = max(vol,0);
+vol = max(vol,0)/35;
 end
 
 function [tmp] = gen_solvate(modpts,sz,distfrac,tol)
