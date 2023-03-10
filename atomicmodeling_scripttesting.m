@@ -74,7 +74,7 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %edgedims = 3;
 
 %% randomly add to the points and concatenate them into a list
-boxsize = pix*[300,400,50];
+boxsize = pix*[200,300,50];
 %modelpoints = pts+boxsize/2; modelid = atomid;
 %modelpoints =  modelid = 0; modelid2=single(modelid); 
 dynpts = single([-100 -100 -100]); %dynid = single(0);
@@ -291,7 +291,7 @@ sliceViewer(em);
 tic
 allatoms = vertcat(split{2:end,1});
 solvvol = ifcn_solv(pix,allatoms(:,1:3),boxsize); %similar to helper_pt2vol
-
+sliceViewer(em+solvvol);
 
 toc
 
