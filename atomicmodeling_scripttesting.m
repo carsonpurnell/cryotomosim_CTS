@@ -10,7 +10,7 @@ particles(1) = helper_pdb2dat('tric__tric__6nra-open_7lum-closed.group.pdb',pix,
 particles(2) = helper_pdb2dat('ribo__ribo__4ug0_4v6x.group.pdb',pix,2,0,0);
 particles(3) = helper_pdb2dat('actin__6t1y_13x2.pdb',pix,2,0,0); %duplicate points warning
 %}
-for i=1:numel(input)
+for i=numel(input):-1:1 %backwards loop for very slightly better performance
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
 %{
@@ -81,11 +81,18 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %boxsize = pix*[200,300,50];
 %edgedims = 3;
 
+%% functionalized model gen part
+boxsize = pix*[200,300,50];
+n = 1000;
+split = fn_modelgen(particles,boxsize,n);
+
+
 %% randomly add to the points and concatenate them into a list
 boxsize = pix*[200,300,50];
 %modelpoints = pts+boxsize/2; modelid = atomid;
 %modelpoints =  modelid = 0; modelid2=single(modelid); 
 dynpts = single([-100 -100 -100]); %dynid = single(0);
+dynpts = single(zeros(0,3));
 %modeltree = KDTreeSearcher(modelpoints');
 rng(5);
 tol = 2; %tolerance for overlap testing
@@ -93,8 +100,8 @@ count.s = 0; count.f = 0;
 n = 1000; %ixcat = 2; %iscat 1 to erase the initial point
 ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
 split = cell(1,numel(particles)+1); split{1} = single([0,0,0,0]); %split{2} = 0;
-%zz = 0;
-tl = tic; %ac = [];
+%zz = 0; %ac = [];
+tl = tic; 
 for i=1:n
     if rem(i,n/20)==0; fprintf('%i,',i); end
     
@@ -279,11 +286,8 @@ end
 %sliceViewer(em);
 %}
 
-
 %% function for vol, atlas, and split generation
-
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split(2:end),boxsize);
-
 
 
 %% functionalized volume projection
@@ -356,6 +360,134 @@ sliceViewer(em+watervol);
 %}
 
 %% internal functions
+
+function split = fn_modelgen(particles,boxsize,n)
+dynpts = single([-100 -100 -100]);
+dynpts = single(zeros(0,3));
+%modeltree = KDTreeSearcher(modelpoints');
+rng(5);
+tol = 2; %tolerance for overlap testing
+count.s = 0; count.f = 0;
+ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
+split = cell(1,numel(particles)+1); split{1} = single([0,0,0,0]);
+for i=1:n
+    if rem(i,n/20)==0; fprintf('%i,',i); end
+    
+    which=randi(numel(particles));
+    sel = particles(which);
+    sub = randi(numel(sel.adat));
+    
+    loc = rand(1,3).*boxsize;
+    tform = randomAffine3d('rotation',[0 360]); 
+    
+    ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %transform test points
+    err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
+    %need to replace either with mutable quadtree or short-circuit kdtree
+    %inlined: 33.5
+    %{
+    %idxnew = proxfilt(dynpts(1:ixincat,:),ovcheck,tol); %unfortunately slower than the radial search, but only 3x
+    ix = proxfilt2(dynpts(1:ixincat-1,:),ovcheck,tol); %slower than radial, but closer search so overall faster
+    %radial time: 119s 206s
+    %box filt time: 99s 149s
+    %vector time: 186s
+    %{
+    %ix = rangesearchvect(loc,sel.radius{sub},dynpts(1:ixincat,:));
+    %qq = dynpts(ixlin); %linear prune speed test
+    %qw = dynpts(ix5); %linear index is faster than logical overall
+    %unique(round()) looks like it takes longer per run than radial search+KDT search
+    
+    %randomize the point order to try an exhaustive short-circuit search
+    %shufpts = dynpts(randperm(size(dynpts,1)),:); %slower than searching, need to use random loop order
+    
+    %is there a better search version that just catches points inside of a convex hull?
+    %can inshape accept a large array of points? might be problematic, points might not be INSIDE
+    %easy way of making alphashape hulls just a tiny bit bigger? 
+    %premake larger alphashape shell by multiplying perimeter points by ~1.1ish?
+    %can alphashapes be transformed the same as points? yes, but super slow to read/write the memory
+    %}
+    err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but progressive slowdown
+    if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
+        %{
+        for j=randperm(size(dynpts(ix,:),1)) %shotgun rangesearch - slow
+            scs = rangesearchnest(dynpts(j,:),2,ovcheck);
+            if ~isempty(scs), break; end
+        end
+        for j=randperm(size(ovcheck,1)) %still crazy slow
+            [scs,scsd] =  rangesearch(modeltree,ovcheck(j,:),5,'SortIndices',0);
+            if any(scsd{:}<2), break; end
+        end
+        for j=randperm(size(dynpts(ix,:),1)) %shotgun pdist attempt - very slow
+            scs = pdist2(ovcheck,dynpts(j,:),'euclidean','Smallest',1);
+            if scs<2, break; end
+        end
+        %if any(kdist<2), pderr=1; else pderr=0; end %no errors but still super slow
+        %}
+        buck = round( size(dynpts,1)/450 );
+        modeltree = KDTreeSearcher(dynpts(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
+        [~,d] = rangesearch(modeltree,ovcheck,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
+        %the range search is now the slow part, ~40% of runetime for 2K iters
+        d = [d{:}]; if any(d<tol), err=1; end %test if any points closer than 2A
+        %if err~=pderr, zz=zz+1; end
+    end
+    %}
+    
+    %{
+    %if numel(ix)>5, err=1; end
+    %[ix,d] = knnsearch(modeltree,ovcheck,'K',1,'SortIndices',0); %does the sort make a difference?
+    %d = [d{:}]; 
+    %if any(d<2), err=1; end
+    %if d(1)<10, err=1; end
+    %[k,d] = dsearchn(modelpoints',tpts'); %INSANELY slow for some reason
+    %[d,iix] = pdist2(modelpoints',tpts','euclidean','Smallest',5); %very very slow
+    %if d(1)<10, err=1; end
+    %}
+    %{
+    for j=1:numel(tpts) %also appears very slow, the loop is not at all optimal
+        d = sum(abs(modelpoints-tpts(:,1)),1);
+        if any(d<10), err=1; break; end
+    end
+    %}
+    
+    if err==0
+        tpts = transformPointsForward(tform,sel.adat{sub}(:,1:3))+loc;
+        tpts = [tpts,sel.adat{sub}(:,4)]; %#ok<AGROW>
+        %modelid = vertcat(modelid,atomid); %68.6s, slow overhead vertcat appears slower than horzcat
+        %[modelid2,ixcat] = dyncathorz(ixcat,modelid2,sel.id); %slightly slower than hard cat in normal case
+        %test out inline version to check if non-pass version is faster equiv to nested function
+        
+        %inlined dyncat - ~10x faster than cat, 15x faster than dyncat call (w 1000 iters)
+        %make a bit more flexible by doubling the array size each hit? fewer expand steps, less overhead?
+        %l = size(sel.atomint{sub},2); 
+        
+        % % inlined dyncat code % %
+        l = size(ovcheck,1); e = ixincat+l-1;
+        if e>size(dynpts,1)
+            %dynid(:,ixincat:ixincat-1+l*10) = 0; %not used, dyn is temporary only
+            %dynpts(ixincat:ixincat-1+l*10,:) = 0; %47,159
+            %dynpts(ixincat:size(dynpts,1)*2,:) = 0; %44,176
+            dynpts(ixincat:(size(dynpts,1)+l)*3,:) = 0; %43,153
+        end
+        %dynid(:,ixincat:e) = sel.atomint{sub};
+        dynpts(ixincat:e,:) = ovcheck; %MUCH faster placing only perimeter points - need to prevent holing
+        ixincat = ixincat+l;
+        % % inlined dyncat code % %
+        
+        %janky offset stuff, make 'background' a particle class? or prepend the 4d vol with a zero vol?
+        %ice will be the index 1 class!
+        split{which+1} = [split{which+1};tpts]; %splitvol add
+        %split{which+1,2} = [split{which+1,2},sel.atomint{sub}];
+        
+        count.s=count.s+1;
+    else
+        count.f=count.f+1;
+    end
+end
+%dynid(ixincat:end) = []; %clear unused space from dynamic alloc vector
+%dynpts(ixincat:end,:) = [];
+disp(count)
+end
+
+
 %{
 %nah, need to build into atom2vol
 function [atlas,splitvol] = fnc_atlasgen(pix,pts,sz,offset)
