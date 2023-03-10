@@ -53,15 +53,10 @@ for i=1:size(data,1)
     tmpint = atomdict(data{i,1},'sc')';
     particles.adat{i} = [tmpco,tmpint];
     
-    tmpco = double(unique(tmpco,'rows'));
-    
-    alphat = alphaShape(tmpco,12); %surprisingly slow
+    alphat = alphaShape(double(unique(tmpco,'rows')),12); %surprisingly slow
     [~,p] = boundaryFacets(alphat);
+    %k = boundary(tmpco,0.1); p2 = tmpco(k,:); %boundary is slower, just alphashape/facets with more overhead
     
-    k = boundary(tmpco);
-    p2 = tmpco(k,:);
-    
-    %boundary function might work?
     n = size(tmpco,1);
     ix = randperm(n); ix = ix(1:round(n/400));
     pi = tmpco(ix,1:3);
