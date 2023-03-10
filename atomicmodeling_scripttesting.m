@@ -1,10 +1,18 @@
 % script to test if atomistic model-building is viable
-pix = 10; clear particles;
+pix = 8; clear particles;
+input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
+    'ribo__ribo__4ug0_4v6x.group.pdb',...
+    'actin__6t1y_13x2.pdb'};
 tic
+%{
 %particles(1) = helper_pdb2dat('Canhydrase_4xix_dimer.cif',pix,2,0,0);
 particles(1) = helper_pdb2dat('tric__tric__6nra-open_7lum-closed.group.pdb',pix,2,0,0);
 particles(2) = helper_pdb2dat('ribo__ribo__4ug0_4v6x.group.pdb',pix,2,0,0);
 particles(3) = helper_pdb2dat('actin__6t1y_13x2.pdb',pix,2,0,0); %duplicate points warning
+%}
+for i=1:numel(input)
+    particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
+end
 %{
 for i=1:numel(particles)
     for j=1:numel(particles(i).atomid)
@@ -84,7 +92,7 @@ tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
 n = 1000; %ixcat = 2; %iscat 1 to erase the initial point
 ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
-split = cell(numel(particles)+1,2); split{1,1} = single([0,0,0]); split{1,2} = 0;
+split = cell(1,numel(particles)+1); split{1} = single([0,0,0,0]); %split{2} = 0;
 %zz = 0;
 tl = tic; %ac = [];
 for i=1:n
@@ -229,7 +237,7 @@ for i=1:n
         
         %janky offset stuff, make 'background' a particle class? or prepend the 4d vol with a zero vol?
         %ice will be the index 1 class!
-        split{which+1,1} = [split{which+1,1};tpts]; %splitvol add
+        split{which+1} = [split{which+1};tpts]; %splitvol add
         %split{which+1,2} = [split{which+1,2},sel.atomint{sub}];
         
         count.s=count.s+1;
@@ -237,7 +245,7 @@ for i=1:n
         count.f=count.f+1;
     end
 end
-toc(tl)
+toc(tl); clear tl
 %dynid(ixincat:end) = []; %clear unused space from dynamic alloc vector
 %dynpts(ixincat:end,:) = [];
 disp(count)
@@ -270,6 +278,11 @@ for i=1:numel(volid)
 end
 %sliceViewer(em);
 %}
+
+
+%% function for vol, atlas, and split generation
+[split,solv,split] = helper_atoms2vol(pix,pts,boxsize);
+
 
 %% functionalized volume projection
 tic
@@ -341,7 +354,17 @@ sliceViewer(em+watervol);
 %}
 
 %% internal functions
+%{
+%nah, need to build into atom2vol
+function [atlas,splitvol] = fnc_atlasgen(pix,pts,sz,offset)
+for i=1:size(split,1)
+    %splitvol(:,:,:,i) = fnpt2vol(pix,split{i,1}(:,1:3),split{i,1}(:,4),boxsize,[0,0,0]);
+    splitvol(:,:,:,i) = helper_pt2vol(pix,split{i,1},boxsize,offset);
+end
+[~,atlas] = max(splitvol,[],4); 
 
+end
+%}
 function [vol,solv] = helper_atoms2vol_i(pix,pts,sz,offset)
 if nargin<4, offset=[0,0,0]; end
 if nargin<3, sz = max(pts,[],1)+pix; end
