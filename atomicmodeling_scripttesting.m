@@ -345,7 +345,7 @@ if nargin<3, sz = max(pts,[],1)+pix; end
 %very approximately 1.8a radii
 %eventually might do individual vdw radii individually
 avol = 4/3*pi*(1.8^3); %eyeballed volume of the average organic atom
-h20 = 2; %overrounded number for water magnitude
+h20 = 2.1; %overrounded number for water magnitude
 pts(:,1:3) = round((pts(:,1:3)-offset)/pix+0.5);
 emsz = floor(sz/pix); vol = zeros(emsz)+(pix^3);
 for i=1:3
