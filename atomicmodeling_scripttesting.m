@@ -456,20 +456,18 @@ for i=1:n
     %}
     
     if err==0
-        tpts = transformPointsForward(tform,sel.adat{sub}(:,1:3))+loc;
-        tpts = [tpts,sel.adat{sub}(:,4)]; %#ok<AGROW>
+        tpts = sel.adat{sub};
+        tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
+        %tpts = transformPointsForward(tform,sel.adat{sub}(:,1:3))+loc;
+        %tpts = [tpts,sel.adat{sub}(:,4)]; %#ok<AGROW>
         %modelid = vertcat(modelid,atomid); %68.6s, slow overhead vertcat appears slower than horzcat
         %[modelid2,ixcat] = dyncathorz(ixcat,modelid2,sel.id); %slightly slower than hard cat in normal case
         %test out inline version to check if non-pass version is faster equiv to nested function
         
-        %inlined dyncat - ~10x faster than cat, 15x faster than dyncat call (w 1000 iters)
-        %make a bit more flexible by doubling the array size each hit? fewer expand steps, less overhead?
-        %l = size(sel.atomint{sub},2); 
-        
         % % inlined dyncat code % %
         l = size(ovcheck,1); e = ixincat+l-1;
         if e>size(dynpts,1)
-            dynpts(ixincat:(size(dynpts,1)+l)*3,:) = 0; %43,153 %the slightly faster method
+            dynpts(ixincat:(size(dynpts,1)+l)*3,:) = 0;
         end
         dynpts(ixincat:e,:) = ovcheck; ixincat = ixincat+l;
         % % inlined dyncat code % %
