@@ -1,5 +1,5 @@
 % script to test if atomistic model-building is viable
-pix = 8; clear particles;
+pix = 12; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb'};
@@ -83,7 +83,7 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 
 %% functionalized model gen part
 boxsize = pix*[200,300,50];
-n = 1000;
+n = 1000; %rng(3);
 split = fn_modelgen(particles,boxsize,n);
 
 
@@ -362,9 +362,7 @@ sliceViewer(em+watervol);
 %% internal functions
 
 function split = fn_modelgen(particles,boxsize,n)
-%dynpts = single([-100 -100 -100]);
-dynpts = single(zeros(0,3));
-rng(5);
+dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
 tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
 ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
