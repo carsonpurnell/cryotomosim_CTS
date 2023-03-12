@@ -43,6 +43,8 @@ names = '';
 sumvol = 0;
 vol = {0};
 %data
+disp(filename)
+id = strsplit(filename,{'__','.'})
 
 particles.name = 'notimplemented';
 particles.flags = 'TODO';
