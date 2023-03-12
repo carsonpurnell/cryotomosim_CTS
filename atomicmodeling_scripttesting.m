@@ -380,74 +380,19 @@ for i=1:n
     if rem(i,n/20)==0; fprintf('%i,',i); end
     
     which=randi(numel(particles));
-    sel = particles(which);
-    sub = randi(numel(sel.adat));
+    sel = particles(which); sub = randi(numel(sel.adat));
     
     loc = rand(1,3).*boxsize;
     tform = randomAffine3d('rotation',[0 360]); 
     
     ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %transform test points
-    % ~80% of runtime, short-circuit rangesearch would help significantly
+
     err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
-    %need to replace either with mutable quadtree or short-circuit kdtree
-    %inlined: 33.5
-    %{
-    %idxnew = proxfilt(dynpts(1:ixincat,:),ovcheck,tol); %unfortunately slower than the radial search, but only 3x
-    ix = proxfilt2(dynpts(1:ixincat-1,:),ovcheck,tol); %slower than radial, but closer search so overall faster
-    %radial time: 119s 206s
-    %box filt time: 99s 149s
-    %vector time: 186s
-    %{
-    %ix = rangesearchvect(loc,sel.radius{sub},dynpts(1:ixincat,:));
-    %qq = dynpts(ixlin); %linear prune speed test
-    %qw = dynpts(ix5); %linear index is faster than logical overall
-    %unique(round()) looks like it takes longer per run than radial search+KDT search
-    
+    %need to replace either with mutable quadtree or short-circuit kdtree, it's ~80% of runtime
+
     %randomize the point order to try an exhaustive short-circuit search
     %shufpts = dynpts(randperm(size(dynpts,1)),:); %slower than searching, need to use random loop order
     
-    %is there a better search version that just catches points inside of a convex hull?
-    %can inshape accept a large array of points? might be problematic, points might not be INSIDE
-    %easy way of making alphashape hulls just a tiny bit bigger? 
-    %premake larger alphashape shell by multiplying perimeter points by ~1.1ish?
-    %can alphashapes be transformed the same as points? yes, but super slow to read/write the memory
-    %}
-    err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but progressive slowdown
-    if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
-        %{
-        for j=randperm(size(dynpts(ix,:),1)) %shotgun rangesearch - slow
-            scs = rangesearchnest(dynpts(j,:),2,ovcheck);
-            if ~isempty(scs), break; end
-        end
-        for j=randperm(size(ovcheck,1)) %still crazy slow
-            [scs,scsd] =  rangesearch(modeltree,ovcheck(j,:),5,'SortIndices',0);
-            if any(scsd{:}<2), break; end
-        end
-        for j=randperm(size(dynpts(ix,:),1)) %shotgun pdist attempt - very slow
-            scs = pdist2(ovcheck,dynpts(j,:),'euclidean','Smallest',1);
-            if scs<2, break; end
-        end
-        %if any(kdist<2), pderr=1; else pderr=0; end %no errors but still super slow
-        %}
-        buck = round( size(dynpts,1)/450 );
-        modeltree = KDTreeSearcher(dynpts(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
-        [~,d] = rangesearch(modeltree,ovcheck,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
-        %the range search is now the slow part, ~40% of runetime for 2K iters
-        d = [d{:}]; if any(d<tol), err=1; end %test if any points closer than 2A
-        %if err~=pderr, zz=zz+1; end
-    end
-    %}
-    
-    %{
-    %if numel(ix)>5, err=1; end
-    %[ix,d] = knnsearch(modeltree,ovcheck,'K',1,'SortIndices',0); %does the sort make a difference?
-    %d = [d{:}]; 
-    %if any(d<2), err=1; end
-    %if d(1)<10, err=1; end
-    %[k,d] = dsearchn(modelpoints',tpts'); %INSANELY slow for some reason
-    %[d,iix] = pdist2(modelpoints',tpts','euclidean','Smallest',5); %very very slow
-    %if d(1)<10, err=1; end
-    %}
     %{
     for j=1:numel(tpts) %also appears very slow, the loop is not at all optimal
         d = sum(abs(modelpoints-tpts(:,1)),1);
