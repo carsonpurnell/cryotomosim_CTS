@@ -369,12 +369,10 @@ count.s = 0; count.f = 0;
 ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
 
 %split = cell(1,numel(particles)+0); %split{1} = zeros(0,4); %single([0,0,0,0]);
-
 namelist = [particles.modelname]; %slower than cell, but more consistent
 for i=1:numel(namelist)
     split.(namelist{i}) = zeros(0,4); %initialize split models of target ids
 end
-%}
 
 for i=1:n
     if rem(i,n/20)==0; fprintf('%i,',i); end
@@ -389,25 +387,10 @@ for i=1:n
 
     err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
     %need to replace either with mutable quadtree or short-circuit kdtree, it's ~80% of runtime
-
-    %randomize the point order to try an exhaustive short-circuit search
-    %shufpts = dynpts(randperm(size(dynpts,1)),:); %slower than searching, need to use random loop order
-    
-    %{
-    for j=1:numel(tpts) %also appears very slow, the loop is not at all optimal
-        d = sum(abs(modelpoints-tpts(:,1)),1);
-        if any(d<10), err=1; break; end
-    end
-    %}
     
     if err==0
         tpts = sel.adat{sub};
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
-        %tpts = transformPointsForward(tform,sel.adat{sub}(:,1:3))+loc;
-        %tpts = [tpts,sel.adat{sub}(:,4)]; %#ok<AGROW>
-        %modelid = vertcat(modelid,atomid); %68.6s, slow overhead vertcat appears slower than horzcat
-        %[modelid2,ixcat] = dyncathorz(ixcat,modelid2,sel.id); %slightly slower than hard cat in normal case
-        %test out inline version to check if non-pass version is faster equiv to nested function
         
         % % inlined dyncat code % %
         l = size(ovcheck,1); e = ixincat+l-1;
@@ -417,7 +400,7 @@ for i=1:n
         dynpts(ixincat:e,:) = ovcheck; ixincat = ixincat+l;
         % % inlined dyncat code % %
         
-        %split{which} = [split{which};tpts]; %add to splitvol
+        %split{which} = [split{which};tpts]; %add to splitvol - cell version
         split.(sel.modelname{sub}) = [split.(sel.modelname{sub});tpts]; %struct a bit slower :(
         count.s=count.s+1;
     else
@@ -462,8 +445,6 @@ for i=1:size(pts,1)
 end
 solv = max(solv,0)/32*h20;
 end
-
-
 function vol = ifcn_solv(pix,pts,sz,offset)
 if nargin<4, offset=[0,0,0]; end
 if nargin<3, sz = max(pts,[],1)+pix; end
@@ -485,7 +466,6 @@ for i=1:size(pts,1)
 end
 vol = max(vol,0)/32*h20;
 end
-
 function [tmp] = gen_solvate(modpts,sz,distfrac,tol)
 h20vol = 35;
 atomfrac = 1;
@@ -511,7 +491,6 @@ solv = [solv;tmp];
 end
 
 end
-
 function [v,ix] = dyncat(ix,v,b)
     l = size(b,1); e = ix+l-1;
     if e>size(v,1)
@@ -520,7 +499,6 @@ function [v,ix] = dyncat(ix,v,b)
     v(ix:e,:) = b;
     ix = ix+l;
 end
-
 function [v,ix] = dyncathorz(ix,v,b)
     l = size(b,2); e = ix+l-1;
     if e>size(v,2)
@@ -618,7 +596,7 @@ ix = c>l & c<h; %a = prod(a,2);
 ix = find(sum(ix,2)>2);
 err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but progressive slowdown
 if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
-    buck = round( size(c,1)/450 );
+    buck = round( size(c,1)/1650 );
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
     %the range search is now the slow part, ~40% of runetime for 2K iters
