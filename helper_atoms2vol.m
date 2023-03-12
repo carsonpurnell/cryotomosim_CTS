@@ -1,12 +1,12 @@
 function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
-
-
+%[vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
+%
 
 if iscell(pts)
-    s = numel(pts);
+    s = numel(pts); ce=1;
     if nargin<3, sz = max(vertcat(pts{:}(:,1:3)),[],1)+pix; end
 else
-    s = 1;
+    s = 1; ce=0;
     if nargin<3, sz = max(pts(:,1:3),[],1)+pix; end
 end
 if nargin<4, offset=[0,0,0]; end
@@ -22,7 +22,11 @@ emsz = floor(sz/pix);
 solv = (rand(emsz)-0.5)*1*pix^2+(pix^3);
 split = zeros([emsz,s]);
 for j=1:s
-    p = pts{j}; %split{j} = zeros(emsz);
+    if ce==1
+        p = pts{j}; %split{j} = zeros(emsz);
+    else
+        p = pts;
+    end
     if size(p,2)<4, p(:,4)=1; end %intensity==1 if not provided in 4th column
     p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5);
     for i=1:3
