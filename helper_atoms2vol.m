@@ -47,7 +47,6 @@ solv = max(solv,0)/32*h20; %compute waters in pixels from remaining volume
 tmp = cat(4,zeros(emsz),split);
 [~,atlas] = max(tmp,[],4); atlas = atlas-1;
 vol = sum(split,4);
-names
 if iscell(names)
     t = split; clear split
     %t
