@@ -42,6 +42,7 @@ end
 names = '';
 sumvol = 0;
 vol = {0};
+%data
 
 particles.name = 'notimplemented';
 particles.flags = 'TODO';
@@ -62,11 +63,12 @@ for i=1:size(data,1)
     pi = tmpco(ix,1:3);
     p = single([p;pi]); %need to add back 1-3% or so of points to prevent inside placements
     particles.perim{i} = unique(p,'rows');
+    particles.modelname{i} = data{i,3};
 end
 %data
 %need to center on 0,0,0
 %particles.atomid = data(:,1)';
-particles.modelnames = names';
+%particles.modelnames = names';
 particles.bonds = 'notimplemented';
 %particles
 %most of this needs to go into the volparser
