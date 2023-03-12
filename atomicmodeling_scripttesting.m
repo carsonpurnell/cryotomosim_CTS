@@ -83,13 +83,10 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 
 %% functionalized model gen part
 boxsize = pix*[200,300,50];
-n = 5000; rng(3);
+n = 1000; rng(3);
 tic
 split = fn_modelgen(particles,boxsize,n);
 toc
-%cell 56s
-%struct 80 unfortunate. map to cell?
-
 
 %% randomly add to the points and concatenate them into a list
 boxsize = pix*[200,300,50];
@@ -373,7 +370,7 @@ ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves 
 
 %split = cell(1,numel(particles)+0); %split{1} = zeros(0,4); %single([0,0,0,0]);
 
-namelist = [particles.modelname]; %vector collection of all ids instead of the former double loop
+namelist = [particles.modelname]; %slower than cell, but more consistent
 for i=1:numel(namelist)
     split.(namelist{i}) = zeros(0,4); %initialize split models of target ids
 end
