@@ -1,12 +1,16 @@
 function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %[vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %
-
+if isstruct(pts)
+    names = fieldnames(pts); pts = struct2cell(pts);
+else
+    names = 0;
+end
 if iscell(pts)
-    s = numel(pts); ce=1;
+    s = numel(pts); t=1;
     if nargin<3, sz = max(vertcat(pts{:}(:,1:3)),[],1)+pix; end
 else
-    s = 1; ce=0;
+    s = 1; t=0;
     if nargin<3, sz = max(pts(:,1:3),[],1)+pix; end
 end
 if nargin<4, offset=[0,0,0]; end
@@ -22,7 +26,7 @@ emsz = floor(sz/pix);
 solv = (rand(emsz)-0.5)*1*pix^2+(pix^3);
 split = zeros([emsz,s]);
 for j=1:s
-    if ce==1
+    if t==1
         p = pts{j}; %split{j} = zeros(emsz);
     else
         p = pts;
@@ -43,4 +47,10 @@ solv = max(solv,0)/32*h20; %compute waters in pixels from remaining volume
 tmp = cat(4,zeros(emsz),split);
 [~,atlas] = max(tmp,[],4); atlas = atlas-1;
 vol = sum(split,4);
+if names~=0
+    t = split;
+    for i=1:s
+        split.(names{i}) = t{i};
+    end
+end
 end
