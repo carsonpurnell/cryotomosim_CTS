@@ -87,7 +87,7 @@ n = 1000; rng(3);
 tic
 split = fn_modelgen(particles,boxsize,n);
 toc
-%cell 5xs
+%cell 56s
 %struct 
 
 
@@ -371,8 +371,8 @@ tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
 ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
 
-split = cell(1,numel(particles)+0); %split{1} = zeros(0,4); %single([0,0,0,0]);
-%{
+%split = cell(1,numel(particles)+0); %split{1} = zeros(0,4); %single([0,0,0,0]);
+
 namelist = [particles.modelname]; %vector collection of all ids instead of the former double loop
 for i=1:numel(namelist)
     split.(namelist{i}) = zeros(0,4); %initialize split models of target ids
@@ -478,7 +478,8 @@ for i=1:n
         
         %janky offset stuff, make 'background' a particle class? or prepend the 4d vol with a zero vol?
         %ice will be the index 1 class?
-        split{which} = [split{which};tpts]; %add to splitvol
+        %split{which} = [split{which};tpts]; %add to splitvol
+        split.(sel.modelname{sub}) = [split.(sel.modelname{sub});tpts]; 
         count.s=count.s+1;
     else
         count.f=count.f+1;
