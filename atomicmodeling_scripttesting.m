@@ -387,6 +387,7 @@ for i=1:n
     tform = randomAffine3d('rotation',[0 360]); 
     
     ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %transform test points
+    % ~80% of runtime, short-circuit rangesearch would help significantly
     err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
     %need to replace either with mutable quadtree or short-circuit kdtree
     %inlined: 33.5
@@ -473,10 +474,8 @@ for i=1:n
         dynpts(ixincat:e,:) = ovcheck; ixincat = ixincat+l;
         % % inlined dyncat code % %
         
-        %janky offset stuff, make 'background' a particle class? or prepend the 4d vol with a zero vol?
-        %ice will be the index 1 class?
         %split{which} = [split{which};tpts]; %add to splitvol
-        split.(sel.modelname{sub}) = [split.(sel.modelname{sub});tpts]; 
+        split.(sel.modelname{sub}) = [split.(sel.modelname{sub});tpts]; %struct a bit slower :(
         count.s=count.s+1;
     else
         count.f=count.f+1;
