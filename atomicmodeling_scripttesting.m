@@ -83,11 +83,11 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 
 %% functionalized model gen part
 boxsize = pix*[200,300,50];
-n = 1000; %rng(3);
+n = 1000; rng(3);
 tic
 split = fn_modelgen(particles,boxsize,n);
 toc
-%cell 
+%cell 5xs
 %struct 
 
 
@@ -370,7 +370,15 @@ dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
 tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
 ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
-split = cell(1,numel(particles)+0); split{1} = zeros(0,4);%single([0,0,0,0]);
+
+split = cell(1,numel(particles)+0); %split{1} = zeros(0,4); %single([0,0,0,0]);
+%{
+namelist = [particles.modelname]; %vector collection of all ids instead of the former double loop
+for i=1:numel(namelist)
+    split.(namelist{i}) = zeros(0,4); %initialize split models of target ids
+end
+%}
+
 for i=1:n
     if rem(i,n/20)==0; fprintf('%i,',i); end
     
