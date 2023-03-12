@@ -44,9 +44,10 @@ sumvol = 0;
 vol = {0};
 %data
 disp(filename)
-id = strsplit(filename,{'__','.'})
+id = strsplit(filename,{'__','.'});
 
-particles.name = 'notimplemented';
+
+particles.name = id{1};
 particles.flags = 'TODO';
 particles.pix = pix;
 %particles.atomcoords = data(:,2)'; %hopefully vertical now
@@ -65,7 +66,12 @@ for i=1:size(data,1)
     pi = tmpco(ix,1:3);
     p = single([p;pi]); %need to add back 1-3% or so of points to prevent inside placements
     particles.perim{i} = unique(p,'rows');
-    particles.modelname{i} = data{i,3};
+    mn = data{i,3};
+    if strcmp(mn,'NA')
+        particles.modelname{i} = id{min(i,end)};
+    else
+        particles.modelname{i} = data{i,3};
+    end
 end
 %data
 %need to center on 0,0,0
