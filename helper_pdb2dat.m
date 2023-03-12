@@ -43,9 +43,8 @@ names = '';
 sumvol = 0;
 vol = {0};
 %data
-disp(filename)
+%disp(filename)
 id = strsplit(filename,{'__','.'});
-
 
 particles.name = id{1};
 particles.flags = 'TODO';
