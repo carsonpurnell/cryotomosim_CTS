@@ -48,7 +48,8 @@ id = strsplit(filename,{'__','.'});
 
 particles.name = id{1};
 particles.flags = 'TODO';
-particles.pix = pix;
+%particles.bonds = 'notimplemented';
+%particles.pix = pix;
 %particles.atomcoords = data(:,2)'; %hopefully vertical now
 for i=1:size(data,1)
     com = mean(data{i,2},1); %need radius from geometric, not mass center
@@ -76,7 +77,6 @@ end
 %need to center on 0,0,0
 %particles.atomid = data(:,1)';
 %particles.modelnames = names';
-particles.bonds = 'notimplemented';
 %particles
 %most of this needs to go into the volparser
 %particles.radius = max(pdist2(particles.atomcoords,single([0,0,0])));
