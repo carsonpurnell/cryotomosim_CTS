@@ -7,6 +7,7 @@ tic
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
+toc
 %{
 for i=1:numel(particles)
     for j=1:numel(particles(i).atomid)
@@ -27,8 +28,6 @@ for i=1:numel(particles)
     end
 end
 %}
-toc
-
 %{
 %% load some input data - ribos
 %{
