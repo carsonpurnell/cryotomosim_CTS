@@ -90,7 +90,7 @@ layers{1} = lipid;
 %% functionalized model gen part
 boxsize = pix*[200,300,50];
 n = 100; rng(3);
-n = [50,2000];
+n = [10,2000];
 tic
 split = fn_modelgen(layers,boxsize,n);
 toc
