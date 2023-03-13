@@ -4,12 +4,6 @@ input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb'};
 tic
-%{
-%particles(1) = helper_pdb2dat('Canhydrase_4xix_dimer.cif',pix,2,0,0);
-particles(1) = helper_pdb2dat('tric__tric__6nra-open_7lum-closed.group.pdb',pix,2,0,0);
-particles(2) = helper_pdb2dat('ribo__ribo__4ug0_4v6x.group.pdb',pix,2,0,0);
-particles(3) = helper_pdb2dat('actin__6t1y_13x2.pdb',pix,2,0,0); %duplicate points warning
-%}
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
@@ -596,7 +590,7 @@ ix = c>l & c<h; %a = prod(a,2);
 ix = find(sum(ix,2)>2);
 err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but progressive slowdown
 if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
-    buck = round( size(c,1)/1650 );
+    buck = round( size(c,1)/1650 ); %very rough, is probably not linear scale
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
     %the range search is now the slow part, ~40% of runetime for 2K iters
