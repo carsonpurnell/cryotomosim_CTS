@@ -77,7 +77,7 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 
 %% atomic vesicle gen
 ves = 5;
-lipid(1).name = 'lipid'; flags = 'TODO';
+lipid(1).name = 'lipid'; lipid(1).flags = 'TODO';
 for i=1:ves
     [pts,perim] = vesgen_sphere(600+randi(200),30+randi(5));
     lipid(1).perim{1,i} = perim;
@@ -447,7 +447,7 @@ sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2; %factor to correct for excess inne
 
 %fill space between radii with tons of points
 %ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
-shellvol = pi*(rado^3-radi^3)*0.2; %volume of shell in pseudoatoms
+shellvol = pi*(rado^3-radi^3)*0.01; %volume of shell in pseudoatoms
 %ptnum = round( 0.2*shellvol*1^3 )*2; %convert to angstroms, scale to some arbitrary working density
 %frac = [ptnum,ptnum*sf(2),ptnum*sf(1)]; %get fractions of the total to distribute between inner and outer
 rti = round(shellvol*sf(2)); %rto = ptnum-rti; %partition density between inner and outer radii
@@ -470,12 +470,10 @@ ptel = asin(2*rand(ptnum,1)-1); %random elevation angles, corrected for polar de
 [x,y,z] = sph2cart(ptaz,ptel,ptrad); %convert spherical coords to cartesian coords
 pts = [x,y,z];
 %ves = 0;
-n = size(pts,1); ix = randi(n,round(n/500),1);
+n = size(pts,1); ix = randi(n,round(n/1500),1);
 %perimix = randperm(n); permix = perimix(1:round(n/400)); perim = pts(perimix,:);
 perim = pts(ix,:);
-in = ones(size(pts,1),1)*5.5;
-size(pts)
-size(in)
+in = ones(size(pts,1),1)*60;
 pts = [pts,in];
 
 end
