@@ -82,9 +82,10 @@ for i=1:ves
     [pts,perim] = vesgen_sphere(600+randi(200),30+randi(5));
     lipid.perim = perim;
     lipid.adat = pts;
-    lipid.modelname{i} = append('vesicle',i);
+    lipid.modelname{i} = append('vesicle',string(i));
 end
-%layers{2} = lipid
+layers{2} = layers{1};
+layers{1} = lipid;
 
 %% functionalized model gen part
 boxsize = pix*[200,300,50];
@@ -371,9 +372,11 @@ sliceViewer(em+watervol);
 function split = fn_modelgen(layers,boxsize,n)
 dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
 %tmp = fieldnames(split);
+%{
 for i=1:numel(fieldnames)
     dynpts = [dynpts;split.(tmp{i})];
 end
+%}
 %dynpts = split;
 tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
@@ -469,6 +472,7 @@ pts = [x,y,z];
 %ves = 0;
 n = size(pts,1);
 perimix = randperm(n); permix = perimix(1:round(n/400));
+perim = pts(perimix,:);
 pts = [pts,ones(size(pts,1),1)*5.5];
 
 end
