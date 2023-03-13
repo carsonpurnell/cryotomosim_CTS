@@ -76,7 +76,14 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %edgedims = 3;
 
 %% atomic vesicle gen
-
+ves = 5;
+lipid.name = 'lipid'; flags = 'TODO';
+for i=1:ves
+    [pts,perim] = vesgen_sphere(600+randi(200),30+randi(5));
+    lipid.perim = perim;
+    lipid.adat = pts;
+    lipid.modelname{i} = append('vesicle',i);
+end
 
 %% functionalized model gen part
 boxsize = pix*[200,300,50];
@@ -420,6 +427,50 @@ fprintf('  placed %i, failed %i \n',count.s,count.f);
 end
 end
 
+
+function [pts,perim] = vesgen_sphere(r,thick)
+radi = r;
+rado=radi+thick;
+%radi = (rand*700+150)/pix; %randomly generate inner radius of vesicle (need better range)
+%rado = radi+(14+randi(14))/pix; %get outer radius from inner, should be constant something (7-9nm-ish?)
+%reduced outer radius distance for pearson, skew makes it wider
+%offset = round(rado+20); %centroid offset to prevent negative values
+%still not sure how to do the radius and what the radial density curve should look like
+
+w = (rado-radi)/1.5; %deviation of the membrane distribution
+sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2; %factor to correct for excess inner density
+%correction factor seems a bit off. little too much inner density still?
+
+%fill space between radii with tons of points
+%ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
+shellvol = pi*(rado^3-radi^3)*0.2; %volume of shell in pseudoatoms
+%ptnum = round( 0.2*shellvol*1^3 )*2; %convert to angstroms, scale to some arbitrary working density
+%frac = [ptnum,ptnum*sf(2),ptnum*sf(1)]; %get fractions of the total to distribute between inner and outer
+rti = round(shellvol*sf(2)); %rto = ptnum-rti; %partition density between inner and outer radii
+rto = round(shellvol*sf(1)); %slightly more points to balance out?
+ptnum = rti+rto;
+%ptrad = rand(ptnum,1)*(rado-radi)+radi; %uniform - flat monolayer
+switch 1
+    case 1 %mirrored pearson - relatively hard inner and outer edges
+        ptrad = [pearsrnd(radi,w,0.7,3,rti,1);pearsrnd(rado,w,-0.7,3,rto,1)];
+    case 2 %mirrored gamma - a bit narrower, more edge smoothing
+        ptrad = radi+[betarnd(3.0,6,rti,1);betarnd(6,3.0,rto,1)]*(rado-radi)*3.0;
+end
+%pearson is very slow, calls beta to call gamma which takes most of the time
+%need to reformulate the math so that density is hard-bound between ri/ro in angstroms
+
+ptaz = rand(ptnum,1)*pi*2; %random circular azimuth angles
+%ptel = rand(1,ptnum)*pi*2; %causes asymmetry, polar density accumulation
+ptel = asin(2*rand(ptnum,1)-1); %random elevation angles, corrected for polar density accumulation
+
+[x,y,z] = sph2cart(ptaz,ptel,ptrad); %convert spherical coords to cartesian coords
+pts = [x,y,z];
+%ves = 0;
+n = size(pts,1);
+perimix = randperm(n); permix = perimix(1:round(n/400));
+pts = [pts,ones(size(pts,1))*5.5];
+
+end
 
 %{
 %nah, need to build into atom2vol
