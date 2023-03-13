@@ -77,12 +77,12 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 
 %% atomic vesicle gen
 ves = 5;
-lipid.name = 'lipid'; flags = 'TODO';
+lipid(1).name = 'lipid'; flags = 'TODO';
 for i=1:ves
     [pts,perim] = vesgen_sphere(600+randi(200),30+randi(5));
-    lipid.perim = perim;
-    lipid.adat = pts;
-    lipid.modelname{i} = append('vesicle',string(i));
+    lipid(1).perim{1,i} = perim;
+    lipid(1).adat{1,i} = pts;
+    lipid(1).modelname{i} = append('vesicle');%,string(i));
 end
 layers{2} = layers{1};
 layers{1} = lipid;
@@ -386,9 +386,9 @@ ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves 
 for i=1:numel(layers)
 namelist = [layers{i}.modelname]; %slower than cell, but more consistent
 for j=1:numel(namelist)
-    if ~isfield(split,namelist{j})
+    %if ~isfield(split,namelist{j})
         split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
-    end
+    %end
 end
 end
 
@@ -470,10 +470,13 @@ ptel = asin(2*rand(ptnum,1)-1); %random elevation angles, corrected for polar de
 [x,y,z] = sph2cart(ptaz,ptel,ptrad); %convert spherical coords to cartesian coords
 pts = [x,y,z];
 %ves = 0;
-n = size(pts,1);
-perimix = randperm(n); permix = perimix(1:round(n/400));
-perim = pts(perimix,:);
-pts = [pts,ones(size(pts,1),1)*5.5];
+n = size(pts,1); ix = randi(n,round(n/500),1);
+%perimix = randperm(n); permix = perimix(1:round(n/400)); perim = pts(perimix,:);
+perim = pts(ix,:);
+in = ones(size(pts,1),1)*5.5;
+size(pts)
+size(in)
+pts = [pts,in];
 
 end
 
