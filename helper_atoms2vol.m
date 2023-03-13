@@ -34,7 +34,7 @@ for j=1:s
     if size(p,2)<4, p(:,4)=1; end %intensity==1 if not provided in 4th column
     p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5);
     for i=1:3
-        ix = p(:,i) < emsz(i) & p(:,i) > 1; %get points inside the box
+        ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %get points inside the box
         p = p(ix,:); %drop points outside the box
     end
     for i=1:size(p,1)
