@@ -95,6 +95,10 @@ tic
 split = fn_modelgen(layers,boxsize,n);
 toc
 
+%% function for vol, atlas, and split generation
+[vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
+sliceViewer(vol);
+
 %% randomly add to the points and concatenate them into a list
 boxsize = pix*[200,300,50];
 %modelpoints = pts+boxsize/2; modelid = atomid;
@@ -293,10 +297,6 @@ for i=1:numel(volid)
 end
 %sliceViewer(em);
 %}
-
-%% function for vol, atlas, and split generation
-[vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
-sliceViewer(vol);
 
 %% functionalized volume projection
 tic
