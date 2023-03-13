@@ -7,6 +7,7 @@ tic
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
+layers{1} = particles;
 toc
 %{
 for i=1:numel(particles)
@@ -74,11 +75,14 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %boxsize = pix*[200,300,50];
 %edgedims = 3;
 
+%% atomic vesicle gen
+
+
 %% functionalized model gen part
 boxsize = pix*[200,300,50];
 n = 1000; rng(3);
 tic
-split = fn_modelgen(particles,boxsize,n);
+split = fn_modelgen(inmod,layers,boxsize,n);
 toc
 
 %% randomly add to the points and concatenate them into a list
@@ -355,18 +359,23 @@ sliceViewer(em+watervol);
 
 %% internal functions
 
-function split = fn_modelgen(particles,boxsize,n)
-dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
+function split = fn_modelgen(inmod,layers,boxsize,n)
+%dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
+dynpts = inmod;
 tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
 ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
 
 %split = cell(1,numel(particles)+0); %split{1} = zeros(0,4); %single([0,0,0,0]);
-namelist = [particles.modelname]; %slower than cell, but more consistent
-for i=1:numel(namelist)
-    split.(namelist{i}) = zeros(0,4); %initialize split models of target ids
+for i=1:numel(layers)
+namelist = [layers{i}.modelname]; %slower than cell, but more consistent
+for j=1:numel(namelist)
+    split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
+end
 end
 
+for l = 1:numel(layers)
+    particles = layers{l};
 for i=1:n
     if rem(i,n/20)==0; fprintf('%i,',i); end
     
@@ -401,6 +410,7 @@ for i=1:n
     end
 end
 fprintf('  placed %i, failed %i \n',count.s,count.f);
+end
 end
 
 
