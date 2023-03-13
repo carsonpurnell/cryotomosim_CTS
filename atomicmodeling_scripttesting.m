@@ -81,8 +81,9 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %% functionalized model gen part
 boxsize = pix*[200,300,50];
 n = 1000; rng(3);
+
 tic
-split = fn_modelgen(inmod,layers,boxsize,n);
+split = fn_modelgen(layers,boxsize,n);
 toc
 
 %% randomly add to the points and concatenate them into a list
@@ -359,9 +360,13 @@ sliceViewer(em+watervol);
 
 %% internal functions
 
-function split = fn_modelgen(inmod,layers,boxsize,n)
-%dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
-dynpts = inmod;
+function split = fn_modelgen(layers,boxsize,n)
+dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
+%tmp = fieldnames(split);
+for i=1:numel(fieldnames)
+    dynpts = [dynpts;split.(tmp{i})];
+end
+%dynpts = split;
 tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
 ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
@@ -370,7 +375,9 @@ ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves 
 for i=1:numel(layers)
 namelist = [layers{i}.modelname]; %slower than cell, but more consistent
 for j=1:numel(namelist)
-    split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
+    if ~isfield(split,namelist{j})
+        split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
+    end
 end
 end
 
