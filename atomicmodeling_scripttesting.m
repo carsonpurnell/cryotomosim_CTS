@@ -84,6 +84,7 @@ for i=1:ves
     lipid.adat = pts;
     lipid.modelname{i} = append('vesicle',i);
 end
+%layers{2} = lipid
 
 %% functionalized model gen part
 boxsize = pix*[200,300,50];
@@ -468,7 +469,7 @@ pts = [x,y,z];
 %ves = 0;
 n = size(pts,1);
 perimix = randperm(n); permix = perimix(1:round(n/400));
-pts = [pts,ones(size(pts,1))*5.5];
+pts = [pts,ones(size(pts,1),1)*5.5];
 
 end
 
