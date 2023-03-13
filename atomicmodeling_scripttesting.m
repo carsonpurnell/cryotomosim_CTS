@@ -89,7 +89,7 @@ layers{1} = lipid;
 
 %% functionalized model gen part
 boxsize = pix*[200,300,50];
-n = 1000; rng(3);
+n = 100; rng(3);
 
 tic
 split = fn_modelgen(layers,boxsize,n);
@@ -470,7 +470,7 @@ ptel = asin(2*rand(ptnum,1)-1); %random elevation angles, corrected for polar de
 [x,y,z] = sph2cart(ptaz,ptel,ptrad); %convert spherical coords to cartesian coords
 pts = [x,y,z];
 %ves = 0;
-n = size(pts,1); ix = randi(n,round(n/1500),1);
+n = size(pts,1); ix = randi(n,round(n/500),1);
 %perimix = randperm(n); permix = perimix(1:round(n/400)); perim = pts(perimix,:);
 perim = pts(ix,:);
 in = ones(size(pts,1),1)*60;
