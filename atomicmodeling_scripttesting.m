@@ -72,15 +72,13 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %first try just flat top/bottom z planes
 %might try wavy version, definitely figure out x/y implementation as well
 %obviates need for starting points in the model too
-%boxsize = pix*[200,300,50];
-%edgedims = 3;
 
 %% atomic vesicle gen
 ves = 5;
 lipid(1).name = 'lipid'; lipid(1).flags = 'TODO';
 for i=1:ves
     [pts,perim] = vesgen_sphere(200+randi(300),20+randi(5));
-    lipid(1).perim{1,i} = perim;
+    lipid(1).perim{1,i} = perim; %alphashape of full shell >60s, not feasible
     lipid(1).adat{1,i} = pts;
     lipid(1).modelname{i} = append('vesicle');%,string(i));
 end
@@ -88,9 +86,9 @@ layers{2} = layers{1};
 layers{1} = lipid;
 
 %% functionalized model gen part
-boxsize = pix*[200,300,50];
+boxsize = pix*[300,400,50];
 n = 100; rng(3);
-n = [10,2000];
+n = [20,3000];
 tic
 split = fn_modelgen(layers,boxsize,n);
 toc
@@ -98,6 +96,8 @@ toc
 %% function for vol, atlas, and split generation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol);
+WriteMRC(vol+solv,pix,'atomicmodtest.mrc');
+
 
 %% randomly add to the points and concatenate them into a list
 boxsize = pix*[200,300,50];
