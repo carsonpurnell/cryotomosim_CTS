@@ -94,9 +94,9 @@ split = fn_modelgen(layers,boxsize,n);
 toc
 
 %% function for vol, atlas, and split generation
-[vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
+[vol,solv,atlas,splitvol] = helper_atoms2vol(14,split,boxsize);
 sliceViewer(vol);
-WriteMRC(vol+solv,pix,'atomicmodtest.mrc');
+WriteMRC(vol+solv,14,'atomicmodtest.mrc');
 
 
 %% randomly add to the points and concatenate them into a list
