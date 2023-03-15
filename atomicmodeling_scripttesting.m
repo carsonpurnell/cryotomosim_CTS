@@ -2,7 +2,7 @@
 pix = 12; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
-    'actin__6t1y_13x2.pdb'};
+    'actin__6t1y_13x2.pdb','ATPS.membrane.complex.cif'};
 tic
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
@@ -88,9 +88,10 @@ layers{1} = lipid;
 %% functionalized model gen part
 boxsize = pix*[300,400,50];
 n = 100; rng(3);
-n = [20,3000];
+n = [20,1000];
 tic
-split = fn_modelgen(layers,boxsize,n);
+[split,sh] = fn_modelgen(layers,boxsize,n);
+plot(sh)
 toc
 
 %% function for vol, atlas, and split generation
@@ -369,7 +370,7 @@ sliceViewer(em+watervol);
 
 %% internal functions
 
-function split = fn_modelgen(layers,boxsize,niter)
+function [split,sh] = fn_modelgen(layers,boxsize,niter)
 dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
 %tmp = fieldnames(split);
 %{
@@ -392,9 +393,9 @@ for j=1:numel(namelist)
 end
 end
 
-for l = 1:numel(layers)
-    particles = layers{l};
-    n = niter(l);
+for lc = 1:numel(layers)
+    particles = layers{lc};
+    n = niter(lc);
 for i=1:n
     if rem(i,n/20)==0; fprintf('%i,',i); end
     
@@ -427,6 +428,9 @@ for i=1:n
     else
         count.f=count.f+1;
     end
+end
+if lc==1
+    tic; sh=alphaShape(double(dynpts),12); toc; %plot(sh); drawnow;
 end
 fprintf('  placed %i, failed %i \n',count.s,count.f);
 end
