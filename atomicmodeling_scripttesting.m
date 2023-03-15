@@ -91,13 +91,13 @@ n = 100; rng(3);
 n = [20,1000];
 tic
 [split,sh] = fn_modelgen(layers,boxsize,n);
-plot(sh)
+%plot(sh)
 toc
 
 %% function for vol, atlas, and split generation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(14,split,boxsize);
 sliceViewer(vol);
-WriteMRC(vol+solv,14,'atomicmodtest.mrc');
+%WriteMRC(vol+solv,14,'atomicmodtest.mrc');
 
 
 %% randomly add to the points and concatenate them into a list
@@ -478,7 +478,7 @@ pts = [x,y,z];
 n = size(pts,1); ix = randi(n,round(n/50),1);
 %perimix = randperm(n); permix = perimix(1:round(n/400)); perim = pts(perimix,:);
 perim = pts(ix,:);
-in = ones(size(pts,1),1)*05;
+in = ones(size(pts,1),1)*03;
 pts = [pts,in];
 
 end
