@@ -26,10 +26,8 @@ end
 
 %need more control options over thickness/radius and variability of both
 %cell array of inputs for each? or just vector?
-
 count.s = 0; count.f = 0;
-memvol = vol*0;
-vescen = []; 
+memvol = vol*0; vescen = []; 
 ves = cell(1,num);
 vesvol = memvol; skel = vesvol;
 label = 1;
