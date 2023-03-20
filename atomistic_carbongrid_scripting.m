@@ -8,7 +8,7 @@ hcen = [boxsize(1)/2+randi(120),radius+20+randi(120)]; %offsets for the hole cen
 filmsize = boxsize+pad*2; filmsize(3) = thick;
 
 density = 2.5/(1e8)^3/12*6.022e23; %carbons per A^3, approx 0.1
-atomfrac = 4;
+atomfrac = 2;
 ccount = round(density*prod(filmsize)/atomfrac);
 carbons = rand(ccount,3).*filmsize-pad;
 carbons(:,3) = carbons(:,3)+(boxsize(3)-thick)/2;
