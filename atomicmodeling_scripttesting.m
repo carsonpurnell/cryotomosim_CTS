@@ -76,6 +76,8 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %obviates need for starting points in the model too
 
 %% atomic vesicle gen
+%currently just a hamfisted first-pass in the modelgen. separate implementation needed? need better outputs
+%membrane-only implementation could generate spheres based on the random location
 ves = 5;
 lipid(1).name = 'lipid'; lipid(1).flags = 'TODO';
 for i=1:ves
