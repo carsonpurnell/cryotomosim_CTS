@@ -19,7 +19,7 @@ if nargin<4, offset=[0,0,0]; end
 %need rough estimate of average volume for organic atoms
 %very approximately 1.8a radii
 %eventually might do individual vdw radii individually
-avol = 4/3*pi*(1.4^3); %eyeballed volume of the average organic atom
+avol = 4/3*pi*(1.9^3); %eyeballed volume of the average organic atom
 h20 = 3.041; %computed scatter factor for H2O
 
 emsz = floor(sz/pix); 
