@@ -2,8 +2,10 @@
 pix = 12; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
-    'actin__6t1y_13x2.pdb','ATPS.membrane.complex.cif','5fil.cif','7tjz.cif'};
+    'actin__6t1y_13x2.pdb',...
+    'ATPS.membrane.complex.cif','a5fil.cif'};%,'a7tjz.cif'};
 tic
+%input = {'ATPS.membrane.complex.cif','a5fil.cif'};
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
@@ -88,7 +90,7 @@ layers{1} = lipid;
 %% functionalized model gen part
 boxsize = pix*[400,500,50];
 n = 100; rng(3);
-n = [10,1000];
+n = [20,2000];
 tic
 [split,sh] = fn_modelgen(layers,boxsize,n);
 %plot(sh)
