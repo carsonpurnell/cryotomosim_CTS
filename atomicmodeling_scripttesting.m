@@ -480,7 +480,7 @@ pts = [x,y,z];
 n = size(pts,1); ix = randi(n,round(n/50),1);
 %perimix = randperm(n); permix = perimix(1:round(n/400)); perim = pts(perimix,:);
 perim = pts(ix,:);
-in = ones(size(pts,1),1)*03;
+in = ones(size(pts,1),1)*2.6;
 pts = [pts,in];
 
 end
