@@ -86,18 +86,18 @@ layers{2} = layers{1};
 layers{1} = lipid;
 
 %% functionalized model gen part
-boxsize = pix*[300,400,50];
+boxsize = pix*[400,500,50];
 n = 100; rng(3);
-n = [20,1000];
+n = [20,5000];
 tic
 [split,sh] = fn_modelgen(layers,boxsize,n);
 %plot(sh)
 toc
 
-%% function for vol, atlas, and split generation
-[vol,solv,atlas,splitvol] = helper_atoms2vol(14,split,boxsize);
-sliceViewer(vol);
-%WriteMRC(vol+solv,14,'atomicmodtest.mrc');
+%% function for vol, atlas, and split generation + water solvation
+[vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
+sliceViewer(vol+solv);
+WriteMRC(vol+solv,14,'atomicmodtest.mrc');
 
 
 %% randomly add to the points and concatenate them into a list
