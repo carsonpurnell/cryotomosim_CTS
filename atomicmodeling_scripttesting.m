@@ -81,7 +81,7 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 ves = 5;
 lipid(1).name = 'lipid'; lipid(1).flags = 'TODO';
 for i=1:ves
-    [pts,perim] = vesgen_sphere(200+randi(300),20+randi(5));
+    [pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
     lipid(1).perim{1,i} = perim; %alphashape of full shell >60s, not feasible
     lipid(1).adat{1,i} = pts;
     lipid(1).modelname{i} = append('vesicle');%,string(i));
@@ -92,7 +92,7 @@ layers{1} = lipid;
 %% functionalized model gen part
 boxsize = pix*[300,400,50];
 n = 100; rng(3);
-n = [20,1000];
+n = [20,2000];
 tic
 [split,sh] = fn_modelgen(layers,boxsize,n);
 %plot(sh)
@@ -101,7 +101,7 @@ toc
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol+solv);
-%WriteMRC(vol+solv,14,'atomicmodtest_lipid2.mrc');
+WriteMRC(vol+solv,14,'atomicmodtest_lipid3.mrc');
 
 
 %% randomly add to the points and concatenate them into a list
