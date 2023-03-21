@@ -101,7 +101,7 @@ toc
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol+solv);
-WriteMRC(vol+solv,14,'atomicmodtest_lipid2.mrc');
+%WriteMRC(vol+solv,14,'atomicmodtest_lipid2.mrc');
 
 
 %% randomly add to the points and concatenate them into a list
