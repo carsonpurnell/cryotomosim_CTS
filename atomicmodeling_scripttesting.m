@@ -90,9 +90,9 @@ layers{2} = layers{1};
 layers{1} = lipid;
 
 %% functionalized model gen part
-boxsize = pix*[400,500,50];
+boxsize = pix*[300,400,50];
 n = 100; rng(3);
-n = [20,2000];
+n = [20,1000];
 tic
 [split,sh] = fn_modelgen(layers,boxsize,n);
 %plot(sh)
@@ -101,7 +101,7 @@ toc
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol+solv);
-WriteMRC(vol+solv,14,'atomicmodtest.mrc');
+%WriteMRC(vol+solv,14,'atomicmodtest.mrc');
 
 
 %% randomly add to the points and concatenate them into a list
@@ -456,7 +456,7 @@ sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2; %factor to correct for excess inne
 
 %fill space between radii with tons of points
 %ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
-shellvol = pi*(rado^3-radi^3)*0.14; %volume of shell in pseudoatoms
+shellvol = pi*(rado^3-radi^3)*0.17; %volume of shell in pseudoatoms
 %ptnum = round( 0.2*shellvol*1^3 )*2; %convert to angstroms, scale to some arbitrary working density
 %frac = [ptnum,ptnum*sf(2),ptnum*sf(1)]; %get fractions of the total to distribute between inner and outer
 rti = round(shellvol*sf(2)); %rto = ptnum-rti; %partition density between inner and outer radii
@@ -482,7 +482,7 @@ pts = [x,y,z];
 n = size(pts,1); ix = randi(n,round(n/50),1);
 %perimix = randperm(n); permix = perimix(1:round(n/400)); perim = pts(perimix,:);
 perim = pts(ix,:);
-in = ones(size(pts,1),1)*2.6;
+in = ones(size(pts,1),1)*2.9;
 pts = [pts,in];
 
 end
