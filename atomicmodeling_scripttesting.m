@@ -94,14 +94,14 @@ boxsize = pix*[300,400,50];
 n = 100; rng(3);
 n = [20,2000];
 tic
-[split,sh] = fn_modelgen(layers,boxsize,n);
+[split,sh] = fn_modelgen(layers,boxsize,n,csplit);
 %plot(sh)
 toc
 
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol+solv);
-WriteMRC(vol+solv,14,'atomicmodtest_lipid4.mrc');
+%WriteMRC(vol+solv,14,'atomicmodtest_lipid4.mrc');
 
 
 %% randomly add to the points and concatenate them into a list
@@ -374,8 +374,16 @@ sliceViewer(em+watervol);
 
 %% internal functions
 
-function [split,sh] = fn_modelgen(layers,boxsize,niter)
+function [split,sh] = fn_modelgen(layers,boxsize,niter,split)
 dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
+if nargin<4
+    split = struct; %dynpts = single(zeros(0,3));
+else
+    fn = fieldnames(split);
+    for i=1:numel(fieldnames)
+        dynpts = [dynpts,;split.(fn)];
+    end
+end
 %tmp = fieldnames(split);
 %{
 for i=1:numel(fieldnames)
@@ -391,9 +399,9 @@ ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves 
 for i=1:numel(layers)
 namelist = [layers{i}.modelname]; %slower than cell, but more consistent
 for j=1:numel(namelist)
-    %if ~isfield(split,namelist{j})
+    if ~isfield(split,namelist{j})
         split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
-    %end
+    end
 end
 end
 
