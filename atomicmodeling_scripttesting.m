@@ -3,7 +3,7 @@ pix = 12; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb',...
-    'ATPS.membrane.complex.cif','a5fil.cif'};%,'a7tjz.cif'};
+    'ATPS.membrane.complex.cif','a5fil.cif','a7tjz.cif'};
 tic
 %input = {'ATPS.membrane.complex.cif','a5fil.cif'};
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
@@ -101,7 +101,7 @@ toc
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol+solv);
-WriteMRC(vol+solv,14,'atomicmodtest_lipid3.mrc');
+WriteMRC(vol+solv,14,'atomicmodtest_lipid4.mrc');
 
 
 %% randomly add to the points and concatenate them into a list
