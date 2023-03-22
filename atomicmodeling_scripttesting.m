@@ -381,7 +381,7 @@ if nargin<4
 else
     fn = fieldnames(split);
     for i=1:numel(fn)
-        dynpts = [dynpts,;split.(fn)];
+        dynpts = [dynpts,;split.(fn{i})];
     end
 end
 %tmp = fieldnames(split);
