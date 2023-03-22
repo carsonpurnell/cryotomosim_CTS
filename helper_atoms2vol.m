@@ -43,7 +43,7 @@ for j=1:s
         solv(x,y,z) = solv(x,y,z)-avol*(rand*.4+0.8);
     end
 end
-solv = max(solv,0)/32*h20; %compute waters in pixels from remaining volume
+solv = max(solv,0)/35*h20; %compute waters in pixels from remaining volume
 tmp = cat(4,zeros(emsz),split);
 [~,atlas] = max(tmp,[],4); atlas = atlas-1;
 vol = sum(split,4);
