@@ -380,7 +380,7 @@ if nargin<4
     split = struct; %dynpts = single(zeros(0,3));
 else
     fn = fieldnames(split);
-    for i=1:numel(fieldnames)
+    for i=1:numel(fn)
         dynpts = [dynpts,;split.(fn)];
     end
 end
