@@ -94,7 +94,7 @@ boxsize = pix*[300,400,50];
 n = 100; rng(3);
 n = [10,1000];
 tic
-[split,sh] = fn_modelgen(layers,boxsize,n,csplit);
+[split] = fn_modelgen(layers,boxsize,n,csplit);
 %plot(sh)
 toc
 
@@ -103,7 +103,7 @@ toc
 sliceViewer(vol+solv);
 %WriteMRC(vol+solv,14,'atomicmodtest_lipid4.mrc');
 
-
+%{
 %% randomly add to the points and concatenate them into a list
 boxsize = pix*[200,300,50];
 %modelpoints = pts+boxsize/2; modelid = atomid;
@@ -317,17 +317,19 @@ em = sum(splitvol,4); %small difference with em in a few scattered points
 %atlas2 = min(atlas,proj); %zero out empty voxels to separate 0 from the first split
 toc
 sliceViewer(em);
-
+%}
 %% solvation op2: flat density+variance window
 %subtract volume from each voxel, estimate waters per voxel from remaining volume with random portion
 %works well, need better values and improved randomization. should probably be built into helper_pt2vol
 %now is built in. kind of.
+%{
 tic
 allatoms = vertcat(split{2:end,1});
 %solvvol = ifcn_solv(pix,allatoms(:,1:3),boxsize); %similar to helper_pt2vol
 [vol,solv] = helper_atoms2vol(pix,allatoms,boxsize);
 sliceViewer(solv+vol);
 toc
+%}
 
 %% solvation testing with explicit water particles - way too slow for even small models
 %just too slow to prune millions of points.
@@ -374,7 +376,7 @@ sliceViewer(em+watervol);
 
 %% internal functions
 
-function [split,sh] = fn_modelgen(layers,boxsize,niter,split)
+function [split] = fn_modelgen(layers,boxsize,niter,split)
 dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
 if nargin<4
     split = struct; %ixincat = 1; %dynpts = single(zeros(0,3));
@@ -445,7 +447,7 @@ for i=1:n
     end
 end
 if lc==1
-    tic; sh=alphaShape(double(dynpts),12); toc; %plot(sh); drawnow;
+    %tic; sh=alphaShape(double(dynpts),12); toc; %plot(sh); drawnow;
 end
 fprintf('  placed %i, failed %i \n',count.s,count.f);
 end
