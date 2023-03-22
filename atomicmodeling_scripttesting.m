@@ -377,13 +377,16 @@ sliceViewer(em+watervol);
 function [split,sh] = fn_modelgen(layers,boxsize,niter,split)
 dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
 if nargin<4
-    split = struct; %dynpts = single(zeros(0,3));
+    split = struct; %ixincat = 1; %dynpts = single(zeros(0,3));
 else
     fn = fieldnames(split);
     for i=1:numel(fn)
         dynpts = [dynpts,;split.(fn{i})];
     end
 end
+ixincat = size(dynpts,1)+1; %where to start the indexing
+
+
 %tmp = fieldnames(split);
 %{
 for i=1:numel(fieldnames)
@@ -393,7 +396,7 @@ end
 %dynpts = split;
 tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
-ixincat = 1; %index 1 to overwrite the initial preallocation point, 2 preserves it
+ %index 1 to overwrite the initial preallocation point, 2 preserves it
 
 %split = cell(1,numel(particles)+0); %split{1} = zeros(0,4); %single([0,0,0,0]);
 for i=1:numel(layers)
