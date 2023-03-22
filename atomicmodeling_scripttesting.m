@@ -381,7 +381,7 @@ if nargin<4
 else
     fn = fieldnames(split);
     for i=1:numel(fn)
-        dynpts = [dynpts,;split.(fn{i})];
+        dynpts = [dynpts,;split.(fn{i})(:,1:3)];
     end
 end
 ixincat = size(dynpts,1)+1; %where to start the indexing
@@ -421,7 +421,7 @@ for i=1:n
     tform = randomAffine3d('rotation',[0 360]); 
     
     ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %transform test points
-
+    
     err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
     %need to replace either with mutable quadtree or short-circuit kdtree, it's ~80% of runtime
     
