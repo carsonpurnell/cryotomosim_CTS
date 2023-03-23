@@ -92,9 +92,9 @@ layers{1} = lipid;
 %% functionalized model gen part
 boxsize = pix*[300,400,50];
 n = 100; rng(3);
-n = [10,3000];
+n = [5,1000];
 tic
-[split] = fn_modelgen(layers,boxsize,n,csplit);
+[split] = fn_modelgen(layers,boxsize,n,split);
 %plot(sh)
 toc
 
