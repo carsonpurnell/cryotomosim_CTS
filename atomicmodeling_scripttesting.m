@@ -92,7 +92,7 @@ layers{1} = lipid;
 %% functionalized model gen part
 boxsize = pix*[300,400,50];
 n = 100; rng(3);
-n = [10,1000];
+n = [10,3000];
 tic
 [split] = fn_modelgen(layers,boxsize,n,csplit);
 %plot(sh)
@@ -682,7 +682,7 @@ function err = proxtest(c,pts,tol)
 l = min(pts,[],1)-tol; %mins in each dim
 h = max(pts,[],1)+tol; %maxes in each dim
 ix = c>l & c<h; %a = prod(a,2);
-ix = find(sum(ix,2)>2);
+ix = find(sum(ix,2)>2); %bottleneck - just too many points. mutable octree should be faster overall
 err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but progressive slowdown
 if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     buck = round( size(c,1)/1650 ); %very rough, is probably not linear scale
