@@ -77,8 +77,6 @@ end
 %need to center on 0,0,0
 %particles.atomid = data(:,1)';
 %particles.modelnames = names';
-%particles
-%most of this needs to go into the volparser
 %particles.radius = max(pdist2(particles.atomcoords,single([0,0,0])));
 %particles.vol = vol;
 %particles.sumvol = sumvol;
