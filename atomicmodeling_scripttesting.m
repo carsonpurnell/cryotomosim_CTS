@@ -393,10 +393,11 @@ n = prod(boxsize)/500; %number of map points
 locgrid = rand(n,3).*boxsize; %generate map points
 gtree = KDTreeSearcher(dynpts);
 [~,d] = rangesearch(gtree,locgrid,gridmaptol,'SortIndices',0);
+size(d)
 d = [d{:}]; %if any(d<gridmaptol), err=1; end
-locgrid = locgrid(d>gridmaptol,:);
-size(locgrid)
-plot3(locgrid(:,1),locgrid(:,2),locgrid(:,3)); axis equal
+%locgrid = locgrid(d>gridmaptol,:);
+%size(locgrid)
+%plot3(locgrid(:,1),locgrid(:,2),locgrid(:,3)); axis equal
 
 %tmp = fieldnames(split);
 %{
