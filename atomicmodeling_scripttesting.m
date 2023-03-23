@@ -94,7 +94,7 @@ boxsize = pix*[300,400,50];
 n = 100; rng(3);
 n = [5,1000];
 tic
-[split] = fn_modelgen(layers,boxsize,n,split);
+[split] = fn_modelgen(layers,boxsize,n,csplit);
 %plot(sh)
 toc
 
@@ -388,6 +388,15 @@ else
 end
 ixincat = size(dynpts,1)+1; %where to start the indexing
 
+gridmaptol = 12;
+n = prod(boxsize)/500; %number of map points
+locgrid = rand(n,3).*boxsize; %generate map points
+gtree = KDTreeSearcher(dynpts);
+[~,d] = rangesearch(gtree,locgrid,gridmaptol,'SortIndices',0);
+d = [d{:}]; %if any(d<gridmaptol), err=1; end
+locgrid = locgrid(d>gridmaptol,:);
+size(locgrid)
+plot3(locgrid(:,1),locgrid(:,2),locgrid(:,3)); axis equal
 
 %tmp = fieldnames(split);
 %{
