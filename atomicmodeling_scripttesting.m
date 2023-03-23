@@ -389,15 +389,24 @@ end
 ixincat = size(dynpts,1)+1; %where to start the indexing
 
 gridmaptol = 12;
-n = prod(boxsize)/500; %number of map points
+n = prod(boxsize)/(gridmaptol^3); %number of map points
 locgrid = rand(n,3).*boxsize; %generate map points
 gtree = KDTreeSearcher(dynpts);
 [~,d] = rangesearch(gtree,locgrid,gridmaptol,'SortIndices',0);
-size(d)
-d = [d{:}]; %if any(d<gridmaptol), err=1; end
+%size(d)
+p = zeros(1,numel(d));
+for i=1:numel(d)
+    if isempty(d{i})
+        p(i) = 1;
+    %else
+    %    p(i) = 0;
+    end
+end
+locgrid = locgrid(p,:);
+%d = [d{:}]; %if any(d<gridmaptol), err=1; end
 %locgrid = locgrid(d>gridmaptol,:);
-%size(locgrid)
-%plot3(locgrid(:,1),locgrid(:,2),locgrid(:,3)); axis equal
+size(locgrid)
+plot3(locgrid(:,1),locgrid(:,2),locgrid(:,3)); axis equal
 
 %tmp = fieldnames(split);
 %{
