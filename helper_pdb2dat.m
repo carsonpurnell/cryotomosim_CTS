@@ -62,7 +62,7 @@ for i=1:size(data,1)
     %k = boundary(tmpco,0.1); p2 = tmpco(k,:); %boundary is slower, just alphashape/facets with more overhead
     
     n = size(tmpco,1);
-    ix = randperm(n); ix = ix(1:round(n/400));
+    ix = randperm(n); ix = ix(1:round(n/200));
     pi = tmpco(ix,1:3);
     p = single([p;pi]); %need to add back 1-3% or so of points to prevent inside placements
     particles.perim{i} = unique(p,'rows');
