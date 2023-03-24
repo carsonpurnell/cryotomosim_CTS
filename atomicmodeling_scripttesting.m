@@ -388,9 +388,26 @@ else
 end
 ixincat = size(dynpts,1)+1; %where to start the indexing
 
+% available location mapping - probably not going to be faster due to needing to prune full list after
+% each successful placement
+%instead, after octree tech, do a basic check to see how many points are nearby
+%need the dynamic octree!
+%{
 gridmaptol = 12;
 n = prod(boxsize)/((gridmaptol*1)^3); %number of map points
 locgrid = rand(n,3).*boxsize; %generate map points
+gtree = KDTreeSearcher(dynpts);
+[~,d] = rangesearch(gtree,locgrid,gridmaptol,'SortIndices',0);
+p = zeros(1,numel(d));
+for i=1:numel(d)
+    if isempty(d{i}), p(i) = 1; end
+end
+locgrid = locgrid(logical(p),:);
+
+%[lgridvol] = helper_atoms2vol(6,locgrid,boxsize);
+%sliceViewer(lgridvol);
+%}
+
 
 %d = [d{:}]; %if any(d<gridmaptol), err=1; end
 %locgrid = locgrid(d>gridmaptol,:);
@@ -466,16 +483,6 @@ end
 fprintf('  placed %i, failed %i \n',count.s,count.f);
 end
 
-gtree = KDTreeSearcher(dynpts);
-    [~,d] = rangesearch(gtree,locgrid,gridmaptol,'SortIndices',0);
-    p = zeros(1,numel(d));
-    for i=1:numel(d)
-        if isempty(d{i}), p(i) = 1; end
-    end
-    locgrid = locgrid(logical(p),:);
-    
-[lgridvol] = helper_atoms2vol(6,locgrid,boxsize);
-sliceViewer(lgridvol);
 end
 
 
