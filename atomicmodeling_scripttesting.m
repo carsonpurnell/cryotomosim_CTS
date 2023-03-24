@@ -482,8 +482,7 @@ if lc==1
 end
 fprintf('  placed %i, failed %i \n',count.s,count.f);
 end
-tic; ot = OcTree(dynpts,'binCapacity',1e3); toc;
-ot.plot3; axis equal;
+%tic; ot = OcTree(dynpts,'binCapacity',1e3); toc; ot.plot3; axis equal;
 end
 
 
