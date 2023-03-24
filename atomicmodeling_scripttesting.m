@@ -482,7 +482,8 @@ if lc==1
 end
 fprintf('  placed %i, failed %i \n',count.s,count.f);
 end
-
+tic; ot = OcTree(dynpts,'binCapacity',1e3); toc;
+ot.plot3; axis equal;
 end
 
 
@@ -719,9 +720,17 @@ err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but pr
 if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     buck = round( size(c,1)/1650 ); %very rough, is probably not linear scale
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
+    ot = OcTree(c(ix,:),'binCapacity',buck);
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
     %the range search is now the slow part, ~40% of runetime for 2K iters
     d = [d{:}]; if any(d<tol), err=1; end %test if any points closer than 2A
+end
+end
+function err = sskdtrange(kdt,pts,tol)
+err = 0;
+for i=1:size(pts,1)
+    [~,d] = rangesearch(kdt,pts(i,:),tol,'SortIndices',0);
+    if any([d{:}]<tol); err = 1; break; end
 end
 end
 
