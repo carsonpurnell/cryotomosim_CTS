@@ -383,10 +383,13 @@ if nargin<4
 else
     fn = fieldnames(split);
     for i=1:numel(fn)
-        %tmp = split.(fn{i})(:,1:3);
+        ix = randi(size(split.(fn{i})(:,1:3),1),size(split.(fn{i})(:,1:3),1)/10,1);
+        ix = unique(ix);
+        tmp = split.(fn{i})(ix,1:3);
         %l = size(tmp,1);
         %dynpts(end+1:end+l,:) = tmp;
-        dynpts = [dynpts;split.(fn{i})(:,1:3)];
+        dynpts = [dynpts;tmp];
+        %dynpts = [dynpts;split.(fn{i})(:,1:3)];
     end
 end
 ixincat = size(dynpts,1)+1; %where to start the indexing
