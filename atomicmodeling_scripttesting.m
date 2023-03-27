@@ -90,9 +90,9 @@ layers{2} = layers{1};
 layers{1} = lipid;
 
 %% functionalized model gen part
-boxsize = pix*[200,300,50];
+boxsize = pix*[300,400,50];
 n = 100; rng(3);
-n = [5,1000];
+n = [20,3000];
 tic
 [split] = fn_modelgen(layers,boxsize,n,csplit);
 %plot(sh)
@@ -383,11 +383,10 @@ if nargin<4
 else
     fn = fieldnames(split);
     for i=1:numel(fn)
-        ix = randi(size(split.(fn{i})(:,1:3),1),round(size(split.(fn{i})(:,1:3),1)/10),1);
-        ix = unique(ix);
+        s = size(split.(fn{i})(:,1:3),1);
+        ix = randi(s,round(s/10),1); ix = unique(ix);
         tmp = split.(fn{i})(ix,1:3);
-        %l = size(tmp,1);
-        %dynpts(end+1:end+l,:) = tmp;
+        %l = size(tmp,1); %dynpts(end+1:end+l,:) = tmp;
         dynpts = [dynpts;tmp];
         %dynpts = [dynpts;split.(fn{i})(:,1:3)];
     end
