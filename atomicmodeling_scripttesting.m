@@ -383,7 +383,7 @@ if nargin<4
 else
     fn = fieldnames(split);
     for i=1:numel(fn)
-        ix = randi(size(split.(fn{i})(:,1:3),1),round(size(split.(fn{i})(:,1:3),1)/100),1);
+        ix = randi(size(split.(fn{i})(:,1:3),1),round(size(split.(fn{i})(:,1:3),1)/10),1);
         ix = unique(ix);
         tmp = split.(fn{i})(ix,1:3);
         %l = size(tmp,1);
