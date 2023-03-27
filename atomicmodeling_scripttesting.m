@@ -383,7 +383,10 @@ if nargin<4
 else
     fn = fieldnames(split);
     for i=1:numel(fn)
-        dynpts = [dynpts,;split.(fn{i})(:,1:3)];
+        tmp = split.(fn{i})(:,1:3);
+        l = size(tmp,1);
+        dynpts(end+1:end+l,:) = tmp;
+        %dynpts = [dynpts;tmp];
     end
 end
 ixincat = size(dynpts,1)+1; %where to start the indexing
@@ -719,7 +722,7 @@ err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but pr
 if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     buck = round( size(c,1)/1650 ); %very rough, is probably not linear scale
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
-    ot = OcTree(c(ix,:),'binCapacity',buck);
+    %ot = OcTree(c(ix,:),'binCapacity',buck);
     %
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
     %the range search is now the slow part, ~40% of runetime for 2K iters
