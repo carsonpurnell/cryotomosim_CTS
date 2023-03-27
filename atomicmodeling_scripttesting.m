@@ -446,9 +446,6 @@ for lc = 1:numel(layers)
     particles = layers{lc};
     n = niter(lc);
     
-    
-    
-
 for i=1:n
     if rem(i,n/20)==0; fprintf('%i,',i); end
     
