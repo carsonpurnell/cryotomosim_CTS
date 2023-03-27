@@ -726,6 +726,7 @@ if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     d = [d{:}]; if any(d<tol), err=1; end %test if any points closer than 2A
 end
 end
+
 function err = sskdtrange(kdt,pts,tol)
 err = 0;
 for i=1:size(pts,1)
