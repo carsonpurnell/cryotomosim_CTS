@@ -32,9 +32,8 @@ for j=1:s
         p = pts;
     end
     if size(p,2)<4, p(:,4)=1; end %intensity==1 if not provided in 4th column
-    m = p(:,1); p = p(:,1:3);
-    p = round( (p-offset)/pix+0.5 );
-    %p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5);
+    m = p(:,4); p = p(:,1:3); p = round( (p-offset)/pix+0.5 );
+    %p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5); %very slow intermediate array assignments
     for i=1:3
         ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %get points inside the box
         p = p(ix,:); %drop points outside the box
