@@ -713,8 +713,7 @@ ix = ix(ix>0);
 %}
 end
 function err = proxtest(c,pts,tol)
-l = min(pts,[],1)-tol; %mins in each dim
-h = max(pts,[],1)+tol; %maxes in each dim
+l = min(pts,[],1)-tol; h = max(pts,[],1)+tol; %low and high bounds per dimension
 ix = c>l & c<h; %a = prod(a,2);
 ix = find(sum(ix,2)>2); %bottleneck - just too many points. mutable octree should be faster overall
 err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but progressive slowdown
@@ -722,12 +721,9 @@ if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     buck = round( size(c,1)/1650 ); %very rough, is probably not linear scale
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
     %ot = OcTree(c(ix,:),'binCapacity',buck);
-    %
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
     %the range search is now the slow part, ~40% of runetime for 2K iters
     d = [d{:}]; if any(d<tol), err=1; end %test if any points closer than 2A
-    %}
-    %err = sskdtrange(modeltree,pts,tol);
 end
 end
 function err = sskdtrange(kdt,pts,tol)
