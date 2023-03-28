@@ -19,5 +19,4 @@ carbons(:,4) = 2.5088*atomfrac/2; %scatter val for carbon
 
 %x = 1:100; y = 1.3.^x; plot(x,y);
 %plot3(carbons(:,1),carbons(:,2),carbons(:,3),'.'); axis equal
-
 %[vol] = helper_atoms2vol(pix,carbons,boxsize); sliceViewer(vol);
