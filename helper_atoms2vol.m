@@ -1,6 +1,7 @@
 function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %[vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %
+%
 if isstruct(pts)
     names = fieldnames(pts); pts = struct2cell(pts);
 else
