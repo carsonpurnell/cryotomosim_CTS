@@ -1,6 +1,6 @@
 %% atomistic carbon grid generator
 pix = 12;
-boxsize = pix*[300,400,50];
+%boxsize = pix*[300,400,50];
 pad = [pix,pix,0];
 radius = 1e4; %hole radius
 thick = 150; %carbon thickness
