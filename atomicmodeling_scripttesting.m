@@ -91,7 +91,7 @@ layers{1} = lipid;
 
 %% functionalized model gen part
 boxsize = pix*[400,500,50];
-n = 6000; rng(3);
+n = 6000; %rng(3);
 n = [30,2000];
 tic
 [split] = fn_modelgen(layers,boxsize,n);%,csplit);
