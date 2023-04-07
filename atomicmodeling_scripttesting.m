@@ -92,9 +92,9 @@ layers{1} = lipid;
 %% functionalized model gen part
 boxsize = pix*[400,500,50];
 n = 6000; rng(3);
-n = [50,5000];
+n = [30,2000];
 tic
-[split] = fn_modelgen(layers,boxsize,n,csplit);
+[split] = fn_modelgen(layers,boxsize,n);%,csplit);
 %plot(sh)
 toc
 
@@ -439,6 +439,7 @@ for j=1:numel(namelist)
     if ~isfield(split,namelist{j})
         split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
     end
+    dx.(namelist{j}) = size(split.(namelist{j}),1)+1;
 end
 end
 
@@ -464,16 +465,23 @@ for i=1:n
         tpts = sel.adat{sub};
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
-        % % inlined dyncat code % %
+        % % inlined dyncat code, dynpts % %
         l = size(ovcheck,1); e = ixincat+l-1;
         if e>size(dynpts,1)
             dynpts(ixincat:(size(dynpts,1)+l)*3,:) = 0;
         end
         dynpts(ixincat:e,:) = ovcheck; ixincat = ixincat+l;
+        % % inlined dyncat code, split assignments % %
+        tdx = dx.(sel.modelname{sub}); %MUCH faster than hard cat, ~7x.
+        l = size(tpts,1); e = tdx+l-1;
+        if e>size(split.(sel.modelname{sub}),1)
+            split.(sel.modelname{sub})(tdx:(size(tpts,1)+l)*3,:) = 0;
+        end
+        split.(sel.modelname{sub})(tdx:e,:) = tpts; dx.(sel.modelname{sub}) = tdx+l;
         % % inlined dyncat code % %
         
         %split{which} = [split{which};tpts]; %add to splitvol - cell version
-        split.(sel.modelname{sub}) = [split.(sel.modelname{sub});tpts]; %struct a bit slower :(
+        %split.(sel.modelname{sub}) = [split.(sel.modelname{sub});tpts]; %struct a bit slower :(
         count.s=count.s+1;
     else
         count.f=count.f+1;
@@ -483,6 +491,8 @@ if lc==1
     %tic; sh=alphaShape(double(dynpts),12); toc; %plot(sh); drawnow;
 end
 fprintf('  placed %i, failed %i \n',count.s,count.f);
+
+%trim trailing zeros from prealloc from the split structs?
 end
 %tic; ot = OcTree(dynpts,'binCapacity',1e3); toc; ot.plot3; axis equal;
 end
