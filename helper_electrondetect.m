@@ -55,16 +55,16 @@ blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside lo
 for i=1:size(tilt,3)
     
     if param.raddamage>0 %block for raadiation-induced noise and blurring
-    accum = accum+dw(i); %add to accumulated dose delivered, including first tilt
-    
-    %need to use the pre-CTF tilt for the rad map to avoid CTF impacts
-    radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins - what is good scale?
-    addrad = randn(size(radmap))*accum*radscale.*(radmap+1); %scaled gaussian 0-center noise field
-    
-    sigma = sqrt(radscale*(accum)*0.1); %might need to scale filter size with pixel size
-    proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',3); 
-    irad = proj*1+tilt(:,:,i)*0+addrad*1;
-    rad(:,:,i) = proj; %store radiation maps for review
+        accum = accum+dw(i); %add to accumulated dose delivered, including first tilt
+        
+        %need to use the pre-CTF tilt for the rad map to avoid CTF impacts
+        radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins - what is good scale?
+        addrad = randn(size(radmap))*accum*radscale.*(radmap+1); %scaled gaussian 0-center noise field
+        
+        sigma = sqrt(radscale*(accum)*0.1); %might need to scale filter size with pixel size
+        proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',3);
+        irad = proj*1+tilt(:,:,i)*0+addrad*1;
+        rad(:,:,i) = proj; %store radiation maps for review
     else
         irad = tilt(:,:,i);
     end
