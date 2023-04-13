@@ -79,7 +79,10 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %currently just a hamfisted first-pass in the modelgen. separate implementation needed? need better outputs
 %membrane-only implementation could generate spheres based on the random location
 ves = 5;
-lipid(1).name = 'lipid'; lipid(1).flags = 'TODO';
+lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
+%need a more complex implementation - centreline shell, perimeter shell?, and complete set of points
+%centreline for membrane protein placement, points for kdt searcher. shell redundant? won't need multiple
+%searches?
 for i=1:ves
     [pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
     lipid(1).perim{1,i} = perim; %alphashape of full shell >60s, not feasible
@@ -90,9 +93,9 @@ layers{2} = layers{1};
 layers{1} = lipid;
 
 %% functionalized model gen part
-boxsize = pix*[400,500,50];
+boxsize = pix*[500,600,50];
 n = 6000; %rng(3);
-n = [30,2000];
+n = [80,6000];
 tic
 [split] = fn_modelgen(layers,boxsize,n);%,csplit);
 %plot(sh)
