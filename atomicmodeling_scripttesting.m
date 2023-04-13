@@ -478,7 +478,7 @@ for i=1:n
         tdx = dx.(sel.modelname{sub}); %MUCH faster than hard cat, ~7x.
         l = size(tpts,1); e = tdx+l-1;
         if e>size(split.(sel.modelname{sub}),1)
-            split.(sel.modelname{sub})(tdx:(size(tpts,1)+l)*3,:) = 0;
+            split.(sel.modelname{sub})(tdx:(tdx+l)*3,:) = 0;
         end
         split.(sel.modelname{sub})(tdx:e,:) = tpts; dx.(sel.modelname{sub}) = tdx+l;
         % % inlined dyncat code % %
