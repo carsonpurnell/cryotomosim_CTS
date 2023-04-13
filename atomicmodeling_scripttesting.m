@@ -93,9 +93,9 @@ layers{2} = layers{1};
 layers{1} = lipid;
 
 %% functionalized model gen part
-boxsize = pix*[500,600,50];
+boxsize = pix*[400,500,50];
 n = 6000; %rng(3);
-n = [80,6000];
+n = [50,4000];
 tic
 [split] = fn_modelgen(layers,boxsize,n);%,csplit);
 %plot(sh)
@@ -104,7 +104,7 @@ toc
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol+solv);
-WriteMRC(vol+solv,14,'atomicmodtest_lg1.mrc');
+%WriteMRC(vol+solv,14,'atomicmodtest_lg1.mrc');
 
 %{
 %% randomly add to the points and concatenate them into a list
@@ -495,8 +495,12 @@ if lc==1
 end
 fprintf('  placed %i, failed %i \n',count.s,count.f);
 
-%trim trailing zeros from prealloc from the split structs?
 end
+sn = fieldnames(split); %trimming trailing zeros from split arrays to prevent atom2vol weirdness
+for i=1:numel(sn)
+    tdx = dx.(sn{i}); split.(sn{i})(tdx:end,:) = [];
+end
+
 %tic; ot = OcTree(dynpts,'binCapacity',1e3); toc; ot.plot3; axis equal;
 end
 
