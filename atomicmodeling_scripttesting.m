@@ -499,7 +499,7 @@ end
 sn = fieldnames(split); %trimming trailing zeros from split arrays to prevent atom2vol weirdness
 for i=1:numel(sn)
     tdx = size(split.(sn{i}),1); %backstop for when the object was preexisting so there's no dx
-    if isfield(sn,sn{i})
+    if isfield(dx,sn{i})
         tdx = dx.(sn{i});
     end
     split.(sn{i})(tdx:end,:) = [];
