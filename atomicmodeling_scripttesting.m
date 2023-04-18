@@ -93,11 +93,11 @@ layers{2} = layers{1};
 layers{1} = lipid;
 
 %% functionalized model gen part
-boxsize = pix*[400,500,50];
+boxsize = pix*[300,400,50];
 n = 6000; %rng(3);
-n = [50,4000];
+n = [50,2000];
 tic
-[split] = fn_modelgen(layers,boxsize,n);%,csplit);
+[split] = fn_modelgen(layers,boxsize,n,csplit);
 %plot(sh)
 toc
 
@@ -385,7 +385,7 @@ if nargin<4
     split = struct; %ixincat = 1; %dynpts = single(zeros(0,3));
 else
     fn = fieldnames(split);
-    for i=1:numel(fn)
+    for i=1:numel(fn) %add split into dynpts
         s = size(split.(fn{i})(:,1:3),1);
         ix = randi(s,round(s/10),1); ix = unique(ix);
         tmp = split.(fn{i})(ix,1:3);
@@ -498,7 +498,11 @@ fprintf('  placed %i, failed %i \n',count.s,count.f);
 end
 sn = fieldnames(split); %trimming trailing zeros from split arrays to prevent atom2vol weirdness
 for i=1:numel(sn)
-    tdx = dx.(sn{i}); split.(sn{i})(tdx:end,:) = [];
+    tdx = size(split.(sn{i}),1); %backstop for when the object was preexisting so there's no dx
+    if isfield(sn,sn{i})
+        tdx = dx.(sn{i});
+    end
+    split.(sn{i})(tdx:end,:) = [];
 end
 
 %tic; ot = OcTree(dynpts,'binCapacity',1e3); toc; ot.plot3; axis equal;
