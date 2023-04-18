@@ -524,7 +524,7 @@ sf = [(rado^2)/(radi^2),(radi^2)/(rado^2)]/2; %factor to correct for excess inne
 
 %fill space between radii with tons of points
 %ptnum = round(radi*5*(pix^3)*pi^2); %need to actually calculate volume of shell
-shellvol = pi*(rado^3-radi^3)*0.18; %volume of shell in pseudoatoms
+shellvol = pi*(rado^3-radi^3)*0.16; %volume of shell in pseudoatoms
 %ptnum = round( 0.2*shellvol*1^3 )*2; %convert to angstroms, scale to some arbitrary working density
 %frac = [ptnum,ptnum*sf(2),ptnum*sf(1)]; %get fractions of the total to distribute between inner and outer
 rti = round(shellvol*sf(2)); %rto = ptnum-rti; %partition density between inner and outer radii
@@ -550,7 +550,7 @@ pts = [x,y,z];
 n = size(pts,1); ix = randi(n,round(n/50),1);
 %perimix = randperm(n); permix = perimix(1:round(n/400)); perim = pts(perimix,:);
 perim = pts(ix,:);
-in = ones(size(pts,1),1)*2.9;
+in = ones(size(pts,1),1)*2.95;
 pts = [pts,in];
 
 end
