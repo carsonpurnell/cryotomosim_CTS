@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.1.8](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.8) - 2023-04-21 15:15:31
+
+**Full Changelog**: https://github.com/carsonpurnell/cryotomosim_CTS/compare/v0.1.6...v0.1.8
+
 ## [v0.1.6](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.1.6) - 2023-02-09 16:35:30
 
 *No description*
