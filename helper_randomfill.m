@@ -33,11 +33,11 @@ for i=1:numel(namelist)
 end
 end
 
-% membrane setup stuff
+ismem = 0;
 if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
-    ismem = 1; 
-    %memvol = sum( cat(4,vesvol{:}) ,4); %this is terrible, they need to be one volume
+    ismem = 1;
     %{
+    %memvol = sum( cat(4,vesvol{:}) ,4); %this is terrible, they need to be one volume
     bw = bwdist(~memvol); %calculate distances inside the shape
     mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
     skel = (bw.*~mask)>max(bw,[],'all')/2-1; %apply the mask to the distance map and threshold edge noise
@@ -60,10 +60,9 @@ if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     mout(CC.PixelIdxList{idx}) = 1; %locmap for outside of vesicles
     min = nonmem-mout; %locmap for inside vesicles    
     %numel(find(skel))/numel(skel) %check occupancy
-else
-    ismem = 0;
-end
-% membrane setup stuff end
+%else
+%    ismem = 0;
+end % membrane setup block end
 
 diagout = zeros(size(inarray,1),size(inarray,2),0);
 
