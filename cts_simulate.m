@@ -1,5 +1,5 @@
 function [detected, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param,opt)
-%[detected, conv, tiltseries, atlas, ctf] = tomosim_simulate(sampleMRC, param, opt)
+%[detected, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC, param, opt)
 %simulates tomographic data as if collected from a sample and reconstructs a tomogram
 %
 %  Inputs
