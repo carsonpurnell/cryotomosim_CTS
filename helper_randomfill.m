@@ -39,7 +39,6 @@ end
 if any(vesvec~=0,'all') %prep skeleton point map if provided for TMprotein
     ismem = 1; 
     %memvol = sum( cat(4,vesvol{:}) ,4); %this is terrible, they need to be one volume
-    %sliceViewer(memvol);
     %{
     bw = bwdist(~memvol); %calculate distances inside the shape
     mask = rescale(imgradient3(bw))>0.5; %generate an inverse mask that approximates the border, minus the mid
@@ -86,7 +85,6 @@ for i=1:iters(ww)
     which = randi(numel(set)); 
     particle = set(which).vol; 
     %precall more things so structs aren't called into so many times
-    %prealloc anything else for speed?
     vols = set(which).vol; 
     flags = set(which).flags; 
     flags = (flags(randperm(length(flags)))); %randomize flag order for mixed usage
