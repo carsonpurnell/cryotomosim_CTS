@@ -1,5 +1,5 @@
 function [outarray, split] = helper_randomfill(inarray,layers,iters,memvol,vesvec,memskel,vesvol,density,opt)
-%[outarray, split] = helper_randomfill(inarray,set,iters,density,opt)
+%[outarray, split] = helper_randomfill(inarray,layers,iters,memvol,vesvec,memskel,vesvol,density,opt)
 %shared function for adding particles randomly, used for generating models and adding distractors
 arguments
     inarray (:,:,:) double

@@ -1,4 +1,5 @@
 function [particleset] = helper_input(list,pixelsize,sv)
+%[particleset] = helper_input(list,pixelsize,sv)
 %outputs a cell array of 3d volumes ready to input into other tomosim functions
 %list is a cell array of input files(pdb or mrc) and workspace variables, which can be mixed. 
 %list=='gui' opens a broswer for selecting inputs(files only) or for each time it is used in the cell array
@@ -16,8 +17,7 @@ if isstruct(list) && isfield(list,'type') %if the input is a formatted particle 
 end
 list = internal_load(list); %internal call to either uipickfiles or uigetfiles
 
-types = {'single','bundle','complex','cluster','group','assembly','memplex','membrane',...
-    'inmem','outmem'};
+%types = {'single','bundle','complex','cluster','group','assembly','memplex','membrane','inmem','outmem'};
 %complex one flag to make it place everything separately, rather than needing a complex for each type
 %location flag (any/default, membrane, inside/outside vesicles) control locmaps
 %grouping/class flag (complex, assembly, random pick from group, sum of group) control split placement

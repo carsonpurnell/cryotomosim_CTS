@@ -1,4 +1,6 @@
 function out = gen_carbongrid(vol,pix,grid)
+% out = gen_carbongrid(vol,pix,grid)
+% generates a holey carbon grid edge along the side of an input volume
 arguments
     vol (:,:,:) double
     pix (1,1) double

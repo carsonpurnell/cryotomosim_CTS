@@ -1,5 +1,5 @@
 function [detect,rad] = helper_electrondetect(tilt,param)
-%detect = helper_electrondetect(tilt,param)
+%[detect,rad] = helper_electrondetect(tilt,param)
 %simulates electron detection by camera of a CTF-convolved tiltseries. simulates electon transmission and
 %interaction with poisson sampling, after estimating electrons lost by inelastic scattering.
 %
