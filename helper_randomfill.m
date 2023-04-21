@@ -26,8 +26,6 @@ if opt.graph==1 %graphical output of particles block
 end
 if isstruct(layers), layers = {layers}; end
 
-%probably need to make this a double loop across cells of particle sets
-
 for ii=1:numel(layers)
 namelist = [layers{ii}(:).id]; %vector collection of all ids instead of the former double loop
 for i=1:numel(namelist)
@@ -36,7 +34,7 @@ end
 end
 
 % membrane setup stuff
-if any(vesvec~=0,'all') %prep skeleton point map if provided for TMprotein
+if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     ismem = 1; 
     %memvol = sum( cat(4,vesvol{:}) ,4); %this is terrible, they need to be one volume
     %{
