@@ -1,5 +1,5 @@
 function [param] = param_simulate(guiinput,param)
-%[param] = cts_param(guiinput,param)
+%[param] = param_simulate(guiinput,param)
 %records microscope/image details for CTS simulation
 %  Inputs
 %
