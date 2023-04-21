@@ -49,7 +49,6 @@ if any(vesvec~=0,'all') %prep skeleton point map if provided for TMprotein
     %}
     memlocmap = memskel; %store map of valid locations inside the membrane
     init = [0,0,1]; %initial required orientation for memprots
-    %sliceViewer(skel); %it does work
     
     %inside/outside membrane localization maps
     nonmem = bwdist(inarray)>2; %locmap for all available area
@@ -59,13 +58,9 @@ if any(vesvec~=0,'all') %prep skeleton point map if provided for TMprotein
     numpixels = cellfun(@numel,CC.PixelIdxList); %count pixels in each component
     [~,idx] = max(numpixels); %get the largest volume component from image
     mout = zeros(size(nonmem));
-    %disp(numpixels)
-    %disp(idx)
+    
     mout(CC.PixelIdxList{idx}) = 1; %locmap for outside of vesicles
-    
-    min = nonmem-mout; %locmap for inside vesicles
-    %sliceViewer(skel); figure(); sliceViewer(nonmem); figure(); sliceViewer(mout); figure(); sliceViewer(min);
-    
+    min = nonmem-mout; %locmap for inside vesicles    
     %numel(find(skel))/numel(skel) %check occupancy
 else
     ismem = 0;
