@@ -39,7 +39,7 @@ function [detected, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param
 
 arguments
     sampleMRC (1,1) string %full path to input mrc/ts, or 'gui' for browser
-    param = {} %input a cts_param call, or within {} to send to it
+    param = {} %input a param_simulate call, or within {} to send to it
     opt.suffix string = ''
     opt.atlasindividual = 0
     opt.dynamotable = 0
