@@ -43,6 +43,7 @@ arguments
     param.raddamage = 1;
     param.scatter = 1;
     param.ctfoverlap {mustBeNonnegative,mustBeInteger} = 2 %if 0 skip ctf
+    % Q factor for CTF convolution?
     %randomization to tilt angles?
     param.tilterr = 0; %0 no randomization, 1 range==tilt increment
 end
