@@ -33,6 +33,7 @@ B = param.sigma*Ny; %envelope factor from nyquist frequency - also incorporates 
 q = 0.07*1; %amplitude contrast value - 7% is standard
 %envelope/amplitude still needs validation and corroboration to our real data
 
+% crunchy strip math thing - replace with subfunction, extend from 2d to 3d?
 k = 1:size(input,1); divs = k(rem(size(input,1),k)==0); %find divisible factors from volume size
 
 binspacing = divs(round(end/2)); %use the middle divisor as the spacing
@@ -42,6 +43,7 @@ binlength = binspacing*param.ctfoverlap; %this is one-sided, not full length
 edge = binlength+binspacing*(param.ctfoverlap-1);
 padded = padarray(input,[edge pad],mean(input,'all'));
 bincenter = (linspace(binlength,size(padded,1)-binlength,bins+(param.ctfoverlap-1)*2)); %compute strip centres
+% crunchy strip math thing
 
 xl = size(padded,2); %uses dim2 to avoid needing to permute the CTF to the image space
 yl = binlength*2;
