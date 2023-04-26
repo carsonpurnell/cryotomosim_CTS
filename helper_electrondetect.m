@@ -41,7 +41,7 @@ thick = param.size(3)*param.pix; %compute thickness from depth of original model
 IMFP = 3800; %inelastic mean free path, average distance before inelastic electron scatter (for water/ice)
 %IMFP estimated to be 350nm for water ice, is probabaly somewhat different for vitreous (higher)
 %electronpath = thick*(1+abs(tand(tiltangs))); %compute the path length of electrons through ice
-electronpath = thick*cosd(tiltangs).^-1; %corrected trig, very slightly better appearance
+electronpath = thick./cosd(tiltangs); %corrected trig, very slightly better appearance
 thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not inelastically/lossly scattered
 %change IMFP to instead be per pixel, so more electrons are lost at high density AND thickness?
 %scattering map inside the loop, using pixel intensities to scale the IMFP/path?
