@@ -1,7 +1,9 @@
 function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %[vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
-%
-%
+%projects a list of points as a 3d density volume
+%4th dimension sets the weight value for each point, otherwise all weights are 1
+
+%break into subfunctions for speed? not everything needs to run through multiple inputs
 if isstruct(pts)
     names = fieldnames(pts); pts = struct2cell(pts);
 else

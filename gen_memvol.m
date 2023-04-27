@@ -1,4 +1,4 @@
-function [memvol,skel,nvecs,vesvol,count,ves] = gen_mem(vol,pix,num,tries,vecpts,memthick,memsize)
+function [memvol,skel,nvecs,vesvol,count,ves] = gen_memvol(vol,pix,num,tries,vecpts,memthick,memsize)
 %randomly generates and places spherical vesicles into a volume without overlapping contents
 %
 %inputs:
