@@ -56,6 +56,8 @@ for i=1:size(tilt,3)
     
     if param.raddamage>0 %block for raadiation-induced noise and blurring
         accum = accum+dw(i); %add to accumulated dose delivered, including first tilt
+        %this radiation count is inappropriate. needs to increase at higher tilt, and ignore DQE/etc.
+        %use raw dose number and adjust for angle? or precompute rad scalars outside loop?
         
         %need to use the pre-CTF tilt for the rad map to avoid CTF impacts
         radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins - what is good scale?
