@@ -24,6 +24,7 @@ indvol = cell(1,numel(roinames));
 atlas = zeros(size(cts.splitmodel.(roinames{1})));
 
 %rework into a simpler max() version for the standard atlas for simplicity
+%individual outputs should be unscaled, and an entirely separate loop from the default
 
 for i=1:numel(roinames)
     indvol{i} = cts.splitmodel.(roinames{i}); %add model to stack
