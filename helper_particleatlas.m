@@ -13,6 +13,13 @@ arguments
     individual = 0 %by default don't save individual splits, only global atlas image
     dynamotable = 0 %switch to generate dynamo table
 end
+
+%new less jank way
+natlas = zeros(size(cts.vol)); %initial empty atlas for background==0
+
+nsplits = struct2cell(cts.splitmodel); %convert to cell array
+nsplits = cat(4,nsplits{:}); %stack in 4th dim
+
 %move other important particles to splitmodel if they exist, at the end for ease
 if isfield(cts.model,'beads'), cts.splitmodel.beads = cts.model.beads; end
 if isfield(cts.model,'mem'), cts.splitmodel.AAmem = cts.model.mem; end %makes membrane first placement
