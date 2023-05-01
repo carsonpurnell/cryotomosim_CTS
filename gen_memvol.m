@@ -1,4 +1,4 @@
-function [memvol,skel,nvecs,vesvol,count,ves] = gen_memvol(vol,pix,num,tries,vecpts,memthick,memsize)
+function [memvol,skel,nvecs,vesvol,count,ves] = gen_memvol(vol,pix,num,tries,vecpts,memthick,memsize,memtype)
 %randomly generates and places spherical vesicles into a volume without overlapping contents
 %
 %inputs:
@@ -21,6 +21,7 @@ arguments
     vecpts = 9
     memthick = [60 24]
     memsize = 3
+    memtype = 2
 end
 %clipping out of the Z also conviniently how tomos actually look, but is maybe too random
 
@@ -38,7 +39,12 @@ vesvol = memvol; skel = vesvol;
 nvecs = zeros(size(memvol,1),size(memvol,2),size(memvol,3),3);
 label = 1;
 for i=1:num
-    switch 2%randi(2)
+    if memtype==3
+        gg = randi(2);
+    else
+        gg=memtype;
+    end
+    switch gg%randi(2)
         case 1
             tmp = vesgen_sphere(pix); %generate spherical vesicles
             ves{i} = tmp; %store trimmed vesicle into output cell array
