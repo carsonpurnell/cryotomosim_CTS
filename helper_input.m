@@ -77,7 +77,6 @@ for i=1:numel(list)
     %if lumper, use first id string for all names
     %if splitting, run through and replace NA names with same ID name
     
-    
     % old janky class parser and loader thing
     %
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
@@ -111,7 +110,8 @@ for i=1:numel(list)
         fprintf('loading %s  ',filename)
         [tmpmrcvol, head] = ReadMRC(list{i});
         %fprintf('resizing from %g to %g pixel size',head.pixA,pixelsize)
-        tmp.vol = imresize3(tmpmrcvol,head.pixA/pixelsize);
+        tmpmrcvol = imresize3(tmpmrcvol,head.pixA/pixelsize);
+        tmp.vol{1} = tmpmrcvol;
         names = {'NA'};
     elseif iscellstr(list(i)) %#ok<*ISCLSTR>
         error('Error: item %i (%s) in the input list is a string, but not a valid file type',i,list{i})
