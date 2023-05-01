@@ -109,9 +109,9 @@ for i=1:numel(list)
         %fprintf('generating at %g A ',pixelsize)
     elseif iscellstr(list(i)) && strcmp(ext,'.mrc')
         fprintf('loading %s  ',filename)
-        [tmpb, head] = ReadMRC(list{i});
+        [tmpmrcvol, head] = ReadMRC(list{i});
         %fprintf('resizing from %g to %g pixel size',head.pixA,pixelsize)
-        tmp.vol = imresize3(tmpb,head.pixA/pixelsize);
+        tmp.vol = imresize3(tmpmrcvol,head.pixA/pixelsize);
         names = {'NA'};
     elseif iscellstr(list(i)) %#ok<*ISCLSTR>
         error('Error: item %i (%s) in the input list is a string, but not a valid file type',i,list{i})
