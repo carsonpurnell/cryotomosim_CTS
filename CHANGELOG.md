@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [v0.2.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.2.1) - 2023-05-01 14:58:09
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix MRC loading ([6acd33a](https://github.com/carsonpurnell/cryotomosim_CTS/commit/6acd33a2a9733955d5dd0ba6fae58b9991e00b30))
+  - fix MRC input error ([80cb53d](https://github.com/carsonpurnell/cryotomosim_CTS/commit/80cb53d4e118b13f055918c6264cf49ad1e56aa2))
+
 ## [v0.2.0](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.2.0) - 2023-04-28 15:15:34
 
 *No description*
