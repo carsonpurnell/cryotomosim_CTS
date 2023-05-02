@@ -61,14 +61,14 @@ plot(sh)
 
 
 %% project potato as volume after shelling
-vpts = randtess(2,sh,'s');
-vec = randn(size(vpts)); vec = 35*vec./vecnorm(vec,2,2);
-vpts = vpts+vec;
-ai = ones(size(vpts,1),1);
-vol = fnpt2vol(3,vpts,ai',[300,300,300],-[100,100,100]);
-%sliceViewer(vol);
+%vpts = randtess(2,sh,'s');
+%vec = randn(size(vpts)); vec = 35*vec./vecnorm(vec,2,2);
+%vpts = vpts+vec;
+%ai = ones(size(vpts,1),1);
+vol = fnpt2vol(12,vpts,ai',[800,800,800],-[500,500,500]);
+sliceViewer(vol);
 
-%
+%%
 shell = alphaShape(vpts); shell.Alpha = criticalAlpha(sh,'one-region')*0.0+12;
 %vpts = randtess(10,shell,'v');
 dens = 1;
