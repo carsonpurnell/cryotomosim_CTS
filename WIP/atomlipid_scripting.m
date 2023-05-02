@@ -5,7 +5,7 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.1; %antisphericity scale instead, 0 = sphere
+sz = 300; sp = 0.9; %antisphericity scale instead, 0 = sphere
 n = round(sp+sz^(0.5+sp)); %sz = 400;
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
 iters = round(1+(1+1/sp)^0.5);
@@ -61,11 +61,12 @@ plot(sh)
 
 
 %% project potato as volume after shelling
-%vpts = randtess(2,sh,'s');
-%vec = randn(size(vpts)); vec = 35*vec./vecnorm(vec,2,2);
-%vpts = vpts+vec;
-%ai = ones(size(vpts,1),1);
-vol = fnpt2vol(12,vpts,ai',[800,800,800],-[500,500,500]);
+vpts = randtess(2,sh,'s');
+vec = randn(size(vpts)); vec = 35*vec./vecnorm(vec,2,2);
+vpts = vpts+vec;
+ai = ones(size(vpts,1),1);
+bx = [200,200,200]*5;
+vol = fnpt2vol(12,vpts,ai',bx*2,-bx);
 sliceViewer(vol);
 
 %%
