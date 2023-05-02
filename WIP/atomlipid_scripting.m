@@ -5,7 +5,7 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.9; %antisphericity scale instead, 0 = sphere
+sz = 300; sp = 0.5; %antisphericity scale instead, 0 = sphere
 n = round(sp+sz^(0.5+sp)); %sz = 400;
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
 iters = round(1+(1+1/sp)^0.5);
@@ -20,7 +20,7 @@ pts = pts*R; %spin about Z randomly so blobs are isotropically disordered in-pla
 for i=1:iters
     sh = alphaShape(pts);
     sh.Alpha = criticalAlpha(sh,'one-region')*(1.5+i/3);
-    p2 = randtess(.001*i,sh,'s');
+    p2 = randtess(.005*i,sh,'s');
     pts = [pts;p2]*1; v = randn(size(pts));
     pts = pts+v*sz/100*i;
     %[~,pts] = boundaryFacets(sh);
@@ -61,32 +61,38 @@ plot(sh)
 
 
 %% project potato as volume after shelling
-vpts = randtess(2,sh,'s');
-vec = randn(size(vpts)); vec = 35*vec./vecnorm(vec,2,2);
+vpts = randtess(4,sh,'s');
+thick = 32;
+vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
 vpts = vpts+vec;
 ai = ones(size(vpts,1),1);
-bx = [200,200,200]*5;
+bx = [200,200,200]*2;
 vol = fnpt2vol(12,vpts,ai',bx*2,-bx);
 sliceViewer(vol);
 
 %%
 shell = alphaShape(vpts); shell.Alpha = criticalAlpha(sh,'one-region')*0.0+12;
 %vpts = randtess(10,shell,'v');
-dens = 1;
+dens = .01;
 [mi,ma] = bounds(vpts,1);
 box = (ma-mi)+10;
 vnum = round(dens*prod( box ));
 vpts = rand(vnum,3).*box+mi-5;
 invol = inShape(shell,vpts);
 vpts = vpts(invol,:);
-%
-spts = randtess(0.1,shell,'s');
-vec = randn(size(spts)); vec = vec./vecnorm(vec,2,2).*rand(size(vec,1),1);
+%%
+spts = randtess(0.3,shell,'s');
+vec = randn(size(spts)); vec = vec./vecnorm(vec,2,2).*rand(size(vec,1),1)*20;
 spts=spts+vec;%randn(size(spts)); 
 %plot(shell); hold on;
 %plot3(vpts(:,1),vpts(:,2),vpts(:,3),'.'); axis equal; hold on
 %plot3(spts(:,1),spts(:,2),spts(:,3),'.'); axis equal
+%% 
+fpts = [spts;vpts];
+vol = fnpt2vol(8,fpts,ones(size(fpts,1),1)',bx*2,-bx);
+sliceViewer(vol);
 
+%{
 %% spherical vesicle test
 [pts] = vesgen_sphere(600,30);
 ma = max(pts,[],1); mi = min(pts,[],1);
@@ -100,7 +106,7 @@ apts = [vpts;spts2]; ai = ones(size(apts,1),1)*15;
 ma = max(apts,[],1); mi = min(apts,[],1);
 vol = fnpt2vol(10,apts,ai',ma-mi,mi);
 sliceViewer(vol);
-
+%}
 %% internal functs
 
 function [pts] = vesgen_sphere(r,thick)
