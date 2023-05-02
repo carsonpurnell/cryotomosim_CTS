@@ -5,10 +5,10 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 1.0; %antisphericity scale instead, 0 = sphere
+sz = 300; sp = 0.1; %antisphericity scale instead, 0 = sphere
 n = round(sp+sz^(0.5+sp)); %sz = 400;
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
-iters = round(1+(1+sp)^0);
+iters = round(1+(1+1/sp)^0.5);
 az = rand(n,1)*180; el = rand(n,1)*180; r = rand(n,1)*var+rad;
 [x,y,z] = sph2cart(az,el,r);
 R = makehgtform('xrotate',pi/2); R = R(1:3,1:3); %get rotation matrix (3x3 of full matrix)
