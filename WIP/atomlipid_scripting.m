@@ -5,7 +5,7 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.9; %antisphericity scale instead, 0 = sphere
+sz = 300; sp = 0.5; %antisphericity scale instead, 0 = sphere
 n = round(sp+sz^(0.5+sp)); %sz = 400;
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
 iters = round(1+(1+1/sp)^0.5);
@@ -67,12 +67,12 @@ vpts = randtess(thick/3,sh,'s');
 vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
 vpts = vpts+vec;
 ai = ones(size(vpts,1),1);
-bx = [200,200,200]*4;
+bx = [200,200,200]*5;
 vol = fnpt2vol(12,vpts,ai',bx*2,-bx);
 sliceViewer(vol);
 
 %%
-shell = alphaShape(vpts); %very slow, main bottleneck
+shell = alphaShape(vpts,12); %slow, main bottleneck
 %shell.Alpha = criticalAlpha(sh,'one-region')*0.0+12; %weirdly slow, secondary bottleneck
 sfdsvpts = randtess(0.1,shell,'v');
 dens = .01;
@@ -94,7 +94,7 @@ spts=spts+vec;%randn(size(spts));
 %plot3(spts(:,1),spts(:,2),spts(:,3),'.'); axis equal
 %% 
 fpts = [spts;sfdsvpts];
-%vol = fnpt2vol(8,fpts,ones(size(fpts,1),1)',bx*2,-bx);
+vol = fnpt2vol(8,fpts,ones(size(fpts,1),1)',bx*2,-bx);
 vv = helper_atoms2vol(8,fpts,bx,-bx/2);
 sliceViewer(vv);
 

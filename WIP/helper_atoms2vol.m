@@ -43,7 +43,7 @@ for j=1:s
     end
     for i=1:size(p,1)
         x=p(i,1); y=p(i,2); z=p(i,3); mag = m(i); %fetch data per atom
-        split(x,y,z,j) = split(x,y,z,j)+mag;
+        split(x,y,z,j) = split(x,y,z,j)+mag; %slow, 4d indexing very inefficient
         solv(x,y,z) = solv(x,y,z)-avol*(rand*.4+0.8);
     end
 end
