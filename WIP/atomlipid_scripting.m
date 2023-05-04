@@ -5,7 +5,9 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.8; %antisphericity scale instead, 0 = sphere
+sz = 300; sp = 0.75; %antisphericity scale instead, 0 = sphere
+%interesting bugfeature: sp~.8 usually makes double membranes
+%>~.85 is double-thick and not a good membrane model unfortunately, need to separate layers
 n = round(5+sz^(0.3+sp));
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
 iters = round(1+(1+1/sp)^0.5);
@@ -22,12 +24,14 @@ for i=1:iters
     sh.Alpha = criticalAlpha(sh,'one-region')*(1.5+i/3);
     p2 = randtess(.005*i,sh,'s');
     pts = [pts;p2]*1; v = randn(size(pts));
-    pts = pts+v*sz/100*i;
+    pts = pts+v*sz/1000*i;
     %[~,pts] = boundaryFacets(sh);
 end
-sh = alphaShape(pts);
-sh.Alpha = criticalAlpha(sh,'one-region')*(1.5+i/3);
-pts = boundaryFacets(sh);
+sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')*(1.5);
+[~,pts] = boundaryFacets(sh);
+[~,ptso] = boundaryFacets(alphaShape(pts,400));
+%the following should remove inner surface while closing envelope gaps
+sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')*(1.5);
 plot(sh);
 %prune sh to boundary points only to speed randtess?
 
@@ -53,7 +57,6 @@ sh = alphaShape(xx,yy,zz);sh.Alpha = criticalAlpha(sh,'one-region')*2;
 
 plot3(xx,yy,zz,'.'); axis equal; hold on; plot(sh)
 %}
-
 %{
 %% spherical generation
 pts = vesgen_sphere(1);
@@ -63,7 +66,6 @@ plot(sh)
 %plot3(x,y,z,'.'); axis equal
 %}
 
-
 %% project potato as volume after shelling
 thick = 30;
 vpts = randtess(thick/3,sh,'s');
@@ -71,8 +73,8 @@ vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
 vpts = vpts+vec;
 ai = ones(size(vpts,1),1);
 bx = [200,200,200]*5;
-%vol = fnpt2vol(12,vpts,ai',bx*2,-bx);
-%sliceViewer(vol);
+vol = fnpt2vol(12,vpts,ai',bx*2,-bx);
+sliceViewer(vol);
 
 %%
 shell = alphaShape(vpts,12); %slow, main bottleneck
