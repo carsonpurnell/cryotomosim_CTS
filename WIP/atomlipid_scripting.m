@@ -5,9 +5,10 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.75; %antisphericity scale instead, 0 = sphere
+sz = 300; sp = 0.8; %antisphericity scale instead, 0 = sphere
 %interesting bugfeature: sp~.8 usually makes double membranes
 %>~.85 is double-thick and not a good membrane model unfortunately, need to separate layers
+%nesting bugfeature gone as the cost of fixing the double layer/delamination bug
 n = round(5+sz^(0.3+sp));
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
 iters = round(1+(1+1/sp)^0.5);
@@ -22,16 +23,16 @@ pts = pts*R; %spin about Z randomly so blobs are isotropically disordered in-pla
 for i=1:iters
     sh = alphaShape(pts);
     sh.Alpha = criticalAlpha(sh,'one-region')*(1.5+i/3);
-    p2 = randtess(.005*i,sh,'s');
+    p2 = randtess(.01*i,sh,'s');
     pts = [pts;p2]*1; v = randn(size(pts));
     pts = pts+v*sz/1000*i;
     %[~,pts] = boundaryFacets(sh);
 end
 sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')*(1.5);
 [~,pts] = boundaryFacets(sh);
-[~,ptso] = boundaryFacets(alphaShape(pts,400));
+[~,ptso] = boundaryFacets(alphaShape(pts,5000));
 %the following should remove inner surface while closing envelope gaps
-sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')*(1.5);
+sh = alphaShape(ptso); sh.Alpha = criticalAlpha(sh,'one-region')*(1.5);
 plot(sh);
 %prune sh to boundary points only to speed randtess?
 
@@ -68,7 +69,7 @@ plot(sh)
 
 %% project potato as volume after shelling
 thick = 30;
-vpts = randtess(thick/3,sh,'s');
+vpts = randtess(thick/2.0,sh,'s');
 vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
 vpts = vpts+vec;
 ai = ones(size(vpts,1),1);
