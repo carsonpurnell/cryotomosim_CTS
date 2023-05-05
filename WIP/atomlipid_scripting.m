@@ -5,11 +5,11 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.8; %antisphericity scale instead, 0 = sphere
+sz = 300; sp = 0.7; %antisphericity scale instead, 0 = sphere
 %interesting bugfeature: sp~.8 usually makes double membranes
 %>~.85 is double-thick and not a good membrane model unfortunately, need to separate layers
-%nesting bugfeature gone as the cost of fixing the double layer/delamination bug
-n = round(5+sz^(0.3+sp));
+%nesting bugfeature gone as the cost of (mostly) fixing the double layer/delamination bug
+n = round(5+sz^(0.4+sp));
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
 iters = round(1+(1+1/sp)^0.5);
 az = rand(n,1)*180; el = rand(n,1)*180; r = rand(n,1)*var+rad;
@@ -29,10 +29,10 @@ for i=1:iters
     %[~,pts] = boundaryFacets(sh);
 end
 sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')*(1.5);
-[~,pts] = boundaryFacets(sh);
-[~,ptso] = boundaryFacets(alphaShape(pts,5000));
+%[~,pts] = boundaryFacets(sh);
+[~,ptso] = boundaryFacets(alphaShape(pts,1000));
 %the following should remove inner surface while closing envelope gaps
-sh = alphaShape(ptso); sh.Alpha = criticalAlpha(sh,'one-region')*(1.5);
+sh = alphaShape(ptso); sh.Alpha = criticalAlpha(sh,'one-region')*(10);
 plot(sh);
 %prune sh to boundary points only to speed randtess?
 
@@ -101,8 +101,8 @@ spts=spts+vec;%randn(size(spts));
 %plot3(spts(:,1),spts(:,2),spts(:,3),'.'); axis equal
 %% 
 fpts = [spts;vpts];
-vol = fnpt2vol(8,fpts,ones(size(fpts,1),1)',bx*2,-bx);
-vv = helper_atoms2vol(8,fpts,bx,-bx/2);
+%vol = fnpt2vol(8,fpts,ones(size(fpts,1),1)',bx*2,-bx);
+[vv,solv,atlas,split] = helper_atoms2vol(8,fpts,bx,-bx/2);
 sliceViewer(vv);
 
 %{
