@@ -5,11 +5,11 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.8; %antisphericity scale instead, 0 = sphere
+sz = 300; sp = 0.6; %antisphericity scale instead, 0 = sphere
 %interesting bugfeature: sp~.8 usually makes double membranes
 %>~.85 is double-thick and not a good membrane model unfortunately, need to separate layers
 %nesting bugfeature gone as the cost of (mostly) fixing the double layer/delamination bug
-n = round(5+sz^(0.4+sp));
+n = round(5+sz^(0.1+sp));
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
 iters = round(1+(1+1/sp)^0.5);
 az = rand(n,1)*180; el = rand(n,1)*180; r = rand(n,1)*var+rad;
@@ -23,16 +23,30 @@ pts = pts*R; %spin about Z randomly so blobs are isotropically disordered in-pla
 for i=1:iters
     sh = alphaShape(pts);
     sh.Alpha = criticalAlpha(sh,'one-region')*(1.5+i/3);
-    p2 = randtess(.01*i,sh,'s');
-    pts = [pts;p2]*1; v = randn(size(pts));
+    pts = randtess(.01*i,sh,'s');
+    pts = [pts;p2]*1; 
+    v = randn(size(pts));
     pts = pts+v*sz/1000*i;
-    %[~,pts] = boundaryFacets(sh);
+    pts = smiter(pts,1,9);
+    [~,pts] = boundaryFacets(alphaShape(pts));
 end
 sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')*(1.5);
 %[~,pts] = boundaryFacets(sh);
 [~,ptso] = boundaryFacets(alphaShape(pts,100));
+%smoothing thing
+%ptsa = smiter(ptso,1,9);
+%{
+[~,ix] = pdist2(ptso,ptso,'euclidean','Smallest',9);
+ix = ix(2:end,:); ptsa = zeros(size(ptso));
+for i=1:size(ix,2)
+    mm = mean(ptso(ix(:,i),:));
+    ptsa(i,:) = mm;
+end
+%}
+
+ptsa = unique(ptso,'rows');
 %the following should remove inner surface while closing envelope gaps
-sh = alphaShape(ptso); sh.Alpha = criticalAlpha(sh,'one-region')*(10);
+sh = alphaShape(ptsa); sh.Alpha = criticalAlpha(sh,'one-region')*(2);
 plot(sh);
 %prune sh to boundary points only to speed randtess?
 
@@ -103,8 +117,7 @@ spts = randtess(10,shell,'s');
 vec = randn(size(spts));
 spd = rand(size(vec,1),1)*8+4;
 vec = vec./vecnorm(vec,2,2).*spd;
-spts=spts+vec;%randn(size(spts)); 
-%plot(shell); hold on;
+spts=spts+vec;
 %plot3(vpts(:,1),vpts(:,2),vpts(:,3),'.'); axis equal; hold on
 %plot3(spts(:,1),spts(:,2),spts(:,3),'.'); axis equal
 %% 
@@ -132,13 +145,24 @@ sliceViewer(vol);
 %}
 %% internal functs
 
-function [shell] = shape2shell(shape,thick)
+function ptsa = smiter(ptso,iter,nb)
+ptsa = zeros(size(ptso));
+for j=1:iter
+    [~,ix] = pdist2(ptso,ptso,'euclidean','Smallest',nb);
+    ix = ix(2:end,:);
+    for i=1:size(ix,2)
+        mm = mean(ptso(ix(:,i),:));
+        ptsa(i,:) = mm;
+    end
+    ptso = ptsa;
+end
+end
 
+function [shell] = shape2shell(shape,thick)
 vpts = randtess(thick/2.0,shape,'s');
 vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
 vpts = vpts+vec;
 shell = alphaShape(vpts,12);
-
 end
 
 function [pts] = vesgen_sphere(r,thick)
