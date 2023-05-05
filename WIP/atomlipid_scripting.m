@@ -100,8 +100,8 @@ vpts = rand(vnum,3).*box+mi-5;
 %}
 %%
 spts = randtess(10,shell,'s');
-vec = randn(size(spts)); 
-spd = rand(size(vec,1),1)*8+4; 
+vec = randn(size(spts));
+spd = rand(size(vec,1),1)*8+4;
 vec = vec./vecnorm(vec,2,2).*spd;
 spts=spts+vec;%randn(size(spts)); 
 %plot(shell); hold on;
