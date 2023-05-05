@@ -1,6 +1,7 @@
 # cryotomosim
  
 simulate cryo-EM tomograms of molecular mixtures
+Preprint article: https://doi.org/10.1101/2023.04.28.538636
 
 requirements:
 
