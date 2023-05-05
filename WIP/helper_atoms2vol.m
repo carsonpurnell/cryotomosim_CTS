@@ -26,36 +26,68 @@ avol = 4/3*pi*(1.65^3); %eyeballed volume of the average organic atom
 h20 = 3.041; %computed scatter factor for H2O
 
 emsz = floor(sz/pix); 
-solv = (rand(emsz)-0.5)*1*pix^2+(pix^3);
-split = zeros([emsz,s]);
+solv = (rand(emsz)-0.5)*0.2*pix^2+(pix^3);
+%split = zeros([emsz,s]);
+%split = zeros(emsz);
+%sl = split;
+%vl(1:s) = {split};
+split = cell(1,s);
 for j=1:s
+    
     if t==1
         p = pts{j}; %split{j} = zeros(emsz);
     else
         p = pts;
     end
+    
     if size(p,2)<4, p(:,4)=1; end %intensity==1 if not provided in 4th column
     m = p(:,4); p = p(:,1:3); p = round( (p-offset)/pix+0.5 );
     %p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5); %very slow intermediate array assignments
+    
+    [split{j},solv] = internal_accum(p,m,avol,emsz,solv);
+    
+    %{
     for i=1:3
         ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %get points inside the box
         p = p(ix,:); %drop points outside the box
     end
     for i=1:size(p,1)
         x=p(i,1); y=p(i,2); z=p(i,3); mag = m(i); %fetch data per atom
-        split(x,y,z,j) = split(x,y,z,j)+mag; %slow, 4d indexing very inefficient
-        solv(x,y,z) = solv(x,y,z)-avol*(rand*.4+0.8);
+        %split(x,y,z,j) = split(x,y,z,j)+mag; %slow, 4d indexing very inefficient
+        split(x,y,z) = split(x,y,z)+mag;
+        solv(x,y,z) = solv(x,y,z)-avol*1;%(rand*.4+0.8);
     end
+    %}
+    %sliceViewer(solv-sl)
+    %[a,b] = bounds(vl{1}-split,'all')
 end
 solv = max(solv,0)/35*h20; %compute waters in pixels from remaining volume
-tmp = cat(4,zeros(emsz),split);
+tmp = cat(4,zeros(emsz),split{:});
 [~,atlas] = max(tmp,[],4); atlas = atlas-1;
-vol = sum(split,4);
+vol = sum(tmp,4);
 if iscell(names)
-    t = split; clear split
+    %t = split; 
+    clear split
     %t
     for i=1:s
-        split.(names{i}) = t(:,:,:,i);
+        split.(names{i}) = tmp(:,:,:,i+1);
     end
 end
+end
+
+
+function [vl,solv] = internal_accum(p,mag,avol,emsz,solv)
+vl = zeros(emsz);
+
+for i=1:3
+    ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %get points inside the box
+    p = p(ix,:); %drop points outside the box
+end
+for i=1:size(p,1)
+    x=p(i,1); y=p(i,2); z=p(i,3); m = mag(i); %fetch data per atom
+    %split(x,y,z,j) = split(x,y,z,j)+mag; %slow, 4d indexing very inefficient
+    vl(x,y,z) = vl(x,y,z)+m;
+    solv(x,y,z) = solv(x,y,z)-avol*1;%(rand*.4+0.8);
+end
+
 end

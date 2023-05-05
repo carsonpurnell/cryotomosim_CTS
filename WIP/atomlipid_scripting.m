@@ -5,7 +5,7 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.7; %antisphericity scale instead, 0 = sphere
+sz = 300; sp = 0.8; %antisphericity scale instead, 0 = sphere
 %interesting bugfeature: sp~.8 usually makes double membranes
 %>~.85 is double-thick and not a good membrane model unfortunately, need to separate layers
 %nesting bugfeature gone as the cost of (mostly) fixing the double layer/delamination bug
@@ -30,7 +30,7 @@ for i=1:iters
 end
 sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')*(1.5);
 %[~,pts] = boundaryFacets(sh);
-[~,ptso] = boundaryFacets(alphaShape(pts,1000));
+[~,ptso] = boundaryFacets(alphaShape(pts,100));
 %the following should remove inner surface while closing envelope gaps
 sh = alphaShape(ptso); sh.Alpha = criticalAlpha(sh,'one-region')*(10);
 plot(sh);
@@ -67,6 +67,12 @@ plot(sh)
 %plot3(x,y,z,'.'); axis equal
 %}
 
+%% functionalized surface shape to a shell shape
+thick = 30; %shape = sh;
+[shell] = shape2shell(sh,thick);
+plot(shell)
+
+%{
 %% project potato as volume after shelling
 thick = 30;
 vpts = randtess(thick/2.0,sh,'s');
@@ -74,12 +80,14 @@ vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
 vpts = vpts+vec;
 ai = ones(size(vpts,1),1);
 bx = [200,200,200]*5;
-vol = fnpt2vol(12,vpts,ai',bx*2,-bx);
-sliceViewer(vol);
+%vol = fnpt2vol(12,vpts,ai',bx*2,-bx);
+%sliceViewer(vol);
 
-%%
 shell = alphaShape(vpts,12); %slow, main bottleneck
 %shell.Alpha = criticalAlpha(sh,'one-region')*0.0+12; %weirdly slow, secondary bottleneck
+%}
+
+%% shell to point distributions
 vpts = randtess(0.3,shell,'v');
 %{
 dens = .01;
@@ -101,6 +109,8 @@ spts=spts+vec;%randn(size(spts));
 %plot3(spts(:,1),spts(:,2),spts(:,3),'.'); axis equal
 %% 
 fpts = [spts;vpts];
+%ai = ones(size(vpts,1),1);
+bx = [200,200,200]*5;
 %vol = fnpt2vol(8,fpts,ones(size(fpts,1),1)',bx*2,-bx);
 [vv,solv,atlas,split] = helper_atoms2vol(8,fpts,bx,-bx/2);
 sliceViewer(vv);
@@ -121,6 +131,15 @@ vol = fnpt2vol(10,apts,ai',ma-mi,mi);
 sliceViewer(vol);
 %}
 %% internal functs
+
+function [shell] = shape2shell(shape,thick)
+
+vpts = randtess(thick/2.0,shape,'s');
+vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
+vpts = vpts+vec;
+shell = alphaShape(vpts,12);
+
+end
 
 function [pts] = vesgen_sphere(r,thick)
 radi = r;

@@ -97,7 +97,7 @@ boxsize = pix*[300,400,50];
 n = 6000; %rng(3);
 n = [50,2000];
 tic
-[split] = fn_modelgen(layers,boxsize,n,csplit);
+[split] = fn_modelgen(layers,boxsize,n);%,csplit);
 %plot(sh)
 toc
 
