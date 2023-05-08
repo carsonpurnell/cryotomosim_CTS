@@ -2,6 +2,8 @@
  
 simulate cryo-EM tomograms of molecular mixtures
 
+Preprint article: https://doi.org/10.1101/2023.04.28.538636
+
 requirements:
 
 MATLAB version 2019b or later
