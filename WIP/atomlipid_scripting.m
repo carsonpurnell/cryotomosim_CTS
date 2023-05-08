@@ -5,7 +5,7 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.2; %sphericity scale - needs more impact, by magnitude is awkward
+sz = 300; sp = 0.4; %sphericity scale - needs more impact, by magnitude is awkward
 %interesting bugfeature: sp~.8 usually makes double membranes
 %>~.85 is double-thick and not a good membrane model unfortunately, need to separate layers
 %nesting bugfeature gone as the cost of (mostly) fixing the double layer/delamination bug
