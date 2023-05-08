@@ -5,11 +5,11 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.6; %sphericity scale - needs more impact, by magnitude is awkward
+sz = 300; sp = 0.2; %sphericity scale - needs more impact, by magnitude is awkward
 %interesting bugfeature: sp~.8 usually makes double membranes
 %>~.85 is double-thick and not a good membrane model unfortunately, need to separate layers
 %nesting bugfeature gone as the cost of (mostly) fixing the double layer/delamination bug
-n = round(5+sz^(0.1+sp));
+n = round(8+sz^(0.1+sp));
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
 iters = round(1+(1+1/sp)^0.5);
 az = rand(n,1)*180; el = rand(n,1)*180; r = rand(n,1)*var+rad;
@@ -25,10 +25,10 @@ for i=1:iters
     sh.Alpha = criticalAlpha(sh,'one-region')*(1.5+i/3);
     pts2 = randtess(.01*i,sh,'s');
     pts = [pts;pts2]*1; 
-    v = rand(size(pts))*4;
+    v = rand(size(pts))*10+sz/100;
     pts = pts+v;
-    pts = smiter(pts,1,19);
-    [~,pts] = boundaryFacets(alphaShape(pts));
+    pts = smiter(pts,2,19);
+    [~,pts] = boundaryFacets(alphaShape(pts)); %getting duplicates here 
 end
 sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')*(2);
 %[~,pts] = boundaryFacets(sh);
@@ -47,7 +47,7 @@ end
 ptsa = unique(ptso,'rows');
 %the following should remove inner surface while closing envelope gaps
 sh = alphaShape(ptsa); sh.Alpha = criticalAlpha(sh,'one-region')*(5);
-plot(sh);
+%plot(sh);
 %prune sh to boundary points only to speed randtess?
 
 %{
@@ -83,12 +83,11 @@ plot(sh)
 
 %% functionalized surface shape to a shell shape
 thick = 30; %shape = sh;
-[shell] = shape2shell(sh,thick); %noticable slowdown compared to inlined code
-
-%
+[shell] = shape2shell(sh,thick);
+%{
 %% project potato as volume after shelling
 thick = 30;
-vpts = randtess(thick/1.5,sh,'s');
+vpts = randtess(thick/1.2,sh,'s');
 vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
 vpts = vpts+vec;
 ai = ones(size(vpts,1),1);
@@ -97,7 +96,7 @@ bx = [200,200,200]*5;
 shell = alphaShape(vpts,12); %slow, main bottleneck
 %shell.Alpha = criticalAlpha(sh,'one-region')*0.0+12; %weirdly slow, secondary bottleneck
 %}
-plot(shell)
+%plot(shell)
 
 %% shell to point distributions
 vpts = randtess(0.3,shell,'v');
@@ -118,10 +117,12 @@ vec = vec./vecnorm(vec,2,2).*spd;
 spts=spts+vec;
 %plot3(vpts(:,1),vpts(:,2),vpts(:,3),'.'); axis equal; hold on
 %plot3(spts(:,1),spts(:,2),spts(:,3),'.'); axis equal
-%% 
+
+
+%% project surface and interior points as a volume map
 fpts = [spts;vpts];
 %ai = ones(size(vpts,1),1);
-bx = [200,200,200]*5;
+bx = [200,200,200]*4;
 %vol = fnpt2vol(8,fpts,ones(size(fpts,1),1)',bx*2,-bx);
 [vv,solv,atlas,split] = helper_atoms2vol(8,fpts,bx,-bx/2);
 sliceViewer(vv);
@@ -157,7 +158,7 @@ end
 end
 
 function [shell] = shape2shell(shape,thick)
-vpts = randtess(thick/2.0,shape,'s');
+vpts = randtess(thick/1.2,shape,'s');
 vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
 vpts = vpts+vec;
 shell = alphaShape(vpts,12);
