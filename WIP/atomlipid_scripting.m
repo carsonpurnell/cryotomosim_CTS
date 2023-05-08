@@ -5,7 +5,7 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.4; %sphericity scale - needs more impact, by magnitude is awkward
+sz = 300; sp = 0.6; %sphericity scale - needs more impact, by magnitude is awkward
 %interesting bugfeature: sp~.8 usually makes double membranes
 %>~.85 is double-thick and not a good membrane model unfortunately, need to separate layers
 %nesting bugfeature gone as the cost of (mostly) fixing the double layer/delamination bug
@@ -83,23 +83,21 @@ plot(sh)
 
 %% functionalized surface shape to a shell shape
 thick = 30; %shape = sh;
-[shell] = shape2shell(sh,thick);
-plot(shell)
+[shell] = shape2shell(sh,thick); %noticable slowdown compared to inlined code
 
-%{
+%
 %% project potato as volume after shelling
 thick = 30;
-vpts = randtess(thick/2.0,sh,'s');
+vpts = randtess(thick/1.5,sh,'s');
 vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
 vpts = vpts+vec;
 ai = ones(size(vpts,1),1);
 bx = [200,200,200]*5;
-%vol = fnpt2vol(12,vpts,ai',bx*2,-bx);
-%sliceViewer(vol);
 
 shell = alphaShape(vpts,12); %slow, main bottleneck
 %shell.Alpha = criticalAlpha(sh,'one-region')*0.0+12; %weirdly slow, secondary bottleneck
 %}
+plot(shell)
 
 %% shell to point distributions
 vpts = randtess(0.3,shell,'v');
