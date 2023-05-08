@@ -5,7 +5,7 @@
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.6; %sphericity scale - needs more impact, by magnitude is awkward
+sz = 300; sp = 0.4; %sphericity scale - needs more impact, by magnitude is awkward
 %interesting bugfeature: sp~.8 usually makes double membranes
 %>~.85 is double-thick and not a good membrane model unfortunately, need to separate layers
 %nesting bugfeature gone as the cost of (mostly) fixing the double layer/delamination bug
@@ -23,14 +23,14 @@ pts = pts*R; %spin about Z randomly so blobs are isotropically disordered in-pla
 for i=1:iters
     sh = alphaShape(pts);
     sh.Alpha = criticalAlpha(sh,'one-region')*(1.5+i/3);
-    pts = randtess(.01*i,sh,'s');
-    pts = [pts;p2]*1; 
-    v = randn(size(pts));
-    pts = pts+v*sz/1000*i;
-    pts = smiter(pts,1,9);
+    pts2 = randtess(.01*i,sh,'s');
+    pts = [pts;pts2]*1; 
+    v = rand(size(pts))*4;
+    pts = pts+v;
+    pts = smiter(pts,1,19);
     [~,pts] = boundaryFacets(alphaShape(pts));
 end
-sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')*(1.5);
+sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')*(2);
 %[~,pts] = boundaryFacets(sh);
 [~,ptso] = boundaryFacets(alphaShape(pts,100));
 %smoothing thing
@@ -46,7 +46,7 @@ end
 
 ptsa = unique(ptso,'rows');
 %the following should remove inner surface while closing envelope gaps
-sh = alphaShape(ptsa); sh.Alpha = criticalAlpha(sh,'one-region')*(2);
+sh = alphaShape(ptsa); sh.Alpha = criticalAlpha(sh,'one-region')*(5);
 plot(sh);
 %prune sh to boundary points only to speed randtess?
 
