@@ -1,6 +1,6 @@
 % atomistic lipid generation
 sz = 300;
-sp = 0.99;
+sp = 0.2;
 
 [sh,pts,pts1,pts2] = potato(sz,sp);
 plot(sh)
@@ -205,14 +205,14 @@ pts = qq+d;
 sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')+sz;
 
 tp = randtess(0.1,sh,'s');
-sh = alphaShape(tp); sh.Alpha = criticalAlpha(sh,'one-region')+sz/8;
+sh = alphaShape(tp); sh.Alpha = criticalAlpha(sh,'one-region')+sz/2;
 [~,pts] = boundaryFacets(sh);
 
 pts1 = smiter(pts,1,9); %smiter not great, can average between faces. need dist cutoff at least.
 pts2 = smiter(pts,1,30);
 %pts = (pts+pts1)/2;
 
-sh = alphaShape(pts1); sh.Alpha = criticalAlpha(sh,'one-region')+sz/5;
+sh = alphaShape(pts1); sh.Alpha = criticalAlpha(sh,'one-region')+sz/2;
 
 end
 
