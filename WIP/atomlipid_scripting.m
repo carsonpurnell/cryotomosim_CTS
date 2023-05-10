@@ -1,6 +1,6 @@
 % atomistic lipid generation
-sz = 300;
-sp = 0.2;
+sz = 500;
+sp = 0.999;
 
 [sh,pts,pts1,pts2] = potato(sz,sp);
 plot(sh)
@@ -160,7 +160,7 @@ spts=spts+vec;
 %% project surface and interior points as a volume map
 fpts = [spts;vpts];
 %ai = ones(size(vpts,1),1);
-bx = [200,200,200]*4;
+bx = [200,200,200]*8;
 %vol = fnpt2vol(8,fpts,ones(size(fpts,1),1)',bx*2,-bx);
 [vv,solv,atlas,split] = helper_atoms2vol(8,fpts,bx,-bx/2);
 sliceViewer(vv);
@@ -213,7 +213,6 @@ pts2 = smiter(pts,1,30);
 %pts = (pts+pts1)/2;
 
 sh = alphaShape(pts1); sh.Alpha = criticalAlpha(sh,'one-region')+sz/2;
-
 end
 
 function ptsa = smiter(ptso,iter,nb)
@@ -230,7 +229,7 @@ end
 end
 
 function [shell] = shape2shell(shape,thick)
-vpts = randtess(thick/1.2,shape,'s');
+vpts = randtess(thick/10.0,shape,'s'); %might be too rough at 10, smaller divisor is smoother and slower
 vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
 vpts = vpts+vec;
 shell = alphaShape(vpts,24);
