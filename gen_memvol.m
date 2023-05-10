@@ -173,7 +173,7 @@ n = round(sqrt(sum(sz)));
 %beta 3 is pretty good for quite round membrane bodies
 %beta = 5; %1 = uniform, lower is U, higher is increasingly sharp peak
 %can decrease for wilder shapes, increase for nearer sphere
-minl = sz*0.22; maxl = sz*0.75; %min and max of points for use as blob origins
+minl = sz*0.25; maxl = sz*0.75; %min and max of points for use as blob origins
 pts = minl+(maxl-minl).*betarnd(beta,beta,n,3); %generate beta dist points to allow center/siding
 pts = round(pts);
 for i=1:size(pts,1)
