@@ -1,8 +1,10 @@
 % atomistic lipid generation
-sz = 500;
-sp = 0.999;
+sz = 300;
+sp = 0.4;
+thick = 30;
+pix = 10;
 
-[sh,pts,pts1,pts2] = potato(sz,sp);
+[sh,pts,pts1,pts2] = blob(sz,sp);
 plot(sh)
 
 %{
@@ -121,7 +123,7 @@ plot3(pts(:,1),pts(:,2),pts(:,3),'.'); axis equal
 %}
 
 %% functionalized surface shape to a shell shape
-thick = 30; %shape = sh;
+%thick = 30; %shape = sh;
 [shell] = shape2shell(sh,thick);
 %{
 %% project potato as volume after shelling
@@ -160,9 +162,9 @@ spts=spts+vec;
 %% project surface and interior points as a volume map
 fpts = [spts;vpts];
 %ai = ones(size(vpts,1),1);
-bx = [200,200,200]*8;
-%vol = fnpt2vol(8,fpts,ones(size(fpts,1),1)',bx*2,-bx);
-[vv,solv,atlas,split] = helper_atoms2vol(8,fpts,bx,-bx/2);
+bx = [200,200,200]*5;
+%vol = fnpt2vol(pix,fpts,ones(size(fpts,1),1)',bx*2,-bx);
+[vv,solv,atlas,split] = helper_atoms2vol(pix,fpts,bx,-bx/2);
 sliceViewer(vv);
 
 %{
@@ -182,7 +184,7 @@ sliceViewer(vol);
 %}
 %% internal functs
 
-function [sh,pts,pts1,pts2] = potato(sz,sp)
+function [sh,pts,pts1,pts2] = blob(sz,sp)
 n = round(8+sz^(0.2+sp));
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
 iters = round(1+(1+1/sp)^0.5);
@@ -192,9 +194,11 @@ R = makehgtform('xrotate',pi/2); R = R(1:3,1:3); %get rotation matrix (3x3 of fu
 pts = ([x,y,z])*R; %rotate about axis so points aren't clustered in Z (stays 0-centered though)
 R = makehgtform('zrotate',rand*180); R = R(1:3,1:3);
 pts = pts*R; %spin about Z randomly so blobs are isotropically disordered in-plane
-% surround points with randn hulls?
+
+% surround points with randn hulls
+%same strategy could generate variability inside membrane, including lipid rafts
 qq = repmat(pts,round(10*(sp^0.5)),1); %replicate points by 10
-d = randn(size(qq))*30/sp; %not unitized for variability?
+d = randn(size(qq))*10/sp^2*(1-sp); %not unitized for variability?
 %d = d./vecnorm(d,2,2); %vector directions, unitized
 
 % vec = randn(size(spts));
