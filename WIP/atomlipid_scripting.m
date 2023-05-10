@@ -1,15 +1,27 @@
 % atomistic lipid generation
+sz = 300;
+sp = 0.99;
 
-%% generate potato
+[sh,pts,pts1,pts2] = potato(sz,sp);
+plot(sh)
+
+%{
+plot3(pts(:,1),pts(:,2),pts(:,3),'.'); axis equal; hold on
+plot3(pts1(:,1),pts1(:,2),pts1(:,3),'.'); axis equal
+plot3(pts2(:,1),pts2(:,2),pts2(:,3),'.'); axis equal
+%}
+
+%{
+%% generate potato by connecting points
 %s = rand(20,3);
 %size input and sphericity input
 %size scales number of points and base radius, sphericity scales radius between fixed and variable 1/sph
 %should give good spectrum of control with few needed parameters
-sz = 300; sp = 0.4; %sphericity scale - needs more impact, by magnitude is awkward
+%sz = 300; sp = 0.4; %sphericity scale - needs more impact, by magnitude is awkward
 %interesting bugfeature: sp~.8 usually makes double membranes
 %>~.85 is double-thick and not a good membrane model unfortunately, need to separate layers
 %nesting bugfeature gone as the cost of (mostly) fixing the double layer/delamination bug
-n = round(8+sz^(0.1+sp));
+n = round(8+sz^(0.2+sp));
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
 iters = round(1+(1+1/sp)^0.5);
 az = rand(n,1)*180; el = rand(n,1)*180; r = rand(n,1)*var+rad;
@@ -18,14 +30,30 @@ R = makehgtform('xrotate',pi/2); R = R(1:3,1:3); %get rotation matrix (3x3 of fu
 pts = ([x,y,z])*R; %rotate about axis so points aren't clustered in Z (stays 0-centered though)
 R = makehgtform('zrotate',rand*180); R = R(1:3,1:3);
 pts = pts*R; %spin about Z randomly so blobs are isotropically disordered in-plane
+% surround points with randn hulls?
+qq = repmat(pts,round(10*(sp^0.5)),1); %replicate points by 10
+d = randn(size(qq))*30/sp; %not unitized for variability?
+%d = d./vecnorm(d,2,2); %vector directions, unitized
+
+% vec = randn(size(spts));
+% spd = rand(size(vec,1),1)*8+4;
+% vec = vec./vecnorm(vec,2,2).*spd;
+pts = qq+d;
+pts = smiter(pts,1,9);
+sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')+sz;
+%plot(sh); hold on
+%plot3(pts(:,1),pts(:,2),pts(:,3),'.'); axis equal
+%}
+%% 
+%{
 %plot3(x,y,z,'.'); axis equal;
 %scales badly, need an interpolator function to get good sizes without handholding
 for i=1:iters
     sh = alphaShape(pts);
-    sh.Alpha = criticalAlpha(sh,'one-region')*(1.5+i/3);
-    pts2 = randtess(.01*i,sh,'s');
+    sh.Alpha = criticalAlpha(sh,'one-region')*1+0*(1.5+i/3);
+    pts2 = randtess(.01*i,sh,'s'); %no points?
     pts = [pts;pts2]*1; 
-    v = rand(size(pts))*10+sz/100;
+    v = randn(size(pts))*10; %this right here makes no sense
     pts = pts+v;
     pts = smiter(pts,2,19);
     [~,pts] = boundaryFacets(alphaShape(pts)); %getting duplicates here 
@@ -47,9 +75,9 @@ end
 ptsa = unique(ptso,'rows');
 %the following should remove inner surface while closing envelope gaps
 sh = alphaShape(ptsa); sh.Alpha = criticalAlpha(sh,'one-region')*(5);
-%plot(sh);
+plot(sh);
 %prune sh to boundary points only to speed randtess?
-
+%}
 %{
 %% potato, but interpolation
 n = 100; sz = 100;
@@ -81,6 +109,17 @@ plot(sh)
 %plot3(x,y,z,'.'); axis equal
 %}
 
+%% generate from point expansion
+%{
+minl = sz*0.25; maxl = sz*0.75; %min and max of points for use as blob origins
+beta = 40; n = 50;
+%pts = -sz/2+(sz).*betarnd(beta,beta,n,3); %random points
+pts = sz/2*randn(n,3);
+plot3(pts(:,1),pts(:,2),pts(:,3),'.'); axis equal
+%sh = alphaShape(pts,120);
+%plot(sh)
+%}
+
 %% functionalized surface shape to a shell shape
 thick = 30; %shape = sh;
 [shell] = shape2shell(sh,thick);
@@ -96,7 +135,7 @@ bx = [200,200,200]*5;
 shell = alphaShape(vpts,12); %slow, main bottleneck
 %shell.Alpha = criticalAlpha(sh,'one-region')*0.0+12; %weirdly slow, secondary bottleneck
 %}
-%plot(shell)
+plot(shell)
 
 %% shell to point distributions
 vpts = randtess(0.3,shell,'v');
@@ -109,7 +148,6 @@ vpts = rand(vnum,3).*box+mi-5;
 %invol = inShape(shell,vpts); %now the main bottleneck - alphashape slowness
 %vpts = vpts(invol,:);
 %}
-%%
 spts = randtess(10,shell,'s');
 vec = randn(size(spts));
 spd = rand(size(vec,1),1)*8+4;
@@ -144,6 +182,40 @@ sliceViewer(vol);
 %}
 %% internal functs
 
+function [sh,pts,pts1,pts2] = potato(sz,sp)
+n = round(8+sz^(0.2+sp));
+rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
+iters = round(1+(1+1/sp)^0.5);
+az = rand(n,1)*180; el = rand(n,1)*180; r = rand(n,1)*var+rad;
+[x,y,z] = sph2cart(az,el,r);
+R = makehgtform('xrotate',pi/2); R = R(1:3,1:3); %get rotation matrix (3x3 of full matrix)
+pts = ([x,y,z])*R; %rotate about axis so points aren't clustered in Z (stays 0-centered though)
+R = makehgtform('zrotate',rand*180); R = R(1:3,1:3);
+pts = pts*R; %spin about Z randomly so blobs are isotropically disordered in-plane
+% surround points with randn hulls?
+qq = repmat(pts,round(10*(sp^0.5)),1); %replicate points by 10
+d = randn(size(qq))*30/sp; %not unitized for variability?
+%d = d./vecnorm(d,2,2); %vector directions, unitized
+
+% vec = randn(size(spts));
+% spd = rand(size(vec,1),1)*8+4;
+% vec = vec./vecnorm(vec,2,2).*spd;
+pts = qq+d;
+%pts = smiter(pts,1,9);
+sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')+sz;
+
+tp = randtess(0.1,sh,'s');
+sh = alphaShape(tp); sh.Alpha = criticalAlpha(sh,'one-region')+sz/8;
+[~,pts] = boundaryFacets(sh);
+
+pts1 = smiter(pts,1,9); %smiter not great, can average between faces. need dist cutoff at least.
+pts2 = smiter(pts,1,30);
+%pts = (pts+pts1)/2;
+
+sh = alphaShape(pts1); sh.Alpha = criticalAlpha(sh,'one-region')+sz/5;
+
+end
+
 function ptsa = smiter(ptso,iter,nb)
 ptsa = zeros(size(ptso));
 for j=1:iter
@@ -161,7 +233,7 @@ function [shell] = shape2shell(shape,thick)
 vpts = randtess(thick/1.2,shape,'s');
 vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
 vpts = vpts+vec;
-shell = alphaShape(vpts,12);
+shell = alphaShape(vpts,24);
 end
 
 function [pts] = vesgen_sphere(r,thick)
