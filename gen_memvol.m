@@ -63,7 +63,7 @@ for i=1:num
             end
             %disp(rs)
         case 3
-            sz = memsize*100;
+            sz = memsize*100+randi(100);
             [~,~,tmp] = gen_mem(sz,pix);
             tmpskel = vesskeletonize(tmp);
     end

@@ -5,7 +5,7 @@ arguments
     sz
     pix = []
     sp = 0.6
-    thick = 30
+    thick = 32
 end
 vol = 0;
 
@@ -17,7 +17,7 @@ vol = 0;
 %assign atomic IDs to atoms for proper density
 atoms = pts;%[head;tail];
 perim = shell.Points; %perimeter from shell shape
-atoms(:,4) = 2.5; %terrible very bad interim density
+atoms(:,4) = 6.5; %terrible very bad interim density
 
 if ~isempty(pix)
     vol = helper_atoms2vol(pix,atoms);
@@ -81,10 +81,10 @@ shell = alphaShape(shellpts,24);
 end
 
 function [pts,h,t] = shell2pts(shell)
-t = randtess(0.2,shell,'v');
-h = randtess(10,shell,'s');
+t = randtess(0.4,shell,'v');
+h = randtess(20,shell,'s');
 vec = randn(size(h));
-spd = rand(size(vec,1),1)*10+0;
+spd = rand(size(vec,1),1)*12+0;
 vec = vec./vecnorm(vec,2,2).*spd;
 h=h+vec;
 pts = [h;t];
