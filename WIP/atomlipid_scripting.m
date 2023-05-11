@@ -5,7 +5,8 @@ thick = 30;
 pix = 10;
 
 [sh,pts,pts1,pts2] = blob(sz,sp);
-plot(sh)
+%alternative shape generators? cylinders, planes, sphere, stacks, double layers?
+%plot(sh)
 
 %{
 plot3(pts(:,1),pts(:,2),pts(:,3),'.'); axis equal; hold on
@@ -137,10 +138,16 @@ bx = [200,200,200]*5;
 shell = alphaShape(vpts,12); %slow, main bottleneck
 %shell.Alpha = criticalAlpha(sh,'one-region')*0.0+12; %weirdly slow, secondary bottleneck
 %}
-plot(shell)
+%plot(shell)
 
 %% shell to point distributions
-vpts = randtess(0.3,shell,'v');
+vpts = randtess(0.2,shell,'v');
+spts = randtess(10,shell,'s');
+vec = randn(size(spts));
+spd = rand(size(vec,1),1)*10+0;
+vec = vec./vecnorm(vec,2,2).*spd;
+spts=spts+vec;
+fpts = [spts;vpts];
 %{
 dens = .01;
 [mi,ma] = bounds(vpts,1);
@@ -150,22 +157,16 @@ vpts = rand(vnum,3).*box+mi-5;
 %invol = inShape(shell,vpts); %now the main bottleneck - alphashape slowness
 %vpts = vpts(invol,:);
 %}
-spts = randtess(10,shell,'s');
-vec = randn(size(spts));
-spd = rand(size(vec,1),1)*8+4;
-vec = vec./vecnorm(vec,2,2).*spd;
-spts=spts+vec;
 %plot3(vpts(:,1),vpts(:,2),vpts(:,3),'.'); axis equal; hold on
 %plot3(spts(:,1),spts(:,2),spts(:,3),'.'); axis equal
 
 
 %% project surface and interior points as a volume map
-fpts = [spts;vpts];
 %ai = ones(size(vpts,1),1);
-bx = [200,200,200]*5;
+bx = [sz,sz,sz]*3;
 %vol = fnpt2vol(pix,fpts,ones(size(fpts,1),1)',bx*2,-bx);
 [vv,solv,atlas,split] = helper_atoms2vol(pix,fpts,bx,-bx/2);
-sliceViewer(vv);
+sliceViewer(vv*3+solv);
 
 %{
 %% spherical vesicle test
@@ -233,10 +234,10 @@ end
 end
 
 function [shell] = shape2shell(shape,thick)
-vpts = randtess(thick/10.0,shape,'s'); %might be too rough at 10, smaller divisor is smoother and slower
-vec = randn(size(vpts)); vec = thick*vec./vecnorm(vec,2,2);
-vpts = vpts+vec;
-shell = alphaShape(vpts,24);
+shellpts = randtess(thick/10.0,shape,'s'); %might be too rough at 10, smaller divisor is smoother and slower
+vec = randn(size(shellpts)); vec = thick*vec./vecnorm(vec,2,2);
+shellpts = shellpts+vec;
+shell = alphaShape(shellpts,24);
 end
 
 function [pts] = vesgen_sphere(r,thick)
