@@ -5,7 +5,7 @@ arguments
     sz
     pix = []
     sp = 0.6
-    thick = 32
+    thick = 30
 end
 vol = 0;
 
@@ -13,6 +13,8 @@ vol = 0;
 %alternative shape generators? cylinders, planes, sphere, stacks, double layers?
 [shell] = shape2shell(sh,thick);
 [pts,head,tail] = shell2pts(shell); %need to use surface/interior separately for atomic density purposes
+%better control over thickness and surface layer density - impacts layered CTF artifact a lot.
+%spread of surface density also impacts the apparent thickness of final membrane, need to account
 
 %assign atomic IDs to atoms for proper density
 atoms = pts;%[head;tail];
