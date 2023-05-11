@@ -81,12 +81,13 @@ shell = alphaShape(shellpts,24);
 end
 
 function [pts,h,t] = shell2pts(shell)
-surfvar = 16;
-t = randtess(0.6,shell,'v');
+surfvar = 12;
+t = randtess(0.4,shell,'v');
 h = randtess(20,shell,'s');
 vec = randn(size(h));
 spd = rand(size(vec,1),1)*surfvar+0;
-spd = min(spd,surfvar*1.5); %reduce distant fuzz points
+spd = max(spd,0);
+spd = min(spd,surfvar*2); %reduce distant fuzz points
 vec = vec./vecnorm(vec,2,2).*spd;
 h=h+vec;
 pts = [h;t];
