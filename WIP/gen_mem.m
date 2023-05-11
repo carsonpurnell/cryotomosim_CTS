@@ -1,4 +1,4 @@
-function [atoms,vol] = gen_mem(sz,pix,sp,thick)
+function [atoms,perim,vol] = gen_mem(sz,pix,sp,thick)
 
 
 arguments
@@ -16,6 +16,7 @@ vol = 0;
 
 %assign atomic IDs to atoms for proper density
 atoms = pts;%[head;tail];
+perim = shell.Points; %perimeter from shell shape
 atoms(:,4) = 2.5; %terrible very bad interim density
 
 if ~isempty(pix)
