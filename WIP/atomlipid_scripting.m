@@ -1,13 +1,21 @@
-% atomistic lipid generation
+%% atomistic lipid generation
 sz = 300;
-sp = 0.4;
+sp = 0.8;
 thick = 30;
+
 pix = 10;
 
-[sh,pts,pts1,pts2] = blob(sz,sp);
+[sh,~,~,~] = blob(sz,sp);
+[shell] = shape2shell(sh,thick);
+pts = shell2pts(shell);
 %alternative shape generators? cylinders, planes, sphere, stacks, double layers?
 %plot(sh)
+bx = [sz,sz,sz]*3;
+%vol = fnpt2vol(pix,fpts,ones(size(fpts,1),1)',bx*2,-bx);
+[vv,solv,atlas,split] = helper_atoms2vol(pix,pts,bx,-bx/2);
+sliceViewer(vv);
 
+%{
 %{
 plot3(pts(:,1),pts(:,2),pts(:,3),'.'); axis equal; hold on
 plot3(pts1(:,1),pts1(:,2),pts1(:,3),'.'); axis equal
@@ -122,7 +130,6 @@ plot3(pts(:,1),pts(:,2),pts(:,3),'.'); axis equal
 %sh = alphaShape(pts,120);
 %plot(sh)
 %}
-
 %% functionalized surface shape to a shell shape
 %thick = 30; %shape = sh;
 [shell] = shape2shell(sh,thick);
@@ -139,8 +146,10 @@ shell = alphaShape(vpts,12); %slow, main bottleneck
 %shell.Alpha = criticalAlpha(sh,'one-region')*0.0+12; %weirdly slow, secondary bottleneck
 %}
 %plot(shell)
-
+%}
+%{
 %% shell to point distributions
+%{
 vpts = randtess(0.2,shell,'v');
 spts = randtess(10,shell,'s');
 vec = randn(size(spts));
@@ -148,6 +157,8 @@ spd = rand(size(vec,1),1)*10+0;
 vec = vec./vecnorm(vec,2,2).*spd;
 spts=spts+vec;
 fpts = [spts;vpts];
+%}
+fpts = shell2pts(shell);
 %{
 dens = .01;
 [mi,ma] = bounds(vpts,1);
@@ -159,14 +170,15 @@ vpts = rand(vnum,3).*box+mi-5;
 %}
 %plot3(vpts(:,1),vpts(:,2),vpts(:,3),'.'); axis equal; hold on
 %plot3(spts(:,1),spts(:,2),spts(:,3),'.'); axis equal
-
-
+%}
+%{
 %% project surface and interior points as a volume map
 %ai = ones(size(vpts,1),1);
 bx = [sz,sz,sz]*3;
 %vol = fnpt2vol(pix,fpts,ones(size(fpts,1),1)',bx*2,-bx);
 [vv,solv,atlas,split] = helper_atoms2vol(pix,fpts,bx,-bx/2);
-sliceViewer(vv*3+solv);
+sliceViewer(vv);
+%}
 
 %{
 %% spherical vesicle test
@@ -238,6 +250,18 @@ shellpts = randtess(thick/10.0,shape,'s'); %might be too rough at 10, smaller di
 vec = randn(size(shellpts)); vec = thick*vec./vecnorm(vec,2,2);
 shellpts = shellpts+vec;
 shell = alphaShape(shellpts,24);
+end
+
+function [pts,h,t] = shell2pts(shell)
+
+t = randtess(0.2,shell,'v');
+h = randtess(10,shell,'s');
+vec = randn(size(h));
+spd = rand(size(vec,1),1)*10+0;
+vec = vec./vecnorm(vec,2,2).*spd;
+h=h+vec;
+pts = [h;t];
+
 end
 
 function [pts] = vesgen_sphere(r,thick)
