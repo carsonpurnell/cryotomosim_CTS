@@ -5,7 +5,7 @@ arguments
     sz
     pix = []
     sp = 0.6
-    thick = 32
+    thick = 28
 end
 vol = 0;
 
@@ -81,10 +81,12 @@ shell = alphaShape(shellpts,24);
 end
 
 function [pts,h,t] = shell2pts(shell)
+surfvar = 16;
 t = randtess(0.4,shell,'v');
 h = randtess(20,shell,'s');
 vec = randn(size(h));
-spd = rand(size(vec,1),1)*12+0;
+spd = rand(size(vec,1),1)*surfvar+0;
+spd = min(spd,surfvar*1.5); %reduce distant fuzz points
 vec = vec./vecnorm(vec,2,2).*spd;
 h=h+vec;
 pts = [h;t];
