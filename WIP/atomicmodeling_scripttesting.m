@@ -78,13 +78,15 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %% atomic vesicle gen
 %currently just a hamfisted first-pass in the modelgen. separate implementation needed? need better outputs
 %membrane-only implementation could generate spheres based on the random location
-ves = 5;
+ves = 6;
 lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
 %need a more complex implementation - centreline shell, perimeter shell?, and complete set of points
 %centreline for membrane protein placement, points for kdt searcher. shell redundant? won't need multiple
 %searches?
 for i=1:ves
-    [pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
+    %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
+    [pts] = gen_mem(200+randi(100),[],rand*0.4+0.2, 24+randi(8));
+    [~,perim] = boundaryfacets(alphaShape(pts(:,1:3)));
     lipid(1).perim{1,i} = perim; %alphashape of full shell >60s, not feasible
     lipid(1).adat{1,i} = pts;
     lipid(1).modelname{i} = append('vesicle');%,string(i));
@@ -95,7 +97,7 @@ layers{1} = lipid;
 %% functionalized model gen part
 boxsize = pix*[300,400,50];
 n = 6000; %rng(3);
-n = [50,2000];
+n = [50,1000];
 tic
 [split] = fn_modelgen(layers,boxsize,n);%,csplit);
 %plot(sh)
