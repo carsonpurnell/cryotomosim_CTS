@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.2.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.2.2) - 2023-05-11 21:55:09
+
+Improved membrane generation, same process for both atomic and volumetric schemes for transparency.
+
 ## [v0.2.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.2.1) - 2023-05-01 14:58:09
 
 *No description*
