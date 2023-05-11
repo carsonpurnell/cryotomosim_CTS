@@ -5,7 +5,7 @@ arguments
     sz
     pix = []
     sp = 0.6
-    thick = 28
+    thick = 32
 end
 vol = 0;
 
@@ -82,7 +82,7 @@ end
 
 function [pts,h,t] = shell2pts(shell)
 surfvar = 16;
-t = randtess(0.4,shell,'v');
+t = randtess(0.6,shell,'v');
 h = randtess(20,shell,'s');
 vec = randn(size(h));
 spd = rand(size(vec,1),1)*surfvar+0;
