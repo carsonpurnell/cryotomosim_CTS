@@ -85,8 +85,8 @@ lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
 %searches?
 for i=1:ves
     %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
-    [pts] = gen_mem(200+randi(100),[],rand*0.4+0.2, 24+randi(8));
-    [~,perim] = boundaryfacets(alphaShape(pts(:,1:3)));
+    [pts,perim] = gen_mem(200+randi(100),[],rand*0.4+0.2, 24+randi(8));
+    %[~,perim] = boundaryfacets(alphaShape(pts(:,1:3)));
     lipid(1).perim{1,i} = perim; %alphashape of full shell >60s, not feasible
     lipid(1).adat{1,i} = pts;
     lipid(1).modelname{i} = append('vesicle');%,string(i));
@@ -97,7 +97,7 @@ layers{1} = lipid;
 %% functionalized model gen part
 boxsize = pix*[300,400,50];
 n = 6000; %rng(3);
-n = [50,1000];
+n = [50,2000];
 tic
 [split] = fn_modelgen(layers,boxsize,n);%,csplit);
 %plot(sh)
