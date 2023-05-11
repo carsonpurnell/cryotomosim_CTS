@@ -44,7 +44,7 @@ for i=1:num
     else
         gg=memtype;
     end
-    switch gg%randi(2)
+    switch 3%randi(2)
         case 1
             tmp = vesgen_sphere(pix); %generate spherical vesicles
             ves{i} = tmp; %store trimmed vesicle into output cell array
@@ -62,6 +62,10 @@ for i=1:num
                 %rs = rs+1;
             end
             %disp(rs)
+        case 3
+            sz = memsize*100;
+            [~,~,tmp] = gen_mem(sz,pix);
+            tmpskel = vesskeletonize(tmp);
     end
     
     for q=1:tries %try to place each vesicle N times, allows for duplicates
