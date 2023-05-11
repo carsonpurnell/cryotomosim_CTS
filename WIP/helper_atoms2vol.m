@@ -9,14 +9,24 @@ if isstruct(pts)
 else
     names = 0;
 end
-if iscell(pts)
+if iscell(pts) %this is a mess, subfunct/streamline
     s = numel(pts); t=1;
-    if nargin<3, sz = max(vertcat(pts{:}(:,1:3)),[],1)+pix; end
+    if nargin<3
+        offset = min(vertcat(pts{:}(:,1:3)),[],1)-pix;
+        sz = max(vertcat(pts{:}(:,1:3)),[],1)+pix-offset;
+    elseif nargin<4
+        offset = [0,0,0];
+    end
 else
     s = 1; t=0;
-    if nargin<3, sz = max(pts(:,1:3),[],1)+pix; end
+    if nargin<3
+        offset = min(pts(:,1:3),[],1)-pix;
+        sz = max(pts(:,1:3),[],1)+pix-offset;
+    elseif nargin<4
+        offset = [0,0,0];
+    end
 end
-if nargin<4, offset=[0,0,0]; end
+%if nargin<4, offset=[0,0,0]; end
 %if nargin<3, sz = max(catpts(:,1:3),[],1)+pix; end
 %if size(pts,2)<4, pts(:,end+1)=1; end %intensity==1 if not given by 4th column
 %need rough estimate of average volume for organic atoms

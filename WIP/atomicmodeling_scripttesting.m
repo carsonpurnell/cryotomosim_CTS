@@ -566,6 +566,7 @@ end
 
 end
 %}
+%{
 function [vol,solv] = helper_atoms2vol_i(pix,pts,sz,offset)
 if nargin<4, offset=[0,0,0]; end
 if nargin<3, sz = max(pts,[],1)+pix; end
@@ -589,6 +590,7 @@ for i=1:size(pts,1)
 end
 solv = max(solv,0)/32*h20;
 end
+%}
 function vol = ifcn_solv(pix,pts,sz,offset)
 if nargin<4, offset=[0,0,0]; end
 if nargin<3, sz = max(pts,[],1)+pix; end

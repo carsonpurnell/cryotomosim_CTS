@@ -6,9 +6,9 @@ thick = 30;
 pix = 10;
 
 [sh,~,~,~] = blob(sz,sp);
+%alternative shape generators? cylinders, planes, sphere, stacks, double layers?
 [shell] = shape2shell(sh,thick);
 pts = shell2pts(shell);
-%alternative shape generators? cylinders, planes, sphere, stacks, double layers?
 %plot(sh)
 bx = [sz,sz,sz]*3;
 %vol = fnpt2vol(pix,fpts,ones(size(fpts,1),1)',bx*2,-bx);
