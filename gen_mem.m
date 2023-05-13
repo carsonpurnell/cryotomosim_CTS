@@ -4,12 +4,17 @@ function [atoms,perim,vol] = gen_mem(sz,pix,sp,thick)
 arguments
     sz
     pix = []
-    sp = 0.6
+    sp = 0.6+rand*0.4
     thick = 30
 end
 vol = 0;
 
-[sh,~,~,~] = blob(sz,sp);
+switch 1%randi(2)
+    case 1 %needs a bit more smoothing and less flat faces
+        [sh,~,~,~] = blob(sz,sp); %connect and smooth scattered points
+    case 2
+        [sh] = bubble(sz,sp); %expand spheres from core pts
+end
 %alternative shape generators? cylinders, planes, sphere, stacks, double layers?
 [shell] = shape2shell(sh,thick);
 [pts,head,tail] = shell2pts(shell); %need to use surface/interior separately for atomic density purposes
@@ -58,6 +63,7 @@ sh = alphaShape(tp); sh.Alpha = criticalAlpha(sh,'one-region')+sz/2;
 pts1 = smiter(pts,1,9); %smiter not great, can average between faces. need dist cutoff at least.
 pts2 = smiter(pts,1,30);
 %pts = (pts+pts1)/2;
+pts1 = unique(pts1,'rows'); %prune duplicates
 
 sh = alphaShape(pts1); sh.Alpha = criticalAlpha(sh,'one-region')+sz/2;
 end
