@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [v0.2.3](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.2.3) - 2023-05-11 22:31:01
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix gen_mem subfolder issue ([9c7f7fd](https://github.com/carsonpurnell/cryotomosim_CTS/commit/9c7f7fd7495db216ce05be484d9c6bd1a6411d87))
+
 ## [v0.2.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.2.2) - 2023-05-11 21:55:09
 
 Improved membrane generation, same process for both atomic and volumetric schemes for transparency.
