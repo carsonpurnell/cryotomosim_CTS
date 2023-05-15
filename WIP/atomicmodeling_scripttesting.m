@@ -87,7 +87,9 @@ for i=1:ves
     %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
     [pts,perim] = gen_mem(200+randi(100),[],rand*0.4+0.2, 24+randi(8));
     %[~,perim] = boundaryfacets(alphaShape(pts(:,1:3)));
-    lipid(1).perim{1,i} = perim; %alphashape of full shell >60s, not feasible
+    pts(:,4) = pts(:,4)/2.5;
+    ix = randi(size(pts,1),1,round(size(pts,1)/100)); % 1% of pts
+    lipid(1).perim{1,i} = pts(ix,1:3);%perim; %alphashape of full shell >60s, not feasible
     lipid(1).adat{1,i} = pts;
     lipid(1).modelname{i} = append('vesicle');%,string(i));
 end
