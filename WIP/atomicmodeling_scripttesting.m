@@ -85,11 +85,12 @@ lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
 %searches?
 for i=1:ves
     %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
-    [pts,perim] = gen_mem(200+randi(100),[],rand*0.4+0.2, 24+randi(8));
+    [pts,perim] = gen_mem(200+randi(200),[],rand*0.7+0.3, 24+randi(8));
     %[~,perim] = boundaryfacets(alphaShape(pts(:,1:3)));
     pts(:,4) = pts(:,4)/2.5;
-    ix = randi(size(pts,1),1,round(size(pts,1)/1000)); % 1% of pts
-    lipid(1).perim{1,i} = pts(ix,1:3);%perim; %alphashape of full shell >60s, not feasible
+    ix = randi(size(pts,1),1,round(size(pts,1)/50)); % 1% of pts
+    perim = [pts(ix,1:3);perim];
+    lipid(1).perim{1,i} = unique(perim,'rows'); %alphashape of full shell >60s, not feasible
     lipid(1).adat{1,i} = pts;
     lipid(1).modelname{i} = append('vesicle');%,string(i));
 end
@@ -99,7 +100,7 @@ layers{1} = lipid;
 %% functionalized model gen part
 boxsize = pix*[300,400,50];
 n = 6000; %rng(3);
-n = [50,2000];
+n = [60,2000];
 tic
 [split] = fn_modelgen(layers,boxsize,n);%,csplit);
 %plot(sh)
@@ -482,7 +483,7 @@ for i=1:n
         tdx = dx.(sel.modelname{sub}); %MUCH faster than hard cat, ~7x.
         l = size(tpts,1); e = tdx+l-1;
         if e>size(split.(sel.modelname{sub}),1)
-            split.(sel.modelname{sub})(tdx:(tdx+l)*3,:) = 0;
+            split.(sel.modelname{sub})(tdx:(tdx+l)*4,:) = 0;
         end
         split.(sel.modelname{sub})(tdx:e,:) = tpts; dx.(sel.modelname{sub}) = tdx+l;
         % % inlined dyncat code % %
