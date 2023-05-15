@@ -16,6 +16,7 @@ switch 1%randi(2)
         [sh] = bubble(sz,sp); %expand spheres from core pts
 end
 %alternative shape generators? cylinders, planes, sphere, stacks, double layers?
+%alt gen 3: curved spline of core points with varying radii for expansion
 [shell] = shape2shell(sh,thick);
 [pts,head,tail] = shell2pts(shell); %need to use surface/interior separately for atomic density purposes
 %better control over thickness and surface layer density - impacts layered CTF artifact a lot.
@@ -54,6 +55,7 @@ d = randn(size(qq))*10/sp^2*(1-sp); %not unitized for variability?
 % vec = vec./vecnorm(vec,2,2).*spd;
 pts = qq+d;
 %pts = smiter(pts,1,9);
+pts = unique(pts,'rows');
 sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')+sz;
 
 tp = randtess(0.1,sh,'s');
@@ -90,8 +92,8 @@ end
 
 function [pts,h,t] = shell2pts(shell)
 surfvar = 12;
-t = randtess(0.4,shell,'v');
-h = randtess(20,shell,'s');
+t = randtess(0.5,shell,'v'); 
+h = randtess(20,shell,'s'); %was 20,testing for less bilayer
 vec = randn(size(h));
 spd = rand(size(vec,1),1)*surfvar+0;
 spd = max(spd,0);
