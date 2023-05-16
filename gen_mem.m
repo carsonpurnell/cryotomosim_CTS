@@ -25,7 +25,7 @@ end
 %assign atomic IDs to atoms for proper density
 atoms = pts;%[head;tail];
 perim = shell.Points; %perimeter from shell shape
-atoms(:,4) = 6.5; %terrible very bad interim density
+atoms(:,4) = 13; %terrible very bad interim density
 
 if ~isempty(pix)
     vol = helper_atoms2vol(pix,atoms);
@@ -92,8 +92,8 @@ end
 
 function [pts,h,t] = shell2pts(shell)
 surfvar = 12;
-t = randtess(0.5,shell,'v'); 
-h = randtess(20,shell,'s'); %was 20,testing for less bilayer
+t = randtess(0.25,shell,'v'); 
+h = randtess(10,shell,'s'); %was 20,testing for less bilayer
 vec = randn(size(h));
 spd = rand(size(vec,1),1)*surfvar+0;
 spd = max(spd,0);
