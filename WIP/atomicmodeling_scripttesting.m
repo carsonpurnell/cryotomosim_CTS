@@ -84,12 +84,12 @@ lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
 %centreline for membrane protein placement, points for kdt searcher. shell redundant? won't need multiple
 %searches?
 tic
-fprintf('generating membranes')
+fprintf('generating membranes  ')
 for i=1:ves
     %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
     [pts,perim] = gen_mem(200+randi(200),[],rand*0.7+0.3, 24+randi(8)); %need fewer more intense points
     %[~,perim] = boundaryfacets(alphaShape(pts(:,1:3)));
-    pts(:,4) = pts(:,4)/2.5; %288 init, 170/xxx at 1/2 pts
+    pts(:,4) = pts(:,4)/4.5; %288 init, 170/195 at 1/2 pts, 125 at 1/4
     ix = randi(size(pts,1),1,round(size(pts,1)/50)); % 1% of pts
     perim = [pts(ix,1:3);perim];
     lipid(1).perim{1,i} = unique(perim,'rows'); %alphashape of full shell >60s, not feasible
@@ -113,7 +113,7 @@ toc
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol+solv);
-%WriteMRC(vol+solv,14,'atomicmodtest_lg1.mrc');
+%WriteMRC(vol+solv,pix,'atomicmodtest_newtatomem2.mrc');
 
 %{
 %% randomly add to the points and concatenate them into a list
