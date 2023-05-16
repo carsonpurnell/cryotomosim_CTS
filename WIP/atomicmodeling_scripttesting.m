@@ -484,11 +484,11 @@ for i=1:n
         tdx = dx.(sel.modelname{sub}); %MUCH faster than hard cat, ~7x.
         l = size(tpts,1); e = tdx+l-1;
         if e>size(split.(sel.modelname{sub}),1)
-            split.(sel.modelname{sub})(tdx:(tdx+l)*5,:) = 0;
-            %2 34.4     
-            %3 24.8     
-            %4 7.8      
-            %5 14.5     
+            split.(sel.modelname{sub})(tdx:(tdx+l)*4,:) = 0;
+            %2 34.4     25.6    overall 402
+            %3 24.8     25.3    overall 405
+            %4 7.8      9.9    overall 393
+            %5 14.5     15.7    overall 394
         end
         split.(sel.modelname{sub})(tdx:e,:) = tpts; dx.(sel.modelname{sub}) = tdx+l;
         % % inlined dyncat code % %
@@ -513,10 +513,10 @@ for i=1:numel(sn)
         tdx = dx.(sn{i});
     end
     split.(sn{i})(tdx:end,:) = [];
-    %2 
-    %3 
-    %4 
-    %5 
+    %2 22.1
+    %3 30.9
+    %4 39.7
+    %5 32.9
 end
 
 %tic; ot = OcTree(dynpts,'binCapacity',1e3); toc; ot.plot3; axis equal;
