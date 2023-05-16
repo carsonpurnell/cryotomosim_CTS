@@ -83,11 +83,13 @@ lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
 %need a more complex implementation - centreline shell, perimeter shell?, and complete set of points
 %centreline for membrane protein placement, points for kdt searcher. shell redundant? won't need multiple
 %searches?
+tic
+fprintf('generating membranes')
 for i=1:ves
     %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
-    [pts,perim] = gen_mem(200+randi(200),[],rand*0.7+0.3, 24+randi(8));
+    [pts,perim] = gen_mem(200+randi(200),[],rand*0.7+0.3, 24+randi(8)); %need fewer more intense points
     %[~,perim] = boundaryfacets(alphaShape(pts(:,1:3)));
-    pts(:,4) = pts(:,4)/2.5;
+    pts(:,4) = pts(:,4)/2.5; %288 init, 170/xxx at 1/2 pts
     ix = randi(size(pts,1),1,round(size(pts,1)/50)); % 1% of pts
     perim = [pts(ix,1:3);perim];
     lipid(1).perim{1,i} = unique(perim,'rows'); %alphashape of full shell >60s, not feasible
@@ -96,11 +98,12 @@ for i=1:ves
 end
 layers{2} = layers{1};
 layers{1} = lipid;
+toc
 
 %% functionalized model gen part
 boxsize = pix*[300,400,50];
 n = 6000; 
-rng(3);
+%rng(3);
 n = [60,2000];
 tic
 [split] = fn_modelgen(layers,boxsize,n);%,csplit);
