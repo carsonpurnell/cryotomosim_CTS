@@ -484,10 +484,10 @@ for i=1:n
         tdx = dx.(sel.modelname{sub}); %MUCH faster than hard cat, ~7x.
         l = size(tpts,1); e = tdx+l-1;
         if e>size(split.(sel.modelname{sub}),1)
-            split.(sel.modelname{sub})(tdx:(tdx+l)*2,:) = 0;
-            %2 
-            %3 
-            %4 
+            split.(sel.modelname{sub})(tdx:(tdx+l)*5,:) = 0;
+            %2 34.4
+            %3 24.8
+            %4 7.8
             %5 
         end
         split.(sel.modelname{sub})(tdx:e,:) = tpts; dx.(sel.modelname{sub}) = tdx+l;
