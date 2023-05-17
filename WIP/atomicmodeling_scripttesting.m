@@ -92,7 +92,7 @@ for i=1:ves
     pts(:,4) = pts(:,4)/4.8; %288 init, 170/195 at 1/2 pts, 125 at 1/4
     ix = randi(size(pts,1),1,round(size(pts,1)/50)); % 1% of pts
     perim = [pts(ix,1:3);perim];
-    lipid(1).perim{1,i} = unique(perim,'rows'); %alphashape of full shell >60s, not feasible
+    lipid(1).perim{1,i} = unique(perim,'rows'); %remove duplicate points
     lipid(1).adat{1,i} = pts;
     lipid(1).modelname{i} = append('vesicle');%,string(i));
 end
@@ -107,7 +107,6 @@ n = 6000;
 n = [60,2000];
 tic
 [split] = fn_modelgen(layers,boxsize,n);%,csplit);
-%plot(sh)
 toc
 
 %% function for vol, atlas, and split generation + water solvation
