@@ -106,7 +106,8 @@ n = 6000;
 %rng(3);
 n = [60,2000];
 tic
-[split] = fn_modelgen(layers,boxsize,n);%,csplit);
+csplit.carbon = carbons;
+[split] = fn_modelgen(layers,boxsize,n,csplit);
 toc
 
 %% function for vol, atlas, and split generation + water solvation
