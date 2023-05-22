@@ -16,7 +16,7 @@ carbons(:,3) = carbons(:,3)+(boxsize(3)-thick)/2;
 
 h = sqrt( (carbons(:,1)-hcen(1)).^2 + (carbons(:,2)-hcen(2)).^2 );% +rand(ccount,1)*0;
 carbons = carbons(h>radius,:); %filter out points inside the grid hole
-carbons(:,4) = 2.5088*atomfrac/3; %scatter val for carbon
+carbons(:,4) = 2.5088*atomfrac/2; %scatter val for carbon
 
 %x = 1:100; y = 1.3.^x; plot(x,y);
 %plot3(carbons(:,1),carbons(:,2),carbons(:,3),'.'); axis equal
