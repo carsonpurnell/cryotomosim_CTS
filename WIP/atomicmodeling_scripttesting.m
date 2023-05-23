@@ -88,10 +88,7 @@ fprintf('generating membranes  ')
 for i=1:ves
     %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
     [pts,perim] = gen_mem(200+randi(200),[],rand*0.4+0.6, 24+randi(8)); %need fewer more intense points
-    %[~,perim] = boundaryfacets(alphaShape(pts(:,1:3)));
     pts(:,4) = pts(:,4)/1; %288 init, 170/195 at 1/2 pts, 125 at 1/4
-%     ix = randi(size(pts,1),1,round(size(pts,1)/50)); % 1% of pts
-%     perim = [pts(ix,1:3);perim];
     lipid(1).perim{1,i} = perim; %remove duplicate points
     lipid(1).adat{1,i} = pts;
     lipid(1).modelname{i} = append('vesicle');%,string(i));
@@ -760,9 +757,8 @@ err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but pr
 if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     buck = round( size(c,1)/1650 ); %very rough, is probably not linear scale
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
-    %ot = OcTree(c(ix,:),'binCapacity',buck);
+    %ot = OcTree(c(ix,:),'binCapacity',buck); %slightly slower than kdt
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
-    %the range search is now the slow part, ~40% of runetime for 2K iters
     d = [d{:}]; if any(d<tol), err=1; end %test if any points closer than tol
 end
 end
