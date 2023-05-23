@@ -28,7 +28,7 @@ perim = shell.Points; %perimeter from shell shape
 ix = randi(size(pts,1),1,round(size(pts,1)/50)); % 2% of pts
 perim = [pts(ix,1:3);perim]; perim = unique(perim,'rows');
 
-atoms(:,4) = 6.4*1; %terrible very bad interim density
+atoms(:,4) = 6.4/1; %terrible very bad interim density
 
 if ~isempty(pix)
     vol = helper_atoms2vol(pix,atoms);
@@ -95,7 +95,7 @@ end
 
 function [pts,h,t] = shell2pts(shell)
 surfvar = 12;
-t = randtess(0.5/4,shell,'v'); 
+t = randtess(0.5/4,shell,'v'); %/4 for speed and memory limits. need more dense (and h20 excluding) dict
 h = randtess(20/4,shell,'s'); %was 20,testing for less bilayer
 vec = randn(size(h));
 spd = rand(size(vec,1),1)*surfvar+0;
