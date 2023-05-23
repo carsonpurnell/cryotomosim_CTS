@@ -25,7 +25,10 @@ end
 %assign atomic IDs to atoms for proper density
 atoms = pts;%[head;tail];
 perim = shell.Points; %perimeter from shell shape
-atoms(:,4) = 6.4*4; %terrible very bad interim density
+ix = randi(size(pts,1),1,round(size(pts,1)/50)); % 2% of pts
+perim = [pts(ix,1:3);perim]; perim = unique(perim,'rows');
+
+atoms(:,4) = 6.4*1; %terrible very bad interim density
 
 if ~isempty(pix)
     vol = helper_atoms2vol(pix,atoms);
