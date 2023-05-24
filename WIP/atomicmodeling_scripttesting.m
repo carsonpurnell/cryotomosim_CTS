@@ -100,8 +100,9 @@ toc
 %% functionalized model gen part
 boxsize = pix*[500,600,60];
 n = 6000; 
-%rng(3);
+rng(3);
 n = [60,4000];
+%738 with full lipid, ??? pseudopt lipid (/5)
 tic
 %csplit.carbon = carbons;
 [split] = fn_modelgen(layers,boxsize,n);%,csplit);
