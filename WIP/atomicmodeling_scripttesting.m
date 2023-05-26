@@ -88,7 +88,7 @@ fprintf('generating membranes  ')
 for i=1:ves
     %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
     [pts,perim] = gen_mem(200+randi(200),[],rand*0.4+0.6, 24+randi(8)); %need fewer more intense points
-    pts(:,4) = pts(:,4)/1; %288 init, 170/195 at 1/2 pts, 125 at 1/4
+    pts(:,4) = pts(:,4)/4; %288 init, 170/195 at 1/2 pts, 125 at 1/4
     lipid(1).perim{1,i} = perim; %remove duplicate points
     lipid(1).adat{1,i} = pts;
     lipid(1).modelname{i} = append('vesicle');%,string(i));
