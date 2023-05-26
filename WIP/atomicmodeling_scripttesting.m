@@ -102,7 +102,7 @@ boxsize = pix*[500,600,60];
 n = 6000; 
 rng(3);
 n = [60,4000];
-%738 with full lipid, 400 pseudopt lipid (/4), xxx with carbons
+%738 with full lipid, 400 pseudopt lipid (/4), 700 with carbons
 tic
 csplit.carbon = carbons;
 [split] = fn_modelgen(layers,boxsize,n,csplit);
