@@ -95,8 +95,8 @@ end
 
 function [pts,h,t] = shell2pts(shell)
 surfvar = 12;
-t = randtess(0.5/16,shell,'v'); %/4 for speed and memory limits. need more dense (and h20 excluding) dict
-h = randtess(20/16,shell,'s'); %was 20,testing for less bilayer
+t = randtess(0.5/4,shell,'v'); %/4 for speed and memory limits. need more dense (and h20 excluding) dict
+h = randtess(20/4,shell,'s'); %was 20,testing for less bilayer
 vec = randn(size(h));
 spd = rand(size(vec,1),1)*surfvar+0;
 spd = max(spd,0);
