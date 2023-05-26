@@ -93,15 +93,15 @@ shellpts = shellpts+vec;
 shell = alphaShape(shellpts,24);
 end
 
-function [pts,h,t] = shell2pts(shell)
+function [pts,head,tail] = shell2pts(shell)
 surfvar = 12;
-t = randtess(0.5/4,shell,'v'); %/4 for speed and memory limits. need more dense (and h20 excluding) dict
-h = randtess(20/4,shell,'s'); %was 20,testing for less bilayer
-vec = randn(size(h));
+tail = randtess(0.5/4,shell,'v'); %/4 for speed and memory limits. need more dense (and h20 excluding) dict
+head = randtess(20/4,shell,'s'); %was 20,testing for less bilayer
+vec = randn(size(head));
 spd = rand(size(vec,1),1)*surfvar+0;
 spd = max(spd,0);
 spd = min(spd,surfvar*2); %reduce distant fuzz points
 vec = vec./vecnorm(vec,2,2).*spd;
-h=h+vec;
-pts = [h;t];
+head=head+vec;
+pts = [head;tail];
 end
