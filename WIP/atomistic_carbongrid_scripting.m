@@ -25,7 +25,7 @@ c1 = helper_atoms2vol(pix,carbons,boxsize,[0,0,0]);
 %% comparison fill alphashape density
 tic
 
-psn = round(prod(filmsize)/5000); %
+psn = round(prod(filmsize)/18000); %
 ps = rand(psn,3).*filmsize-pad;
 h = sqrt( (ps(:,1)-hcen(1)).^2 + (ps(:,2)-hcen(2)).^2 );% +rand(ccount,1)*0;
 ps = ps(h>radius,:);
@@ -40,7 +40,7 @@ sh = alphaShape(ps+vec,40);
 d2 = 2.3/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
 atomfrac = 1;
 vp = randtess(d2/atomfrac,sh,'v'); %fewer pts with more density for speed during modelgen
-vp(:,4) = 2.5088*4;
+vp(:,4) = 2.5088*4*atomfrac;
 plot(sh)
 
 toc
