@@ -7,6 +7,8 @@ thick = 150; %carbon thickness
 hcen = [boxsize(1)/2+randi(600)-300,radius+30+randi(200)]; %offsets for the hole center
 filmsize = boxsize+pad*2; filmsize(3) = thick;
 
+
+%% direct flat pt gen
 %carbon density 2-2.3 g/cm?
 density = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
 atomfrac = 4;
@@ -35,15 +37,17 @@ vec = randn(size(ps)); mag = rand(size(ps,1),1)*60;
 vec = mag.*vec./vecnorm(vec,2,2);
 
 sh = alphaShape(ps+vec,40);
-vp = randtess(.25,sh,'v'); %fewer pts with more density for speed during modelgen
-vp(:,4) = 2.5088*2;
+density = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
+atomfrac = 4;
+vp = randtess(density/atomfrac,sh,'v'); %fewer pts with more density for speed during modelgen
+vp(:,4) = 2.5088*atomfrac/2;
 plot(sh)
 
 toc
 c2 = helper_atoms2vol(pix,vp,boxsize,[0,0,0]);
 %dif = c1-c2;
-%sliceViewer(c2);
-%figure(); histogram(c1(c1>0)); hold on; histogram(c2(c2>0));
+figure(); sliceViewer(c2);
+figure(); histogram(c1(c1>0)); hold on; histogram(c2(c2>0));
 %figure(); histogram(dif(dif>0));
 carbons = vp;
 
