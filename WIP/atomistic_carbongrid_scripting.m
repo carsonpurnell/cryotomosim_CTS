@@ -31,10 +31,10 @@ ps(:,3) = ps(:,3)+(boxsize(3)-thick)/2;
 
 %sh = alphaShape(carbons(:,1:3),pix); %way too many points
 %[~,ps] = boundaryFacets(sh);
-vec = randn(size(ps)); mag = rand(size(ps,1),1)*50;
+vec = randn(size(ps)); mag = rand(size(ps,1),1)*60;
 vec = mag.*vec./vecnorm(vec,2,2);
 
-sh = alphaShape(ps+vec,30);
+sh = alphaShape(ps+vec,40);
 vp = randtess(.25,sh,'v'); %fewer pts with more density for speed during modelgen
 vp(:,4) = 2.5088*2;
 plot(sh)
