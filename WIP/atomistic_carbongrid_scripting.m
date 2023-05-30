@@ -37,10 +37,10 @@ vec = randn(size(ps)); mag = rand(size(ps,1),1)*60;
 vec = mag.*vec./vecnorm(vec,2,2);
 
 sh = alphaShape(ps+vec,40);
-density = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
-atomfrac = 4;
-vp = randtess(density/atomfrac,sh,'v'); %fewer pts with more density for speed during modelgen
-vp(:,4) = 2.5088*atomfrac/2;
+d2 = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
+atomfrac = 1;
+vp = randtess(d2/atomfrac,sh,'v'); %fewer pts with more density for speed during modelgen
+vp(:,4) = 2.5088*4;
 plot(sh)
 
 toc
@@ -49,7 +49,7 @@ c2 = helper_atoms2vol(pix,vp,boxsize,[0,0,0]);
 figure(); sliceViewer(c2);
 figure(); histogram(c1(c1>0)); hold on; histogram(c2(c2>0));
 %figure(); histogram(dif(dif>0));
-carbons = vp;
+%carbons = vp;
 
 %x = 1:100; y = 1.3.^x; plot(x,y);
 %plot3(carbons(:,1),carbons(:,2),carbons(:,3),'.'); axis equal
