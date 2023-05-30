@@ -23,7 +23,7 @@ c1 = helper_atoms2vol(pix,carbons,boxsize,[0,0,0]);
 %% comparison fill alphashape density
 tic
 
-psn = round(prod(filmsize)/2000); %
+psn = round(prod(filmsize)/5000); %
 ps = rand(psn,3).*filmsize-pad;
 h = sqrt( (ps(:,1)-hcen(1)).^2 + (ps(:,2)-hcen(2)).^2 );% +rand(ccount,1)*0;
 ps = ps(h>radius,:);
@@ -31,19 +31,19 @@ ps(:,3) = ps(:,3)+(boxsize(3)-thick)/2;
 
 %sh = alphaShape(carbons(:,1:3),pix); %way too many points
 %[~,ps] = boundaryFacets(sh);
-vec = randn(size(ps)); mag = rand(size(ps,1),1)*40;
+vec = randn(size(ps)); mag = rand(size(ps,1),1)*50;
 vec = mag.*vec./vecnorm(vec,2,2);
 
-sh = alphaShape(ps+vec,40);
+sh = alphaShape(ps+vec,30);
 vp = randtess(.25,sh,'v'); %fewer pts with more density for speed during modelgen
 vp(:,4) = 2.5088*2;
 plot(sh)
 
 toc
 c2 = helper_atoms2vol(pix,vp,boxsize,[0,0,0]);
-dif = c1-c2;
-sliceViewer(c2);
-figure(); histogram(c1(c1>0)); hold on; histogram(c2(c2>0));
+%dif = c1-c2;
+%sliceViewer(c2);
+%figure(); histogram(c1(c1>0)); hold on; histogram(c2(c2>0));
 %figure(); histogram(dif(dif>0));
 carbons = vp;
 
