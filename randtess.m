@@ -107,7 +107,7 @@ vols = simplexvolume(domain,Conn);
 if strcmp(sampledomain,'v')
     %tvol = sum(vols) %total volume of simplexes
     tvol = volume(tess);
-    N = round(tvol*N/10);
+    N = round(tvol*N/1);
 else
     tvol = surfaceArea(tess);
     N = round(tvol*N/100); %'v' has negative volume, so this doesn't work
