@@ -254,7 +254,7 @@ end
 
 function [pts,h,t] = shell2pts(shell)
 
-t = randtess(0.2,shell,'v');
+t = randtess(2,shell,'v');
 h = randtess(10,shell,'s');
 vec = randn(size(h));
 spd = rand(size(vec,1),1)*10+0;
