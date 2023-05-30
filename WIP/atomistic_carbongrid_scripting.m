@@ -1,7 +1,7 @@
 %% atomistic carbon grid generator
 pix = 12;
 %boxsize = pix*[200,300,50];
-pad = [pix,pix,0];
+pad = [50,50,0];
 radius = 1e4; %hole radius
 thick = 150; %carbon thickness
 hcen = [boxsize(1)/2+randi(600)-300,radius+30+randi(200)]; %offsets for the hole center
@@ -38,18 +38,19 @@ vec = mag.*vec./vecnorm(vec,2,2);
 
 sh = alphaShape(ps+vec,40);
 d2 = 2.3/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
-atomfrac = 1;
+atomfrac = 4;
 vp = randtess(d2/atomfrac,sh,'v'); %fewer pts with more density for speed during modelgen
 vp(:,4) = 2.5088*4*atomfrac;
-plot(sh)
+
 
 toc
+%plot(sh)
 c2 = helper_atoms2vol(pix,vp,boxsize,[0,0,0]);
 %dif = c1-c2;
-figure(); sliceViewer(c2);
-figure(); histogram(c1(c1>0)); hold on; histogram(c2(c2>0));
+%figure(); sliceViewer(c2);
+%figure(); histogram(c1(c1>0)); hold on; histogram(c2(c2>0));
 %figure(); histogram(dif(dif>0));
-%carbons = vp;
+carbons = vp;
 
 %x = 1:100; y = 1.3.^x; plot(x,y);
 %plot3(carbons(:,1),carbons(:,2),carbons(:,3),'.'); axis equal
