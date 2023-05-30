@@ -37,7 +37,7 @@ vec = randn(size(ps)); mag = rand(size(ps,1),1)*60;
 vec = mag.*vec./vecnorm(vec,2,2);
 
 sh = alphaShape(ps+vec,40);
-d2 = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
+d2 = 2.3/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
 atomfrac = 1;
 vp = randtess(d2/atomfrac,sh,'v'); %fewer pts with more density for speed during modelgen
 vp(:,4) = 2.5088*4;
