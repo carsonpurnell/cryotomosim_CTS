@@ -101,7 +101,7 @@ toc
 boxsize = pix*[500,600,60];
 n = 6000; 
 %rng(3);
-n = [60,4000];
+n = [50,3000];
 %738 with full lipid, 400 pseudopt lipid (/4), 700 with carbons
 tic
 csplit.carbon = carbons;
@@ -111,7 +111,7 @@ toc
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol+solv);
-%WriteMRC(vol+solv,pix,'atomictest_carbon5fast.mrc');
+WriteMRC(vol+solv,pix,'atomictest_carbon6natural.mrc');
 
 %{
 %% randomly add to the points and concatenate them into a list
