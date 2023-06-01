@@ -19,7 +19,7 @@ carbons(:,3) = carbons(:,3)+(boxsize(3)-thick)/2;
 h = sqrt( (carbons(:,1)-hcen(1)).^2 + (carbons(:,2)-hcen(2)).^2 );% +rand(ccount,1)*0;
 carbons = carbons(h>radius,:); %filter out points inside the grid hole
 carbons(:,4) = 2.5088*atomfrac/2; %scatter val for carbon - /2 because intensity too high weirdly
-
+carbonsdeprec = carbons;
 c1 = helper_atoms2vol(pix,carbons,boxsize,[0,0,0]);
 
 %% comparison fill alphashape density
@@ -37,9 +37,9 @@ vec = randn(size(ps)); mag = rand(size(ps,1),1)*60;
 vec = mag.*vec./vecnorm(vec,2,2);
 
 sh = alphaShape(ps+vec,40);
-d2 = 2.3/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
-atomfrac = 4;
-vp = randtess(d2/atomfrac*10,sh,'v'); %fewer pts with more density for speed during modelgen
+d2 = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
+atomfrac = 8;
+vp = randtess(d2/atomfrac*10*0.8,sh,'v'); %fewer pts with more density for speed during modelgen
 vp(:,4) = 2.5088*1*atomfrac;
 
 
@@ -48,7 +48,7 @@ toc
 c2 = helper_atoms2vol(pix,vp,boxsize,[0,0,0]);
 %dif = c1-c2;
 %figure(); sliceViewer(c2);
-%figure(); histogram(c1(c1>0)); hold on; histogram(c2(c2>0));
+figure(); histogram(c1(c1>0)); hold on; histogram(c2(c2>0));
 %figure(); histogram(dif(dif>0));
 carbons = vp;
 
