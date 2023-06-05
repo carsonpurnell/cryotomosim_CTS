@@ -105,5 +105,5 @@ spd = min(spd,surfvar*2); %reduce distant fuzz points
 vec = vec./vecnorm(vec,2,2).*spd;
 head=head+vec;
 pts = [head;tail];
-pts(:,4) = 6.4*atomfrac;
+pts(:,4) = 6.2*atomfrac;
 end
