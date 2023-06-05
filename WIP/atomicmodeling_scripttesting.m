@@ -100,7 +100,7 @@ toc
 
 
 %% functionalized model gen part
-boxsize = pix*[300,400,50];
+boxsize = pix*[400,300,50];
 n = 6000; 
 rng(3);
 n = [40,3000];

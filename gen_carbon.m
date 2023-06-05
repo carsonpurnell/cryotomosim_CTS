@@ -36,12 +36,11 @@ edge = carbonshape(vol,opt);
 
 density = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
 atomfrac = 1; %pseudoatomic factor for speed
-vp = randtess(density/atomfrac*3,edge,'v'); %
-vp(:,4) = 2.5088*1*atomfrac;
+carbon = randtess(density/atomfrac*3,edge,'v'); %
+carbon(:,4) = 2.5088*1*atomfrac;
 
-carbon = vp;
 if pix>0
-    carbon = helper_atoms2vol(pix,vp,vol,[0,0,0]);
+    carbon = helper_atoms2vol(pix,carbon,vol,[0,0,0]);
 end
 
 end
