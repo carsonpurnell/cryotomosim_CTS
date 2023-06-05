@@ -43,7 +43,8 @@ solv = (rand(emsz)-0.5)*0.2*pix^2+(pix^3);
 %split = zeros(emsz);
 %sl = split;
 %vl(1:s) = {split};
-split = cell(1,s);
+sptmp = cell(1,s);
+%split = sptmp;
 for j=1:s
     
     if t==1
@@ -56,7 +57,7 @@ for j=1:s
     m = p(:,4); p = p(:,1:3); p = round( (p-offset)/pix+0.5 );
     %p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5); %very slow intermediate array assignments
     
-    [split{j},solv] = internal_accum(p,m,avol,emsz,solv);
+    [sptmp{j},solv] = internal_accum(p,m,avol,emsz,solv);
     
     %{
     for i=1:3
@@ -74,12 +75,12 @@ for j=1:s
     %[a,b] = bounds(vl{1}-split,'all')
 end
 solv = max(solv,0)/wvol*h20; %compute waters in pixels from remaining volume
-tmp = cat(4,zeros(emsz),split{:});
+tmp = cat(4,zeros(emsz),sptmp{:});
 [~,atlas] = max(tmp,[],4); atlas = atlas-1;
 vol = sum(tmp,4);
 if iscell(names)
     %t = split; 
-    clear split
+    %clear split
     %t
     for i=1:s
         split.(names{i}) = tmp(:,:,:,i+1);
