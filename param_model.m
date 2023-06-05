@@ -53,7 +53,7 @@ arguments
     param.constraint char = '  &' %use & +- to add borders to different axes
     
     %objects and contents params
-    param.grid = [15 2000]
+    param.grid = [150 1e4]
     param.mem = 0 %need subcomponents
     param.beads = 0
     param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
