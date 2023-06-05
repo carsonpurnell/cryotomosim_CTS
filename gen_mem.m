@@ -96,14 +96,15 @@ end
 function [pts,head,tail] = shell2pts(shell)
 surfvar = 12;
 atomfrac = 4;
+
 tail = randtess(0.5/atomfrac,shell,'v'); %/4 for speed and memory limits. need larger hydrophobic dict
 head = randtess(20/atomfrac,shell,'s'); %was 20,testing for less bilayer
+
 vec = randn(size(head));
 spd = rand(size(vec,1),1)*surfvar+0;
-spd = max(spd,0);
-spd = min(spd,surfvar*2); %reduce distant fuzz points
+%spd = max(spd,0); spd = min(spd,surfvar*2); %control distant fuzzyness
 vec = vec./vecnorm(vec,2,2).*spd;
 head=head+vec;
 pts = [head;tail];
-pts(:,4) = 6.2*atomfrac;
+pts(:,4) = 6.2/4 *atomfrac;
 end
