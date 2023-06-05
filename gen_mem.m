@@ -5,7 +5,7 @@ arguments
     sz
     pix = []
     sp = 0.6+rand*0.4
-    thick = 26+randi(6)
+    thick = 24+randi(6)
 end
 vol = 0;
 
