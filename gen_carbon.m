@@ -7,8 +7,6 @@ arguments
     opt.radius = 1e4
 end
 
-
-%% atomistic carbon grid generator
 %pix = 12;
 %boxsize = pix*[200,300,50];
 %boxsize = vol;
@@ -42,8 +40,6 @@ carbonsdeprec = carbons;
 c1 = helper_atoms2vol(pix,carbons,boxsize,[0,0,0]);
 %}
 
-%% comparison fill alphashape density
-
 %{
 psn = round(prod(filmsize)/18000); % 18000 just looks nice and is fast, not evaluated or hypothesis-driven
 ps = rand(psn,3).*filmsize-pad;
@@ -58,12 +54,11 @@ vec = mag.*vec./vecnorm(vec,2,2);
 
 sh = alphaShape(ps+vec,40);
 %}
-sh = carbonshape(vol,opt);
-
+edge = carbonshape(vol,opt);
 
 d2 = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
 atomfrac = 4;
-vp = randtess(d2/atomfrac*3,sh,'v'); %fewer pts with more density for speed during modelgen
+vp = randtess(d2/atomfrac*3,edge,'v'); %fewer pts with more density for speed during modelgen
 vp(:,4) = 2.5088*1*atomfrac;
 
 carbon = vp;
