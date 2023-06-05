@@ -95,7 +95,7 @@ end
 
 function [pts,head,tail] = shell2pts(shell)
 surfvar = 12;
-atomfrac = 1; %make operable? 4 super rough at higher pixel sizes, but 1 very slow for atomic gen
+atomfrac = 2; %make operable? 4 super rough at higher pixel sizes, but 1 very slow for atomic gen
 
 tail = randtess(0.5/atomfrac,shell,'v'); %/4 for speed and memory limits. need larger hydrophobic dict
 head = randtess(20/atomfrac,shell,'s'); %was 20,testing for less bilayer
@@ -106,5 +106,5 @@ spd = rand(size(vec,1),1)*surfvar+0;
 vec = vec./vecnorm(vec,2,2).*spd;
 head=head+vec;
 pts = [head;tail];
-pts(:,4) = 6.2/4 *atomfrac;
+pts(:,4) = 6.2/2 *atomfrac;
 end
