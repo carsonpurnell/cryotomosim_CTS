@@ -34,6 +34,7 @@ end
 %eventually might do individual vdw radii individually
 avol = 4/3*pi*(1.65^3); %eyeballed volume of the average organic atom
 h20 = 3.041; %computed scatter factor for H2O
+wvol = 35; %eyeballed volume of water in angstroms
 
 emsz = floor(sz/pix); 
 solv = (rand(emsz)-0.5)*0.2*pix^2+(pix^3);
@@ -71,7 +72,7 @@ for j=1:s
     %sliceViewer(solv-sl)
     %[a,b] = bounds(vl{1}-split,'all')
 end
-solv = max(solv,0)/35*h20; %compute waters in pixels from remaining volume
+solv = max(solv,0)/wvol*h20; %compute waters in pixels from remaining volume
 tmp = cat(4,zeros(emsz),split{:});
 [~,atlas] = max(tmp,[],4); atlas = atlas-1;
 vol = sum(tmp,4);
@@ -84,7 +85,6 @@ if iscell(names)
     end
 end
 end
-
 
 function [vl,solv] = internal_accum(p,mag,avol,emsz,solv)
 vl = zeros(emsz);
