@@ -38,8 +38,8 @@ vec = mag.*vec./vecnorm(vec,2,2);
 
 sh = alphaShape(ps+vec,40);
 d2 = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
-atomfrac = 8;
-vp = randtess(d2/atomfrac,sh,'v'); %fewer pts with more density for speed during modelgen
+atomfrac = 4;
+vp = randtess(d2/atomfrac*3,sh,'v'); %fewer pts with more density for speed during modelgen
 vp(:,4) = 2.5088*1*atomfrac;
 
 
