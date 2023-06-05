@@ -95,7 +95,7 @@ end
 
 function [pts,head,tail] = shell2pts(shell)
 surfvar = 12;
-atomfrac = 4;
+atomfrac = 1; %make operable? 4 super rough at higher pixel sizes
 
 tail = randtess(0.5/atomfrac,shell,'v'); %/4 for speed and memory limits. need larger hydrophobic dict
 head = randtess(20/atomfrac,shell,'s'); %was 20,testing for less bilayer
