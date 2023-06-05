@@ -58,7 +58,8 @@ cts.param = param; %store parameters in the struct
 
 if param.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
-    [cts.model.grid] = gen_carbongrid(vol,pix,param.grid);
+    %[cts.model.grid] = gen_carbongrid(vol,pix,param.grid);
+    cts.model.grid = gen_carbon(size(vol),pix,'thick',param.grid(1),'radius',param.grid(2))*4.8;
     cts.vol = cts.model.grid+cts.vol; fprintf('   complete \n')
 end
 if ~iscell(param.mem); param.mem = {param.mem(:)}; end
