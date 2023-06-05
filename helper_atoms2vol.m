@@ -31,10 +31,11 @@ end
 %if size(pts,2)<4, pts(:,end+1)=1; end %intensity==1 if not given by 4th column
 %need rough estimate of average volume for organic atoms
 %very approximately 1.8a radii
-%eventually might do individual vdw radii individually
-avol = 4/3*pi*(1.65^3); %eyeballed volume of the average organic atom
+%should do individual radii individually
+avol = 4/3*pi*(1.7^3); %eyeballed volume of the average organic atom
 h20 = 3.041; %computed scatter factor for H2O
-wvol = 35; %eyeballed volume of water in angstroms
+wd = 6.022e23/18/(1e8)^3; %molecules of water per a^3 - ~30 for liquid water
+wvol = 36; %eyeballed volume of amorphous ice molecules in angstroms
 
 emsz = floor(sz/pix); 
 solv = (rand(emsz)-0.5)*0.2*pix^2+(pix^3);
