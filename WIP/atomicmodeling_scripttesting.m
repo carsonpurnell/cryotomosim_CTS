@@ -87,7 +87,7 @@ tic
 fprintf('generating membranes  ')
 for i=1:ves
     %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
-    [pts,perim] = gen_mem(200+randi(200),[],rand*0.5+0.5, 24+randi(8)); %need fewer more intense points
+    [pts,perim] = gen_mem(200+randi(200),[],rand*0.4+0.6, 24+randi(8)); %need fewer more intense points
     pts(:,4) = pts(:,4)/4; %288 init, 170/195 at 1/2 pts, 125 at 1/4
     lipid(1).perim{1,i} = perim; %remove duplicate points
     lipid(1).adat{1,i} = pts;
@@ -98,10 +98,10 @@ layers{1} = lipid;
 toc
 
 %% functionalized model gen part
-boxsize = pix*[500,600,60];
+boxsize = pix*[300,400,50];
 n = 6000; 
 rng(3);
-n = [50,4000];
+n = [40,3000];
 %738 with full lipid, 400 pseudopt lipid (/4), 700 with carbons
 tic
 csplit.carbon = carbons;

@@ -107,10 +107,10 @@ vols = simplexvolume(domain,Conn);
 if strcmp(sampledomain,'v')
     %tvol = sum(vols) %total volume of simplexes
     tvol = volume(tess);
-    N = round(tvol*N/1); % 10% of expected points =, unknown why
+    N = round(tvol*N*10); %  points per unit^3
 else
     tvol = surfaceArea(tess);
-    N = round(tvol*N/100); %'v' has negative volume, so this doesn't work
+    N = round(tvol*N/100); % don't know how many pts per surface area this is
 end
 % determine which simplex each point will randomly fall in
 cvol = cumsum([0;vols]); %disp(cvol') %size(cvol)

@@ -28,7 +28,7 @@ perim = shell.Points; %perimeter from shell shape
 ix = randi(size(pts,1),1,round(size(pts,1)/50)); % 2% of pts
 perim = [pts(ix,1:3);perim]; perim = unique(perim,'rows');
 
-atoms(:,4) = 6.4*4; %terrible very bad interim density
+%atoms(:,4) = 6.4*4; %terrible very bad interim density
 
 if ~isempty(pix)
     vol = helper_atoms2vol(pix,atoms);
@@ -61,7 +61,7 @@ pts = qq+d;
 pts = unique(pts,'rows');
 sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')+sz;
 
-tp = randtess(0.1,sh,'s');
+tp = randtess(0.01,sh,'s');
 sh = alphaShape(tp); sh.Alpha = criticalAlpha(sh,'one-region')+sz/2;
 [~,pts] = boundaryFacets(sh);
 
@@ -95,8 +95,9 @@ end
 
 function [pts,head,tail] = shell2pts(shell)
 surfvar = 12;
-tail = randtess(0.5/4,shell,'v'); %/4 for speed and memory limits. need more dense (and h20 excluding) dict
-head = randtess(20/4,shell,'s'); %was 20,testing for less bilayer
+atomfrac = 4;
+tail = randtess(0.5/atomfrac,shell,'v'); %/4 for speed and memory limits. need larger hydrophobic dict
+head = randtess(20/atomfrac,shell,'s'); %was 20,testing for less bilayer
 vec = randn(size(head));
 spd = rand(size(vec,1),1)*surfvar+0;
 spd = max(spd,0);
@@ -104,4 +105,5 @@ spd = min(spd,surfvar*2); %reduce distant fuzz points
 vec = vec./vecnorm(vec,2,2).*spd;
 head=head+vec;
 pts = [head;tail];
+pts(:,4) = 6.4*atomfrac;
 end
