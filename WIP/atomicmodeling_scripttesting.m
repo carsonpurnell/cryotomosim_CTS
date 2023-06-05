@@ -97,6 +97,10 @@ layers{2} = layers{1};
 layers{1} = lipid;
 toc
 
+%%functionalized carbon gen
+carbons = gen_carbon(boxsize);
+csplit.carbon = carbons;
+
 %% functionalized model gen part
 boxsize = pix*[300,400,50];
 n = 6000; 
@@ -104,7 +108,6 @@ rng(3);
 n = [40,3000];
 %738 with full lipid, 400 pseudopt lipid (/4), 700 with carbons
 tic
-csplit.carbon = carbons;
 [split] = fn_modelgen(layers,boxsize,n,csplit);
 toc
 
