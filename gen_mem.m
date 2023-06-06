@@ -15,10 +15,15 @@ switch 1%randi(2)
     case 2
         [sh] = bubble(sz,sp); %expand spheres from core pts
 end
+if ~isempty(pix)
+    atomfrac = pix/3;
+else
+    atomfrac = 2;
+end
 %alternative shape generators? cylinders, planes, sphere, stacks, double layers?
 %alt gen 3: curved spline of core points with varying radii for expansion
 [shell] = shape2shell(sh,thick);
-[pts,head,tail] = shell2pts(shell); %need to use surface/interior separately for atomic density purposes
+[pts,head,tail] = shell2pts(shell,atomfrac); %need to use surface/interior for atomic density purposes
 %better control over thickness and surface layer density - impacts layered CTF artifact a lot.
 %spread of surface density also impacts the apparent thickness of final membrane, need to account
 
@@ -87,15 +92,15 @@ end
 end
 
 function [shell] = shape2shell(shape,thick)
-shellpts = randtess(thick/10.0,shape,'s'); %might be too rough at 10, smaller divisor is smoother and slower
+shellpts = randtess(thick/20.0,shape,'s'); %might be too rough at 10, smaller divisor is smoother and slower
 vec = randn(size(shellpts)); vec = thick*vec./vecnorm(vec,2,2);
 shellpts = shellpts+vec;
 shell = alphaShape(shellpts,24);
 end
 
-function [pts,head,tail] = shell2pts(shell)
+function [pts,head,tail] = shell2pts(shell,atomfrac)
 surfvar = 12;
-atomfrac = 2; %make operable? 4 super rough at higher pixel sizes, but 1 very slow for atomic gen
+%atomfrac = 2; %make operable? 4 super rough at higher pixel sizes, but 1 very slow for atomic gen
 
 tail = randtess(0.4/atomfrac,shell,'v'); % need larger hydrophobic dict
 head = randtess(15/atomfrac,shell,'s'); %was 20,testing for less bilayer
