@@ -78,18 +78,16 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %% atomic vesicle gen
 %currently just a hamfisted first-pass in the modelgen. separate implementation needed? need better outputs
 %membrane-only implementation could generate spheres based on the random location
-ves = 6;
+ves = 8;
 lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
-%need a more complex implementation - centreline shell, perimeter shell?, and complete set of points
-%centreline for membrane protein placement, points for kdt searcher. shell redundant? won't need multiple
-%searches?
 tic
 fprintf('generating membranes  ')
 for i=1:ves
-    %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5));
+    %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5)); %old deprec spherical version
     [pts,perim] = gen_mem(200+randi(200),[],rand*0.4+0.6, 24+randi(8)); %need fewer more intense points
+    %need core shape for anchoring membrane proteins as well
     %pts(:,4) = pts(:,4)/4; %288 init, 170/195 at 1/2 pts, 125 at 1/4
-    lipid(1).perim{1,i} = perim; %remove duplicate points
+    lipid(1).perim{1,i} = perim;
     lipid(1).adat{1,i} = pts;
     lipid(1).modelname{i} = append('vesicle');%,string(i));
 end
@@ -100,13 +98,11 @@ toc
 
 %% functionalized model gen part
 boxsize = pix*[400,300,50];
-n = 6000; 
+%n = 6000; 
 %rng(3);
 n = [10,1000];
-%738 with full lipid, 400 pseudopt lipid (/4), 700 with carbons
-%%functionalized carbon gen
-carbons = gen_carbon(boxsize);
-csplit.carbon = carbons;
+csplit.carbon = gen_carbon(boxsize); % atomic carbon grid generator
+%csplit.carbon = carbons;
 
 tic
 [split] = fn_modelgen(layers,boxsize,n,csplit);
