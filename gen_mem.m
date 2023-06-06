@@ -111,5 +111,5 @@ spd = rand(size(vec,1),1)*surfvar+0;
 vec = vec./vecnorm(vec,2,2).*spd;
 head=head+vec;
 pts = [head;tail];
-pts(:,4) = 6.0/3 *atomfrac;
+pts(:,4) = 6.0/2 *atomfrac;
 end
