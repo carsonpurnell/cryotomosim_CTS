@@ -102,7 +102,7 @@ toc
 %% functionalized model gen part
 boxsize = pix*[400,300,50];
 n = 6000; 
-rng(3);
+%rng(3);
 n = [40,2000];
 %738 with full lipid, 400 pseudopt lipid (/4), 700 with carbons
 %%functionalized carbon gen
