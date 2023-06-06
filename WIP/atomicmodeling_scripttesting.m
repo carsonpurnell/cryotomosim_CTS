@@ -1,5 +1,5 @@
 % script to test if atomistic model-building is viable
-pix = 12; clear particles;
+pix = 8; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb',...
@@ -98,7 +98,6 @@ layers{1} = lipid;
 toc
 
 
-
 %% functionalized model gen part
 boxsize = pix*[400,300,50];
 n = 6000; 
@@ -116,7 +115,7 @@ toc
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol+solv);
-WriteMRC(vol+solv,pix,'atomictest_lipidnew2.mrc');
+WriteMRC(vol+solv,pix,'atomictest_fastgen1.mrc');
 
 %{
 %% randomly add to the points and concatenate them into a list
@@ -428,7 +427,6 @@ locgrid = locgrid(logical(p),:);
 %sliceViewer(lgridvol);
 %}
 
-
 %d = [d{:}]; %if any(d<gridmaptol), err=1; end
 %locgrid = locgrid(d>gridmaptol,:);
 %size(locgrid)
@@ -437,16 +435,10 @@ locgrid = locgrid(logical(p),:);
 %sliceViewer(lgridvol);
 
 %tmp = fieldnames(split);
-%{
-for i=1:numel(fieldnames)
-    dynpts = [dynpts;split.(tmp{i})];
-end
-%}
 %dynpts = split;
 tol = 2; %tolerance for overlap testing
 count.s = 0; count.f = 0;
- %index 1 to overwrite the initial preallocation point, 2 preserves it
-
+%index 1 to overwrite the initial preallocation point, 2 preserves it
 %split = cell(1,numel(particles)+0); %split{1} = zeros(0,4); %single([0,0,0,0]);
 for i=1:numel(layers)
 namelist = [layers{i}.modelname]; %slower than cell, but more consistent
@@ -491,10 +483,6 @@ for i=1:n
         l = size(tpts,1); e = tdx+l-1;
         if e>size(split.(sel.modelname{sub}),1)
             split.(sel.modelname{sub})(tdx:(tdx+l)*4,:) = 0;
-            %2 34.4     25.6    overall 402
-            %3 24.8     25.3    overall 405
-            %4 7.8      9.9    overall 393
-            %5 14.5     15.7    overall 394
         end
         split.(sel.modelname{sub})(tdx:e,:) = tpts; dx.(sel.modelname{sub}) = tdx+l;
         % % inlined dyncat code % %
@@ -519,13 +507,8 @@ for i=1:numel(sn)
         tdx = dx.(sn{i});
     end
     split.(sn{i})(tdx:end,:) = [];
-    %2 22.1
-    %3 30.9
-    %4 39.7
-    %5 32.9
 end
 
-%tic; ot = OcTree(dynpts,'binCapacity',1e3); toc; ot.plot3; axis equal;
 end
 
 
