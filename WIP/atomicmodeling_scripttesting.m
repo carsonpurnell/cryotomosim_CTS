@@ -1,5 +1,5 @@
 % script to test if atomistic model-building is viable
-pix = 8; clear particles;
+pix = 12; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb',...
@@ -42,17 +42,6 @@ particles(2).rad = max(pdist2(pts,single([0,0,0])));
 particles(2).pts = pts; 
 particles(2).id = atomdict(data{1,1}); 
 particles(2).perim = p;
-%}
-
-%{
-%% get boundary points to use for searching instead of the whole set
-%so far does offer massive speed increase for the test particle - what about the rest of the model?
-alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reason
-[bf,p] = boundaryFacets(alphat);
-%plot(alphat)
-%plot3(p(:,1),p(:,2),p(:,3),'.'); axis equal
-%}
-
 %}
 
 % constraint border atoms on planes
