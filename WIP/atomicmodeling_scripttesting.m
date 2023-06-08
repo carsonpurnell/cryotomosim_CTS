@@ -3,9 +3,8 @@ pix = 8; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb',...
-    'ATPS.membrane.complex.cif','a5fil.cif','a7tjz.cif'};
+    'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
 tic
-%input = {'ATPS.membrane.complex.cif','a5fil.cif'};
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
@@ -30,24 +29,7 @@ for i=1:numel(particles)
         %clear com alphat %p pi
     end
 end
-%}
-%{
-%% load some input data - ribos
-%{
-[vol,sumvol,names,data] = helper_pdb2vol('ribo__ribo__4ug0_4v6x.group.mat',pix,2,1,0);
-%might need to make atom id vector a row vector for memory write reasons
-pts = single(data{1,2})'; atomid = (data{1,1});
-pts = pts-mean(pts,1); %get and center points
-%need atomdict function that accepts vector of atomic symbols and returns vector of Z/e- values
-r = max(pdist2(pts,single([0,0,0]))); %find longest distance from the centroid among all points
-atomint = atomdict(atomid);
-alphat = alphaShape(double(pts),pix*1.2); [bf,p] = boundaryFacets(alphat);
-particles(1).name = 'ribo'; particles(1).rad = r;
-particles(1).pts = pts; particles(1).id = atomint; particles(1).perim = p;
-%}
 
-%% load some input data - tric
-%{
 [~,~,~,data] = helper_pdb2vol('tric__tric__6nra-open_7lum-closed.group.mat',pix,2,1,0);
 %might need to make atom id vector a row vector for memory write reasons
 pts = single(data{1,2})'; pts = pts-mean(pts,1); %get and center points
@@ -61,6 +43,7 @@ particles(2).pts = pts;
 particles(2).id = atomdict(data{1,1}); 
 particles(2).perim = p;
 %}
+
 %{
 %% get boundary points to use for searching instead of the whole set
 %so far does offer massive speed increase for the test particle - what about the rest of the model?
@@ -69,7 +52,9 @@ alphat = alphaShape(double(pts'),pix*1.2); %shape requires double for some reaso
 %plot(alphat)
 %plot3(p(:,1),p(:,2),p(:,3),'.'); axis equal
 %}
+
 %}
+
 % constraint border atoms on planes
 %first try just flat top/bottom z planes
 %might try wavy version, definitely figure out x/y implementation as well
