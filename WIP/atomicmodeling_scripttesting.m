@@ -343,7 +343,7 @@ solv = solv(~ol,:); %remaining waters that are not overlapping particles
 toc
 %}
 
-%% 
+%{
 watervol = fnpt2vol(pix,solv,ones(1,size(solv,1))*2/distfrac,boxsize);
 %sliceViewer(watervol)
 sliceViewer(em+watervol);
