@@ -1,4 +1,4 @@
-% script to test if atomistic model-building is viable
+%% load input structures as atomic data
 pix = 12; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
@@ -30,18 +30,10 @@ for i=1:numel(particles)
     end
 end
 
-[~,~,~,data] = helper_pdb2vol('tric__tric__6nra-open_7lum-closed.group.mat',pix,2,1,0);
 %might need to make atom id vector a row vector for memory write reasons
-pts = single(data{1,2})'; pts = pts-mean(pts,1); %get and center points
 %atomid = (data{1,1}); %atomid = atomdict(atomid);
 %need atomdict function that accepts vector of atomic symbols and returns vector of Z/e- values
-%r = max(pdist2(pts,single([0,0,0]))); %find longest distance from the centroid among all points
-alphat = alphaShape(double(pts),pix*1.2); [~,p] = boundaryFacets(alphat);
-particles(2).name = 'tric'; 
-particles(2).rad = max(pdist2(pts,single([0,0,0])));
-particles(2).pts = pts; 
-particles(2).id = atomdict(data{1,1}); 
-particles(2).perim = p;
+
 %}
 
 % constraint border atoms on planes
