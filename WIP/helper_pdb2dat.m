@@ -57,8 +57,16 @@ for i=1:size(data,1)
     tmpint = atomdict(data{i,1},'sc')';
     particles.adat{i} = [tmpco,tmpint];
     
-    alphat = alphaShape(double(unique(tmpco,'rows')),12); %surprisingly slow
-    [~,p] = boundaryFacets(alphat);
+    tmpco = double(unique(tmpco,'rows'));
+    %instead of alphashape on everything, prune to fraction of points and AS that - much faster
+    %then add >10% of all points back in and unique check at the end?
+    %is it faster to iteratively find borders from chunks of points then do it again at the end?
+    alphat = alphaShape(double(tmpco),12); %surprisingly slow
+    [~,p2] = boundaryFacets(alphat);
+    p = boundaryiter(tmpco);
+    %tr = delaunay(tmpco(:,1),tmpco(:,2),tmpco(:,3)); %don't have freeboundary function?
+    %[f,pfree] = freeBoundary(tr);
+    
     %k = boundary(tmpco,0.1); p2 = tmpco(k,:); %boundary is slower, just alphashape/facets with more overhead
     
     n = size(tmpco,1);
@@ -97,6 +105,32 @@ if savemat==1 %.mat saving and check if file already exists
 end
 
 end
+
+function piter = boundaryiter(pts)
+
+%pts = unique(pts,'rows');
+n = size(pts,1);
+ix = randperm(n); ix = repmat(ix,[2,1]);
+iters = 20;
+l = round(n/iters);
+alpha = 12;
+
+b = cell(1,iters);
+for i=1:iters
+    j = ix(1+l*(i-1):i*l);
+    tmp = unique(pts(j,:),'rows');
+    shape = alphaShape(tmp,alpha*2);
+    [~,b{i}] = boundaryFacets(shape);
+    %size(b{i})
+end
+pcat = cat(1,b{:}); %concatenate boundary points
+pcat = unique(pcat,'rows');
+
+sh = alphaShape(pcat,alpha);
+[~,piter] = boundaryFacets(sh);
+
+end
+
 
 function [data] = internal_pdbparse(pdb)
 fid = fileread(pdb); 
