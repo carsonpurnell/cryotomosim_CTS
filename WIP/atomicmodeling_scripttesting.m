@@ -64,7 +64,7 @@ toc
 %% functionalized model gen part
 boxsize = pix*[400,300,50];
 %n = 6000; 
-%rng(3);
+rng(4);
 n = [10,1000];
 csplit.carbon = gen_carbon(boxsize); % atomic carbon grid generator
 tic; [split] = fn_modelgen(layers,boxsize,n,csplit); toc
