@@ -43,7 +43,6 @@ end
 
 %% atomic vesicle gen
 %currently just a hamfisted first-pass in the modelgen. separate implementation needed? need better outputs
-%membrane-only implementation could generate spheres based on the random location
 ves = 8;
 lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
 tic
@@ -68,11 +67,7 @@ boxsize = pix*[400,300,50];
 %rng(3);
 n = [10,1000];
 csplit.carbon = gen_carbon(boxsize); % atomic carbon grid generator
-%csplit.carbon = carbons;
-
-tic
-[split] = fn_modelgen(layers,boxsize,n,csplit);
-toc
+tic; [split] = fn_modelgen(layers,boxsize,n,csplit); toc
 
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
