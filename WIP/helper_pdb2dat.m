@@ -61,9 +61,10 @@ for i=1:size(data,1)
     %instead of alphashape on everything, prune to fraction of points and AS that - much faster
     %then add >10% of all points back in and unique check at the end?
     %is it faster to iteratively find borders from chunks of points then do it again at the end?
-    alphat = alphaShape(double(tmpco),12); %surprisingly slow
-    [~,p2] = boundaryFacets(alphat);
-    p = boundaryiter(tmpco);
+    %alphat = alphaShape(double(tmpco),12); %surprisingly slow
+    %[~,p2] = boundaryFacets(alphat);
+    p = boundaryiter(tmpco); %faster iterative border finding
+    %size(p2), size(p)
     %tr = delaunay(tmpco(:,1),tmpco(:,2),tmpco(:,3)); %don't have freeboundary function?
     %[f,pfree] = freeBoundary(tr);
     
@@ -107,11 +108,10 @@ end
 end
 
 function piter = boundaryiter(pts)
-
 %pts = unique(pts,'rows');
 n = size(pts,1);
 ix = randperm(n); ix = repmat(ix,[2,1]);
-iters = 20;
+iters = 10;
 l = round(n/iters);
 alpha = 12;
 
@@ -121,14 +121,12 @@ for i=1:iters
     tmp = unique(pts(j,:),'rows');
     shape = alphaShape(tmp,alpha*2);
     [~,b{i}] = boundaryFacets(shape);
-    %size(b{i})
 end
 pcat = cat(1,b{:}); %concatenate boundary points
 pcat = unique(pcat,'rows');
 
 sh = alphaShape(pcat,alpha);
 [~,piter] = boundaryFacets(sh);
-
 end
 
 
