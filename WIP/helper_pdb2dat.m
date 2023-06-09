@@ -111,7 +111,7 @@ function piter = boundaryiter(pts)
 %pts = unique(pts,'rows');
 n = size(pts,1);
 ix = randperm(n); ix = repmat(ix,[2,1]);
-iters = 10;
+iters = 5;
 l = round(n/iters);
 alpha = 12;
 
