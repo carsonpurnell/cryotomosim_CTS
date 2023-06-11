@@ -92,7 +92,7 @@ end
 end
 
 function [shell] = shape2shell(shape,thick)
-shellpts = randtess(thick/10.0,shape,'s'); %might be too rough at 10, smaller divisor is smoother and slower
+shellpts = randtess(thick/100.0,shape,'s'); %might be too rough at 10, smaller divisor is smoother and slower
 vec = randn(size(shellpts)); vec = thick*vec./vecnorm(vec,2,2);
 shellpts = shellpts+vec;
 shell = alphaShape(shellpts,24);
@@ -102,8 +102,8 @@ function [pts,head,tail] = shell2pts(shell,atomfrac)
 surfvar = 12;
 %atomfrac = 2; %make operable? 4 super rough at higher pixel sizes, but 1 very slow for atomic gen
 
-tail = randtess(0.3/atomfrac,shell,'v'); % need larger hydrophobic dict
-head = randtess(10/atomfrac,shell,'s'); %was 20,testing for less bilayer
+tail = randtess(0.03/atomfrac,shell,'v'); % need larger hydrophobic dict
+head = randtess(1/atomfrac,shell,'s'); %was 20,testing for less bilayer
 
 vec = randn(size(head));
 spd = rand(size(vec,1),1)*surfvar+0;
