@@ -35,7 +35,7 @@ end
 avol = 4/3*pi*(1.7^3); %eyeballed volume of the average organic atom
 h20 = 3.041; %computed scatter factor for H2O
 wd = 6.022e23/18/(1e8)^3; %molecules of water per a^3 - ~30 for liquid water
-wvol = 36; %eyeballed volume of amorphous ice molecules in angstroms
+wvol = 30; %eyeballed volume of amorphous ice molecules in angstroms
 
 emsz = floor(sz/pix); 
 solv = (rand(emsz)-0.5)*0.2*pix^2+(pix^3);
