@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.3.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.1) - 2023-06-11 18:59:53
+
+Fix hyper-intense membranes and carbon under some conditions
+
 ## [v0.3.0](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.0) - 2023-06-08 16:14:26
 
 *No description*
