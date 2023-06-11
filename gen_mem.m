@@ -92,7 +92,7 @@ end
 end
 
 function [shell] = shape2shell(shape,thick)
-shellpts = randtess(thick/100.0,shape,'s'); %might be too rough at 10, smaller divisor is smoother and slower
+shellpts = randtess(thick/10.0,shape,'s'); %might be too rough at 10, smaller divisor is smoother and slower
 vec = randn(size(shellpts)); vec = thick*vec./vecnorm(vec,2,2);
 shellpts = shellpts+vec;
 shell = alphaShape(shellpts,24);
