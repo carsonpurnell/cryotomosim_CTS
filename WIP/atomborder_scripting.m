@@ -81,11 +81,16 @@ vol = helper_atoms2vol(pix,bvol,boxsize);
 sliceViewer(vol);
 
 %% borders for atomic 
-pix = 10;
+pix = 12;
 boxsize = pix*[400,300,50]; %curvature is anisotropic, nonsquare grid has uneven noise
 sz = [max(boxsize),max(boxsize)]; n = 4+pix^1.6;
 
-pts = surfgen_scripting(sz,n);
+pts = surfgen_scripting(sz,n); %pts{2} = surfgen_scripting(sz,n);
 
-
-
+%plot3(pts(:,1),pts(:,2),pts(:,3),'.'); axis equal
+borderpts = pts;
+for i=1:5
+    zl = [0,0,i*50];
+    tmp1 = bshell+zl; %tmp2 = bshell-zl;
+    borderpts = [blc;tmp1];%;tmp2];
+end
