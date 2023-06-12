@@ -2,8 +2,8 @@
 pix = 12; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
-    'actin__6t1y_13x2.pdb',...
-    'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
+    'actin__6t1y_13x2.pdb'};%,...
+    %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
 tic
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
@@ -43,7 +43,8 @@ end
 
 %% atomic vesicle gen
 %currently just a hamfisted first-pass in the modelgen. separate implementation needed? need better outputs
-ves = 8;
+ves = 0;
+if ves>0
 lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
 tic
 fprintf('generating membranes  ')
@@ -59,13 +60,14 @@ end
 layers{2} = layers{1};
 layers{1} = lipid;
 toc
+end
 
 
 %% functionalized model gen part
-boxsize = pix*[400,300,50];
-%n = 6000; 
+boxsize = pix*[400,300,40];
+n = 2000; 
 rng(4);
-n = [10,1000];
+%n = [10,2000];
 csplit.carbon = gen_carbon(boxsize); % atomic carbon grid generator
 csplit.border = borderpts;
 tic; [split] = fn_modelgen(layers,boxsize,n,csplit); toc
