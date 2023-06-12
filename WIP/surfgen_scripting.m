@@ -3,6 +3,8 @@ function pts = gen_surf(sz,n)
 %sz = [400,300];
 %n = 2.5; % noise magnitude
 len = max(sz);
+pad = 20;
+sz = sz+pad*2;
 %padding
 %pruning square back down to target size
 
@@ -14,6 +16,7 @@ Z = real(ifft2(H.*fft2(randn(sz)))); % 0-centered, approximately normal
 pts = [X(:),Y(:),Z(:)*1e3];
 n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/100));
 pts = pts(ix,:);
+pts(:,1:2) = pts(:,1:2)-pad;
 
 %figure();
 %plot3(pts2(:,1),pts2(:,2),pts2(:,3),'.'); axis equal;
