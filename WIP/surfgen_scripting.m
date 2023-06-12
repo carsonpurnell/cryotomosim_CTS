@@ -14,7 +14,7 @@ H = exp(-.5*(i.^2+j.^2)/n^2);
 Z = real(ifft2(H.*fft2(randn(sz)))); % 0-centered, approximately normal
 
 pts = [X(:),Y(:),Z(:)*2e3];
-n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/10));
+n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/100));
 pts = pts(ix,:);
 pts(:,1:2) = pts(:,1:2)-pad;
 
