@@ -59,7 +59,7 @@ vec = randn(size(bshell)); vec = d2.*vec./vecnorm(vec,2,2);
 bshell = bshell+vec;
 bshell(:,3) = bshell(:,3)+boxsize(3)/2;
 
-%sh = alphaShape(bshell,pix*5); plot(sh)
+sh = alphaShape(bshell,pix*5); plot(sh)
 
 vol = helper_atoms2vol(pix,bshell,boxsize);
-sliceViewer(vol);
+%sliceViewer(vol);
