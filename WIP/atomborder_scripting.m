@@ -55,14 +55,14 @@ pts = surfgen_scripting(sz,n);
 
 bshell = repmat(pts,[4,1]);
 d2 = 12;%rand(size(bshell))*12;
-vec = randn(size(bshell)); vec = d2.*vec./vecnorm(vec,2,2);
+vec = randn(size(bshell)); vec = d2*vec./vecnorm(vec,2,2);
 bshell = bshell+vec;
 bshell(:,3) = bshell(:,3)+boxsize(3)/2;
 
 sh = alphaShape(bshell,pix*5); plot(sh)
 %border version should not need expansion? just exclude area outside somehow
 %add several copies at z,z+1,z+2 etc?
-bvol = randtess(0.01,sh,'v');
+%bvol = randtess(0.01,sh,'v');
 
-vol = helper_atoms2vol(pix,bvol,boxsize);
-sliceViewer(vol);
+%vol = helper_atoms2vol(pix,bvol,boxsize);
+%sliceViewer(vol);
