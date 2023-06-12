@@ -46,10 +46,10 @@ plot(sh)
 %sliceViewer(vol);
 %}
 
-%% surfgen version
+%% surfgen version - mostly turned into carbon shenanigans
 pix = 10;
 boxsize = pix*[400,300,50]; %curvature is anisotropic, nonsquare grid has uneven noise
-sz = [max(boxsize),max(boxsize)]; n = pix^1.2;
+sz = [max(boxsize),max(boxsize)]; n = 4+pix^1.6;
 
 pts = surfgen_scripting(sz,n);
 
@@ -60,14 +60,32 @@ bshell = bshell+vec;
 bshell(:,3) = bshell(:,3)+boxsize(3)/2;
 
 opt.radius = 4e3;
-hcen = [boxsize(1)/2+50,opt.radius+100]; 
+hcen = [boxsize(1)/2+50,opt.radius+200]; 
+bshell = pts; bshell(:,3) = bshell(:,3)+boxsize(3)/2;
 h = sqrt( (bshell(:,1)-hcen(1)).^2 + (bshell(:,2)-hcen(2)).^2 ); %find points inside hole
 bshell = bshell(h>opt.radius,:);
 
-sh = alphaShape(bshell,pix*4); plot(sh)
+blc = bshell;
+for i=1:2
+    zl = [0,0,i*50];
+    tmp1 = bshell+zl; tmp2 = bshell-zl;
+    blc = [blc;tmp1;tmp2];
+end
+
+sh = alphaShape(blc,pix*5); %plot(sh)
 %border version should not need expansion? just exclude area outside somehow
 %add several copies at z,z+1,z+2 etc?
-%bvol = randtess(0.01,sh,'v');
+bvol = randtess(0.01,sh,'v');
 
-%vol = helper_atoms2vol(pix,bvol,boxsize);
-%sliceViewer(vol);
+vol = helper_atoms2vol(pix,bvol,boxsize);
+sliceViewer(vol);
+
+%% borders for atomic 
+pix = 10;
+boxsize = pix*[400,300,50]; %curvature is anisotropic, nonsquare grid has uneven noise
+sz = [max(boxsize),max(boxsize)]; n = 4+pix^1.6;
+
+pts = surfgen_scripting(sz,n);
+
+
+
