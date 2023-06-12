@@ -1,8 +1,8 @@
 %% wavy surface generator
-function pts = gen_surf(sz,n)
+function pts = gen_surf(sz,n,sc)
 %sz = [400,300];
 %n = 2.5; % noise magnitude
-sc = 500; % scale of Z noise
+%sc = 500; % scale of Z noise
 len = max(sz);
 pad = 20;
 sz = sz+pad*2;
@@ -15,7 +15,7 @@ H = exp(-.5*(i.^2+j.^2)/n^2);
 Z = real(ifft2(H.*fft2(randn(size(X))))); % 0-centered, approximately normal
 
 pts = [X(:),Y(:),Z(:)*sc];
-n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/20));
+n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/5));
 pts = pts(ix,:);
 pts(:,1:2) = pts(:,1:2)-pad;
 
