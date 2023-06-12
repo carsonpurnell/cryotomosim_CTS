@@ -2,6 +2,7 @@
 function pts = gen_surf(sz,n)
 %sz = [400,300];
 %n = 2.5; % noise magnitude
+sc = 500; % scale of Z noise
 len = max(sz);
 pad = 20;
 sz = sz+pad*2;
@@ -13,7 +14,7 @@ i = min(X-1,sz(1)-X+1); j = min(Y-1,sz(2)-Y+1);
 H = exp(-.5*(i.^2+j.^2)/n^2);
 Z = real(ifft2(H.*fft2(randn(size(X))))); % 0-centered, approximately normal
 
-pts = [X(:),Y(:),Z(:)*2.2e3];
+pts = [X(:),Y(:),Z(:)*sc];
 n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/20));
 pts = pts(ix,:);
 pts(:,1:2) = pts(:,1:2)-pad;
