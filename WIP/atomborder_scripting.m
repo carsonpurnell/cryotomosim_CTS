@@ -49,17 +49,20 @@ plot(sh)
 %% surfgen version
 pix = 10;
 boxsize = pix*[300,200,50]; %curvature is anisotropic, nonsquare grid has uneven noise
-sz = [max(boxsize),max(boxsize)]; n = pix^1.2;
+sz = [max(boxsize),max(boxsize)]; n = pix^1.0;
 
 pts = surfgen_scripting(sz,n);
 
 bshell = repmat(pts,[5,1]);
-d2 = rand(size(bshell))*12;
+d2 = 12;%rand(size(bshell))*12;
 vec = randn(size(bshell)); vec = d2.*vec./vecnorm(vec,2,2);
 bshell = bshell+vec;
 bshell(:,3) = bshell(:,3)+boxsize(3)/2;
 
 sh = alphaShape(bshell,pix*5); plot(sh)
+%border version should not need expansion? just exclude area outside somehow
+%add several copies at z,z+1,z+2 etc?
+bvol = randtess(0.01,sh,'v');
 
-vol = helper_atoms2vol(pix,bshell,boxsize);
-%sliceViewer(vol);
+vol = helper_atoms2vol(pix,bvol,boxsize);
+sliceViewer(vol);
