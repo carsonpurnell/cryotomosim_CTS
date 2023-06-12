@@ -67,6 +67,7 @@ boxsize = pix*[400,300,50];
 rng(4);
 n = [10,1000];
 csplit.carbon = gen_carbon(boxsize); % atomic carbon grid generator
+csplit.border = borderpts;
 tic; [split] = fn_modelgen(layers,boxsize,n,csplit); toc
 
 %% function for vol, atlas, and split generation + water solvation
