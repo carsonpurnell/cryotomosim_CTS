@@ -53,9 +53,9 @@ sz = [max(boxsize),max(boxsize)]; n = pix^1.2;
 
 pts = surfgen_scripting(sz,n);
 
-bshell = repmat(pts,[4,1]);
-d2 = 12;
-vec = randn(size(bshell)); vec = d2*vec./vecnorm(vec,2,2);
+bshell = repmat(pts,[5,1]);
+d2 = rand(size(bshell))*12;
+vec = randn(size(bshell)); vec = d2.*vec./vecnorm(vec,2,2);
 bshell = bshell+vec;
 bshell(:,3) = bshell(:,3)+boxsize(3)/2;
 
