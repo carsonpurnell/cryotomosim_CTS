@@ -44,3 +44,13 @@ plot(sh)
 %plot3(x,y,z,'.')
 %plot3(qq(:,1),qq(:,2),qq(:,3),'.')
 %sliceViewer(vol);
+
+%% surfgen version
+sz = [400,300]; n = 2.5;
+
+pts = surfgen_scripting(sz,n);
+
+
+
+
+
