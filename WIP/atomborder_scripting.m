@@ -46,11 +46,19 @@ plot(sh)
 %sliceViewer(vol);
 
 %% surfgen version
-sz = [400,300]; n = 2.5;
+pix = 8;
+binsize = pix*[200,100,50]; %curvature is anisotropic, nonsquare grid has uneven noise
+sz = max(binsize); n = 5.5;
 
-pts = surfgen_scripting(sz,n);
+pts = surfgen_scripting(binsize,n);
 
+bshell = repmat(pts,[5,1]);
+d2 = 16;
+vec = randn(size(bshell)); vec = d2*vec./vecnorm(vec,2,2);
+bshell = bshell+vec;
 
+sh = alphaShape(bshell,pix*5);
+plot(sh)
 
 
 
