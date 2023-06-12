@@ -48,8 +48,8 @@ plot(sh)
 
 %% surfgen version
 pix = 10;
-boxsize = pix*[300,200,50]; %curvature is anisotropic, nonsquare grid has uneven noise
-sz = [max(boxsize),max(boxsize)]; n = pix^1.0;
+boxsize = pix*[400,300,50]; %curvature is anisotropic, nonsquare grid has uneven noise
+sz = [max(boxsize),max(boxsize)]; n = pix^1.2;
 
 pts = surfgen_scripting(sz,n);
 
@@ -58,6 +58,11 @@ d2 = 12;%rand(size(bshell))*12;
 vec = randn(size(bshell)); vec = d2*vec./vecnorm(vec,2,2);
 bshell = bshell+vec;
 bshell(:,3) = bshell(:,3)+boxsize(3)/2;
+
+opt.radius = 1e4;
+hcen = [boxsize(1)/2+50,opt.radius+500]; 
+h = sqrt( (bshell(:,1)-hcen(1)).^2 + (bshell(:,2)-hcen(2)).^2 ); %find points inside hole
+bshell = bshell(h>opt.radius,:);
 
 sh = alphaShape(bshell,pix*5); plot(sh)
 %border version should not need expansion? just exclude area outside somehow
