@@ -1,7 +1,7 @@
 %% prototyping for nonflat constraints mimicking more natural ice
 pix = 8;
 binsize = pix*[200,100,50];
-
+%{
 %how to trim excess border length when using multiple sidedness?
 
 edges = '  &';
@@ -44,21 +44,22 @@ plot(sh)
 %plot3(x,y,z,'.')
 %plot3(qq(:,1),qq(:,2),qq(:,3),'.')
 %sliceViewer(vol);
+%}
 
 %% surfgen version
-pix = 8;
-binsize = pix*[200,100,50]; %curvature is anisotropic, nonsquare grid has uneven noise
-sz = max(binsize); n = 5.5;
+pix = 10;
+binsize = pix*[300,200,50]; %curvature is anisotropic, nonsquare grid has uneven noise
+sz = [max(binsize),max(binsize)]; n = pix^1.2;
 
-pts = surfgen_scripting(binsize,n);
+pts = surfgen_scripting(sz,n);
 
-bshell = repmat(pts,[5,1]);
-d2 = 16;
+bshell = repmat(pts,[4,1]);
+d2 = 12;
 vec = randn(size(bshell)); vec = d2*vec./vecnorm(vec,2,2);
 bshell = bshell+vec;
 
-sh = alphaShape(bshell,pix*5);
-plot(sh)
+%sh = alphaShape(bshell,pix*5);
+%plot(sh)
 
 
 
