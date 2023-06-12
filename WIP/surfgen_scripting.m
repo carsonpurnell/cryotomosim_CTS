@@ -8,13 +8,13 @@ sz = sz+pad*2;
 %padding
 %pruning square back down to target size
 
-[X,Y] = ndgrid(1:sz(1),1:sz(2));
+[X,Y] = ndgrid(1:3:sz(1),1:3:sz(2));
 i = min(X-1,sz(1)-X+1); j = min(Y-1,sz(2)-Y+1);
 H = exp(-.5*(i.^2+j.^2)/n^2);
-Z = real(ifft2(H.*fft2(randn(sz)))); % 0-centered, approximately normal
+Z = real(ifft2(H.*fft2(randn(size(X))))); % 0-centered, approximately normal
 
 pts = [X(:),Y(:),Z(:)*2.2e3];
-n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/100));
+n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/20));
 pts = pts(ix,:);
 pts(:,1:2) = pts(:,1:2)-pad;
 
