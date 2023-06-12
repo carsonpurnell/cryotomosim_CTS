@@ -89,8 +89,9 @@ pts = surfgen_scripting(sz,n); %pts{2} = surfgen_scripting(sz,n);
 
 %plot3(pts(:,1),pts(:,2),pts(:,3),'.'); axis equal
 borderpts = pts;
-for i=1:5
-    zl = [0,0,i*50];
+for i=1:10
+    zl = [0,0,i*10];
     tmp1 = bshell+zl; %tmp2 = bshell-zl;
     borderpts = [blc;tmp1];%;tmp2];
 end
+borderpts(:,4) = 6;
