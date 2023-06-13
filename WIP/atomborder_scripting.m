@@ -84,8 +84,8 @@ sliceViewer(vol);
 pix = 12;
 boxsize = pix*[400,300,50]; %curvature is anisotropic, nonsquare grid has uneven noise
 sz = [max(boxsize),max(boxsize)]; 
-n = 6+pix^1.5;
-sc = 800;
+n = 4+pix^1.5;
+sc = 1000;
 
 pts = surfgen_scripting(sz,n/2,sc*3); %pts{2} = surfgen_scripting(sz,n);
 
@@ -96,6 +96,6 @@ for i=1:10
     tmp1 = pts+zl; %tmp2 = bshell-zl;
     borderpts = [borderpts;tmp1];%;tmp2];
 end
-borderpts = borderpts+[0,0,80];
+borderpts = borderpts+[0,0,20];
 borderpts(:,4) = 6;
 
