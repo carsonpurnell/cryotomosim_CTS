@@ -87,7 +87,7 @@ sz = [max(boxsize),max(boxsize)];
 n = 6+pix^1.5;
 sc = 800;
 
-pts = surfgen_scripting(sz,n,sc); %pts{2} = surfgen_scripting(sz,n);
+pts = surfgen_scripting(sz,n/2,sc*3); %pts{2} = surfgen_scripting(sz,n);
 
 %plot3(pts(:,1),pts(:,2),pts(:,3),'.'); axis equal
 borderpts = pts;
