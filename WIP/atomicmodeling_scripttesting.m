@@ -43,15 +43,16 @@ end
 
 %% atomic vesicle gen
 %currently just a hamfisted first-pass in the modelgen. separate implementation needed? need better outputs
-ves = 0;
+ves = 8;
 if ves>0
 lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
 tic
 fprintf('generating membranes  ')
 for i=1:ves
     %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5)); %old deprec spherical version
-    [pts,perim] = gen_mem(200+randi(200),[],rand*0.4+0.6, 24+randi(8)); %need fewer more intense points
+    [pts,perim] = gen_mem(250+randi(200),[],rand*0.4+0.6, 24+randi(8)); %need fewer more intense points
     %need core shape for anchoring membrane proteins as well
+    %also need hull of all of them for inside/outside checks
     %pts(:,4) = pts(:,4)/4; %288 init, 170/195 at 1/2 pts, 125 at 1/4
     lipid(1).perim{1,i} = perim;
     lipid(1).adat{1,i} = pts;
@@ -64,10 +65,10 @@ end
 
 
 %% functionalized model gen part
-boxsize = pix*[400,300,40];
+boxsize = pix*[400,300,50];
 n = 2000; 
-rng(4);
-%n = [10,2000];
+rng(5);
+n = [50,2000];
 csplit.carbon = gen_carbon(boxsize); % atomic carbon grid generator
 csplit.border = borderpts;
 tic; [split] = fn_modelgen(layers,boxsize,n,csplit); toc
@@ -473,10 +474,9 @@ end
 
 function err = proxtest(c,pts,tol)
 l = min(pts,[],1)-tol; h = max(pts,[],1)+tol; %low and high bounds per dimension
-ix = c>l & c<h; %a = prod(a,2);
-ix = sum(ix,2)>2; 
-%ix = (ix>2); %
-if ~any(ix), ix=[]; end
+ix = c>l & c<h; % compare all points against the prospective box
+ix = all(ix,2); % filter to index of pts inside the box
+if ~any(ix), ix=[]; end % check for early end if no points in the box
 %ix = find(ix>0); %bottleneck - just too many points. mutable octree should be faster overall
 err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but progressive slowdown
 if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
@@ -486,7 +486,6 @@ if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
     d = [d{:}]; if any(d<tol), err=1; end %test if any points closer than tol
 end
-
 end
 
 
