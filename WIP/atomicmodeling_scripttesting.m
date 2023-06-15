@@ -49,7 +49,7 @@ end
 %placed vesicle map filler: premade KDT for overlap testing, track and proxfilt only the proteins
 %prefiller: run after each vesicle generation to fill, and make sure to retry placements a lot. easier
 %per-type membranes (thickness exclusions or whatever) for dissimilar vesicle/membrane types
-ves = 8;
+ves = 0;
 if ves>0
 lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
 tic
