@@ -43,14 +43,14 @@ end
 
 %% atomic vesicle gen
 %currently just a hamfisted first-pass in the modelgen. separate implementation needed? need better outputs
-ves = 8;
+ves = 0;
 if ves>0
 lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
 tic
 fprintf('generating membranes  ')
 for i=1:ves
     %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5)); %old deprec spherical version
-    [pts,perim] = gen_mem(250+randi(200),[],rand*0.4+0.6, 24+randi(8)); %need fewer more intense points
+    [pts,perim] = gen_mem(250+randi(200),[],rand*0.2+0.8, 24+randi(8)); %need fewer more intense points
     %need core shape for anchoring membrane proteins as well
     %also need hull of all of them for inside/outside checks
     %pts(:,4) = pts(:,4)/4; %288 init, 170/195 at 1/2 pts, 125 at 1/4
@@ -67,10 +67,10 @@ end
 %% functionalized model gen part
 boxsize = pix*[400,300,50];
 n = 2000; 
-rng(5);
-n = [50,2000];
+%rng(5);
+%n = [50,3000];
 csplit.carbon = gen_carbon(boxsize); % atomic carbon grid generator
-csplit.border = borderpts;
+%csplit.border = borderpts;
 tic; [split] = fn_modelgen(layers,boxsize,n,csplit); toc
 
 %% function for vol, atlas, and split generation + water solvation
