@@ -5,6 +5,8 @@ input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'actin__6t1y_13x2.pdb'};%,...
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
 tic
+%need to streamline atomic symbol to Z converter, and link into a Z to scatterval dictionary.
+%extend it to work for pdb2vol as well, and the other older cts_model components.
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
@@ -47,7 +49,7 @@ end
 %placed vesicle map filler: premade KDT for overlap testing, track and proxfilt only the proteins
 %prefiller: run after each vesicle generation to fill, and make sure to retry placements a lot. easier
 %per-type membranes (thickness exclusions or whatever) for dissimilar vesicle/membrane types
-ves = 0;
+ves = 8;
 if ves>0
 lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
 tic
@@ -72,7 +74,7 @@ end
 boxsize = pix*[400,300,50];
 n = 2000; 
 %rng(5);
-%n = [50,3000];
+n = [50,3000];
 csplit.carbon = gen_carbon(boxsize); % atomic carbon grid generator
 %csplit.border = borderpts;
 tic; [split] = fn_modelgen(layers,boxsize,n,csplit); toc
