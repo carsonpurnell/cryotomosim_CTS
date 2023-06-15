@@ -1,5 +1,5 @@
 %% load input structures as atomic data
-pix = 8; clear particles;
+pix = 10; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb'};%,...
@@ -72,8 +72,8 @@ end
 
 %% functionalized model gen part
 boxsize = pix*[400,300,50];
-n = 2000; 
-%rng(5);
+n = 2000;
+rng(5);
 n = [50,3000];
 csplit.carbon = gen_carbon(boxsize); % atomic carbon grid generator
 %csplit.border = borderpts;
@@ -82,7 +82,7 @@ tic; [split] = fn_modelgen(layers,boxsize,n,csplit); toc
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol+solv);
-WriteMRC(vol+solv,pix,'atomictest_fastgen1.mrc');
+%WriteMRC(vol+solv,pix,'atomictest_fastgen1.mrc');
 
 %{
 %% randomly add to the points and concatenate them into a list
