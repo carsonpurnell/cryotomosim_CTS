@@ -1,5 +1,5 @@
 %% load input structures as atomic data
-pix = 12; clear particles;
+pix = 8; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb'};%,...
@@ -43,6 +43,10 @@ end
 
 %% atomic vesicle gen
 %currently just a hamfisted first-pass in the modelgen. separate implementation needed? need better outputs
+%mem proteins with their own modelgen? either generated with the vesicle initially, or separate pregenerator
+%placed vesicle map filler: premade KDT for overlap testing, track and proxfilt only the proteins
+%prefiller: run after each vesicle generation to fill, and make sure to retry placements a lot. easier
+%per-type membranes (thickness exclusions or whatever) for dissimilar vesicle/membrane types
 ves = 0;
 if ves>0
 lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
