@@ -55,6 +55,9 @@ for i=1:size(data,1)
     com = mean(data{i,2},1); %need radius from geometric, not mass center
     tmpco = data{i,2}-com;
     tmpint = atomdict(data{i,1},'sc')';
+    %tmpz = dict_atoms(data{i,1});
+    %tmpatomint = dict_intensity(tmpz,'sc');
+    %if tmpatomint~=tmpint, disp('nonidentity'); end
     particles.adat{i} = [tmpco,tmpint];
     
     tmpco = double(unique(tmpco,'rows'));
@@ -71,7 +74,7 @@ for i=1:size(data,1)
     %k = boundary(tmpco,0.1); p2 = tmpco(k,:); %boundary is slower, just alphashape/facets with more overhead
     
     n = size(tmpco,1);
-    ix = randperm(n); ix = ix(1:round(n/200));
+    ix = randperm(n); ix = ix(1:round(n/100));
     pi = tmpco(ix,1:3);
     p = single([p;pi]); %need to add back 1-3% or so of points to prevent inside placements
     particles.perim{i} = unique(p,'rows');
@@ -360,6 +363,27 @@ end
 function atomint = atomdict(atomid,mode)
 if nargin<2, mode='z'; end
 el = {'H','C','N','O','P','S','F','Na','MG','Cl','K','Ca','Mn','Fe'}; %element symbols to use for lookup
+%scattering potentials computed as sum of first 5 parameters of atom form factor, holding s=0
+sc = [0.5288,2.5088,2.2135,1.9834,5.4876,5.1604,1.8012,4.7758,5.2078,4.8577,8.9834,9.9131,7.5062,7.1637,0];
+z = [1,6,7,8,15,16,9,11,12,17,19,20,25,26,0]; %15==0 for bad entries
+hp = [0,1.3,1.1,0.2,0,0.6,0,0,0,0,0,0,0,0,0]; %average hydrogens per atom
+switch mode
+    case 'z', atomint = z+z(1)*hp;
+    case 'sc', atomint = sc+sc(1)*hp;
+end
+
+[~,ix] = ismember(atomid,el);
+%errs = find(ix<1); ix(errs) = 15;
+ix(ix<1 | ix>15) = 15;
+atomint = single(atomint(ix));
+end
+function atomZ = dict_atoms(atomid)
+symbol = {'H','C','N','O','P','S','F','Na','MG','Cl','K','Ca','Mn','Fe'};
+z = [1,6,7,8,15,16,9,11,12,17,19,20,25,26,0]; %15==0 for bad entries
+[~,ix] = ismember(atomid,symbol); ix(ix<1 | ix>15) = 15; %match symbols to atomic number (or other)
+atomZ = single(z(ix));
+end
+function atomint = dict_intensity(atomZ,mode)
 sc = [0.5288,2.5088,2.2135,1.9834,5.4876,5.1604,1.8012,4.7758,5.2078,4.8577,8.9834,9.9131,7.5062,7.1637,0];
 z = [1,6,7,8,15,16,9,11,12,17,19,20,25,26,0]; %15==0 for bad entries
 hp = [0,1.3,1.1,0.2,0,0.6,0,0,0,0,0,0,0,0,0]; %average hydrogens per atom
@@ -369,10 +393,5 @@ switch mode
     case 'sc'
         atomint = sc+sc(1)*hp;
 end
-%scattering potentials computed as sum of first 5 parameters of atom form factor, holding s=0
-
-[~,ix] = ismember(atomid,el);
-%errs = find(ix<1); ix(errs) = 15;
-ix(ix<1 | ix>15) = 15;
-atomint = single(atomint(ix));
+atomint = single(atomint(atomZ));
 end
