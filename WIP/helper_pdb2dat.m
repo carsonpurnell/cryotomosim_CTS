@@ -64,9 +64,9 @@ for i=1:size(data,1)
     %instead of alphashape on everything, prune to fraction of points and AS that - much faster
     %then add >10% of all points back in and unique check at the end?
     %is it faster to iteratively find borders from chunks of points then do it again at the end?
-    %alphat = alphaShape(double(tmpco),12); %surprisingly slow
-    %[~,p2] = boundaryFacets(alphat);
-    p = boundaryiter(tmpco); %faster iterative border finding
+    alphat = alphaShape(double(tmpco),12); %surprisingly slow
+    [~,p] = boundaryFacets(alphat);
+    %p = boundaryiter(tmpco); %faster iterative border finding
     %size(p2), size(p)
     %tr = delaunay(tmpco(:,1),tmpco(:,2),tmpco(:,3)); %don't have freeboundary function?
     %[f,pfree] = freeBoundary(tr);
