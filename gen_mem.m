@@ -62,7 +62,7 @@ d = randn(size(qq))*10/sp^2*(1-sp); %not unitized for variability?
 % spd = rand(size(vec,1),1)*8+4;
 % vec = vec./vecnorm(vec,2,2).*spd;
 pts = qq+d;
-%pts = smiter(pts,1,9);
+pts = smiter(pts,1,9);
 pts = unique(pts,'rows');
 sh = alphaShape(pts); sh.Alpha = criticalAlpha(sh,'one-region')+sz;
 
