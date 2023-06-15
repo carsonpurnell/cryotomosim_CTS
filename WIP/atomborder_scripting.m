@@ -96,6 +96,6 @@ for i=1:10
     tmp1 = pts+zl; %tmp2 = bshell-zl;
     borderpts = [borderpts;tmp1];%;tmp2];
 end
-borderpts = borderpts+[0,0,20];
+borderpts = [borderpts+[0,0,24];borderpts+[0,0,boxsize(3)-24]];
 borderpts(:,4) = 6;
 
