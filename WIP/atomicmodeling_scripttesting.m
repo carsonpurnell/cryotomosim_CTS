@@ -375,7 +375,7 @@ function [splitin,memhull] = fn_modgenmembrane(memnum,vesarg,layers)
 
 end
 
-function [kdcell,shapecell] = modelmem(memnum,vesarg);
+function [kdcell,shapecell] = modelmem(memnum,vesarg)
 
 
 
@@ -389,7 +389,7 @@ else
     fn = fieldnames(split);
     for i=1:numel(fn) %add split into dynpts
         s = size(split.(fn{i})(:,1:3),1);
-        ix = randi(s,round(s/100),1); ix = unique(ix);
+        ix = randi(s,round(s/50),1); ix = unique(ix);
         tmp = split.(fn{i})(ix,1:3);
         %l = size(tmp,1); %dynpts(end+1:end+l,:) = tmp;
         dynpts = [dynpts;tmp];
@@ -430,6 +430,7 @@ locgrid = locgrid(logical(p),:);
 %tmp = fieldnames(split);
 %dynpts = split;
 tol = 2; %tolerance for overlap testing
+retry = 3; %retry attempts per iteration
 count.s = 0; count.f = 0;
 %index 1 to overwrite the initial preallocation point, 2 preserves it
 %split = cell(1,numel(particles)+0); %split{1} = zeros(0,4); %single([0,0,0,0]);
@@ -453,13 +454,15 @@ for i=1:n
     which=randi(numel(particles));
     sel = particles(which); sub = randi(numel(sel.adat));
     
-    loc = rand(1,3).*boxsize;
-    tform = randomAffine3d('rotation',[0 360]); 
     
-    ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %transform test points
-    
-    err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
-    %need to replace either with mutable quadtree or short-circuit kdtree, it's ~80% of runtime
+    for r=1:retry    loc = rand(1,3).*boxsize;
+        tform = randomAffine3d('rotation',[0 360]);
+        
+        ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %transform test points
+        err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
+        %need to replace either with mutable quadtree or short-circuit kdtree, it's ~80% of runtime
+        if err==0, break; end
+    end
     
     if err==0
         tpts = sel.adat{sub};
