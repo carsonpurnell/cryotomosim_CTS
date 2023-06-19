@@ -50,8 +50,9 @@ end
 %prefiller: run after each vesicle generation to fill, and make sure to retry placements a lot. easier
 %per-type membranes (thickness exclusions or whatever) for dissimilar vesicle/membrane types
 ves = 0; memhull = 0;
+vesarg = [250+randi(200),[],rand*0.2+0.8, 24+randi(8)];
 if ves>0
-    %(splitin,memhull) = fn_modgenmembrane(ves,layers);
+    %[splitin,memhull] = fn_modgenmembrane(ves,layers);
     lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
     tic
     fprintf('generating membranes  ')
@@ -363,6 +364,21 @@ sliceViewer(em+watervol);
 %}
 
 %% internal functions
+
+function [splitin,memhull] = fn_modgenmembrane(memnum,vesarg,layers)
+
+%ves = number of vesicles as input
+[kdcell,shapecell] = modelmem(memnum,vesarg);
+%layers = the input particle layers to add to generated membranes
+
+
+end
+
+function [kdcell,shapecell] = modelmem(memnum,vesarg);
+
+
+
+end
 
 function [split] = fn_modelgen(layers,boxsize,niter,split)
 dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
