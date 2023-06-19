@@ -1,5 +1,5 @@
 %% load input structures as atomic data
-pix = 10; clear particles;
+pix = 8; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb'};%,...
@@ -49,35 +49,42 @@ end
 %placed vesicle map filler: premade KDT for overlap testing, track and proxfilt only the proteins
 %prefiller: run after each vesicle generation to fill, and make sure to retry placements a lot. easier
 %per-type membranes (thickness exclusions or whatever) for dissimilar vesicle/membrane types
-ves = 0;
+ves = 0; memhull = 0;
 if ves>0
-lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
-tic
-fprintf('generating membranes  ')
-for i=1:ves
-    %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5)); %old deprec spherical version
-    [pts,perim] = gen_mem(250+randi(200),[],rand*0.2+0.8, 24+randi(8)); %need fewer more intense points
-    %need core shape for anchoring membrane proteins as well
-    %also need hull of all of them for inside/outside checks
-    %pts(:,4) = pts(:,4)/4; %288 init, 170/195 at 1/2 pts, 125 at 1/4
-    lipid(1).perim{1,i} = perim;
-    lipid(1).adat{1,i} = pts;
-    lipid(1).modelname{i} = append('vesicle');%,string(i));
+    %(splitin,memhull) = fn_modgenmembrane(ves,layers);
+    lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
+    tic
+    fprintf('generating membranes  ')
+    for i=1:ves
+        %[pts,perim] = vesgen_sphere(200+randi(300),18+randi(5)); %old deprec spherical version
+        [pts,perim] = gen_mem(250+randi(200),[],rand*0.2+0.8, 24+randi(8)); %need fewer more intense points
+        %need core shape for anchoring membrane proteins as well
+        %also need hull of all of them for inside/outside checks
+        %pts(:,4) = pts(:,4)/4; %288 init, 170/195 at 1/2 pts, 125 at 1/4
+        lipid(1).perim{1,i} = perim;
+        lipid(1).adat{1,i} = pts;
+        lipid(1).modelname{i} = append('vesicle');%,string(i));
+    end
+    layers{2} = layers{1};
+    layers{1} = lipid;
+    toc
 end
-layers{2} = layers{1};
-layers{1} = lipid;
-toc
-end
+
+% need mem and memprot model generator. only way to properly have layers without superbloat.
+% fill out sh level a bit more for tighter alphashape that won't blob into others as easily - also more smooth
+
+
+
 
 
 %% functionalized model gen part
 boxsize = pix*[400,300,50];
 n = 2000;
 rng(5);
-n = [50,3000];
-csplit.carbon = gen_carbon(boxsize); % atomic carbon grid generator
-%csplit.border = borderpts;
-tic; [split] = fn_modelgen(layers,boxsize,n,csplit); toc
+%n = [50,3000];
+splitin.carbon = gen_carbon(boxsize); % atomic carbon grid generator
+%splitin.border = borderpts;
+tic; [split] = fn_modelgen(layers,boxsize,n,splitin); toc
 
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
