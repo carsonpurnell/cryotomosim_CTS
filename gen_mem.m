@@ -21,7 +21,7 @@ else
     atomfrac = 2;
 end
 %alternative shape generators? cylinders, planes, sphere, stacks, double layers?
-%alt gen 3: curved spline of core points with varying radii for expansion
+%alt gen 3: curved spline of core points with varying radii for expansion - how to derive radii?
 [shell] = shape2shell(sh,thick);
 [pts,head,tail] = shell2pts(shell,atomfrac); %need to use surface/interior for atomic density purposes
 %better control over thickness and surface layer density - impacts layered CTF artifact a lot.
