@@ -1,5 +1,5 @@
 %% load input structures as atomic data
-pix = 8; clear particles;
+pix = 12; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb'};%,...
@@ -81,7 +81,7 @@ end
 
 %% functionalized model gen part
 boxsize = pix*[400,300,50];
-n = 2000;
+n = 3000;
 rng(5);
 %n = [50,3000];
 splitin.carbon = gen_carbon(boxsize); % atomic carbon grid generator
@@ -389,7 +389,7 @@ else
     fn = fieldnames(split);
     for i=1:numel(fn) %add split into dynpts
         s = size(split.(fn{i})(:,1:3),1);
-        ix = randi(s,round(s/10),1); ix = unique(ix);
+        ix = randi(s,round(s/100),1); ix = unique(ix);
         tmp = split.(fn{i})(ix,1:3);
         %l = size(tmp,1); %dynpts(end+1:end+l,:) = tmp;
         dynpts = [dynpts;tmp];
@@ -465,7 +465,7 @@ for i=1:n
         tpts = sel.adat{sub};
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
-        [dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
+        %[dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
         [dyn] = dyncell(ovcheck,dyn);
         % % inlined dyncat code, dynpts % %
         l = size(ovcheck,1); e = ixincat+l-1;
@@ -493,8 +493,7 @@ if lc==1
     %tic; sh=alphaShape(double(dynpts),12); toc; %plot(sh); drawnow;
 end
 fprintf('  placed %i, failed %i \n',count.s,count.f);
-%all(dyn{1}==dynpts)
-%all(dynfn==dynpts)
+%all(dyn{1}==dynpts) %all(dynfn==dynpts)
 
 end
 sn = fieldnames(split); %trimming trailing zeros from split arrays to prevent atom2vol weirdness
@@ -525,12 +524,12 @@ end
 end
 
 
-function [dyn] = dyncell(ovcheck,dyn) % insignificantly slower than inline version
-    l = size(ovcheck,1); e = dyn{2}+l-1;
+function [dyn] = dyncell(addpts,dyn)
+    l = size(addpts,1); e = dyn{2}+l-1;
     if e>size(dyn{1},1)
         dyn{1}(dyn{2}:(size(dyn{1},1)+l)*3,:) = 0;
     end
-    dyn{1}(dyn{2}:e,:) = ovcheck;
+    dyn{1}(dyn{2}:e,:) = addpts;
     dyn{2} = dyn{2}+l;
 end
 function [dynfn,ix] = fcndyn(ovcheck,dynfn,ix) % insignificantly slower than inline version
