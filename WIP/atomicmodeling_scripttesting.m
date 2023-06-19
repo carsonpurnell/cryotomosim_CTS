@@ -74,8 +74,9 @@ end
 % need mem and memprot model generator. only way to properly have layers without superbloat.
 % fill out sh level a bit more for tighter alphashape that won't blob into others as easily - also more smooth
 
-
-
+% 470 at /5 atoms perimeter
+% 102 at /50 atoms perimeter
+% huge difference, need to carry forward the dynpts
 
 
 %% functionalized model gen part
@@ -396,6 +397,8 @@ else
     end
 end
 ixincat = size(dynpts,1)+1; %where to start the indexing
+dynfn = dynpts; dynfnix = ixincat;
+dyn = {dynfn,dynfnix};
 
 % available location mapping - probably not going to be faster due to needing to prune full list after
 % each successful placement
@@ -462,6 +465,8 @@ for i=1:n
         tpts = sel.adat{sub};
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
+        [dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
+        [dyn] = dyncell(ovcheck,dyn);
         % % inlined dyncat code, dynpts % %
         l = size(ovcheck,1); e = ixincat+l-1;
         if e>size(dynpts,1)
@@ -488,6 +493,8 @@ if lc==1
     %tic; sh=alphaShape(double(dynpts),12); toc; %plot(sh); drawnow;
 end
 fprintf('  placed %i, failed %i \n',count.s,count.f);
+%all(dyn{1}==dynpts)
+%all(dynfn==dynpts)
 
 end
 sn = fieldnames(split); %trimming trailing zeros from split arrays to prevent atom2vol weirdness
@@ -518,6 +525,22 @@ end
 end
 
 
+function [dyn] = dyncell(ovcheck,dyn) % insignificantly slower than inline version
+    l = size(ovcheck,1); e = dyn{2}+l-1;
+    if e>size(dyn{1},1)
+        dyn{1}(dyn{2}:(size(dyn{1},1)+l)*3,:) = 0;
+    end
+    dyn{1}(dyn{2}:e,:) = ovcheck;
+    dyn{2} = dyn{2}+l;
+end
+function [dynfn,ix] = fcndyn(ovcheck,dynfn,ix) % insignificantly slower than inline version
+    l = size(ovcheck,1); e = ix+l-1;
+    if e>size(dynfn,1)
+        dynfn(ix:(size(dynfn,1)+l)*3,:) = 0;
+    end
+    dynfn(ix:e,:) = ovcheck;
+    ix = ix+l;
+end
 
 function [pts,perim] = vesgen_sphere(r,thick)
 radi = r;
