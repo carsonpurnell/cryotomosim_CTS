@@ -1,4 +1,4 @@
-function [carbon] = gen_carbon(vol,pix,opt)
+function [carbon,perim] = gen_carbon(vol,pix,opt)
 
 arguments
     vol (1,3)
@@ -32,11 +32,21 @@ vec = mag.*vec./vecnorm(vec,2,2);
 
 sh = alphaShape(ps+vec,40);
 %}
-edge = carbonshape(vol,opt);
+[edge] = carbonshape(vol,opt);
 
 density = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
 atomfrac = 1; %pseudoatomic factor for speed
 carbon = randtess(density/atomfrac*0.3,edge,'v'); %
+cperim = randtess(.05,edge,'s');
+
+perim = edge.Points; %perimeter pts of shape
+n = size(carbon,1);
+ix = randperm(n); ix = ix(1:round(n/10));
+pi = carbon(ix,1:3);
+perim = single([perim;pi;cperim]);
+perim = unique(perim,'rows');
+
+
 carbon(:,4) = 2.5088*1.5*atomfrac;
 
 if pix>0
@@ -45,7 +55,7 @@ end
 
 end
 
-function edge = carbonshape(vol,opt)
+function [edge] = carbonshape(vol,opt)
 pad = [20,20,0]; %padding to avoid edge effects
 
 %centering etc needs more control - at least transparency
@@ -60,6 +70,7 @@ ps(:,3) = ps(:,3)+(vol(3)-opt.thick)/2; %adjust grid to the center of the volume
 
 vec = randn(size(ps)); mag = rand(size(ps,1),1)*60;
 vec = mag.*vec./vecnorm(vec,2,2);
+pts = ps+vec;
 
-edge = alphaShape(ps+vec,40); %get the shape itself
+edge = alphaShape(pts,40); %get the shape itself
 end
