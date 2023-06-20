@@ -81,7 +81,7 @@ end
 
 %% functionalized model gen part
 boxsize = pix*[400,300,50];
-n = 3000;
+n = 1000;
 rng(5);
 %n = [50,3000];
 splitin.carbon = gen_carbon(boxsize); % atomic carbon grid generator
@@ -430,7 +430,7 @@ locgrid = locgrid(logical(p),:);
 %tmp = fieldnames(split);
 %dynpts = split;
 tol = 2; %tolerance for overlap testing
-retry = 3; %retry attempts per iteration
+retry = 4; %retry attempts per iteration
 count.s = 0; count.f = 0;
 %index 1 to overwrite the initial preallocation point, 2 preserves it
 %split = cell(1,numel(particles)+0); %split{1} = zeros(0,4); %single([0,0,0,0]);
@@ -455,7 +455,8 @@ for i=1:n
     sel = particles(which); sub = randi(numel(sel.adat));
     
     
-    for r=1:retry    loc = rand(1,3).*boxsize;
+    for r=1:retry    
+        loc = rand(1,3).*boxsize;
         tform = randomAffine3d('rotation',[0 360]);
         
         ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %transform test points
