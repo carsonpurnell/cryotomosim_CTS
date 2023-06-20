@@ -459,8 +459,8 @@ for i=1:n
         loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
         
         ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %transform test points
-        %err = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol); %prune and test atom collision
-        err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
+        err = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol); %prune and test atom collision
+        %err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
         %need to replace either with mutable quadtree or short-circuit kdtree, it's ~80% of runtime
         if err==0, break; end
     end
@@ -471,12 +471,14 @@ for i=1:n
         
         %[dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
         [dyn] = dyncell(ovcheck,dyn);
+        %{
         % % inlined dyncat code, dynpts % %
         l = size(ovcheck,1); e = ixincat+l-1;
         if e>size(dynpts,1)
             dynpts(ixincat:(size(dynpts,1)+l)*3,:) = 0;
         end
         dynpts(ixincat:e,:) = ovcheck; ixincat = ixincat+l;
+        %}
         % % inlined dyncat code, split assignments % %
         tdx = dx.(sel.modelname{sub}); %MUCH faster than hard cat, ~7x.
         l = size(tpts,1); e = tdx+l-1;
@@ -519,7 +521,8 @@ if ~any(ix), ix=[]; end % check for early end if no points in the box
 %ix = find(ix>0); %bottleneck - just too many points. mutable octree should be faster overall
 err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but progressive slowdown
 if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
-    buck = round( size(c,1)/1650 ); %very rough, is probably not linear scale
+    buck = round( size(c,1)/7650 ); %very rough, is probably not linear scale
+    % probably needs some sort of depth-based metric, not a flat one depth = log2 (n/leaf)
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
     %ot = OcTree(c(ix,:),'binCapacity',buck); %slightly slower than kdt
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
