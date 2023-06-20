@@ -1,5 +1,5 @@
 %% load input structures as atomic data
-pix = 8; clear particles;
+pix = 10; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb'};%,...
@@ -50,9 +50,9 @@ end
 %prefiller: run after each vesicle generation to fill, and make sure to retry placements a lot. easier
 %per-type membranes (thickness exclusions or whatever) for dissimilar vesicle/membrane types
 ves = 0; memhull = 0;
-vesarg = [250+randi(200),[],rand*0.2+0.8, 24+randi(8)];
+vesarg = {250+randi(200),[],rand*0.2+0.8, 24+randi(8)};
 if ves>0
-    %[splitin,memhull,dyn] = fn_modgenmembrane(ves,layers);
+    %[splitin,memhull,dyn] = fn_modgenmembrane(ves,layers,vesarg);
     lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
     tic
     fprintf('generating membranes  ')
@@ -82,11 +82,12 @@ end
 %% functionalized model gen part
 boxsize = pix*[400,300,50];
 n = 1000;
-rng(5);
+rng(1);
 %n = [50,3000];
-splitin.carbon = gen_carbon(boxsize); % atomic carbon grid generator
+%dyn = {zeros(0,3),0};
+[splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 %splitin.border = borderpts;
-tic; [split] = fn_modelgen(layers,boxsize,n,splitin); toc
+tic; [split] = fn_modelgen(layers,boxsize,n,splitin,dyn); toc
 
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
@@ -366,6 +367,9 @@ sliceViewer(em+watervol);
 
 %% internal functions
 
+% need a single wrapper that runs carbon, membrane, memprots, allprots sequentially and carries dyn
+% nesting is heavy jank and makes subcalls confusing, can't reuse code as much
+
 function [splitin,memhull,dyn] = fn_modgenmembrane(memnum,vesarg,layers)
 
 %ves = number of vesicles as input
@@ -375,14 +379,23 @@ function [splitin,memhull,dyn] = fn_modgenmembrane(memnum,vesarg,layers)
 
 end
 
-function [kdcell,shapecell] = modelmem(memnum,vesarg)
+function [split,kdcell,shapecell,dyn] = modelmem(memnum,vesarg,dyn)
 
 
+for i=1:memnum % simplified loop to add vesicles
+    
+    [pts,perim] = gen_mem(vesarg{:});
+    
+    
+    
+end
 
 end
 
-function [split] = fn_modelgen(layers,boxsize,niter,split)
-dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
+function [split] = fn_modelgen(layers,boxsize,niter,split,dynpts)
+if nargin<5
+    dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
+end
 if nargin<4
     split = struct; %ixincat = 1; %dynpts = single(zeros(0,3));
 else
@@ -392,7 +405,7 @@ else
         ix = randi(s,round(s/50),1); ix = unique(ix);
         tmp = split.(fn{i})(ix,1:3);
         %l = size(tmp,1); %dynpts(end+1:end+l,:) = tmp;
-        dynpts = [dynpts;tmp];
+        %dynpts = [dynpts;tmp];
         %dynpts = [dynpts;split.(fn{i})(:,1:3)];
     end
 end
