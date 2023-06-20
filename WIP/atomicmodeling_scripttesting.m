@@ -52,7 +52,7 @@ end
 ves = 0; memhull = 0;
 vesarg = {250+randi(200),[],rand*0.2+0.8, 24+randi(8)};
 if ves>0
-    %[splitin,memhull,dyn] = fn_modgenmembrane(ves,layers,vesarg);
+    %[splitin,memhull,dyn] = fn_modgenmembrane(ves,layers);
     lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
     tic
     fprintf('generating membranes  ')
@@ -81,13 +81,18 @@ end
 
 %% functionalized model gen part
 boxsize = pix*[400,300,50];
-n = 1000;
+[splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
+memnum = 8;
+[splitin2,kdcell,shapecell,dyn] = modelmem(memnum,dyn,boxsize);
+splitin3.carbon = splitin.carbon; splitin3.lipid = splitin2.lipid; %super dumb temporary hackjob
+
+n = 500;
 rng(1);
 %n = [50,3000];
 %dyn = {zeros(0,3),0};
-[splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
+
 %splitin.border = borderpts;
-tic; [split] = fn_modelgen(layers,boxsize,n,splitin,dyn); toc
+tic; [split] = fn_modelgen(layers,boxsize,n,splitin3,dyn); toc
 
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
@@ -379,22 +384,53 @@ function [splitin,memhull,dyn] = fn_modgenmembrane(memnum,vesarg,layers)
 
 end
 
-function [split,kdcell,shapecell,dyn] = modelmem(memnum,vesarg,dyn)
+function [split,kdcell,shapecell,dyn] = modelmem(memnum,dyn,boxsize)
+dyn = {dyn,size(dyn,1)}; %convert to dyncell
+kdcell = []; shapecell = [];
 
+tol = 2; %tolerance for overlap testing
+retry = 4; %retry attempts per iteration
+count.s = 0; count.f = 0;
+split.lipid = zeros(0,4); dx.lipid = 1;
 
 for i=1:memnum % simplified loop to add vesicles
     
-    [pts,perim] = gen_mem(vesarg{:});
+    [tpts,tperim] = gen_mem(250+randi(200),[],rand*0.2+0.8, 24+randi(8));
     
+    for r=1:retry    
+        loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
+        ovcheck = transformPointsForward(tform,tperim)+loc; %transform test points
+        err = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol); %prune and test atom collision
+        if err==0, break; end
+    end
+    
+    if err==0
+        splitname = 'lipid';
+        tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
+        
+        [dyn] = dyncell(ovcheck,dyn);
+        % % inlined dyncat code, split assignments % %
+        tdx = dx.(splitname); %MUCH faster than hard cat, ~7x.
+        l = size(tpts,1); e = tdx+l-1;
+        if e>size(split.(splitname),1)
+            split.(splitname)(tdx:(tdx+l)*4,:) = 0;
+        end
+        split.(splitname)(tdx:e,:) = tpts; dx.(splitname) = tdx+l;
+        % % inlined dyncat code % %
+        
+        count.s=count.s+1;
+    else
+        count.f=count.f+1;
+    end
     
     
 end
 
 end
 
-function [split] = fn_modelgen(layers,boxsize,niter,split,dynpts)
+function [split] = fn_modelgen(layers,boxsize,niter,split,dyn)
 if nargin<5
-    dynpts = single(zeros(0,3)); %dynpts = single([-100 -100 -100]);
+    dyn{1} = single(zeros(0,3)); dyn{2} = 0;
 end
 if nargin<4
     split = struct; %ixincat = 1; %dynpts = single(zeros(0,3));
@@ -409,9 +445,9 @@ else
         %dynpts = [dynpts;split.(fn{i})(:,1:3)];
     end
 end
-ixincat = size(dynpts,1)+1; %where to start the indexing
-dynfn = dynpts; dynfnix = ixincat;
-dyn = {dynfn,dynfnix};
+%ixincat = size(dynpts,1)+1; %where to start the indexing
+%dynfn = dynpts; dynfnix = ixincat;
+%dyn = {dynfn,dynfnix};
 
 % available location mapping - probably not going to be faster due to needing to prune full list after
 % each successful placement
