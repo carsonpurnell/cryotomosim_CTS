@@ -1,5 +1,5 @@
 %% load input structures as atomic data
-pix = 10; clear particles;
+pix = 12; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb'};%,...
@@ -80,19 +80,17 @@ end
 
 
 %% functionalized model gen part
+rng(1);
 boxsize = pix*[400,300,50];
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 memnum = 8;
-[splitin2,kdcell,shapecell,dyn] = modelmem(memnum,dyn,boxsize);
+[splitin2,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize);
 splitin3.carbon = splitin.carbon; splitin3.lipid = splitin2.lipid; %super dumb temporary hackjob
 
 n = 500;
-rng(1);
 %n = [50,3000];
-%dyn = {zeros(0,3),0};
-
 %splitin.border = borderpts;
-tic; [split] = fn_modelgen(layers,boxsize,n,splitin3,dyn); toc
+tic; [split] = fn_modelgen(layers,boxsize,n,splitin3,dx,dyn); toc
 
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
@@ -384,7 +382,7 @@ function [splitin,memhull,dyn] = fn_modgenmembrane(memnum,vesarg,layers)
 
 end
 
-function [split,kdcell,shapecell,dyn] = modelmem(memnum,dyn,boxsize)
+function [split,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize)
 dyn = {dyn,size(dyn,1)}; %convert to dyncell
 kdcell = []; shapecell = [];
 
@@ -392,9 +390,8 @@ tol = 2; %tolerance for overlap testing
 retry = 4; %retry attempts per iteration
 count.s = 0; count.f = 0;
 split.lipid = zeros(0,4); dx.lipid = 1;
-
+splitname = 'lipid';
 for i=1:memnum % simplified loop to add vesicles
-    
     [tpts,tperim] = gen_mem(250+randi(200),[],rand*0.2+0.8, 24+randi(8));
     
     for r=1:retry    
@@ -405,10 +402,12 @@ for i=1:memnum % simplified loop to add vesicles
     end
     
     if err==0
-        splitname = 'lipid';
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
         [dyn] = dyncell(ovcheck,dyn);
+        
+        [split,dx] = dynsplit(tpts,split,dx,splitname);
+        %{
         % % inlined dyncat code, split assignments % %
         tdx = dx.(splitname); %MUCH faster than hard cat, ~7x.
         l = size(tpts,1); e = tdx+l-1;
@@ -417,6 +416,7 @@ for i=1:memnum % simplified loop to add vesicles
         end
         split.(splitname)(tdx:e,:) = tpts; dx.(splitname) = tdx+l;
         % % inlined dyncat code % %
+        %}
         
         count.s=count.s+1;
     else
@@ -425,10 +425,33 @@ for i=1:memnum % simplified loop to add vesicles
     
     
 end
+%split prune, should only need this in the last one and carry the dx forward otherwise
+%{
+sn = fieldnames(split); %trimming trailing zeros from split arrays to prevent atom2vol weirdness
+for i=1:numel(sn)
+    tdx = size(split.(sn{i}),1); %backstop for when the object was preexisting so there's no dx
+    if isfield(dx,sn{i})
+        tdx = dx.(sn{i});
+    end
+    split.(sn{i})(tdx:end,:) = [];
+end
+%}
 
 end
 
-function [split] = fn_modelgen(layers,boxsize,niter,split,dyn)
+
+function [split,dx] = dynsplit(tpts,split,dx,splitname) %slower than inlined by too much
+tdx = dx.(splitname);
+l = size(tpts,1); e = tdx+l-1;
+if e>size(split.(splitname),1)
+    split.(splitname)(tdx:(tdx+l)*4,:) = 0;
+end
+split.(splitname)(tdx:e,:) = tpts; dx.(splitname) = tdx+l;
+% % inlined dyncat code % %
+end
+        
+
+function [split] = fn_modelgen(layers,boxsize,niter,split,dx,dyn)
 if nargin<5
     dyn{1} = single(zeros(0,3)); dyn{2} = 0;
 end
@@ -438,8 +461,8 @@ else
     fn = fieldnames(split);
     for i=1:numel(fn) %add split into dynpts
         s = size(split.(fn{i})(:,1:3),1);
-        ix = randi(s,round(s/50),1); ix = unique(ix);
-        tmp = split.(fn{i})(ix,1:3);
+        %ix = randi(s,round(s/50),1); ix = unique(ix);
+        %tmp = split.(fn{i})(ix,1:3);
         %l = size(tmp,1); %dynpts(end+1:end+l,:) = tmp;
         %dynpts = [dynpts;tmp];
         %dynpts = [dynpts;split.(fn{i})(:,1:3)];
@@ -489,7 +512,9 @@ for j=1:numel(namelist)
     if ~isfield(split,namelist{j})
         split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
     end
-    dx.(namelist{j}) = size(split.(namelist{j}),1)+1;
+    if ~isfield(dx,namelist{j})
+        dx.(namelist{j}) = size(split.(namelist{j}),1)+1;
+    end
 end
 end
 
@@ -520,6 +545,10 @@ for i=1:n
         
         %[dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
         [dyn] = dyncell(ovcheck,dyn);
+        
+        splitname = sel.modelname{sub};
+        [split,dx] = dynsplit(tpts,split,dx,splitname);
+        
         %{
         % % inlined dyncat code, dynpts % %
         l = size(ovcheck,1); e = ixincat+l-1;
@@ -529,6 +558,7 @@ for i=1:n
         dynpts(ixincat:e,:) = ovcheck; ixincat = ixincat+l;
         %}
         % % inlined dyncat code, split assignments % %
+        %{
         tdx = dx.(sel.modelname{sub}); %MUCH faster than hard cat, ~7x.
         l = size(tpts,1); e = tdx+l-1;
         if e>size(split.(sel.modelname{sub}),1)
@@ -536,6 +566,7 @@ for i=1:n
         end
         split.(sel.modelname{sub})(tdx:e,:) = tpts; dx.(sel.modelname{sub}) = tdx+l;
         % % inlined dyncat code % %
+        %}
         
         %split{which} = [split{which};tpts]; %add to splitvol - cell version
         %split.(sel.modelname{sub}) = [split.(sel.modelname{sub});tpts]; %struct a bit slower :(
