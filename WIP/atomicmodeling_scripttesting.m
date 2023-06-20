@@ -547,7 +547,7 @@ for i=1:n
         [dyn] = dyncell(ovcheck,dyn);
         
         splitname = sel.modelname{sub};
-        [split,dx] = dynsplit(tpts,split,dx,splitname);
+        %[split,dx] = dynsplit(tpts,split,dx,splitname);
         
         %{
         % % inlined dyncat code, dynpts % %
@@ -558,7 +558,7 @@ for i=1:n
         dynpts(ixincat:e,:) = ovcheck; ixincat = ixincat+l;
         %}
         % % inlined dyncat code, split assignments % %
-        %{
+        %
         tdx = dx.(sel.modelname{sub}); %MUCH faster than hard cat, ~7x.
         l = size(tpts,1); e = tdx+l-1;
         if e>size(split.(sel.modelname{sub}),1)
