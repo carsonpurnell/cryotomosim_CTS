@@ -37,11 +37,11 @@ sh = alphaShape(ps+vec,40);
 density = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
 atomfrac = 1; %pseudoatomic factor for speed
 carbon = randtess(density/atomfrac*0.3,edge,'v'); %
-cperim = randtess(.05,edge,'s');
+cperim = randtess(.04,edge,'s');
 
 perim = edge.Points; %perimeter pts of shape
 n = size(carbon,1);
-ix = randperm(n); ix = ix(1:round(n/10));
+ix = randperm(n); ix = ix(1:round(n/50));
 pi = carbon(ix,1:3);
 perim = single([perim;pi;cperim]);
 perim = unique(perim,'rows');
