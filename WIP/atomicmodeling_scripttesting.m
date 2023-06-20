@@ -1,5 +1,5 @@
 %% load input structures as atomic data
-pix = 12; clear particles;
+pix = 8; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb'};%,...
@@ -52,7 +52,7 @@ end
 ves = 0; memhull = 0;
 vesarg = [250+randi(200),[],rand*0.2+0.8, 24+randi(8)];
 if ves>0
-    %[splitin,memhull] = fn_modgenmembrane(ves,layers);
+    %[splitin,memhull,dyn] = fn_modgenmembrane(ves,layers);
     lipid(1).name = 'lipid'; lipid(1).flags = 'ves';
     tic
     fprintf('generating membranes  ')
@@ -366,7 +366,7 @@ sliceViewer(em+watervol);
 
 %% internal functions
 
-function [splitin,memhull] = fn_modgenmembrane(memnum,vesarg,layers)
+function [splitin,memhull,dyn] = fn_modgenmembrane(memnum,vesarg,layers)
 
 %ves = number of vesicles as input
 [kdcell,shapecell] = modelmem(memnum,vesarg);
@@ -456,10 +456,10 @@ for i=1:n
     
     
     for r=1:retry    
-        loc = rand(1,3).*boxsize;
-        tform = randomAffine3d('rotation',[0 360]);
+        loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
         
         ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %transform test points
+        %err = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol); %prune and test atom collision
         err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
         %need to replace either with mutable quadtree or short-circuit kdtree, it's ~80% of runtime
         if err==0, break; end
