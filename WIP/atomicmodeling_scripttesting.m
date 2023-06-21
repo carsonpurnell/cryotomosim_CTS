@@ -383,6 +383,15 @@ function [splitin,memhull,dyn] = fn_modgenmembrane(memnum,vesarg,layers)
 
 end
 
+function [err,loc,tform,ovcheck] = anyloc(boxsize,tperim,dyn,retry,tol)
+for r=1:retry
+    loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
+    ovcheck = transformPointsForward(tform,tperim)+loc; %transform test points
+    err = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol); %prune and test atom collision
+    if err==0, break; end
+end
+end
+
 function [pts,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize)
 dyn = {dyn,size(dyn,1)}; %convert to dyncell
 kdcell = []; shapecell = [];
@@ -394,12 +403,16 @@ lipid{1} = zeros(0,4); lipid{2} = 1;
 for i=1:memnum % simplified loop to add vesicles
     [tpts,tperim] = gen_mem(250+randi(200),[],rand*0.2+0.8, 24+randi(8));
     
+    [err,loc,tform,ovcheck] = anyloc(boxsize,tperim,dyn,retry,tol); %
+    % 6.9
+    %{
     for r=1:retry    
         loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
         ovcheck = transformPointsForward(tform,tperim)+loc; %transform test points
         err = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol); %prune and test atom collision
         if err==0, break; end
     end
+    %}
     
     if err==0
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
