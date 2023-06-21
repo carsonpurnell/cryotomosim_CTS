@@ -1,5 +1,5 @@
 %% load input structures as atomic data
-pix = 12; clear particles;
+pix = 8; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb'};%,...
@@ -405,10 +405,11 @@ for i=1:memnum % simplified loop to add vesicles
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
         [dyn] = dyncell(ovcheck,dyn);
-        [dyn2,ix2] = dyncat(dyn{1},dyn{2},ovcheck);
+        %[dyn{1},dyn{2}] = dyncat(dyn{1},dyn{2},ovcheck);
         
         [split,dx] = dynsplit(tpts,split,dx,splitname);
-        [sp2,dx2] = dyncat(split.(splitname),dx.(splitname),tpts);
+        %[split.(splitname),dx.(splitname)] = dyncat(split.(splitname),dx.(splitname),tpts);
+        
         %{
         % % inlined dyncat code, split assignments % %
         tdx = dx.(splitname); %MUCH faster than hard cat, ~7x.
@@ -553,10 +554,12 @@ for i=1:n
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
         %[dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
-        [dyn] = dyncell(ovcheck,dyn);
+        [dyn] = dyncell(ovcheck,dyn); %.15
+        %[dyn{1},dyn{2}] = dyncat(dyn{1},dyn{2},ovcheck); %6s
         
-        splitname = sel.modelname{sub};
-        [split,dx] = dynsplit(tpts,split,dx,splitname);
+        %modnm = sel.modelname{sub};
+        [split,dx] = dynsplit(tpts,split,dx,sel.modelname{sub}); %3.6
+        %[split.(modnm),dx.(modnm)] = dyncat(split.(modnm),dx.(modnm),tpts); %46 - crazy slow :(
         
         %{
         % % inlined dyncat code, dynpts % %
