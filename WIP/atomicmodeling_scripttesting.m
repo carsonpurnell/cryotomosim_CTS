@@ -1,4 +1,5 @@
 %% load input structures as atomic data
+rng(1);
 pix = 10; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
@@ -10,7 +11,7 @@ tic
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
-layers{1} = particles;
+layers{1} = particles; fprintf('loaded %i structure files  ',numel(input));
 toc
 %{
 for i=1:numel(particles)
@@ -43,6 +44,26 @@ end
 %might try wavy version, definitely figure out x/y implementation as well
 %obviates need for starting points in the model too
 
+%% functionalized model gen part
+%rng(1);
+boxsize = pix*[400,300,50];
+[splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
+memnum = 8;
+tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
+%splitin3.carbon = splitin.carbon; 
+%splitin.lipid = splitin2.lipid; %super dumb temporary hackjob
+
+n = 500;
+%n = [50,3000];
+%splitin.border = borderpts;
+tic; [split] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
+
+%% function for vol, atlas, and split generation + water solvation
+[vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
+sliceViewer(vol+solv);
+%WriteMRC(vol+solv,pix,'atomictest_fastgen1.mrc');
+
+%{
 %% atomic vesicle gen
 %currently just a hamfisted first-pass in the modelgen. separate implementation needed? need better outputs
 %mem proteins with their own modelgen? either generated with the vesicle initially, or separate pregenerator
@@ -77,14 +98,14 @@ end
 % 470 at /5 atoms perimeter
 % 102 at /50 atoms perimeter
 % huge difference, need to carry forward the dynpts
-
-
+%}
+%{
 %% functionalized model gen part
 rng(1);
 boxsize = pix*[400,300,50];
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 memnum = 8;
-[splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize);
+tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 %splitin3.carbon = splitin.carbon; 
 %splitin.lipid = splitin2.lipid; %super dumb temporary hackjob
 
@@ -97,7 +118,7 @@ tic; [split] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
 sliceViewer(vol+solv);
 %WriteMRC(vol+solv,pix,'atomictest_fastgen1.mrc');
-
+%}
 %{
 %% randomly add to the points and concatenate them into a list
 boxsize = pix*[200,300,50];
@@ -418,6 +439,7 @@ for i=1:memnum % simplified loop to add vesicles
         
         [dyn] = dyncell(ovcheck,dyn);
         [lipid] = dyncell(tpts,lipid);
+        
         %[dyn{1},dyn{2}] = dyncat(dyn{1},dyn{2},ovcheck);
         
         %[pts,dx] = dynsplit(tpts,pts,dx,splitname);
@@ -438,8 +460,8 @@ for i=1:memnum % simplified loop to add vesicles
     end
     
 end
-pts = lipid{1}(1:lipid{2}-1,:);
-dx = lipid{2};
+pts = lipid{1}(1:lipid{2}-1,:); dx = lipid{2};
+fprintf('vesicles: placed %i, failed %i  ',count.s,count.f)
 
 end
 
@@ -556,12 +578,12 @@ for i=1:n
         tpts = sel.adat{sub};
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
-        %[dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
         [dyn] = dyncell(ovcheck,dyn); %.15
-        %[dyn{1},dyn{2}] = dyncat(dyn{1},dyn{2},ovcheck); %6s
-        
-        %modnm = sel.modelname{sub};
         [split,dx] = dynsplit(tpts,split,dx,sel.modelname{sub}); %3.6
+        %{
+        %[dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
+        %[dyn{1},dyn{2}] = dyncat(dyn{1},dyn{2},ovcheck); %6s
+        %modnm = sel.modelname{sub};
         %[split.(modnm),dx.(modnm)] = dyncat(split.(modnm),dx.(modnm),tpts); %46 - crazy slow :(
         
         %{
@@ -585,6 +607,7 @@ for i=1:n
         
         %split{which} = [split{which};tpts]; %add to splitvol - cell version
         %split.(sel.modelname{sub}) = [split.(sel.modelname{sub});tpts]; %struct a bit slower :(
+        %}
         count.s=count.s+1;
     else
         count.f=count.f+1;
