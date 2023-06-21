@@ -1,5 +1,5 @@
 %% load input structures as atomic data
-pix = 8; clear particles;
+pix = 10; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
     'actin__6t1y_13x2.pdb'};%,...
@@ -84,13 +84,14 @@ rng(1);
 boxsize = pix*[400,300,50];
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 memnum = 8;
-[splitin2,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize);
-splitin3.carbon = splitin.carbon; splitin3.lipid = splitin2.lipid; %super dumb temporary hackjob
+[splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize);
+%splitin3.carbon = splitin.carbon; 
+%splitin.lipid = splitin2.lipid; %super dumb temporary hackjob
 
 n = 500;
 %n = [50,3000];
 %splitin.border = borderpts;
-tic; [split] = fn_modelgen(layers,boxsize,n,splitin3,dx,dyn); toc
+tic; [split] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 
 %% function for vol, atlas, and split generation + water solvation
 [vol,solv,atlas,splitvol] = helper_atoms2vol(pix,split,boxsize);
@@ -382,15 +383,14 @@ function [splitin,memhull,dyn] = fn_modgenmembrane(memnum,vesarg,layers)
 
 end
 
-function [split,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize)
+function [pts,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize)
 dyn = {dyn,size(dyn,1)}; %convert to dyncell
 kdcell = []; shapecell = [];
 
 tol = 2; %tolerance for overlap testing
 retry = 4; %retry attempts per iteration
 count.s = 0; count.f = 0;
-split.lipid = zeros(0,4); dx.lipid = 1;
-splitname = 'lipid';
+lipid{1} = zeros(0,4); lipid{2} = 1;
 for i=1:memnum % simplified loop to add vesicles
     [tpts,tperim] = gen_mem(250+randi(200),[],rand*0.2+0.8, 24+randi(8));
     
@@ -405,11 +405,11 @@ for i=1:memnum % simplified loop to add vesicles
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
         [dyn] = dyncell(ovcheck,dyn);
+        [lipid] = dyncell(tpts,lipid);
         %[dyn{1},dyn{2}] = dyncat(dyn{1},dyn{2},ovcheck);
         
-        [split,dx] = dynsplit(tpts,split,dx,splitname);
+        %[pts,dx] = dynsplit(tpts,pts,dx,splitname);
         %[split.(splitname),dx.(splitname)] = dyncat(split.(splitname),dx.(splitname),tpts);
-        
         %{
         % % inlined dyncat code, split assignments % %
         tdx = dx.(splitname); %MUCH faster than hard cat, ~7x.
@@ -420,25 +420,14 @@ for i=1:memnum % simplified loop to add vesicles
         split.(splitname)(tdx:e,:) = tpts; dx.(splitname) = tdx+l;
         % % inlined dyncat code % %
         %}
-        
         count.s=count.s+1;
     else
         count.f=count.f+1;
     end
     
-    
 end
-%split prune, should only need this in the last one and carry the dx forward otherwise
-%{
-sn = fieldnames(split); %trimming trailing zeros from split arrays to prevent atom2vol weirdness
-for i=1:numel(sn)
-    tdx = size(split.(sn{i}),1); %backstop for when the object was preexisting so there's no dx
-    if isfield(dx,sn{i})
-        tdx = dx.(sn{i});
-    end
-    split.(sn{i})(tdx:end,:) = [];
-end
-%}
+pts = lipid{1}(1:lipid{2}-1,:);
+dx = lipid{2};
 
 end
 
