@@ -405,8 +405,10 @@ for i=1:memnum % simplified loop to add vesicles
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
         [dyn] = dyncell(ovcheck,dyn);
+        [dyn2,ix2] = dyncat(dyn{1},dyn{2},ovcheck);
         
         [split,dx] = dynsplit(tpts,split,dx,splitname);
+        [sp2,dx2] = dyncat(split.(splitname),dx.(splitname),tpts);
         %{
         % % inlined dyncat code, split assignments % %
         tdx = dx.(splitname); %MUCH faster than hard cat, ~7x.
@@ -439,17 +441,24 @@ end
 
 end
 
+function [dyn,ix] = dyncat(dyn,ix,pts)
+l = size(pts,1); e = ix+l-1;
+if e>size(dyn,1)
+    dyn(ix:(ix+l)*2,:) = 0;
+end
+dyn(ix:e,:) = pts; 
+ix = ix+l;
+end
 
-function [split,dx] = dynsplit(tpts,split,dx,splitname) %slower than inlined by too much
+function [split,dx] = dynsplit(tpts,split,dx,splitname) %slower than inlined a bit
 tdx = dx.(splitname);
 l = size(tpts,1); e = tdx+l-1;
 if e>size(split.(splitname),1)
-    split.(splitname)(tdx:(tdx+l)*4,:) = 0;
+    split.(splitname)(tdx:(tdx+l)*2,:) = 0;
 end
 split.(splitname)(tdx:e,:) = tpts; dx.(splitname) = tdx+l;
-% % inlined dyncat code % %
 end
-        
+
 
 function [split] = fn_modelgen(layers,boxsize,niter,split,dx,dyn)
 if nargin<5
@@ -547,7 +556,7 @@ for i=1:n
         [dyn] = dyncell(ovcheck,dyn);
         
         splitname = sel.modelname{sub};
-        %[split,dx] = dynsplit(tpts,split,dx,splitname);
+        [split,dx] = dynsplit(tpts,split,dx,splitname);
         
         %{
         % % inlined dyncat code, dynpts % %
@@ -558,7 +567,7 @@ for i=1:n
         dynpts(ixincat:e,:) = ovcheck; ixincat = ixincat+l;
         %}
         % % inlined dyncat code, split assignments % %
-        %
+        %{
         tdx = dx.(sel.modelname{sub}); %MUCH faster than hard cat, ~7x.
         l = size(tpts,1); e = tdx+l-1;
         if e>size(split.(sel.modelname{sub}),1)
@@ -756,7 +765,7 @@ solv = [solv;tmp];
 end
 
 end
-function [v,ix] = dyncat(ix,v,b)
+function [v,ix] = dyncatold(ix,v,b)
     l = size(b,1); e = ix+l-1;
     if e>size(v,1)
         v(ix:ix-1+l*10,:) = 0; %
