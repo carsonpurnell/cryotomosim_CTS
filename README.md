@@ -20,3 +20,5 @@ https://www.mathworks.com/matlabcentral/fileexchange/10867-uipickfiles-uigetfile
 
 Installation
 Extract the downloaded release and move the folder into your matlab toolbox directory, and then add the /cryotomosim folder to your matlab search path.
+
+Tested on Win10, Ubuntu 20, and Mac.
