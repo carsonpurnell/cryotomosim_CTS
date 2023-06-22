@@ -1,5 +1,5 @@
 %% load input structures as atomic data
-rng(1);
+rng(2);
 pix = 10; clear particles;
 input = {'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb',...
@@ -48,13 +48,10 @@ end
 %rng(1);
 boxsize = pix*[400,300,50];
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 8;
+memnum = 12;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
-%splitin3.carbon = splitin.carbon; 
-%splitin.lipid = splitin2.lipid; %super dumb temporary hackjob
 
 n = 500;
-%n = [50,3000];
 %splitin.border = borderpts;
 tic; [split] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 
@@ -63,6 +60,7 @@ tic; [split] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 sliceViewer(vol+solv);
 %WriteMRC(vol+solv,pix,'atomictest_fastgen1.mrc');
 
+%{
 %{
 %% atomic vesicle gen
 %currently just a hamfisted first-pass in the modelgen. separate implementation needed? need better outputs
@@ -389,6 +387,7 @@ watervol = fnpt2vol(pix,solv,ones(1,size(solv,1))*2/distfrac,boxsize);
 sliceViewer(em+watervol);
 %}
 %}
+%}
 
 %% internal functions
 
@@ -400,7 +399,6 @@ function [splitin,memhull,dyn] = fn_modgenmembrane(memnum,vesarg,layers)
 %ves = number of vesicles as input
 [kdcell,shapecell] = modelmem(memnum,vesarg);
 %layers = the input particle layers to add to generated membranes
-
 
 end
 
@@ -418,7 +416,7 @@ dyn = {dyn,size(dyn,1)}; %convert to dyncell
 kdcell = []; shapecell = [];
 
 tol = 2; %tolerance for overlap testing
-retry = 4; %retry attempts per iteration
+retry = 5; %retry attempts per iteration
 count.s = 0; count.f = 0;
 lipid{1} = zeros(0,4); lipid{2} = 1;
 for i=1:memnum % simplified loop to add vesicles
@@ -462,7 +460,6 @@ for i=1:memnum % simplified loop to add vesicles
 end
 pts = lipid{1}(1:lipid{2}-1,:); dx = lipid{2};
 fprintf('vesicles: placed %i, failed %i  ',count.s,count.f)
-
 end
 
 function [dyn,ix] = dyncat(dyn,ix,pts)
@@ -473,7 +470,6 @@ end
 dyn(ix:e,:) = pts; 
 ix = ix+l;
 end
-
 function [split,dx] = dynsplit(tpts,split,dx,splitname) %slower than inlined a bit
 tdx = dx.(splitname);
 l = size(tpts,1); e = tdx+l-1;
