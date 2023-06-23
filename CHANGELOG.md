@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [v0.3.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.2) - 2023-06-23 01:23:27
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix unplaced membrane proteins ([ed5b363](https://github.com/carsonpurnell/cryotomosim_CTS/commit/ed5b363d54634fcb6bcece4f5e381cc3142e104c))
+
 ## [v0.3.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.1) - 2023-06-11 18:59:53
 
 Fix hyper-intense membranes and carbon under some conditions
