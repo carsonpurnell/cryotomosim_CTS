@@ -63,6 +63,10 @@ if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
 %else
 %    ismem = 0;
 end % membrane setup block end
+%sliceViewer(mout); figure(); sliceViewer(min); figure(); sliceViewer(memlocmap);
+%sliceViewer(mout+min+memlocmap);
+%sliceViewer(min+vesvec(:,:,:,1));
+%sliceViewer(inarray); figure(); sliceViewer(inarray-memvol);
 
 diagout = zeros(size(inarray,1),size(inarray,2),0);
 
@@ -200,7 +204,12 @@ for i=1:iters(ww)
             [rot,loc,op,err] = testmem(inarray,locmap,set(which),vesvec,vesvol,memvol,4);
             counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
+            %sliceViewer(locmap*100+memvol);
+            %sliceViewer(rot);
+            %sliceViewer(vesvol);
+            %fprintf('1')
             if err==0
+                %fprintf('2')
                 [inarray] = helper_arrayinsert(inarray,rot,loc); %write sum to working array
                 [memlocmap] = helper_arrayinsert(memlocmap,-imbinarize(rot),loc); %reduce mem loc map
                 if ismem==1 %&& strcmp(set(which).type,'inmem') %reduce inmem/outmem maps if present
@@ -326,7 +335,7 @@ for retry=1:retry
     k = vesvol(loc(1),loc(2),loc(3)); %extract vesicle label ID and normal vector from storage arrays
     %targ = [vescen(loc(1),loc(2),loc(3),1),vescen(loc(1),loc(2),loc(3),2),vescen(loc(1),loc(2),loc(3),3)]';
     %shrink by a 1:3 in 4th dim, and do a linear->vector replace?
-    targ = vescen(loc(1),loc(2),loc(3),1:3); targ = targ(:);
+    targ = vescen(loc(1),loc(2),loc(3),1:3); targ = targ(:); %get normal vector to the membrane
     
     rotax=cross(init,targ); %compute the normal axis from the rotation angle
     theta = acosd( dot(init,targ) ); %compute angle between initial pos and final pos
@@ -336,9 +345,10 @@ for retry=1:retry
     rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]); %rotate to the final position
     
     tdest = inarray-(vesvol==k).*memvol; %remove current membrane from the array to prevent overlap
+    %sliceViewer((vesvol==k).*memvol);
     com = round(loc-size(rot)/2);
     [~,err] = helper_arrayinsert(tdest,rot,com,'overlaptest');
-    
+    %err=0; %diagnostic
     op = {spinang,theta,rotax}; %store operation vals for placing via complex
     if err==0, break; end
 end

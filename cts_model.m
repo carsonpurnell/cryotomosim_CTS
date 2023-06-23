@@ -59,7 +59,7 @@ cts.param = param; %store parameters in the struct
 if param.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ')
     %[cts.model.grid] = gen_carbongrid(vol,pix,param.grid);
-    cts.model.grid = gen_carbon(size(vol),pix,'thick',param.grid(1),'radius',param.grid(2))*4.8;
+    cts.model.grid = gen_carbon(size(vol),pix,'thick',param.grid(1),'radius',param.grid(2))*3.7;
     %4.8 scalar is temporary to convert from scattering factor to Z number density value
     cts.vol = cts.model.grid+cts.vol; fprintf('   complete \n')
 end
@@ -68,7 +68,7 @@ if param.mem{1}~=0 %new membrane gen, makes spherical vesicles and places random
     fprintf('Generating vesicular membranes ')
     %[memvol,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(param.mem),pix);
     [memvol,memskel,nvecs,vesvol,count,~] = gen_memvol(cts.vol,pix,param.mem{:});%,3);
-    cts.model.mem = memvol*4.0; % temp scalar to convert from scatter val to Z number density
+    cts.model.mem = memvol*1.0; % temp scalar to convert from scatter val to Z number density
     cts.vol = cts.model.mem+cts.vol;
     fprintf('   complete,  %i placed, %i failed \n',count.s,count.f)
 else

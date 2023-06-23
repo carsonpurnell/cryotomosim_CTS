@@ -44,6 +44,7 @@ for i=1:num
     else
         gg=memtype;
     end
+    tmpskel=0;
     switch 3%randi(2)
         case 1
             tmp = vesgen_sphere(pix); %generate spherical vesicles
@@ -51,7 +52,7 @@ for i=1:num
             tmpskel = vesskeletonize(tmp);
         case 2
             %lower pixel size can create empty blobs regularly
-            tmpskel=0; %rs = 1;
+            %tmpskel=0; %rs = 1;
             %thick = [28,12];%-rs;
             while ~any(tmpskel==1,'all')
                 l = round(300/pix+20);
@@ -63,9 +64,15 @@ for i=1:num
             end
             %disp(rs)
         case 3
-            sz = memsize*100+randi(100);
-            [~,~,tmp] = gen_mem(sz,pix);
-            tmpskel = vesskeletonize(tmp);
+            while numel(find(tmpskel>0))<50
+                sz = memsize*80+randi(200);
+                [~,~,tmp] = gen_mem(sz,pix);
+                %sliceViewer(tmp);
+                tmp = tmp*3; %scalar to fix inconsistent density between scatter and Z
+                tmpskel = vesskeletonize(tmp);
+                ves{i} = tmp;
+                %sliceViewer(tmp+tmpskel*200);
+            end
     end
     
     for q=1:tries %try to place each vesicle N times, allows for duplicates
@@ -80,7 +87,7 @@ for i=1:num
             
             %close all; sliceViewer(tmp); figure(); sliceViewer(tmpskel);
             
-            norm4d = helper_volsurfnorm(tmpskel,vecpts);
+            norm4d = helper_volsurfnorm(tmpskel,vecpts); % inconsistently throws out of bounds error
             for j=1:3 
                 nvecs(:,:,:,j) = helper_arrayinsert(nvecs(:,:,:,j),norm4d(:,:,:,j),loc); 
             end
