@@ -68,7 +68,7 @@ for i=1:num
                 sz = memsize*80+randi(200);
                 [~,~,tmp] = gen_mem(sz,pix);
                 %sliceViewer(tmp);
-                tmp = tmp*3; %scalar to fix inconsistent density between scatter and Z
+                tmp = tmp*3.4; %scalar to fix inconsistent density between scatter and Z
                 tmpskel = vesskeletonize(tmp);
                 ves{i} = tmp;
                 %sliceViewer(tmp+tmpskel*200);
