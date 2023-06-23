@@ -48,10 +48,10 @@ end
 %rng(1);
 boxsize = pix*[400,300,50];
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 12;
+memnum = 20;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
-n = 500;
+n = 2000;
 %splitin.border = borderpts;
 tic; [split] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 
