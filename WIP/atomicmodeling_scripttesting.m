@@ -51,7 +51,7 @@ boxsize = pix*[400,300,50];
 memnum = 20;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
-n = 2000;
+n = 1000;
 %splitin.border = borderpts;
 tic; [split] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 
