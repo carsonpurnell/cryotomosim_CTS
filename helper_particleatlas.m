@@ -44,7 +44,7 @@ for i=1:numel(roinames)
     
     filename = append('ind',string(i),'_',roinames{i});
     if individual==1
-        WriteMRC(bin,cts.pix,append(filename,'.mrc'))
+        WriteMRC(bin,cts.param.pix,append(filename,'.mrc'))
     end
     if dynamotable==1
         generatetable(indvol{i},filename);
