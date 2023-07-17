@@ -46,9 +46,9 @@ end
 
 %% functionalized model gen part
 %rng(1);
-boxsize = pix*[400,400,100];
+boxsize = pix*[400,300,50];
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 20;
+memnum = 10;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
 n = 500;
@@ -56,10 +56,10 @@ n = 500;
 tic; [split] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 
 %% function for vol, atlas, and split generation + water solvation
-outpix = 5;
+outpix = pix;
 [vol,solv,atlas,splitvol] = helper_atoms2vol(outpix,split,boxsize);
 sliceViewer(vol+solv);
-WriteMRC(vol+solv,outpix,'upscaletest_5.mrc');
+%WriteMRC(vol+solv,outpix,'upscaletest_5.mrc');
 
 %{
 %{
