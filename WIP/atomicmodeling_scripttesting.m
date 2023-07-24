@@ -51,15 +51,15 @@ boxsize = pix*[400,300,50];
 memnum = 10;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
-n = 500;
+n = 100;
 %splitin.border = borderpts;
-tic; [split] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
+tic; [split,dyn] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 
 %% function for vol, atlas, and split generation + water solvation
 outpix = pix;
 [vol,solv,atlas,splitvol] = helper_atoms2vol(outpix,split,boxsize);
 sliceViewer(vol+solv);
-%WriteMRC(vol+solv,outpix,'upscaletest_5.mrc');
+WriteMRC(vol+solv,outpix,'upscaletest_5.mrc');
 
 %{
 %{
@@ -481,7 +481,7 @@ split.(splitname)(tdx:e,:) = tpts; dx.(splitname) = tdx+l;
 end
 
 
-function [split] = fn_modelgen(layers,boxsize,niter,split,dx,dyn)
+function [split,dyn] = fn_modelgen(layers,boxsize,niter,split,dx,dyn)
 if nargin<5
     dyn{1} = single(zeros(0,3)); dyn{2} = 0;
 end
@@ -636,7 +636,7 @@ if ~any(ix), ix=[]; end % check for early end if no points in the box
 %ix = find(ix>0); %bottleneck - just too many points. mutable octree should be faster overall
 err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but progressive slowdown
 if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
-    buck = round( size(c,1)/7650 ); %very rough, is probably not linear scale
+    buck = 100;%round( size(c,1)/7650 ); %very rough, is probably not linear scale
     % probably needs some sort of depth-based metric, not a flat one depth = log2 (n/leaf)
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
     %ot = OcTree(c(ix,:),'binCapacity',buck); %slightly slower than kdt
