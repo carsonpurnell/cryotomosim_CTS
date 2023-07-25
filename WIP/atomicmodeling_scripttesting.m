@@ -51,7 +51,7 @@ boxsize = pix*[400,300,50];
 memnum = 10;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
-n = 100;
+n = 500;
 %splitin.border = borderpts;
 tic; [split,dyn] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 
@@ -638,8 +638,12 @@ err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but pr
 if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     buck = 100;%round( size(c,1)/7650 ); %very rough, is probably not linear scale
     % probably needs some sort of depth-based metric, not a flat one depth = log2 (n/leaf)
+    %ot = OcTree(c(ix,:),'binCapacity',buck); %significantly slower than kdt build
+    %mutree = octcubetree(c(ix,:)); %slightly faster than kd building
+    %err = mutreetest(mutree,pts); %WAYYY slower than knn search
+    %err = any(err);
+    
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
-    %ot = OcTree(c(ix,:),'binCapacity',buck); %slightly slower than kdt
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
     d = [d{:}]; if any(d<tol), err=1; end %test if any points closer than tol
 end
