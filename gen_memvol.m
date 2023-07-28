@@ -86,8 +86,13 @@ for i=1:num
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc); %label image of binary membranes
             
             %close all; sliceViewer(tmp); figure(); sliceViewer(tmpskel);
-            
-            norm4d = helper_volsurfnorm(tmpskel,vecpts); % inconsistently throws out of bounds error
+            for g=1:3
+                try
+                    norm4d = helper_volsurfnorm(tmpskel,vecpts); % inconsistently throws out of bounds error
+                catch
+                    fprintf('f')
+                end  
+            end
             for j=1:3 
                 nvecs(:,:,:,j) = helper_arrayinsert(nvecs(:,:,:,j),norm4d(:,:,:,j),loc); 
             end
