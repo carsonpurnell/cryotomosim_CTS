@@ -86,11 +86,11 @@ for i=1:num
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc); %label image of binary membranes
             
             %close all; sliceViewer(tmp); figure(); sliceViewer(tmpskel);
-            for g=1:5 %sloppy patch hackjob to prevent errors from empty membrane skels by retrying
+            for g=1:1 %sloppy patch hackjob to prevent errors from empty membrane skels by retrying
                 try
                     norm4d = helper_volsurfnorm(tmpskel,vecpts); % inconsistently throws out of bounds error
                 catch
-                    fprintf('f')
+                    %fprintf('%i',numel(tmpskel>0))
                 end  
                 if exist('norm4d','var'), return; end
             end
