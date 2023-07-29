@@ -11,6 +11,7 @@ numpixels = cellfun(@numel,CC.PixelIdxList); %count pixels in each component
 [~,idx] = max(numpixels); %get the largest volume component from image
 outer = perim*0; outer(CC.PixelIdxList{idx}) = 1; %extract outer boundary
 inner = perim-outer; %get inner boundary
+%inner being empty is causing the inconsistent failures
 
 % convert each volume to an array of points
 [x,y,z] = ind2sub(size(skel),find(skel==1)); skelpts = [x,y,z];
@@ -30,8 +31,6 @@ norm4d = zeros(size(skel,1),size(skel,2),size(skel,3),3);
 %q = ptsout(ixout,:); q2 = reshape(q,[],3,n); wout = sum(q2,3)/n;
 %need to refactor this vectorization to be more streamlined, probably doable in many fewer steps
 q = ptsin(ixin(:),:); q2 = reshape(q',3,n,[]); win = permute(mean(q2,2),[1,3,2])';
-size(ptsin), size(ixin)
-size(q), size(q2), size(win)
 q = ptsout(ixout(:),:); q2 = reshape(q',3,n,[]); wout = permute(mean(q2,2),[1,3,2])';
 
 %{
@@ -72,11 +71,14 @@ q = ptsout(ixout(:),:); q2 = reshape(q',3,n,[]); wout = permute(mean(q2,2),[1,3,
 %}
 for i=1:size(skelpts,1)
     skelcen = skelpts(i,:);
+    incen = win(i,:);
+    %{
     try
         incen = win(i,:); %index out of bounds error line
     catch
         %size(q), size(q2), size(win)
     end
+    %}
     outcen = wout(i,:);
     long = outcen-incen; long = long/norm(long);
     under = skelcen-incen; under = under/norm(under);
