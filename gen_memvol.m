@@ -64,13 +64,18 @@ for i=1:num
             end
             %disp(rs)
         case 3
-            while numel(find(tmpskel>0))<50
+            while numel(find(tmpskel>0))<50 || ~exist('norm4d','var')
                 sz = memsize*80+randi(200);
                 [~,~,tmp] = gen_mem(sz,pix);
                 %sliceViewer(tmp);
                 tmp = tmp*3.4; %scalar to fix inconsistent density between scatter and Z
                 tmpskel = vesskeletonize(tmp);
                 ves{i} = tmp;
+                try
+                    norm4d = helper_volsurfnorm(tmpskel,vecpts); %inconsistent fail out-of-bounds
+                catch
+                    %fprintf('f')
+                end
                 %sliceViewer(tmp+tmpskel*200);
             end
     end
@@ -86,6 +91,7 @@ for i=1:num
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc); %label image of binary membranes
             
             %close all; sliceViewer(tmp); figure(); sliceViewer(tmpskel);
+            %{
             for g=1:1 %sloppy patch hackjob to prevent errors from empty membrane skels by retrying
                 try
                     norm4d = helper_volsurfnorm(tmpskel,vecpts); % inconsistently throws out of bounds error
@@ -94,6 +100,7 @@ for i=1:num
                 end  
                 if exist('norm4d','var'), return; end
             end
+            %}
             for j=1:3 
                 nvecs(:,:,:,j) = helper_arrayinsert(nvecs(:,:,:,j),norm4d(:,:,:,j),loc); 
             end
