@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.3.5](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.5) - 2023-07-29 01:30:07
+
+*No description*
+
 ## [v0.3.4](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.4) - 2023-07-29 00:28:42
 
 *No description*
