@@ -14,7 +14,8 @@ if iscell(pts) %this is a mess, subfunct/streamline
     if nargin<3
         dd = cat(1,pts{:}); %failing without a sz already given
         offset = min(dd(:,1:3),[],1)-pix;
-        sz = max(vertcat(pts{:}(:,1:3)),[],1)+pix-offset;
+        sz = vertcat(pts{:});
+        sz = max(sz(:,1:3),[],1)+pix-offset;
     elseif nargin<4
         offset = [0,0,0];
     end
