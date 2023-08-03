@@ -53,6 +53,11 @@ particles.flags = 'TODO';
 %particles.atomcoords = data(:,2)'; %hopefully vertical now
 for i=1:size(data,1)
     com = mean(data{i,2},1); %need radius from geometric, not mass center
+    if centering==1; com = 0; end
+    if strcmp(centering,'z')
+        z = mean(data{i,2}(:,3));
+        com = [0,0,z];
+    end
     tmpco = data{i,2}-com;
     tmpint = atomdict(data{i,1},'sc')';
     %tmpz = dict_atoms(data{i,1});
