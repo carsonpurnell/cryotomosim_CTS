@@ -12,7 +12,8 @@ end
 if iscell(pts) %this is a mess, subfunct/streamline
     s = numel(pts); t=1;
     if nargin<3
-        offset = min(vertcat(pts{:}(:,1:3)),[],1)-pix;
+        dd = vertcat([pts{:}(:,1:3)]); %failing without a sz already given
+        offset = min(dd,[],1)-pix;
         sz = max(vertcat(pts{:}(:,1:3)),[],1)+pix-offset;
     elseif nargin<4
         offset = [0,0,0];
@@ -85,6 +86,8 @@ if iscell(names)
     for i=1:s
         split.(names{i}) = tmp(:,:,:,i+1);
     end
+else
+    split = 0;
 end
 end
 
