@@ -51,13 +51,18 @@ particles.flags = 'TODO';
 %particles.bonds = 'notimplemented';
 %particles.pix = pix;
 %particles.atomcoords = data(:,2)'; %hopefully vertical now
+
+if strcmp(centering,'z') %need
+    tmpco = vertcat(data{:,2});
+    %z = mean(data{i,2}(:,3));
+    z = mean(tmpco(:,3));
+    com = [0,0,z];
+end
+    
 for i=1:size(data,1)
-    com = mean(data{i,2},1); %need radius from geometric, not mass center
+    if centering==0; com = mean(data{i,2},1); end %need radius from geometric, not mass center
     if centering==1; com = 0; end
-    if strcmp(centering,'z')
-        z = mean(data{i,2}(:,3));
-        com = [0,0,z];
-    end
+    
     tmpco = data{i,2}-com;
     tmpint = atomdict(data{i,1},'sc')';
     %tmpz = dict_atoms(data{i,1});
