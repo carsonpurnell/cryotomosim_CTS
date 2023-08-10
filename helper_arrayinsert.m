@@ -40,6 +40,7 @@ sx=max(-coord(1)+2,1):min(d1-coord(1)+1,s1);
 sy=max(-coord(2)+2,1):min(d2-coord(2)+1,s2);
 sz=max(-coord(3)+2,1):min(d3-coord(3)+1,s3);
 
+%appears to work, needs a bit of cleanup
 if numel(dx)<1||numel(dy)<1||numel(dz)<1
     %dx,dy,dz
 overlap=1; output=dest; return;
