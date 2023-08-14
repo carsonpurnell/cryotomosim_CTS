@@ -3,7 +3,7 @@ function [out,out2] = ctsutil(op,in,opt)
 %various utility functions that are used in multiple CTS functions
 %'trim' in=vol
 %'pad'  in=vol opt=padding, all dims
-
+%'findloc' in=vol, 
 %'bin'  in=vol opt=binning
 %edge blanking in here?
 arguments
