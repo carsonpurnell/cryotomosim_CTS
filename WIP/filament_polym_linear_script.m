@@ -474,6 +474,7 @@ while l<minL-ftry/3 && ftry<10
             
             spin = imrotate3(sumv,filang,ori); %rotate about Z for filament twist (might go last)
             rot = imrotate3(spin,theta,[rotax(1),rotax(2),rotax(3)]); %rotate to the final position
+            %would it be faster to rotate atoms and project them?
             
             com = round(pos([1,2,3])-size(rot)/2-vecc*step/pix/2);
             [~,err] = helper_arrayinsert(vol+con,rot,com,'overlaptest');
