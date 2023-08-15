@@ -1,6 +1,6 @@
 
 %% integrated filament walk - vol-based version
-profile on
+
 % filaments rotate in the wrong direction - XY inversion for everything
 % is this from pdb2vol? in normal cts models too
 pix = 8; ori = [0,0,1];
@@ -103,6 +103,7 @@ vol = fvol+vol;
 fvol = vol*0;
 end
 %}
+profile on
 ovol = vol_fill_fil(mvol,con,pix,sumv,step,ang,flex,minL);
 sliceViewer(ovol); 
 profile viewer
@@ -444,9 +445,9 @@ sliceViewer(vol);
 
 function vol = vol_fill_fil(vol,con,pix,sumv,step,ang,flex,minL)
 r = max(size(sumv,[1,2]))/3-4;
-n = 100; retry = 5;
+n = 200; retry = 5;
 ori = [0,0,1];
-for nn=1:5
+for nn=1:30
 ftry=0; l=0;
 while l<minL-ftry/3 && ftry<10
     %tvol = ~(bwdist(vol)<4); %weirdly slow
