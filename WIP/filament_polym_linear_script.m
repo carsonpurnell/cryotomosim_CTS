@@ -104,7 +104,7 @@ fvol = vol*0;
 end
 %}
 ovol = vol_fill_fil(mvol,con,pix,sumv,step,ang,flex,minL);
-sliceViewer(fvol+vol); 
+sliceViewer(ovol); 
 profile viewer
 
 
