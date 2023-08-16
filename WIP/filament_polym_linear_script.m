@@ -447,12 +447,12 @@ function vol = vol_fill_fil(vol,con,pix,sumv,step,ang,flex,minL)
 r = max(size(sumv,[1,2]))/3-4;
 n = 200; retry = 5;
 ori = [0,0,1];
-for nn=1:30
+for nn=1:20
 ftry=0; l=0;
 while l<minL-ftry/3 && ftry<10
     %tvol = ~(bwdist(vol)<4); %weirdly slow
     tvol = ~(vol==1);
-    l = 0; rec = 0; fvol = vol*0; %initialize output vol
+    l = 0; fvol = vol*0; %initialize output vol
     for i=1:n
     %while l<30
         for j=1:retry
@@ -478,7 +478,6 @@ while l<minL-ftry/3 && ftry<10
             com = round(pos([1,2,3])-size(rot)/2-vecc*step/pix/2);
             [~,err] = helper_arrayinsert(vol+con,rot,com,'overlaptest');
             if err==0 %place if location is good
-                %rec=rec+1; 
                 veci = vecc; %new initial vector for cone search to avoid high angle/retry overwrite
                 l = l+1; %length counting
                 [fvol] = helper_arrayinsert(fvol,rot,com);
@@ -486,7 +485,7 @@ while l<minL-ftry/3 && ftry<10
             elseif retry==5 && l>6
                 %vol = vol+fvol; fvol=fvol*0; l=0; %ftry=ftry+1;
                 %tvol = (bwdist(vol)<8);
-            end 
+            end
         end
         
         %if err==0
