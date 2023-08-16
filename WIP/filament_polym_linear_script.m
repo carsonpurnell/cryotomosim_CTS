@@ -3,10 +3,10 @@
 
 % filaments rotate in the wrong direction - XY inversion for everything
 % is this from pdb2vol? in normal cts models too
-pix = 8; ori = [0,0,1];
+pix = 6; ori = [0,0,1];
 %dat = helper_pdb2vol('actin_mono_fil2.cif',pix,0,1,0); ang = -166.15; step = 27.3*1; flex = 12; minL=20;
-%dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); ang = 0; step = 85; flex = 5; minL=8;
-dat = helper_pdb2vol('cofilactin_lead_samename.cif',pix,0,1,0); ang = -161; step = 24*1; flex = 12; minL = 15;
+dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); ang = 0; step = 85; flex = 5; minL=8;
+%dat = helper_pdb2vol('cofilactin_lead_samename.cif',pix,0,1,0); ang = -161; step = 24*1; flex = 12; minL = 15;
 %part of errors is from non-centering, so wildly wrong Z axis borks everything
 %measure center and move z d models # to z-flatten things seems to fix it well enough
 %minimum repeat for each filament type, maximum length? or default very overlong loop?
@@ -14,7 +14,7 @@ sumv = sum(cat(4,dat{:}),4);
 r = max(size(sumv,[1,2]))/3-4; %find approximate maximum radius for bwdist comparison efficiency
 
 %rng(3)
-mvol = gen_memvol(zeros(400,300,50),pix,3,5)*1;
+mvol = gen_memvol(zeros(400,300,50),pix,2,5)*1;
 flex = flex*pi/180; %ang = ang*pi/180; %vol method is degree based
 
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
@@ -508,11 +508,11 @@ while l<minL-ftry/3 && ftry<10
     end
     %l, %rec
 end
-disp(ftry)
+fprintf('%i, ',ftry);
 vol = fvol+vol; 
 fvol = vol*0;
 end
-
+fprintf('/n');
 end
 
 function vec = randc(row,col,ax,ang)
