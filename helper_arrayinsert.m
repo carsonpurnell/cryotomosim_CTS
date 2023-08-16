@@ -10,7 +10,7 @@ arguments
     coord (1,:) double
     method string {mustBeMember(method,{'sum','replace','nonoverlap','overlaptest','min','max','mean'})} = 'sum'
 end
-overlap = 0;
+%overlap = 0;
 [d1, d2, d3]=size(dest);
 [s1, s2, s3]=size(source);
 
