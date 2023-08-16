@@ -4,9 +4,9 @@
 % filaments rotate in the wrong direction - XY inversion for everything
 % is this from pdb2vol? in normal cts models too
 pix = 8; ori = [0,0,1];
-dat = helper_pdb2vol('actin_mono_fil2.cif',pix,0,1,0); ang = -166.15; step = 27.3*1; flex = 12; minL=20;
+%dat = helper_pdb2vol('actin_mono_fil2.cif',pix,0,1,0); ang = -166.15; step = 27.3*1; flex = 12; minL=20;
 %dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); ang = 0; step = 85; flex = 5; minL=8;
-%dat = helper_pdb2vol('cofilactin_lead.cif',pix,0,1,0); ang = -161; step = 24*1; flex = 12; minL = 15;
+dat = helper_pdb2vol('cofilactin_lead_samename.cif',pix,0,1,0); ang = -161; step = 24*1; flex = 12; minL = 15;
 %part of errors is from non-centering, so wildly wrong Z axis borks everything
 %measure center and move z d models # to z-flatten things seems to fix it well enough
 %minimum repeat for each filament type, maximum length? or default very overlong loop?
@@ -15,14 +15,11 @@ sumv = sum(cat(4,dat{:}),4);
 r = max(size(sumv,[1,2]))/3-4; %find approximate maximum radius for bwdist comparison efficiency
 
 %rng(3)
-mvol = gen_memvol(zeros(300,300,50),pix,3,5)*1;
+mvol = gen_memvol(zeros(400,300,50),pix,3,5)*1;
 %ang = ang*pi/180; %vol method is degree based
-flex = flex*pi/180; %monomer = dat.adat;
+flex = flex*pi/180;
 
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
-% for i=1:numel(dat.modelname)
-%     fil.(dat.modelname{i}) = []; %preinitialize empty split struct
-% end
 %need to make temporary structs for split filaments and at the end add to splitvols and working array
 %{
 for nn=1:10
@@ -112,9 +109,9 @@ profile viewer
 
 %% integrated filament walk - atomistic version
 pix = 5; ori = [0,0,1];
-dat = helper_pdb2dat('actin_mono_fil.cif',pix,2,'z',0); ang = -166.15; step = 27.3; flex = 12;
+%dat = helper_pdb2dat('actin_mono_fil.cif',pix,2,'z',0); ang = -166.15; step = 27.3; flex = 12;
 %dat = helper_pdb2dat('MTring.cif',pix,2,'z',0); ang = 0; step = 85; flex = 3;
-%dat = helper_pdb2dat('cofilactin_lead_samename.cif',pix,2,'z',0); ang = -161; step = 24; flex = 10;
+dat = helper_pdb2dat('cofilactin_lead_samename.cif',pix,2,'z',0); ang = -161; step = 24; flex = 10;
 ang = ang*pi/180; flex = flex*pi/180; %monomer = dat.adat;
 n = 50; 
 pos = rand(1,3)*100; vec = []; rang = rand*360*pi/180;
