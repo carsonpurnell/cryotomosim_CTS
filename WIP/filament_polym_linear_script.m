@@ -457,8 +457,7 @@ while l<minL-ftry/3 && ftry<10
     %while l<30
         for j=1:retry
             %figure out how to reproject (affine translate subpixel?) vol to right spot?
-            %restart initial vals until 1st placement
-            if l==0 %new start vals
+            if l==0 %new start vals until initial placement found
                 %pos = rand(1,3).*size(vol); 
                 veci = []; rang = rand*360; 
                 pos = ctsutil('findloc',tvol); %find more reliably empty start loc
