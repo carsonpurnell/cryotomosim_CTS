@@ -10,17 +10,14 @@ dat = helper_pdb2vol('cofilactin_lead_samename.cif',pix,0,1,0); ang = -161; step
 %part of errors is from non-centering, so wildly wrong Z axis borks everything
 %measure center and move z d models # to z-flatten things seems to fix it well enough
 %minimum repeat for each filament type, maximum length? or default very overlong loop?
-%dat{1} = dat{1}+dat{2};
 sumv = sum(cat(4,dat{:}),4);
 r = max(size(sumv,[1,2]))/3-4; %find approximate maximum radius for bwdist comparison efficiency
 
 %rng(3)
 mvol = gen_memvol(zeros(400,300,50),pix,3,5)*1;
-%ang = ang*pi/180; %vol method is degree based
-flex = flex*pi/180;
+flex = flex*pi/180; %ang = ang*pi/180; %vol method is degree based
 
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
-%need to make temporary structs for split filaments and at the end add to splitvols and working array
 %{
 for nn=1:10
 ftry=0; l=0;
@@ -104,7 +101,6 @@ profile on
 ovol = vol_fill_fil(mvol,con,pix,sumv,step,ang,flex,minL);
 sliceViewer(ovol); 
 profile viewer
-
 
 
 %% integrated filament walk - atomistic version
@@ -442,8 +438,7 @@ sliceViewer(vol);
 
 function vol = vol_fill_fil(vol,con,pix,sumv,step,ang,flex,minL)
 r = max(size(sumv,[1,2]))/3-4;
-n = 200; retry = 5;
-ori = [0,0,1];
+n = 200; retry = 5; ori = [0,0,1];
 for nn=1:20
 ftry=0; l=0;
 while l<minL-ftry/3 && ftry<10
@@ -453,10 +448,8 @@ while l<minL-ftry/3 && ftry<10
     for i=1:n
     %while l<30
         for j=1:retry
-            %figure out how to reproject (affine translate subpixel?) vol to right spot?
             if l==0 %new start vals until initial placement found
-                %pos = rand(1,3).*size(vol); 
-                veci = []; rang = rand*360; 
+                veci = []; rang = rand*360; %pos = rand(1,3).*size(vol); 
                 pos = ctsutil('findloc',tvol); %find more reliably empty start loc
             end
             %need better pos values from bwdist by approx filament radius
@@ -485,23 +478,22 @@ while l<minL-ftry/3 && ftry<10
             end
         end
         
-        %if err==0
-            %{
+        %{
             for j=1:1
                 %mn = dat{j};
                 %l = l+1; %length counting
                 %[fvol] = helper_arrayinsert(fvol,rot,com);
                 %if err==1, disp('ERR'); end
-                %{
+        %{
         tmp = dat.adat{j}; name = dat.modelname{j};
         org = [1,2,3]; %or [2,1,3] to invert xy
         tmp(:,org) = tmp(:,org)*rotmat(rotax,theta); %rotate to the filament axis, other order appears identical
         tmp(:,org) = tmp(:,org)*rotmat(vec,filax); %rotate about filament axis
         tmp(:,org) = tmp(:,org)+pos-vec/2; %move rotated unit to the target location, halfway along step
         fil.(dat.modelname{j}) = [fil.(dat.modelname{j});tmp];
-                %}
+        %}
             end
-            %}
+        %}
         if err~=0
             ftry = ftry+1; %somehow broken in certain cases, missing filament links
             %if l<20, fvol=fvol*0; l=0; end %clear filvol if partial filament not long enough
