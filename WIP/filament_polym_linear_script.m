@@ -5,8 +5,8 @@
 % is this from pdb2vol? in normal cts models too
 pix = 6; ori = [0,0,1];
 %dat = helper_pdb2vol('actin_mono_fil2.cif',pix,0,1,0); ang = -166.15; step = 27.3*1; flex = 12; minL=20;
-dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); ang = 0; step = 85; flex = 5; minL=8;
-%dat = helper_pdb2vol('cofilactin_lead_samename.cif',pix,0,1,0); ang = -161; step = 24*1; flex = 12; minL = 15;
+%dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); ang = 0; step = 85; flex = 5; minL=8;
+dat = helper_pdb2vol('cofilactin_lead_samename.cif',pix,0,1,0); ang = -161; step = 24*1; flex = 12; minL = 15;
 %part of errors is from non-centering, so wildly wrong Z axis borks everything
 %measure center and move z d models # to z-flatten things seems to fix it well enough
 %minimum repeat for each filament type, maximum length? or default very overlong loop?
@@ -14,7 +14,7 @@ sumv = sum(cat(4,dat{:}),4);
 r = max(size(sumv,[1,2]))/3-4; %find approximate maximum radius for bwdist comparison efficiency
 
 %rng(3)
-mvol = gen_memvol(zeros(400,300,50),pix,2,5)*1;
+mvol = gen_memvol(zeros(500,400,50),pix,2,5)*1;
 flex = flex*pi/180; %ang = ang*pi/180; %vol method is degree based
 
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
@@ -100,7 +100,9 @@ end
 profile on
 ovol = vol_fill_fil(mvol,con,pix,sumv,step,ang,flex,minL);
 sliceViewer(ovol); 
-profile viewer
+%profile viewer
+%%
+WriteMRC(ovol,pix,'filtestcof.mrc')
 
 
 %% integrated filament walk - atomistic version
@@ -499,6 +501,7 @@ while l<minL-ftry/3 && ftry<10
             %if l<20, fvol=fvol*0; l=0; end %clear filvol if partial filament not long enough
             if l>minL, vol = fvol+vol; end
             fvol=fvol*0; l=0;
+            fvol = zeros(size(fvol));
             %l=0; %try to re-randomize start location to avoid sequence break
             %st = strel('sphere',7); st = st.Neighborhood*1e2;
             %com = round(pos([2,1,3])-size(st)/2-vecc*step/pix/2);
@@ -512,7 +515,7 @@ fprintf('%i, ',ftry);
 vol = fvol+vol; 
 fvol = vol*0;
 end
-fprintf('/n');
+fprintf('\n');
 end
 
 function vec = randc(row,col,ax,ang)
