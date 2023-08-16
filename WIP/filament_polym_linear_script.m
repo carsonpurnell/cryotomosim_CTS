@@ -15,7 +15,7 @@ sumv = sum(cat(4,dat{:}),4);
 r = max(size(sumv,[1,2]))/3-4; %find approximate maximum radius for bwdist comparison efficiency
 
 %rng(3)
-mvol = gen_memvol(zeros(400,300,50),pix,3,5)*1;
+mvol = gen_memvol(zeros(300,300,50),pix,3,5)*1;
 %ang = ang*pi/180; %vol method is degree based
 flex = flex*pi/180; %monomer = dat.adat;
 
