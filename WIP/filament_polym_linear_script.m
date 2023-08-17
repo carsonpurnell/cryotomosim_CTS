@@ -3,16 +3,17 @@
 
 % filaments rotate in the wrong direction - XY inversion for everything
 % is this from pdb2vol? in normal cts models too
-pix = 6; ori = [0,0,1];
+pix = 4; ori = [0,0,1];
 %dat = helper_pdb2vol('actin_mono_fil2.cif',pix,0,1,0); ang = -166.15; step = 27.3*1; flex = 12; minL=20;
 %dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); ang = 0; step = 85; flex = 5; minL=8;
-dat = helper_pdb2vol('cofilactin_lead_samename.cif',pix,0,1,0); ang = -160; step = 24*1; flex = 12*0; minL = 15;
+dat = helper_pdb2vol('cof_reZ.pdb',pix,0,1,0); ang = -160; step = 23*1; flex = 12; minL = 15;
 %part of errors is from non-centering, so wildly wrong Z axis borks everything
 %measure center and move z d models # to z-flatten things seems to fix it well enough
 %minimum repeat for each filament type, maximum length? or default very overlong loop?
 sumv = sum(cat(4,dat{:}),4);
 r = max(size(sumv,[1,2]))/3-4; %find approximate maximum radius for bwdist comparison efficiency
-
+%
+%cof dimer is slightly broken, too close to centroid? need to remake it without changing xy location
 %rng(3)
 mvol = gen_memvol(zeros(500,400,50),pix,2,5)*1;
 flex = flex*pi/180; %ang = ang*pi/180; %vol method is degree based
@@ -102,14 +103,14 @@ ovol = vol_fill_fil(mvol,con,pix,sumv,step,ang,flex,minL);
 sliceViewer(ovol); 
 %profile viewer
 %%
-WriteMRC(ovol,pix,'filtestcof3.mrc')
+WriteMRC(ovol,pix,'filtestcof4.mrc')
 
 
 %% integrated filament walk - atomistic version
-pix = 5; ori = [0,0,1];
+pix = 2; ori = [0,0,1];
 %dat = helper_pdb2dat('actin_mono_fil.cif',pix,2,'z',0); ang = -166.15; step = 27.3; flex = 12;
 %dat = helper_pdb2dat('MTring.cif',pix,2,'z',0); ang = 0; step = 85; flex = 3;
-dat = helper_pdb2dat('cofilactin_lead_samename.cif',pix,2,'z',0); ang = -161; step = 24; flex = 10;
+dat = helper_pdb2dat('cofilactin_lead_samename2.cif',pix,2,'z',0); ang = -161; step = 24; flex = 10;
 ang = ang*pi/180; flex = flex*pi/180; %monomer = dat.adat;
 n = 50; 
 pos = rand(1,3)*100; vec = []; rang = rand*360*pi/180;
