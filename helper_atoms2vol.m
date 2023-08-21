@@ -67,11 +67,8 @@ wd = 6.022e23/18/(1e8)^3; %molecules of water per a^3 - ~30 for liquid water
 wvol = 30; %eyeballed volume of amorphous ice molecules in angstroms
 
 emsz = floor(sz/pix); 
-solv = (rand(emsz)-0.5)*0.2*pix^2+(pix^3);
-%split = zeros([emsz,s]);
-%split = zeros(emsz);
-%sl = split;
-%vl(1:s) = {split};
+solv = (rand(emsz)-0.5)*0.2*pix^2+(pix^3); %set initial solvent density
+
 sptmp = cell(1,s);
 %split = sptmp;
 for j=1:s
@@ -86,10 +83,10 @@ for j=1:s
     %}
     
     if size(p,2)<4, p(:,4)=1; end %intensity==1 if not provided in 4th column
-    m = p(:,4); p = p(:,1:3); p = round( (p-offset)/pix+0.5 );
+    mag = p(:,4); p = p(:,1:3); p = round( (p-offset)/pix+0.5 );
     %p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5); %very slow intermediate array assignments
     
-    [sptmp{j},solv] = internal_accum(p,m,avol,emsz,solv);
+    [sptmp{j},solv] = internal_accum(p,mag,avol,emsz,solv);
     
     %{
     for i=1:3
