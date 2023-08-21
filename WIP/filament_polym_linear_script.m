@@ -12,17 +12,19 @@ pix = 10; ori = [0,0,1];
 %dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); ang = 0; step = 85; flex = 5; minL=8;
 dat = helper_pdb2vol('actin_mono_fil2.cif',pix,0,1,0); ang = -166.15; step = 27.3*1; flex = 12; minL=20;
 datatom = helper_pdb2dat('actin_mono_fil2.cif',pix,0,1,0);
+%sumv = sum(cat(4,dat{:}),4);
+sumv = helper_atoms2vol(pix,datatom.adat,[0,0,0]);
 %atoms2vol output centered on 0,0,0?
 %dat = helper_pdb2vol('cof_reZ.pdb',pix,0,1,0); ang = -160; step = 24*1; flex = 10*1.0; minL = 15;
 %part of errors is from non-centering, so wildly wrong Z axis borks everything
 %measure center and move z d models # to z-flatten things seems to fix it well enough
 %minimum repeat for each filament type, maximum length? or default very overlong loop?
-sumv = sum(cat(4,dat{:}),4);
+
 r = max(size(sumv,[1,2]))/3-4; %find approximate maximum radius for bwdist comparison efficiency
 mono.vol = dat; mono.sum = sum(cat(4,dat{:}),4);
 mono.ang = ang; mono.step = step; mono.flex = flex*pi/180; mono.minlength = minL;
-%%
-%rng(3)
+%
+rng(3)
 mvol = gen_memvol(zeros(400,300,50),pix,2,5)*1;
 %flex = flex*pi/180; %ang = ang*pi/180; %vol method is degree based
 %
@@ -109,7 +111,7 @@ end
 profile on
 ovol = vol_fill_fil(mvol,con,pix,mono); %it works, it's just so slow
 sliceViewer(ovol); 
-%profile viewer
+profile viewer
 %%
 WriteMRC(ovol,pix,'filact2.mrc')
 
