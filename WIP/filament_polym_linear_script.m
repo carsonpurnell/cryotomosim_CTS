@@ -13,12 +13,12 @@ dat = helper_pdb2vol('actin_mono_fil2.cif',pix,0,1,0); ang = -166.15; step = 27.
 sumv = sum(cat(4,dat{:}),4);
 r = max(size(sumv,[1,2]))/3-4; %find approximate maximum radius for bwdist comparison efficiency
 mono.vol = dat; mono.sum = sum(cat(4,dat{:}),4);
-mono.ang = ang; mono.step = step; mono.flex = flex; mono.minlength = minL;
+mono.ang = ang; mono.step = step; mono.flex = flex*pi/180; mono.minlength = minL;
 %
 %cof dimer is slightly broken, too close to centroid? need to remake it without changing xy location
 %rng(3)
 mvol = gen_memvol(zeros(400,300,50),pix,2,5)*1;
-flex = flex*pi/180; %ang = ang*pi/180; %vol method is degree based
+%flex = flex*pi/180; %ang = ang*pi/180; %vol method is degree based
 
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
 %{
@@ -105,7 +105,7 @@ ovol = vol_fill_fil(mvol,con,pix,mono);
 sliceViewer(ovol); 
 %profile viewer
 %%
-WriteMRC(ovol,pix,'fixcof2.mrc')
+WriteMRC(ovol,pix,'filact1.mrc')
 
 
 %% integrated filament walk - atomistic version
@@ -441,12 +441,12 @@ sliceViewer(vol);
 
 %% internal functions
 
-function vol = vol_fill_fil(vol,con,pix,sumv,step,ang,flex,minL)
-r = max(size(sumv,[1,2]))/3-4;
+function vol = vol_fill_fil(vol,con,pix,mono)
+r = max(size(mono.sum,[1,2]))/3-4;
 n = 200; retry = 5; ori = [0,0,1];
 for nn=1:20
 ftry=0; l=0;
-while l<minL-ftry/3 && ftry<10
+while l<mono.minlength-ftry/3 && ftry<10
     %tvol = ~(bwdist(vol)<4); %weirdly slow
     tvol = ~(vol==1);
     l = 0; fvol = vol*0; %initialize output vol
@@ -458,19 +458,19 @@ while l<minL-ftry/3 && ftry<10
                 pos = ctsutil('findloc',tvol); %find more reliably empty start loc
             end
             %need better pos values from bwdist by approx filament radius
-            vecc = randc(1,3,veci,flex+deg2rad((j-1)*2)); %generate new vector in a cone from prior vector, or any if not found
+            vecc = randc(1,3,veci,mono.flex+deg2rad((j-1)*2)); %generate new vector in a cone from prior vector, or any if not found
             %flexibility slightly increases with more retries to attempt filament forced bending
-            pos = pos+vecc([2,1,3])*step/pix;
+            pos = pos+vecc([2,1,3])*mono.step/pix;
             
             rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
             theta = -acosd( dot(ori,vecc) ); %compute angle between initial pos and final pos (negative for matlab)
-            filang = rang+ang*i; %rotation about filament axis
+            filang = rang+mono.ang*i; %rotation about filament axis
             
-            spin = imrotate3(sumv,filang,ori); %rotate about Z for filament twist (might go last)
+            spin = imrotate3(mono.sum,filang,ori); %rotate about Z for filament twist (might go last)
             rot = imrotate3(spin,theta,[rotax(1),rotax(2),rotax(3)]); %rotate to the final position
             %would it be faster to rotate atoms and project them?
             
-            com = round(pos([1,2,3])-size(rot)/2-vecc*step/pix/2);
+            com = round(pos([1,2,3])-size(rot)/2-vecc*mono.step/pix/2);
             [~,err] = helper_arrayinsert(vol+con,rot,com,'overlaptest');
             if err==0 %place if location is good
                 veci = vecc; %new initial vector for cone search to avoid high angle/retry overwrite
@@ -502,7 +502,7 @@ while l<minL-ftry/3 && ftry<10
         if err~=0
             ftry = ftry+1; %somehow broken in certain cases, missing filament links
             %if l<20, fvol=fvol*0; l=0; end %clear filvol if partial filament not long enough
-            if l>minL, vol = fvol+vol; end
+            if l>mono.minlength, vol = fvol+vol; end
             fvol=fvol*0; l=0;
             fvol = zeros(size(fvol));
             %l=0; %try to re-randomize start location to avoid sequence break
