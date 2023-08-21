@@ -116,9 +116,9 @@ WriteMRC(ovol,pix,'filact2.mrc')
 
 %% integrated filament walk - atomistic version
 pix = 2; ori = [0,0,1];
-%dat = helper_pdb2dat('actin_mono_fil.cif',pix,2,'z',0); ang = -166.15; step = 27.3; flex = 12;
+dat = helper_pdb2dat('actin_mono_fil.cif',pix,2,'z',0); ang = -166.15; step = 27.3; flex = 12;
 %dat = helper_pdb2dat('MTring.cif',pix,2,'z',0); ang = 0; step = 85; flex = 3;
-dat = helper_pdb2dat('cofilactin_lead_samename2.cif',pix,2,'z',0); ang = -161; step = 24; flex = 10;
+%dat = helper_pdb2dat('cofilactin_lead_samename2.cif',pix,2,'z',0); ang = -161; step = 24; flex = 10;
 ang = ang*pi/180; flex = flex*pi/180; %monomer = dat.adat;
 n = 50; 
 pos = rand(1,3)*100; vec = []; rang = rand*360*pi/180;
