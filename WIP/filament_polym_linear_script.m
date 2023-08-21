@@ -3,7 +3,7 @@
 
 % filaments rotate in the wrong direction - XY inversion for everything
 % is this from pdb2vol? in normal cts models too
-pix = 6; ori = [0,0,1];
+pix = 10; ori = [0,0,1];
 dat = helper_pdb2vol('actin_mono_fil2.cif',pix,0,1,0); ang = -166.15; step = 27.3*1; flex = 12; minL=20;
 %dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); ang = 0; step = 85; flex = 5; minL=8;
 %dat = helper_pdb2vol('cof_reZ.pdb',pix,0,1,0); ang = -160; step = 24*1; flex = 10*1.0; minL = 15;
@@ -105,7 +105,7 @@ ovol = vol_fill_fil(mvol,con,pix,mono);
 sliceViewer(ovol); 
 %profile viewer
 %%
-WriteMRC(ovol,pix,'filact1.mrc')
+WriteMRC(ovol,pix,'filact2.mrc')
 
 
 %% integrated filament walk - atomistic version
