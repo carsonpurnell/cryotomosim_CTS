@@ -2,6 +2,11 @@ function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %[vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %projects a list of points as a 3d density volume
 %4th dimension sets the weight value for each point, otherwise all weights are 1
+%additional arguments or reuse sz/offset for a 0-centered unbounded output?
+%collapse sz/offset into a corner-to-counter bound, with a single 2x3 input
+%if only 1x3 input, then first corner is assumped 0,0,0
+%if input is only 0 or [] empty, center and trim?
+%if input is [0,0,0] keep center at 0?
 
 %break into subfunctions for speed? not everything needs to run through multiple inputs
 if isstruct(pts)
