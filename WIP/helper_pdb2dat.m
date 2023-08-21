@@ -13,7 +13,7 @@ arguments
     file
     pix
     trim = 1 %0 none, 1 by sum, 2 each individually
-    centering = 0;
+    centering = 0; %1 is already centered
     savemat = 1 %by default, save a .mat file if possible as a much faster alternative
 end
 %calculate the scattering potentials in a subfunction? sum them over 2-4 angstroms?
