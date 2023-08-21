@@ -2,18 +2,38 @@ function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %[vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %projects a list of points as a 3d density volume
 %4th dimension sets the weight value for each point, otherwise all weights are 1
+
 %additional arguments or reuse sz/offset for a 0-centered unbounded output?
 %collapse sz/offset into a corner-to-counter bound, with a single 2x3 input
 %if only 1x3 input, then first corner is assumped 0,0,0
 %if input is only 0 or [] empty, center and trim?
 %if input is [0,0,0] keep center at 0?
 corners = [offset;sz]; 
+%if all(size(corners)==[2,3]) use for start and end corners of box
+%elseif all(corners==[0,0,0]) keep 0-centered
+%elseif all(size(corners)==[1,3]) use for start corner of box, find end corner automatically
+%else (bound not given or given empty) auto box, tight on all sides
+
 %break into subfunctions for speed? not everything needs to run through multiple inputs
 if isstruct(pts)
-    names = fieldnames(pts); pts = struct2cell(pts);
+    names = fieldnames(pts); pts = struct2cell(pts); %convert to cell for easy looping
 else
     names = 0;
 end
+if ~iscell(pts) && numel(size(pts))==2
+    pts{1} = pts; %convert single array to cell for ease of use
+end
+t = 1; s = numel(pts); %temp patch for old loop definition code and cell/array switcher
+
+if nargin<3
+    dd = vertcat(pts{:}); %failing without a sz already given
+    offset = min(dd(:,1:3),[],1)-pix;
+    sz = vertcat(pts{:});
+    sz = max(sz(:,1:3),[],1)+pix-offset;
+elseif nargin<4
+    offset = [0,0,0];
+end
+%{
 if iscell(pts) %this is a mess, subfunct/streamline
     s = numel(pts); t=1;
     if nargin<3
@@ -33,6 +53,7 @@ else
         offset = [0,0,0];
     end
 end
+%}
 %if nargin<4, offset=[0,0,0]; end
 %if nargin<3, sz = max(catpts(:,1:3),[],1)+pix; end
 %if size(pts,2)<4, pts(:,end+1)=1; end %intensity==1 if not given by 4th column
