@@ -23,7 +23,8 @@ end
 if ~iscell(pts) && numel(size(pts))==2
     pts{1} = pts; %convert single array to cell for ease of use
 end
-t = 1; s = numel(pts); %temp patch for old loop definition code and cell/array switcher
+%t = 1; 
+s = numel(pts); %temp patch for old loop definition code and cell/array switcher
 
 if nargin<3
     dd = vertcat(pts{:});
@@ -110,9 +111,6 @@ tmp = cat(4,zeros(emsz),sptmp{:});
 [~,atlas] = max(tmp,[],4); atlas = atlas-1;
 vol = sum(tmp,4);
 if iscell(names)
-    %t = split; 
-    %clear split
-    %t
     for i=1:s
         split.(names{i}) = tmp(:,:,:,i+1);
     end
