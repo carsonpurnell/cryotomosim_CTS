@@ -21,17 +21,21 @@ else
     names = 0;
 end
 if ~iscell(pts) && numel(size(pts))==2
-    pts{1} = pts; %convert single array to cell for ease of use
+    pts = {pts}; %convert single array to cell for ease of use
 end
+
 %t = 1; 
 s = numel(pts); %temp patch for old loop definition code and cell/array switcher
 
-if nargin<3
+if nargin<3 %no box inputs, output tight bounds
     dd = vertcat(pts{:});
     offset = min(dd(:,1:3),[],1)-pix;
-    %sz = vertcat(pts{:});
     sz = max(dd(:,1:3),[],1)+pix-offset;
-elseif nargin<4
+elseif all(sz==[0,0,0]) %if box 0, keep the object centered in the volume
+    dd = vertcat(pts{:});
+    offset = -max(abs(dd(:,1:3)))-pix/2;
+    sz = offset*-2;
+elseif nargin<4 %box limit only, output corner starting at 0
     offset = [0,0,0];
 end
 %{
@@ -122,6 +126,7 @@ vl = zeros(emsz);
 for i=1:3
     ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %index points inside the box
     p = p(ix,:); %drop points outside the box
+    %fprintf('%i dropped \n',numel(ix)-sum(ix)) %diagnostic to check if any points eliminated
 end
 for i=1:size(p,1)
     x=p(i,1); y=p(i,2); z=p(i,3); m = mag(i); %fetch data per atom
