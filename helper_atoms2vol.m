@@ -7,7 +7,7 @@ function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %if only 1x3 input, then first corner is assumped 0,0,0
 %if input is only 0 or [] empty, center and trim?
 %if input is [0,0,0] keep center at 0?
-
+corners = [offset;sz]; 
 %break into subfunctions for speed? not everything needs to run through multiple inputs
 if isstruct(pts)
     names = fieldnames(pts); pts = struct2cell(pts);
