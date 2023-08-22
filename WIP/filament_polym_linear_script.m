@@ -8,20 +8,18 @@
 % filaments rotate in the wrong direction - XY inversion for everything?
 % is this from pdb2vol? in normal cts models too
 pix = 8; ori = [0,0,1];
-%input = 'actin_mono_fil2.cif'; ang = -166.15; step = 27.3; flex = 12; minL = 20;
-%dat = helper_pdb2vol(input,pix,0,1,0); 
+input = 'actin_mono_fil2.cif'; ang = -166.15; step = 27.3; flex = 12; minL = 20;
 %input = 'MTring2.cif'; ang = 0; step = 85; flex = 5; minL = 8;
+%input = 'cof_fix3.cif'; ang = -160; step = 24; flex = 10; minL = 15;
+%dat = helper_pdb2vol(input,pix,0,1,0); 
 %dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); ang = 0; step = 85; flex = 5; minL=8;
-input = 'cof_fix3.cif'; ang = -160; step = 24; flex = 10; minL = 15;
 %dat = helper_pdb2vol('cof_reZ2.pdb',pix,0,1,0); ang = -160; step = 24*1; flex = 10*1.0; minL = 15;
 %can save with arbitrary file extensions - .fil or similar. just need to load with load(fil,'-mat')
 
-%cofilactin file not centering or trimming properly - bad atom reads?
-
-datatom = helper_pdb2dat(input,pix,0,1,0);
+dat = helper_pdb2dat(input,pix,0,1,0);
 %sumv = sum(cat(4,dat{:}),4);
 %need dictionary function to transform between atom Z values and scattering magnitudes
-sumv = helper_atoms2vol(pix,datatom.adat,[0,0,0])*3; %lower intensity from scatter v Z
+sumv = helper_atoms2vol(pix,dat.adat,[0,0,0])*3; %lower intensity from scatter v Z
 %atoms2vol output centered on 0,0,0?
 %part of errors is from non-centering, so wildly wrong Z axis borks everything
 %measure center and move z d models # to z-flatten things seems to fix it well enough
@@ -30,7 +28,7 @@ sumv = helper_atoms2vol(pix,datatom.adat,[0,0,0])*3; %lower intensity from scatt
 %r = max(size(sumv,[1,2]))/3-4; %find approximate maximum radius for bwdist comparison efficiency
 %mono.vol = dat; 
 mono.sum = sumv;
-mono.ang = ang; mono.step = step; mono.flex = flex*pi/180; 
+mono.ang = ang; mono.step = step; mono.flex = flex;%*pi/180; 
 mono.minlength = minL;
 %an minL be derived from step size and flexibility in some way?
 rng(3)
@@ -475,7 +473,7 @@ while l<mono.minlength-ftry/3 && ftry<10
                 pos = ctsutil('findloc',tvol); %find more reliably empty start loc
             end
             %need better pos values from bwdist by approx filament radius
-            vecc = randc(1,3,veci,mono.flex+deg2rad((j-1)*2)); %generate new vector in a cone from prior vector, or any if not found
+            vecc = randc(1,3,veci,deg2rad(mono.flex+(j-1)*2)); %generate new vector in a cone from prior vector, or any if not found
             %flexibility slightly increases with more retries to attempt filament forced bending
             pos = pos+vecc([2,1,3])*mono.step/pix;
             
