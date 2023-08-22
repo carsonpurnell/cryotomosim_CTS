@@ -108,7 +108,15 @@ for j=1:s
     %[a,b] = bounds(vl{1}-split,'all')
 end
 solv = max(solv,0)/wvol*h20; %compute waters in pixels from remaining volume
+%{
+size(sptmp{1})
+size(sptmp)
+for i=1:numel(sptmp)
+    figure(); sliceViewer(sptmp{i});
+end
+%}
 tmp = cat(4,zeros(emsz),sptmp{:});
+%size(tmp)
 [~,atlas] = max(tmp,[],4); atlas = atlas-1;
 vol = sum(tmp,4);
 if iscell(names)
