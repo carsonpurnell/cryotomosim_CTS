@@ -1,17 +1,17 @@
-%function particle = helper_filmono(input,opt)
+function particle = helper_filmono(input,prop)
 %
 %
 %
-%{
+%
 arguments
     input
     prop = 'gui'
 end
 %}
-input = 'gui';
-input = 'actin_mono_fil2.cif'; 
+%input = 'gui';
+%input = 'actin_mono_fil2.cif'; 
 %ang = -166.15; step = 27.3; flex = 12; minL = 20;
-prop = [-166.15,27.3,12,20];
+%prop = [-166.15,27.3,12,20];
 if strcmp(input,'gui')
     [input, path] = uigetfile({'*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif'},'Select input file'); %select file
     input = fullfile(path,input); %parse filename for functional off-path use
@@ -28,7 +28,7 @@ if strcmp(prop,'gui') || numel(prop)~=4
 end
 
 %do the file loading
-dat = helper_pdb2dat(input,pix,0,1,0);
+dat = helper_pdb2dat(input,2,0,1,0);
 particle.name = dat.name;
 particle.filprop = prop;
 particle.adat = dat.adat;
@@ -37,4 +37,4 @@ particle.modelname = dat.modelname;
 % example test filaments?
 % script with a single 3d filament curve test and a second module for filling some volume?
 
-%end
+end
