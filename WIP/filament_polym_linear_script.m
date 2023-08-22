@@ -9,15 +9,19 @@
 % is this from pdb2vol? in normal cts models too
 pix = 10; ori = [0,0,1];
 input = 'actin_mono_fil2.cif'; ang = -166.15; step = 27.3; flex = 12; minL = 20;
+%input = 'MTring2.cif'; ang = 0; step = 85; flex = 5; minL = 8;
+%input = 'cof_reZ.pdb'; ang = -160; step = 24; flex = 10; minL = 15;
 %can save with arbitrary file extensions - .fil or similar. just need to load with load(fil,'-mat')
-%dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); ang = 0; step = 85; flex = 5; minL=8;
+%dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); 
+%ang = 0; step = 85; flex = 5; minL=8;
 dat = helper_pdb2vol(input,pix,0,1,0); 
 datatom = helper_pdb2dat(input,pix,0,1,0);
 sumv = sum(cat(4,dat{:}),4);
 %need dictionary function to transform between atom Z values and scattering magnitudes
 %sumv = helper_atoms2vol(pix,datatom.adat,[0,0,0])*3; %lower intensity from scatter v Z
 %atoms2vol output centered on 0,0,0?
-%dat = helper_pdb2vol('cof_reZ.pdb',pix,0,1,0); ang = -160; step = 24*1; flex = 10*1.0; minL = 15;
+%dat = helper_pdb2vol('cof_reZ.pdb',pix,0,1,0); 
+%ang = -160; step = 24*1; flex = 10*1.0; minL = 15;
 %part of errors is from non-centering, so wildly wrong Z axis borks everything
 %measure center and move z d models # to z-flatten things seems to fix it well enough
 %minimum repeat for each filament type, maximum length? or default very overlong loop?
