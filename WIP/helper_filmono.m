@@ -9,15 +9,12 @@ arguments
 end
 %}
 input = 'gui';
-input = 'actin_mono_fil2.cif'; %ang = -166.15; step = 27.3; flex = 12; minL = 20;
+input = 'actin_mono_fil2.cif'; 
+%ang = -166.15; step = 27.3; flex = 12; minL = 20;
 prop = [-166.15,27.3,12,20];
 if strcmp(input,'gui')
-    [input, path] = uigetfile({'*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif'},'Select input file');%,'MultiSelect','on');
-    %if numel(string(input))==1, input={input}; end
-    %if ~iscell(input) || numel(input)==0, error('No files selected, aborting.'); end
-    %for i=1:numel(input) %make the list full file paths rather than just names so it works off-path
-        input = fullfile(path,input); 
-    %end
+    [input, path] = uigetfile({'*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif'},'Select input file'); %select file
+    input = fullfile(path,input); %parse filename for functional off-path use
 end
 %if ~isfile(input), error('file does not appear to exist - use "gui" for off-path files'); end
 %prop = 'gui';
