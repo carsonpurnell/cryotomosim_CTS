@@ -469,7 +469,7 @@ sliceViewer(vol);
 
 function vol = vol_fill_fil(vol,con,pix,mono,iters)
 %r = max(size(mono.sum,[1,2]))/3-4;
-n = 200; retry = 5; ori = [0,0,1];
+n = 100; retry = 5; ori = [0,0,1];
 %ang = mono.filprop(1);
 step = mono.filprop(2);
 %flex = mono.filprop(3);
@@ -504,13 +504,13 @@ while l<minlength-ftry/3 && ftry<10
             [~,err] = helper_arrayinsert(vol+con,rot,com,'overlaptest');
             if err==0 %place if location is good
                 veci = vecc; %new initial vector for cone search to avoid high angle/retry overwrite
-                l = l+1; %length counting
+                l = l+1; ggg=l; %length counting
                 [fvol] = helper_arrayinsert(fvol,rot,com);
                 break; %early exit if good placement found
             elseif retry==5 && l>minlength
-                vol = vol+fvol; fvol = fvol*0; l=0;
+                %vol = vol+fvol; fvol = fvol*0; ggg=l; l=0;
             elseif retry==5 && l<minlength%-ftry/3
-                fvol = fvol*0; l=0;
+                %fvol = fvol*0; ggg=l; l=0;
                 %vol = vol+fvol; fvol=fvol*0; l=0; %ftry=ftry+1;
                 %tvol = (bwdist(vol)<8);
             end
@@ -535,9 +535,9 @@ while l<minlength-ftry/3 && ftry<10
         if err~=0
             ftry = ftry+1; %somehow broken in certain cases, missing filament links
             %if l<20, fvol=fvol*0; l=0; end %clear filvol if partial filament not long enough
-            if l>minlength, vol = fvol+vol; end
-            fvol=fvol*0; ggg=l; l=0;
-            fvol = zeros(size(fvol));
+            %if l>minlength, vol = fvol+vol; end
+            %fvol=fvol*0; ggg=l; l=0;
+            %fvol = zeros(size(fvol));
             %l=0; %try to re-randomize start location to avoid sequence break
             %st = strel('sphere',7); st = st.Neighborhood*1e2;
             %com = round(pos([2,1,3])-size(st)/2-vecc*step/pix/2);
@@ -548,6 +548,15 @@ while l<minlength-ftry/3 && ftry<10
     %l, %rec
 end
 fprintf('%i, ',ggg);
+%mask = bwlabeln(fvol>0);
+
+CC = bwconncomp(fvol>0);
+numPixels = cellfun(@numel,CC.PixelIdxList);
+[~,idx] = max(numPixels);
+mask = false(size(fvol));
+mask(CC.PixelIDXList{idx}) = true;
+fvol = fvol*(mask>0);
+
 vol = fvol+vol; 
 fvol = vol*0;
 end
