@@ -43,8 +43,8 @@ mono.minlength = minL;
 %
 %}
 %rng(3)
-mvol = gen_memvol(zeros(400,300,50),pix,2,5)*1;
-iters = 20;
+mvol = gen_memvol(zeros(400,300,50),pix,2,5)*0;
+iters = 10;
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
 %{
 for nn=1:10
@@ -127,7 +127,7 @@ end
 %}
 profile on
 ovol = vol_fill_fil(mvol,con,pix,monomer,iters); %it works, it's just so slow
-ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters);
+ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters*2);
 sliceViewer(ovol2); 
 profile viewer
 %%
@@ -507,7 +507,10 @@ while l<minlength-ftry/3 && ftry<10
                 l = l+1; %length counting
                 [fvol] = helper_arrayinsert(fvol,rot,com);
                 break; %early exit if good placement found
-            elseif retry==5 && l>6
+            elseif retry==5 && l>minlength
+                vol = vol+fvol; fvol = fvol*0; l=0;
+            elseif retry==5 && l<minlength%-ftry/3
+                fvol = fvol*0; l=0;
                 %vol = vol+fvol; fvol=fvol*0; l=0; %ftry=ftry+1;
                 %tvol = (bwdist(vol)<8);
             end
