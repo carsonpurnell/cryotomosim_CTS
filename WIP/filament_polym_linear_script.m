@@ -8,10 +8,11 @@
 % filaments rotate in the wrong direction - XY inversion for everything?
 % is this from pdb2vol? in normal cts models too
 pix = 8; ori = [0,0,1];
-%input = 'actin_mono_fil2.cif'; prop = [-166.15,27.3,12,20];
-input = 'MTring2.cif'; prop = [0,85,5,8];
+input = 'actin_mono_fil2.cif'; prop = [-166.15,27.3,12,20];
+monomeract = helper_filmono(input,pix,prop);
+input = 'MTring2.cif'; prop = [0,85,5,10];
 %input = 'cof_fix3.cif'; prop = [-162,24,10,20];
-
+%{
 %input = 'actin_mono_fil2.cif'; %ang = -166.15; step = 27.3; flex = 12; minL = 20;
 %input = 'MTring2.cif'; %ang = 0; step = 85; flex = 5; minL = 8;
 %input = 'cof_fix3.cif'; %ang = -160; step = 24; flex = 10; minL = 15;
@@ -19,7 +20,7 @@ input = 'MTring2.cif'; prop = [0,85,5,8];
 %dat = helper_pdb2vol('MTring2.cif',pix,0,1,0); ang = 0; step = 85; flex = 5; minL=8;
 %dat = helper_pdb2vol('cof_reZ2.pdb',pix,0,1,0); ang = -160; step = 24*1; flex = 10*1.0; minL = 15;
 %can save with arbitrary file extensions - .fil or similar. just need to load with load(fil,'-mat')
-
+%}
 monomer = helper_filmono(input,pix,prop);
 
 %dat = helper_pdb2dat(input,pix,0,1,0);
@@ -41,9 +42,9 @@ mono.minlength = minL;
 %flex = flex*pi/180; %ang = ang*pi/180; %vol method is degree based
 %
 %}
-rng(3)
+%rng(3)
 mvol = gen_memvol(zeros(400,300,50),pix,2,5)*1;
-
+iters = 20;
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
 %{
 for nn=1:10
@@ -125,8 +126,9 @@ fvol = vol*0;
 end
 %}
 profile on
-ovol = vol_fill_fil(mvol,con,pix,monomer); %it works, it's just so slow
-sliceViewer(ovol); 
+ovol = vol_fill_fil(mvol,con,pix,monomer,iters); %it works, it's just so slow
+ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters);
+sliceViewer(ovol2); 
 profile viewer
 %%
 WriteMRC(ovol,pix,'filact2.mrc')
@@ -465,12 +467,16 @@ sliceViewer(vol);
 
 %% internal functions
 
-function vol = vol_fill_fil(vol,con,pix,mono)
-r = max(size(mono.sum,[1,2]))/3-4;
+function vol = vol_fill_fil(vol,con,pix,mono,iters)
+%r = max(size(mono.sum,[1,2]))/3-4;
 n = 200; retry = 5; ori = [0,0,1];
-for nn=1:20
+%ang = mono.filprop(1);
+step = mono.filprop(2);
+%flex = mono.filprop(3);
+minlength = mono.filprop(4);
+for nn=1:iters
 ftry=0; l=0;
-while l<mono.minlength-ftry/3 && ftry<10
+while l<minlength-ftry/3 && ftry<10
     %tvol = ~(bwdist(vol)<4); %weirdly slow
     tvol = ~(vol==1);
     l = 0; fvol = vol*0; %initialize output vol
@@ -482,19 +488,19 @@ while l<mono.minlength-ftry/3 && ftry<10
                 pos = ctsutil('findloc',tvol); %find more reliably empty start loc
             end
             %need better pos values from bwdist by approx filament radius
-            vecc = randc(1,3,veci,deg2rad(mono.flex+(j-1)*2)); %generate new vector in a cone from prior vector, or any if not found
+            vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(j-1)*2)); %generate new vector in a cone from prior vector, or any if not found
             %flexibility slightly increases with more retries to attempt filament forced bending
-            pos = pos+vecc([2,1,3])*mono.step/pix;
+            pos = pos+vecc([2,1,3])*step/pix;
             
             rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
             theta = -acosd( dot(ori,vecc) ); %compute angle between initial pos and final pos (negative for matlab)
-            filang = rang+mono.ang*i; %rotation about filament axis
+            filang = rang+mono.filprop(1)*i; %rotation about filament axis
             
             spin = imrotate3(mono.sum,filang,ori); %rotate about Z for filament twist (might go last)
             rot = imrotate3(spin,theta,[rotax(1),rotax(2),rotax(3)]); %rotate to the final position
             %would it be faster to rotate atoms and project them?
             
-            com = round(pos([1,2,3])-size(rot)/2-vecc*mono.step/pix/2);
+            com = round(pos([1,2,3])-size(rot)/2-vecc*step/pix/2);
             [~,err] = helper_arrayinsert(vol+con,rot,com,'overlaptest');
             if err==0 %place if location is good
                 veci = vecc; %new initial vector for cone search to avoid high angle/retry overwrite
@@ -526,8 +532,8 @@ while l<mono.minlength-ftry/3 && ftry<10
         if err~=0
             ftry = ftry+1; %somehow broken in certain cases, missing filament links
             %if l<20, fvol=fvol*0; l=0; end %clear filvol if partial filament not long enough
-            if l>mono.minlength, vol = fvol+vol; end
-            fvol=fvol*0; l=0;
+            if l>minlength, vol = fvol+vol; end
+            fvol=fvol*0; ggg=l; l=0;
             fvol = zeros(size(fvol));
             %l=0; %try to re-randomize start location to avoid sequence break
             %st = strel('sphere',7); st = st.Neighborhood*1e2;
@@ -538,7 +544,7 @@ while l<mono.minlength-ftry/3 && ftry<10
     end
     %l, %rec
 end
-fprintf('%i, ',ftry);
+fprintf('%i, ',ggg);
 vol = fvol+vol; 
 fvol = vol*0;
 end
