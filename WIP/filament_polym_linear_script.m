@@ -7,7 +7,7 @@
 
 % filaments rotate in the wrong direction - XY inversion for everything?
 % is this from pdb2vol? in normal cts models too
-pix = 8; ori = [0,0,1];
+pix = 10; ori = [0,0,1];
 input = 'actin_mono_fil2.cif'; prop = [-166.15,27.3,12,20];
 monomeract = helper_filmono(input,pix,prop);
 input = 'MTring2.cif'; prop = [0,85,5,10];
@@ -45,8 +45,8 @@ mono.minlength = minL;
 %
 %}
 %rng(3)
-mvol = gen_memvol(zeros(400,300,50),pix,2,5)*0;
-iters = 6;
+mvol = gen_memvol(zeros(500,400,50),pix,2,5)*1;
+iters = 10;
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
 %{
 for nn=1:10
@@ -130,7 +130,8 @@ end
 profile on
 ovol = vol_fill_fil(mvol,con,pix,monomer,iters); %it works, it's just so slow
 ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters*5);
-sliceViewer(ovol2); 
+ovol3 = vol_fill_fil(ovol2,con,pix,monomercof,iters*5);
+sliceViewer(ovol3); 
 profile viewer
 %%
 WriteMRC(ovol,pix,'filact2.mrc')
