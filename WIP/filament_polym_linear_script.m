@@ -134,7 +134,7 @@ ovol3 = vol_fill_fil(ovol2,con,pix,monomercof,iters*5);
 sliceViewer(ovol3); 
 profile viewer
 %%
-WriteMRC(ovol,pix,'filact2.mrc')
+WriteMRC(ovol3,pix,'filmixbig2.mrc')
 
 
 %% integrated filament walk - atomistic version
