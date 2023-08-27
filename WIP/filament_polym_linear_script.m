@@ -9,11 +9,11 @@
 % is this from pdb2vol? in normal cts models too
 pix = 10; ori = [0,0,1];
 input = 'actin_mono_fil2.cif'; prop = [-166.15,27.3,12,20];
-monomeract = helper_filmono(input,pix,prop);
+monomeract = helper_filmono(input,pix,prop); monomeract.modelname{1} = 'MT';
 input = 'MTring2.cif'; prop = [0,85,5,10];
-monomer = helper_filmono(input,pix,prop);
+monomer = helper_filmono(input,pix,prop); monomer.modelname{1} = 'actin';
 input = 'cof_fix3.cif'; prop = [-162,24,10,20];
-monomercof = helper_filmono(input,pix,prop);
+monomercof = helper_filmono(input,pix,prop); monomercof.modelname{1} = 'cofilactin';
 %{
 %input = 'actin_mono_fil2.cif'; %ang = -166.15; step = 27.3; flex = 12; minL = 20;
 %input = 'MTring2.cif'; %ang = 0; step = 85; flex = 5; minL = 8;
@@ -46,7 +46,7 @@ mono.minlength = minL;
 %}
 %rng(3)
 mvol = gen_memvol(zeros(500,400,50),pix,2,5)*1;
-iters = 10;
+iters = 30;
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
 %{
 for nn=1:10
@@ -129,8 +129,8 @@ end
 %}
 profile on
 ovol = vol_fill_fil(mvol,con,pix,monomer,iters); %it works, it's just so slow
-ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters*5);
-ovol3 = vol_fill_fil(ovol2,con,pix,monomercof,iters*5);
+ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters);
+ovol3 = vol_fill_fil(ovol2,con,pix,monomercof,iters);
 sliceViewer(ovol3); 
 profile viewer
 %%
