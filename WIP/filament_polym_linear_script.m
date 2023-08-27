@@ -4,7 +4,7 @@
 %need to recheck when membrane normals are generated and if they'd break
 
 %% integrated filament walk - vol-based version
-
+%{
 % filaments rotate in the wrong direction - XY inversion for everything?
 % is this from pdb2vol? in normal cts models too
 pix = 10; ori = [0,0,1];
@@ -24,7 +24,13 @@ monomercof = helper_filmono(input,pix,prop); monomercof.modelname{1} = 'cofilact
 %can save with arbitrary file extensions - .fil or similar. just need to load with load(fil,'-mat')
 %}
 %monomer = helper_filmono(input,pix,prop);
+%}
 %%
+pix = 10;
+input = {'MT.fil','actin.fil','cofilactin.fil'};
+particles = helper_filinput(pix,input);
+
+%{
 %dat = helper_pdb2dat(input,pix,0,1,0);
 %sumv = sum(cat(4,dat{:}),4);
 %need dictionary function to transform between atom Z values and scattering magnitudes
@@ -34,6 +40,7 @@ monomercof = helper_filmono(input,pix,prop); monomercof.modelname{1} = 'cofilact
 %measure center and move z d models # to z-flatten things seems to fix it well enough
 %minimum repeat for each filament type, maximum length? or default very overlong loop?
 %
+%}
 %{
 %r = max(size(sumv,[1,2]))/3-4; %find approximate maximum radius for bwdist comparison efficiency
 %mono.vol = dat; 
@@ -48,6 +55,7 @@ mono.minlength = minL;
 mvol = gen_memvol(zeros(500,400,50),pix,2,5)*1;
 iters = 30;
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
+vol = mvol;
 %{
 for nn=1:10
 ftry=0; l=0;
@@ -128,11 +136,15 @@ fvol = vol*0;
 end
 %}
 profile on
-ovol = vol_fill_fil(mvol,con,pix,monomer,iters); %it works, it's just so slow
-ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters);
-ovol3 = vol_fill_fil(ovol2,con,pix,monomercof,iters);
-sliceViewer(ovol3); 
+for i=1:numel(particles)
+    vol = vol_fill_fil(vol+con,pix,particles(i),iters);
+end
+%ovol = vol_fill_fil(mvol,con,pix,monomer,iters); %it works, it's just so slow
+%ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters);
+%ovol3 = vol_fill_fil(ovol2,con,pix,monomercof,iters);
+
 profile viewer
+sliceViewer(vol); 
 %%
 WriteMRC(ovol3,pix,'filmixbig2.mrc')
 
@@ -470,7 +482,7 @@ sliceViewer(vol);
 
 %% internal functions
 
-function vol = vol_fill_fil(vol,con,pix,mono,iters)
+function vol = vol_fill_fil(vol,pix,mono,iters)
 %r = max(size(mono.sum,[1,2]))/3-4;
 n = 100; retry = 5; ori = [0,0,1];
 %ang = mono.filprop(1);
