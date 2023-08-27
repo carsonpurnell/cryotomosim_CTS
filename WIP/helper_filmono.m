@@ -27,7 +27,7 @@ end
 
 %do the file loading
 dat = helper_pdb2dat(input,2,0,1,0);
-sum = helper_atoms2vol(pix,dat.adat,[0,0,0])*3;
+sum = helper_atoms2vol(pix,dat.adat,[0,0,0])*3; % 3 is for temporary fix for scatter val in Z number space
 particle.name = dat.name;
 particle.filprop = prop;
 particle.sum = sum;
