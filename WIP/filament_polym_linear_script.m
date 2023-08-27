@@ -27,10 +27,10 @@ monomercof = helper_filmono(input,pix,prop); monomercof.modelname{1} = 'cofilact
 %}
 %%
 pix = 10;
-%input = {'MT.fil','actin.fil','cofilactin.fil'};
-input = 'gui';
+input = {'MT.fil','actin.fil','cofilactin.fil'};
+%input = 'gui'; %works, but unordered, don't have pickfiles fallback yet
 particles = helper_filinput(pix,input);
-%%
+
 %{
 %dat = helper_pdb2dat(input,pix,0,1,0);
 %sumv = sum(cat(4,dat{:}),4);
@@ -138,11 +138,13 @@ end
 %}
 profile on
 for i=1:numel(particles)
-    vol = vol_fill_fil(vol,con,pix,particles(i),round(particles(i).filprop(4)));
+    [vol,split] = vol_fill_fil(vol,con,pix,particles(i),round(particles(i).filprop(4)));
 end
+%{
 %ovol = vol_fill_fil(mvol,con,pix,monomer,iters); %it works, it's just so slow
 %ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters);
 %ovol3 = vol_fill_fil(ovol2,con,pix,monomercof,iters);
+%}
 
 profile viewer
 sliceViewer(vol); 
@@ -483,13 +485,16 @@ sliceViewer(vol);
 
 %% internal functions
 
-function vol = vol_fill_fil(vol,con,pix,mono,iters)
+function [vol,split] = vol_fill_fil(vol,con,pix,mono,iters)
 %r = max(size(mono.sum,[1,2]))/3-4;
 n = 100; retry = 5; ori = [0,0,1]; fpl=0;
 %ang = mono.filprop(1);
 step = mono.filprop(2);
 %flex = mono.filprop(3);
 minlength = mono.filprop(4);
+for i=1:numel(mono.modelname)
+    
+end
 for nn=1:iters
 ftry=0; l=0;
 while l<minlength-ftry/3 && ftry<10
