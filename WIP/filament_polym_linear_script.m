@@ -27,9 +27,10 @@ monomercof = helper_filmono(input,pix,prop); monomercof.modelname{1} = 'cofilact
 %}
 %%
 pix = 10;
-input = {'MT.fil','actin.fil','cofilactin.fil'};
+%input = {'MT.fil','actin.fil','cofilactin.fil'};
+input = 'gui';
 particles = helper_filinput(pix,input);
-
+%%
 %{
 %dat = helper_pdb2dat(input,pix,0,1,0);
 %sumv = sum(cat(4,dat{:}),4);
@@ -52,8 +53,8 @@ mono.minlength = minL;
 %
 %}
 %rng(3)
-mvol = gen_memvol(zeros(500,400,50),pix,2,5)*1;
-iters = 20;
+mvol = gen_memvol(zeros(500,400,50),pix,4,5)*1;
+iters = [5,30,30];
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
 vol = mvol;
 %{
@@ -137,7 +138,7 @@ end
 %}
 profile on
 for i=1:numel(particles)
-    vol = vol_fill_fil(vol+con,pix,particles(i),iters);
+    vol = vol_fill_fil(vol,con,pix,particles(i),round(particles(i).filprop(4)));
 end
 %ovol = vol_fill_fil(mvol,con,pix,monomer,iters); %it works, it's just so slow
 %ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters);
@@ -482,9 +483,9 @@ sliceViewer(vol);
 
 %% internal functions
 
-function vol = vol_fill_fil(vol,pix,mono,iters)
+function vol = vol_fill_fil(vol,con,pix,mono,iters)
 %r = max(size(mono.sum,[1,2]))/3-4;
-n = 100; retry = 5; ori = [0,0,1];
+n = 100; retry = 5; ori = [0,0,1]; fpl=0;
 %ang = mono.filprop(1);
 step = mono.filprop(2);
 %flex = mono.filprop(3);
@@ -516,7 +517,7 @@ while l<minlength-ftry/3 && ftry<10
             %would it be faster to rotate atoms and project them?
             
             com = round(pos([1,2,3])-size(rot)/2-vecc*step/pix/2);
-            [~,err] = helper_arrayinsert(vol,rot,com,'overlaptest');
+            [~,err] = helper_arrayinsert(vol+con,rot,com,'overlaptest');
             if err==0 %place if location is good
                 veci = vecc; %new initial vector for cone search to avoid high angle/retry overwrite
                 l = l+1; ggg=l; %length counting
@@ -562,7 +563,7 @@ while l<minlength-ftry/3 && ftry<10
     end
     %l, %rec
 end
-fprintf('%i, ',ggg);
+%fprintf('%i, ',ggg);
 %mask = bwlabeln(fvol>0);
 
 CC = bwconncomp(imbinarize(fvol));
@@ -571,7 +572,8 @@ numPixels = cellfun(@numel,CC.PixelIdxList);
 if ~isempty(idx)
 mask = false(size(fvol));
 mask(CC.PixelIdxList{idx}) = true;
-fvol = fvol.*(mask>0);
+fvol = fvol.*(mask>0); 
+fpl=fpl+1;
 else
     fvol = fvol*0; l=0;
 end
@@ -579,7 +581,7 @@ end
 vol = fvol+vol; 
 fvol = vol*0;
 end
-fprintf('\n');
+fprintf('Placed %i filaments over %i iterations \n',fpl,iters);
 end
 
 function vec = randc(row,col,ax,ang)
