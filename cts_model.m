@@ -94,6 +94,9 @@ switch param.constraint %write constraints to initial starting volume
 end
 %}
 
+% filament placement WIP block
+
+
 %generate model and add (in case input vol had stuff in it)
 %[cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,param.layers,param.iters,...
 %    memvol,vescen,vesvol,param.density,'graph',opt.graph); 
