@@ -25,8 +25,6 @@ if strcmp(prop,'gui') || numel(prop)~=4
     end
 end
 
-
-
 %do the file loading
 dat = helper_pdb2dat(input,2,0,1,0);
 sum = helper_atoms2vol(pix,dat.adat,[0,0,0])*3;
@@ -38,5 +36,4 @@ particle.modelname = dat.modelname;
 
 % example test filaments?
 % script with a single 3d filament curve test and a second module for filling some volume?
-
 end
