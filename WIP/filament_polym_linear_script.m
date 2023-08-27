@@ -53,7 +53,7 @@ mono.minlength = minL;
 %}
 %rng(3)
 mvol = gen_memvol(zeros(500,400,50),pix,2,5)*1;
-iters = 30;
+iters = 20;
 con = helper_constraints(mvol*0,'  &')*pix^2.5;
 vol = mvol;
 %{
@@ -516,7 +516,7 @@ while l<minlength-ftry/3 && ftry<10
             %would it be faster to rotate atoms and project them?
             
             com = round(pos([1,2,3])-size(rot)/2-vecc*step/pix/2);
-            [~,err] = helper_arrayinsert(vol+con,rot,com,'overlaptest');
+            [~,err] = helper_arrayinsert(vol,rot,com,'overlaptest');
             if err==0 %place if location is good
                 veci = vecc; %new initial vector for cone search to avoid high angle/retry overwrite
                 l = l+1; ggg=l; %length counting
