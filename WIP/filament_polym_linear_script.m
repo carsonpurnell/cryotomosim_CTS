@@ -9,11 +9,11 @@
 % is this from pdb2vol? in normal cts models too
 pix = 10; ori = [0,0,1];
 input = 'actin_mono_fil2.cif'; prop = [-166.15,27.3,12,20];
-monomeract = helper_filmono(input,pix,prop); monomeract.modelname{1} = 'MT';
+monomeract = helper_filmono(input,pix,prop); monomeract.modelname{1} = 'actin';
 input = 'MTring2.cif'; prop = [0,85,5,10];
-monomer = helper_filmono(input,pix,prop); monomer.modelname{1} = 'actin';
+monomer = helper_filmono(input,pix,prop); monomer.modelname{1} = 'MT';
 input = 'cof_fix3.cif'; prop = [-162,24,10,20];
-monomercof = helper_filmono(input,pix,prop); monomercof.modelname{1} = 'cofilactin';
+monomercof = helper_filmono(input,pix,prop); monomercof.modelname{1:2} = 'cofilactin';
 %{
 %input = 'actin_mono_fil2.cif'; %ang = -166.15; step = 27.3; flex = 12; minL = 20;
 %input = 'MTring2.cif'; %ang = 0; step = 85; flex = 5; minL = 8;
@@ -24,7 +24,7 @@ monomercof = helper_filmono(input,pix,prop); monomercof.modelname{1} = 'cofilact
 %can save with arbitrary file extensions - .fil or similar. just need to load with load(fil,'-mat')
 %}
 %monomer = helper_filmono(input,pix,prop);
-
+%%
 %dat = helper_pdb2dat(input,pix,0,1,0);
 %sumv = sum(cat(4,dat{:}),4);
 %need dictionary function to transform between atom Z values and scattering magnitudes
