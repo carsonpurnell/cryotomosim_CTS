@@ -55,6 +55,7 @@ arguments
     %objects and contents params
     param.grid = [150 1e4]
     param.mem = 0 %need subcomponents
+    param.filaments = 0
     param.beads = 0
     param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
 end
