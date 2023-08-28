@@ -123,6 +123,11 @@ if iscell(names)
     for i=1:s
         split.(names{i}) = tmp(:,:,:,i+1);
     end
+elseif s>0
+    split = cell(1,s);
+    for i=1:s
+        split{i} = tmp(:,:,:,i+1);
+    end
 else
     split = 0;
 end
