@@ -2,7 +2,7 @@ function particle = helper_filmono(input,pix,prop)
 % particle = helper_filmono(input,prop)
 %
 %
-%
+% need to add an option to save the struct as a .fil, use the same location and probably filename
 arguments
     input
     pix
