@@ -492,9 +492,13 @@ if nargin<5
         iters(i) = mono(i).filprop(4);
     end
 end
-for i=1:numel(mono.modelname)
-    split.(mono.modelname{i}) = vol*0;
-end
+%for i=1:numel(mono)
+    namelist = [mono(:).modelname];
+    for j=1:numel(namelist)
+        split.(namelist{j}) = zeros(size(vol));
+    end
+%end
+mono = mono(1); iters = iters(1); %temp before implementing internal loop
 
 
 %r = max(size(mono.sum,[1,2]))/3-4;
@@ -536,6 +540,7 @@ while l<minlength-ftry/3 && ftry<10
                 veci = vecc; %new initial vector for cone search to avoid high angle/retry overwrite
                 l = l+1; ggg=l; %length counting
                 [fvol] = helper_arrayinsert(fvol,rot,com);
+                
                 break; %early exit if good placement found
             elseif retry==5 && l>minlength
                 %vol = vol+fvol; fvol = fvol*0; ggg=l; l=0;
