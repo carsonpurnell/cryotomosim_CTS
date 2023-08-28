@@ -485,13 +485,14 @@ sliceViewer(vol);
 
 %% internal functions
 
-function [vol,split] = vol_fill_fil(vol,con,pix,mono,iters)
+function [vol,split] = vol_fill_fil(vol,con,pix,mono,oi)
 if nargin<5
-    iters = zeros(1,numel(mono));
+    oi = zeros(1,numel(mono));
     for i=1:numel(mono)
-        iters(i) = mono(i).filprop(4);
+        oi(i) = mono(i).filprop(4);
     end
 end
+
 %for i=1:numel(mono)
     namelist = [mono(:).modelname];
     for j=1:numel(namelist)
@@ -501,7 +502,7 @@ end
 n = 100; retry = 5; ori = [0,0,1];
 
 for gg=1:numel(mono)
-mono = mono(gg); iters = iters(gg); %temp before implementing internal loop
+mono = mono(gg); iters = oi(gg); %temp before implementing internal loop
 %sel = randi(numel(mono)); sel = 1;
 %r = max(size(mono.sum,[1,2]))/3-4;
 fpl=0;
