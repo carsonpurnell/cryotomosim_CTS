@@ -26,7 +26,7 @@ monomercof = helper_filmono(input,pix,prop); monomercof.modelname{1} = 'cofilact
 %monomer = helper_filmono(input,pix,prop);
 %}
 %%
-pix = 10;
+pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};
 %input = 'gui'; %works, but unordered, don't have pickfiles fallback yet
 particles = helper_filinput(pix,input);
@@ -138,7 +138,7 @@ end
 %}
 profile on
 %for i=1:numel(particles)
-    [vol,split] = vol_fill_fil(vol,con,pix,particles(i));%,iters);
+    [vol,split] = vol_fill_fil(vol,con,pix,particles);%,iters);
 %end
 %{
 %ovol = vol_fill_fil(mvol,con,pix,monomer,iters); %it works, it's just so slow
@@ -498,11 +498,13 @@ end
         split.(namelist{j}) = zeros(size(vol));
     end
 %end
-mono = mono(1); iters = iters(1); %temp before implementing internal loop
+n = 100; retry = 5; ori = [0,0,1];
 
-
+for gg=1:numel(mono)
+mono = mono(gg); iters = iters(gg); %temp before implementing internal loop
+%sel = randi(numel(mono)); sel = 1;
 %r = max(size(mono.sum,[1,2]))/3-4;
-n = 100; retry = 5; ori = [0,0,1]; fpl=0;
+fpl=0;
 %ang = mono.filprop(1);
 step = mono.filprop(2);
 %flex = mono.filprop(3);
@@ -522,12 +524,13 @@ while l<minlength-ftry/3 && ftry<10
                 pos = ctsutil('findloc',tvol); %find more reliably empty start loc
             end
             %need better pos values from bwdist by approx filament radius
-            vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(j-1)*2)); %generate new vector in a cone from prior vector, or any if not found
+            vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(j-1)*2)); 
+            %generate new vector in a cone from prior vector, or any if not found
             %flexibility slightly increases with more retries to attempt filament forced bending
             pos = pos+vecc([2,1,3])*step/pix;
             
             rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
-            theta = -acosd( dot(ori,vecc) ); %compute angle between initial pos and final pos (negative for matlab)
+            theta = -acosd( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
             filang = rang+mono.filprop(1)*i; %rotation about filament axis
             
             spin = imrotate3(mono.sum,filang,ori); %rotate about Z for filament twist (might go last)
@@ -540,7 +543,12 @@ while l<minlength-ftry/3 && ftry<10
                 veci = vecc; %new initial vector for cone search to avoid high angle/retry overwrite
                 l = l+1; ggg=l; %length counting
                 [fvol] = helper_arrayinsert(fvol,rot,com);
-                
+                for jj=1:numel(mono.vol)
+                    nm = mono.modelname{jj};
+                    spin = imrotate3(mono.vol{jj},filang,ori); %rotate about Z for filament twist (go last?)
+                    rot = imrotate3(spin,theta,[rotax(1),rotax(2),rotax(3)]); %rotate to the final position
+                    [split.(nm)] = helper_arrayinsert(split.(nm),rot,com);
+                end
                 break; %early exit if good placement found
             elseif retry==5 && l>minlength
                 %vol = vol+fvol; fvol = fvol*0; ggg=l; l=0;
@@ -599,10 +607,15 @@ end
 
 vol = fvol+vol; 
 %split.(mono.modelname{1}) = fvol;
-split = fvol;
+fn = fieldnames(split);
+for i=1:numel(fn) %loop through splits and mask out bad placements
+    split.(fn{i}) = split.(fn{i}).*(fvol>0);
+end
+%split = split.*(fvol>0);
 fvol = vol*0;
 end
 fprintf('Placed %i filaments over %i iterations \n',fpl,iters);
+end
 end
 
 function vec = randc(row,col,ax,ang)
