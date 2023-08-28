@@ -18,11 +18,18 @@ for i=1:numel(list) %loop through and parse inputs through filmono for structs a
     [~,~,ext] = fileparts(list{i});
     switch ext
         case '.fil'
-            qq = load(list{i},'-mat'); particle(i) = qq.monomer; %#ok<AGROW>
+            qq = load(list{i},'-mat'); particle(i) = qq.monomer;  %#ok<AGROW>
+            [sum,~,~,split] = helper_atoms2vol(pix,particle(i).adat,[0,0,0]); 
+            %if ~iscell(split)
+            convfac = 3; %approximate conversion factor from scatter value to Z numbers
+            for j=1:numel(split)
+                split{j} = split{j}*convfac;
+            end
+            particle(i).vol = split;  %#ok<AGROW>
+            particle(i).sum = sum*convfac; %#ok<AGROW>
         case {'.cif','.mmcif','.pdb','.pdb1'}
             particle(i) = helper_filmono(list{i},pix); %#ok<AGROW>
     end
 end
-
 
 end
