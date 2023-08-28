@@ -137,16 +137,16 @@ fvol = vol*0;
 end
 %}
 profile on
-for i=1:numel(particles)
-    [vol,split] = vol_fill_fil(vol,con,pix,particles(i),round(particles(i).filprop(4)));
-end
+%for i=1:numel(particles)
+    [vol,split] = vol_fill_fil(vol,con,pix,particles(i));%,iters);
+%end
 %{
 %ovol = vol_fill_fil(mvol,con,pix,monomer,iters); %it works, it's just so slow
 %ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters);
 %ovol3 = vol_fill_fil(ovol2,con,pix,monomercof,iters);
 %}
 
-profile viewer
+%profile viewer
 sliceViewer(vol); 
 %%
 WriteMRC(ovol3,pix,'filmixbig2.mrc')
@@ -486,15 +486,24 @@ sliceViewer(vol);
 %% internal functions
 
 function [vol,split] = vol_fill_fil(vol,con,pix,mono,iters)
+if nargin<5
+    iters = zeros(1,numel(mono));
+    for i=1:numel(mono)
+        iters(i) = mono(i).filprop(4);
+    end
+end
+for i=1:numel(mono.modelname)
+    split.(mono.modelname{i}) = vol*0;
+end
+
+
 %r = max(size(mono.sum,[1,2]))/3-4;
 n = 100; retry = 5; ori = [0,0,1]; fpl=0;
 %ang = mono.filprop(1);
 step = mono.filprop(2);
 %flex = mono.filprop(3);
 minlength = mono.filprop(4);
-for i=1:numel(mono.modelname)
-    
-end
+
 for nn=1:iters
 ftry=0; l=0;
 while l<minlength-ftry/3 && ftry<10
@@ -584,6 +593,8 @@ else
 end
 
 vol = fvol+vol; 
+%split.(mono.modelname{1}) = fvol;
+split = fvol;
 fvol = vol*0;
 end
 fprintf('Placed %i filaments over %i iterations \n',fpl,iters);
