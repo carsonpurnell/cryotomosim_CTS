@@ -499,7 +499,8 @@ end
         split.(namelist{j}) = zeros(size(vol));
     end
 %end
-n = 100; retry = 5; ori = [0,0,1];
+%n = 100; 
+retry = 5; ori = [0,0,1];
 
 for gg=1:numel(particles)
 mono = particles(gg); iters = oi(gg); %temp before implementing internal loop
@@ -517,7 +518,7 @@ while l<minlength-ftry/3 && ftry<10
     %tvol = ~(bwdist(vol)<4); %weirdly slow
     tvol = ~(vol==1);
     l = 0; fvol = vol*0; %initialize output vol
-    for i=1:n
+    for i=1:iters*3
     %while l<30
         for j=1:retry
             if l==0 %new start vals until initial placement found
@@ -544,7 +545,7 @@ while l<minlength-ftry/3 && ftry<10
                 veci = vecc; %new initial vector for cone search to avoid high angle/retry overwrite
                 l = l+1; ggg=l; %length counting
                 [fvol] = helper_arrayinsert(fvol,rot,com);
-                for jj=1:numel(mono.vol)
+                for jj=1:numel(mono.modelname)
                     nm = mono.modelname{jj};
                     spin = imrotate3(mono.vol{jj},filang,ori); %rotate about Z for filament twist (go last?)
                     rot = imrotate3(spin,theta,[rotax(1),rotax(2),rotax(3)]); %rotate to the final position
@@ -610,7 +611,7 @@ vol = fvol+vol;
 %split.(mono.modelname{1}) = fvol;
 fn = fieldnames(split);
 for i=1:numel(fn) %loop through splits and mask out bad placements
-    split.(fn{i}) = split.(fn{i}).*(fvol>0);
+    %split.(fn{i}) = split.(fn{i}).*(fvol>0);
 end
 %split = split.*(fvol>0);
 fvol = vol*0;
