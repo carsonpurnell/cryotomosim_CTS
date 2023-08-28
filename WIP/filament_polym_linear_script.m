@@ -485,24 +485,24 @@ sliceViewer(vol);
 
 %% internal functions
 
-function [vol,split] = vol_fill_fil(vol,con,pix,mono,oi)
+function [vol,split] = vol_fill_fil(vol,con,pix,particles,oi)
 if nargin<5
-    oi = zeros(1,numel(mono));
-    for i=1:numel(mono)
-        oi(i) = mono(i).filprop(4);
+    oi = zeros(1,numel(particles));
+    for i=1:numel(particles)
+        oi(i) = particles(i).filprop(4);
     end
 end
 
 %for i=1:numel(mono)
-    namelist = [mono(:).modelname];
+    namelist = [particles(:).modelname];
     for j=1:numel(namelist)
         split.(namelist{j}) = zeros(size(vol));
     end
 %end
 n = 100; retry = 5; ori = [0,0,1];
 
-for gg=1:numel(mono)
-mono = mono(gg); iters = oi(gg); %temp before implementing internal loop
+for gg=1:numel(particles)
+mono = particles(gg); iters = oi(gg); %temp before implementing internal loop
 %sel = randi(numel(mono)); sel = 1;
 %r = max(size(mono.sum,[1,2]))/3-4;
 fpl=0;
