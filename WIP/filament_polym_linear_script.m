@@ -503,7 +503,7 @@ end
     end
 %end
 %n = 100; 
-retry = 3; ori = [0,0,1];
+retry = 5; ori = [0,0,1];
 
 for gg=1:numel(particles)
 mono = particles(gg); iters = oi(gg); %temp before implementing internal loop
@@ -616,7 +616,7 @@ vol = fvol+vol;
 %split.(mono.modelname{1}) = fvol;
 fn = fieldnames(split);
 for i=1:numel(fn) %loop through splits and mask out bad placements
-    split.(fn{i}) = split.(fn{i}).*(fvol>0);
+    split.(fn{i}) = split.(fn{i}).*(vol>0);
 end
 %split = split.*(fvol>0);
 fvol = vol*0;
