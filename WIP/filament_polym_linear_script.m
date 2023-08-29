@@ -7,8 +7,8 @@ box = [300,200,50]*pix; % box size in A
 
 iters = 20;
 
-
-dyn = zeros(0,3);
+% do the thing
+dyn = zeros(0,3); retry=3;
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
     pts.(mn{i}) = zeros(0,3);
@@ -19,9 +19,20 @@ for i=1:iters
     step = particles(1).filprop(2);
     flex = particles(1).filprop(3);
     ml = particles(1).filprop(4);
-
+    for j=1:ml*2
+        for il=1:retry
+            if l==0 %new start vals until initial placement found
+                veci = []; rang = rand*360; pos = rand*box;
+            end
+            
+            %break
+        end
+        
+    end
     
 end
+
+% done the thing
 
 
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
