@@ -7,6 +7,13 @@ box = [300,200,50]*pix; % box size in A
 
 iters = 20;
 
+% do the thing
+
+
+
+[vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
+sliceViewer(atlas);
+
 %try an atom-based version, could be much faster (and less rounding jigger)
 %only need to remake model trees if a new filament was placed, no weirdness with CoM
 %requires atomistic grid and membrane though, and then projecting as a vol
@@ -148,12 +155,12 @@ end
 profile on
 %[vol,split] = vol_fill_fil(vol,con,pix,particles);
 [vol,split] = helper_randfill_fil(vol,con,pix,particles);
-%split placement is being filled by everything, need a better way of temporarily storing the split
 
+%{
 %for i=1:numel(particles)
     %[vol,split] = vol_fill_fil(vol,con,pix,particles);%,iters);
 %end
-%{
+%
 %ovol = vol_fill_fil(mvol,con,pix,monomer,iters); %it works, it's just so slow
 %ovol2 = vol_fill_fil(ovol,con,pix,monomeract,iters);
 %ovol3 = vol_fill_fil(ovol2,con,pix,monomercof,iters);
