@@ -15,7 +15,7 @@ mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
     pts.(mn{i}) = zeros(0,4);
 end
-ol=2;
+%ol=2;
 for ol=1:numel(particles)
 
 for i=1:iters
@@ -42,7 +42,8 @@ for i=1:iters
             theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
             filang = rang+mono.filprop(1)*j; %rotation about filament axis
             
-            err = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol);
+            ovcheck = vertcat(particles(ol).adat{:});
+            err = proxtest(dyn{1},ovcheck(:,1:3),tol);
             if err==0
                 for iix=1:numel(mono.adat) %loop through and cumulate atoms
                     tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
@@ -60,8 +61,14 @@ for i=1:iters
             end
         end
         
-        
         %l=l+1; veci=vecc; %store current vector direction for cone pathing next iter
+    end
+    
+    fn = fieldnames(fil);
+    for fsl=1:numel(fn)
+        pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
+        dyn{1} = [dyn{1};fil.(fn{fsl})(:,1:3)];
+        fil.(fn{fsl}) = 0;
     end
     
 end
