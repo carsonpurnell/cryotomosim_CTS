@@ -3,9 +3,9 @@
 pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
-box = [300,200,50]*pix; % box size in A
+box = [200,200,100]*pix; % box size in A
 
-iters = 4;
+iters = 2;
 
 % do the thing
 %dyn = zeros(0,3); retry=3;
@@ -13,7 +13,7 @@ ori = [0,0,1];
 dyn{1} = single(zeros(0,3)); dyn{2} = 0; retry = 3;
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
-    pts.(mn{i}) = zeros(0,3);
+    pts.(mn{i}) = zeros(0,4);
 end
 ol=1;
 % do the thing
@@ -30,10 +30,11 @@ for i=1:iters
             if l==0 %new start vals until initial placement found
                 veci = []; rang = rand*360; pos = rand(1,3).*box;
             end
-            vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(j-1)*2)); %random deviation vector
+            vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
+            
             %generate new vector in a cone from prior vector, or any if not found
             %flexibility slightly increases with more retries to attempt filament forced bending
-            pos = pos+vecc([2,1,3])*step;
+            pos = pos+vecc([1,2,3])*step;
             
             rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
             theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
@@ -43,15 +44,18 @@ for i=1:iters
             %rot = imrotate3(spin,theta,[rotax(1),rotax(2),rotax(3)]);
             %break
         end
+        
         for il=1:numel(mono.adat) %loop through and cumulate atoms
             tmp = mono.adat{il}; %fetch atoms, needed to operate on partial dimensions
             
             org = [1,2,3]; %or [2,1,3] to invert xy
-            tmp(:,org) = tmp(:,org)*rotmat(rotax,theta); %rotate to the filament axis, other order appears identical
-            tmp(:,org) = tmp(:,org)*rotmat(vecc,deg2rad(filang)); %rotate about filament axis
+            tmp(:,org) = tmp(:,org)*rotmat(rotax,theta); %rotate to the filament orientation
+            tmp(:,org) = tmp(:,org)*rotmat(vecc,deg2rad(filang)); %rotate about the filament axis
             tmp(:,org) = tmp(:,org)+pos-vecc*step/2; %move rotated unit to the target location, halfway along step
             pts.(mono.modelname{il}) = [pts.(mono.modelname{il});tmp];
+            
             l=l+1;
+            veci=vecc; %store current vector direction for cone pathing next iter
         end
         
     end
