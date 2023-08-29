@@ -5,10 +5,11 @@ input = {'MT.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
 box = [300,200,50]*pix; % box size in A
 
-iters = 20;
+iters = 4;
 
 % do the thing
 %dyn = zeros(0,3); retry=3;
+ori = [0,0,1]; 
 dyn{1} = single(zeros(0,3)); dyn{2} = 0; retry = 3;
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
@@ -18,16 +19,16 @@ ol=1;
 % do the thing
 for i=1:iters
     mono = particles(ol);
-    ang = mono.filprop(1);
+    %ang = mono.filprop(1);
     step = mono.filprop(2);
-    flex = mono.filprop(3);
+    %flex = mono.filprop(3);
     ml = mono.filprop(4);
     l=0;
     %kdt = 
     for j=1:ml*2
         for il=1:1
             if l==0 %new start vals until initial placement found
-                veci = []; rang = rand*360; pos = rand*box;
+                veci = []; rang = rand*360; pos = rand(1,3).*box;
             end
             vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(j-1)*2)); %random deviation vector
             %generate new vector in a cone from prior vector, or any if not found
@@ -35,8 +36,8 @@ for i=1:iters
             pos = pos+vecc([2,1,3])*step;
             
             rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
-            theta = -acosd( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
-            filang = rang+mono.filprop(1)*i; %rotation about filament axis
+            theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
+            filang = rang+mono.filprop(1)*j; %rotation about filament axis
             
             %spin = imrotate3(mono.sum,filang,ori); %rotate about Z for filament twist (might go last)
             %rot = imrotate3(spin,theta,[rotax(1),rotax(2),rotax(3)]);
@@ -47,9 +48,10 @@ for i=1:iters
             
             org = [1,2,3]; %or [2,1,3] to invert xy
             tmp(:,org) = tmp(:,org)*rotmat(rotax,theta); %rotate to the filament axis, other order appears identical
-            tmp(:,org) = tmp(:,org)*rotmat(vec,filang); %rotate about filament axis
-            tmp(:,org) = tmp(:,org)+pos-vec*step/2; %move rotated unit to the target location, halfway along step
-            pts.(dat.modelname{j}) = [pts.(dat.modelname{j});tmp];
+            tmp(:,org) = tmp(:,org)*rotmat(vecc,deg2rad(filang)); %rotate about filament axis
+            tmp(:,org) = tmp(:,org)+pos-vecc*step/2; %move rotated unit to the target location, halfway along step
+            pts.(mono.modelname{il}) = [pts.(mono.modelname{il});tmp];
+            l=l+1;
         end
         
     end
@@ -220,7 +222,7 @@ sliceViewer(vol);
 WriteMRC(ovol3,pix,'filmixbig2.mrc')
 
 %% integrated filament walk - atomistic version
-pix = 2; ori = [0,0,1];
+pix = 6; ori = [0,0,1];
 dat = helper_pdb2dat('actin_mono_fil.cif',pix,2,'z',0); ang = -166.15; step = 27.3; flex = 12;
 %dat = helper_pdb2dat('MTring.cif',pix,2,'z',0); ang = 0; step = 85; flex = 3;
 %dat = helper_pdb2dat('cofilactin_lead_samename2.cif',pix,2,'z',0); ang = -161; step = 24; flex = 10;
@@ -715,6 +717,7 @@ end
 
 function vec = randc(row,col,ax,ang)
 if isempty(ax), ax = randv(1,3); end %if no axis given, randomize one
+%ang is IN RADIANS
 nrep = row/size(ax,1); %number of replicates needed to match matrix size for cross
 ax = ax/norm(ax); %unitize target vector to avoid miscalculation
 rax = randv(row,col); %random axes to cross with the center axis
