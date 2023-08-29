@@ -8,7 +8,8 @@ box = [300,200,50]*pix; % box size in A
 iters = 20;
 
 % do the thing
-dyn = zeros(0,3); retry=3;
+%dyn = zeros(0,3); retry=3;
+dyn{1} = single(zeros(0,3)); dyn{2} = 0; retry = 3;
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
     pts.(mn{i}) = zeros(0,3);
@@ -19,6 +20,7 @@ for i=1:iters
     step = particles(1).filprop(2);
     flex = particles(1).filprop(3);
     ml = particles(1).filprop(4);
+    %kdt = 
     for j=1:ml*2
         for il=1:retry
             if l==0 %new start vals until initial placement found
@@ -65,7 +67,7 @@ monomercof = helper_filmono(input,pix,prop); monomercof.modelname{1} = 'cofilact
 %}
 %monomer = helper_filmono(input,pix,prop);
 %}
-%%
+%
 pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};
 %input = 'gui'; %works, but unordered, don't have pickfiles fallback yet
@@ -192,9 +194,8 @@ profile on
 
 profile viewer
 sliceViewer(vol); 
-%%
+%
 WriteMRC(ovol3,pix,'filmixbig2.mrc')
-
 
 %% integrated filament walk - atomistic version
 pix = 2; ori = [0,0,1];
@@ -243,6 +244,7 @@ end
 [vol,~,atlas] = helper_atoms2vol(8,fil);
 volshow(atlas);
 
+%{
 %% spline generation - diagonal
 x = [0,1,2,3,4,5,6,6.5];
 y = [0,1,2,3,4,5.5,6,7];
@@ -526,8 +528,31 @@ bundle = [bundle;poly+[0,80,0,0]];
 [vol,solv,atlas,splitvol] = helper_atoms2vol(5,bundle);
 sliceViewer(vol);
 %WriteMRC(vol+solv,pix,'upscaletest_5.mrc');
+%}
 
 %% internal functions
+
+function err = proxtest(c,pts,tol)
+l = min(pts,[],1)-tol; h = max(pts,[],1)+tol; %low and high bounds per dimension
+ix = c>l & c<h; % compare all points against the prospective box
+ix = all(ix,2); % filter to index of pts inside the box
+if ~any(ix), ix=[]; end % check for early end if no points in the box
+%ix = find(ix>0); %bottleneck - just too many points. mutable octree should be faster overall
+err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but progressive slowdown
+if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
+    buck = 100;%round( size(c,1)/7650 ); %very rough, is probably not linear scale
+    % probably needs some sort of depth-based metric, not a flat one depth = log2 (n/leaf)
+    %ot = OcTree(c(ix,:),'binCapacity',buck); %significantly slower than kdt build
+    
+    %mutree = octcubetree(c(ix,:),'leafmax',500); %slightly faster than kd building
+    %err = mutreetest(mutree,pts); %WAYYY slower than knn search
+    %err = any(err);
+    
+    modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
+    [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
+    d = [d{:}]; if any(d<tol), err=1; end %test if any points closer than tol
+end
+end
 
 function [vol,split] = vol_fill_fil(vol,con,pix,particles,oi)
 if nargin<5
