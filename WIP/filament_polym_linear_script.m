@@ -61,12 +61,10 @@ for i=1:iters
                 veci = vecc; l=1+1; %store current vector as prior, increment length tracker
                 break
             elseif il==retry
-                %fil = struct; 
                 l=0;
             end
         end
         
-        %l=l+1; veci=vecc; %store current vector direction for cone pathing next iter
     end
     
     fn = fieldnames(fil);
