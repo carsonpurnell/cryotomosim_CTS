@@ -108,8 +108,13 @@ end
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
 cts.model.particles = cts.vol;
 if isstruct(param.filaments) %combine structs if filaments were used
-    pn = fieldnames(cts.splitmodel); fn = fieldnames(param.filaments);
+    pn = fieldnames(cts.splitmodel); fn = fieldnames(fsplit);
     for i=1:numel(fn)
+        if ismember(fn{i},pn)
+            cts.splitmodel.(fn{i}) = cts.splitmodel.(fn{i}) + fsplit.(fn{i});
+        else
+            cts.splitmodel.(fn{i}) = fsplit.(fn{i});
+        end
         
     end
 end
