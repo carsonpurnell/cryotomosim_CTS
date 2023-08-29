@@ -14,20 +14,42 @@ mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
     pts.(mn{i}) = zeros(0,3);
 end
+ol=1;
 % do the thing
 for i=1:iters
-    ang = particles(1).filprop(1);
-    step = particles(1).filprop(2);
-    flex = particles(1).filprop(3);
-    ml = particles(1).filprop(4);
+    mono = particles(ol);
+    ang = mono.filprop(1);
+    step = mono.filprop(2);
+    flex = mono.filprop(3);
+    ml = mono.filprop(4);
+    l=0;
     %kdt = 
     for j=1:ml*2
-        for il=1:retry
+        for il=1:1
             if l==0 %new start vals until initial placement found
                 veci = []; rang = rand*360; pos = rand*box;
             end
+            vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(j-1)*2)); %random deviation vector
+            %generate new vector in a cone from prior vector, or any if not found
+            %flexibility slightly increases with more retries to attempt filament forced bending
+            pos = pos+vecc([2,1,3])*step;
             
+            rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
+            theta = -acosd( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
+            filang = rang+mono.filprop(1)*i; %rotation about filament axis
+            
+            %spin = imrotate3(mono.sum,filang,ori); %rotate about Z for filament twist (might go last)
+            %rot = imrotate3(spin,theta,[rotax(1),rotax(2),rotax(3)]);
             %break
+        end
+        for il=1:numel(mono.adat) %loop through and cumulate atoms
+            tmp = mono.adat{il}; %fetch atoms, needed to operate on partial dimensions
+            
+            org = [1,2,3]; %or [2,1,3] to invert xy
+            tmp(:,org) = tmp(:,org)*rotmat(rotax,theta); %rotate to the filament axis, other order appears identical
+            tmp(:,org) = tmp(:,org)*rotmat(vec,filang); %rotate about filament axis
+            tmp(:,org) = tmp(:,org)+pos-vec*step/2; %move rotated unit to the target location, halfway along step
+            pts.(dat.modelname{j}) = [pts.(dat.modelname{j});tmp];
         end
         
     end
