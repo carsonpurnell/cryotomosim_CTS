@@ -8,6 +8,7 @@ box = [200,200,100]*pix; % box size in A
 iters = 10;
 
 % do the thing
+profile on
 
 ori = [0,0,1]; tol = 2;
 dyn{1} = single(zeros(0,3)); dyn{2} = 0; retry = 3;
@@ -68,14 +69,16 @@ for i=1:iters
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         dyn{1} = [dyn{1};fil.(fn{fsl})(:,1:3)];
-        fil.(fn{fsl}) = zeros(0,4);
+        %fil.(fn{fsl}) = zeros(0,4);
     end
+    fil = struct;
     
 end
 fprintf('did a loop, placed XX \n')
 end
-% done the thing
 
+% done the thing
+profile viewer
 
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
 sliceViewer(atlas);
