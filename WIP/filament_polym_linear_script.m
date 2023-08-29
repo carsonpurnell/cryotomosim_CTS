@@ -43,14 +43,18 @@ for i=1:iters
             theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
             filang = rang+mono.filprop(1)*j; %rotation about filament axis
             
+            r1 = rotmat(rotax,theta);
+            r2 = rotmat(vecc,deg2rad(filang));
             ovcheck = vertcat(particles(ol).adat{:});
-            err = proxtest(dyn{1},ovcheck(:,1:3),tol);
+            ovcheck = ovcheck(:,1:3)*r1*r2+pos-vecc*step/2;
+            
+            err = proxtest(dyn{1},ovcheck,tol);
             if err==0
                 for iix=1:numel(mono.adat) %loop through and cumulate atoms
                     tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
                     org = [1,2,3]; %or [2,1,3] to invert xy
-                    tmp(:,org) = tmp(:,org)*rotmat(rotax,theta); %rotate to the filament orientation
-                    tmp(:,org) = tmp(:,org)*rotmat(vecc,deg2rad(filang)); %rotate about the filament axis
+                    tmp(:,org) = tmp(:,org)*r1; %rotate to the filament orientation
+                    tmp(:,org) = tmp(:,org)*r2; %rotate about the filament axis
                     tmp(:,org) = tmp(:,org)+pos-vecc*step/2; %move to halfway along current vector
                     fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
                 end
