@@ -95,7 +95,9 @@ end
 %}
 
 % filament placement WIP block
-
+if isstruct(param.filaments)
+    [cts.vol,fsplit] = helper_randfill_fil(cts.vol,constraint,pix,param.filaments);
+end
 
 %generate model and add (in case input vol had stuff in it)
 %[cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,param.layers,param.iters,...
@@ -105,6 +107,11 @@ end
     memvol,nvecs,memskel,vesvol,param.density,'graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
 cts.model.particles = cts.vol;
+if isstruct(param.filaments)
+    %somehow sum structs
+    fn = fieldnames(cts.splitmode);
+    pn = fieldnames(param.filaments);
+end
 
 if param.beads~=0 %bead generation and placement block
     beadstrc = gen_beads(pix,param.beads(2:end)); %external generation of varied beads
