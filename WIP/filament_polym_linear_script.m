@@ -5,7 +5,7 @@ input = {'MT.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
 box = [200,200,100]*pix; % box size in A
 
-iters = 2;
+iters = 10;
 
 % do the thing
 %dyn = zeros(0,3); retry=3;
@@ -15,7 +15,7 @@ mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
     pts.(mn{i}) = zeros(0,4);
 end
-ol=1;
+ol=2;
 % do the thing
 for i=1:iters
     mono = particles(ol);
@@ -54,9 +54,9 @@ for i=1:iters
             tmp(:,org) = tmp(:,org)+pos-vecc*step/2; %move rotated unit to the target location, halfway along step
             pts.(mono.modelname{il}) = [pts.(mono.modelname{il});tmp];
             
-            l=l+1;
-            veci=vecc; %store current vector direction for cone pathing next iter
         end
+        veci=vecc; %store current vector direction for cone pathing next iter
+        l=l+1;
         
     end
     
