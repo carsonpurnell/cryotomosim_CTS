@@ -31,7 +31,7 @@ while l<minlength-ftry/3 && ftry<10
     %tvol = ~(bwdist(vol)<4); %weirdly slow
     tvol = ~(vol==1);
     l = 0; fvol = vol*0; %initialize output vol
-    for i=1:iters*2
+    for i=1:iters*3
     %while l<30
         for j=1:retry
             if l==0 %new start vals until initial placement found
