@@ -107,10 +107,11 @@ end
     memvol,nvecs,memskel,vesvol,param.density,'graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
 cts.model.particles = cts.vol;
-if isstruct(param.filaments)
-    %somehow sum structs
-    fn = fieldnames(cts.splitmodel);
-    pn = fieldnames(param.filaments);
+if isstruct(param.filaments) %combine structs if filaments were used
+    pn = fieldnames(cts.splitmodel); fn = fieldnames(param.filaments);
+    for i=1:numel(fn)
+        
+    end
 end
 
 if param.beads~=0 %bead generation and placement block
