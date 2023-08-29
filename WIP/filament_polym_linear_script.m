@@ -17,7 +17,7 @@ for i=1:numel(mn)
 end
 ol=2;
 for ol=1:numel(particles)
-% do the thing
+
 for i=1:iters
     mono = particles(ol);
     %ang = mono.filprop(1);
@@ -25,14 +25,15 @@ for i=1:iters
     %flex = mono.filprop(3);
     ml = mono.filprop(4);
     l=0;
-    for mmm=1:numel(mono.modelname)
-        fil.(mono.modelname{mmm}) = zeros(0,4);
-    end
+    
     %kdt = 
     for j=1:ml*2
-        for il=1:1
+        for il=1:retry
             if l==0 %new start vals until initial placement found
                 veci = []; rang = rand*360; pos = rand(1,3).*box;
+                for mmm=1:numel(mono.modelname)
+                    fil.(mono.modelname{mmm}) = zeros(0,4);
+                end
             end
             vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
             pos = pos+vecc([1,2,3])*step; %0-centered placement location from vector path
@@ -42,27 +43,29 @@ for i=1:iters
             filang = rang+mono.filprop(1)*j; %rotation about filament axis
             
             err = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol);
-            %break
+            if err==0
+                for iix=1:numel(mono.adat) %loop through and cumulate atoms
+                    tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
+                    org = [1,2,3]; %or [2,1,3] to invert xy
+                    tmp(:,org) = tmp(:,org)*rotmat(rotax,theta); %rotate to the filament orientation
+                    tmp(:,org) = tmp(:,org)*rotmat(vecc,deg2rad(filang)); %rotate about the filament axis
+                    tmp(:,org) = tmp(:,org)+pos-vecc*step/2; %move to halfway along current vector
+                    fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
+                end
+                veci = vecc; l=1+1; %store current vector as prior, increment length tracker
+                break
+            elseif il==retry
+                %fil = struct; 
+                l=0;
+            end
         end
         
-        for il=1:numel(mono.adat) %loop through and cumulate atoms
-            tmp = mono.adat{il}; %fetch atoms, needed to operate on partial dimensions
-            
-            org = [1,2,3]; %or [2,1,3] to invert xy
-            tmp(:,org) = tmp(:,org)*rotmat(rotax,theta); %rotate to the filament orientation
-            tmp(:,org) = tmp(:,org)*rotmat(vecc,deg2rad(filang)); %rotate about the filament axis
-            tmp(:,org) = tmp(:,org)+pos-vecc*step/2; %move rotated unit to the target location, 
-            %halfway along step
-            fil.(mono.modelname{il}) = [fil.(mono.modelname{il});tmp];
-            
-        end
-        veci=vecc; %store current vector direction for cone pathing next iter
-        l=l+1;
         
+        %l=l+1; veci=vecc; %store current vector direction for cone pathing next iter
     end
     
 end
-fprintf('did a loop \n')
+fprintf('did a loop, placed XX \n')
 end
 % done the thing
 
