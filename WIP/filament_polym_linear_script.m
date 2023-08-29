@@ -68,7 +68,7 @@ for i=1:iters
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         dyn{1} = [dyn{1};fil.(fn{fsl})(:,1:3)];
-        fil.(fn{fsl}) = 0;
+        fil.(fn{fsl}) = zeros(0,4);
     end
     
 end
