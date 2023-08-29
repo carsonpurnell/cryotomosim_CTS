@@ -109,7 +109,7 @@ cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between tr
 cts.model.particles = cts.vol;
 if isstruct(param.filaments)
     %somehow sum structs
-    fn = fieldnames(cts.splitmode);
+    fn = fieldnames(cts.splitmodel);
     pn = fieldnames(param.filaments);
 end
 
