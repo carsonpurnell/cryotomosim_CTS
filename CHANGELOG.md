@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.3.7](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.7) - 2023-08-29 01:01:07
+
+Filament polymerization, with curvature. Currently obnoxiously slow and poor at packing to moderate density.
+
 ## [v0.3.6](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.6) - 2023-08-10 17:00:56
 
 *No description*
