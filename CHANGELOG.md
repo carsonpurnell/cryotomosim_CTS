@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.3.8](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.8) - 2023-08-29 17:41:13
+
+fixed atlas generation of filaments within models, slightly improved generation speed. still quite slow, expect >5min runtimes.
+
 ## [v0.3.7](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.7) - 2023-08-29 01:01:07
 
 Filament polymerization, with curvature. Currently obnoxiously slow and poor at packing to moderate density.
