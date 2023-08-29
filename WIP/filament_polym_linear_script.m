@@ -15,7 +15,11 @@ for i=1:numel(mn)
 end
 % do the thing
 for i=1:iters
-    
+    ang = particles(1).filprop(1);
+    step = particles(1).filprop(2);
+    flex = particles(1).filprop(3);
+    ml = particles(1).filprop(4);
+
     
 end
 
