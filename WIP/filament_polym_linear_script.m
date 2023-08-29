@@ -137,7 +137,8 @@ fvol = vol*0;
 end
 %}
 profile on
-[vol,split] = vol_fill_fil(vol,con,pix,particles);
+%[vol,split] = vol_fill_fil(vol,con,pix,particles);
+[vol,split] = helper_randfill_fil(vol,con,pix,particles);
 %split placement is being filled by everything, need a better way of temporarily storing the split
 
 %for i=1:numel(particles)
