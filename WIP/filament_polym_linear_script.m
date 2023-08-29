@@ -1,14 +1,23 @@
 
 %% integrated polymer walk - atomistic
 pix = 8;
-input = {'MT.fil'};%,'actin.fil','cofilactin.fil'};
+input = {'MT.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
 box = [300,200,50]*pix; % box size in A
 
 iters = 20;
 
-% do the thing
 
+dyn = zeros(0,3);
+mn = [particles.modelname]; %round up all names for models
+for i=1:numel(mn)
+    pts.(mn{i}) = zeros(0,3);
+end
+% do the thing
+for i=1:iters
+    
+    
+end
 
 
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
