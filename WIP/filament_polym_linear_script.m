@@ -1,3 +1,12 @@
+
+%% integrated polymer walk - atomistic
+pix = 8;
+input = {'MT.fil'};%,'actin.fil','cofilactin.fil'};
+particles = helper_filinput(pix,input);
+box = [300,200,50]*pix; % box size in A
+
+iters = 20;
+
 %try an atom-based version, could be much faster (and less rounding jigger)
 %only need to remake model trees if a new filament was placed, no weirdness with CoM
 %requires atomistic grid and membrane though, and then projecting as a vol
