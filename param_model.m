@@ -76,7 +76,7 @@ end
 param.layers = layers; param.iters = iters;
 
 if param.filaments~=0
-    param.filaments = helper_filinput(pix,param.filaments);
+    param.filaments = helper_filinput(pix,'gui');
 end
 
 end
