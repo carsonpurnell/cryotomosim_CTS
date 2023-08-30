@@ -1,14 +1,15 @@
 
 %% integrated polymer walk - atomistic
+profile on
 pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
-box = [200,200,100]*pix; % box size in A
+box = [400,300,50]*pix; % box size in A
 
-iters = 10;
-
+iters = 20;
+%
 % do the thing
-profile on
+%profile on
 
 ori = [0,0,1]; tol = 2;
 dyn{1} = single(zeros(0,3)); dyn{2} = 0; retry = 3;
@@ -18,7 +19,7 @@ for i=1:numel(mn)
 end
 %ol=2;
 for ol=1:numel(particles)
-
+    
 for i=1:iters
     mono = particles(ol);
     %ang = mono.filprop(1);
@@ -28,7 +29,7 @@ for i=1:iters
     l=0;
     
     %kdt = 
-    for j=1:ml*2
+    for j=1:ml*4
         for il=1:retry
             if l==0 %new start vals until initial placement found
                 veci = []; rang = rand*360; pos = rand(1,3).*box;
@@ -43,10 +44,9 @@ for i=1:iters
             theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
             filang = rang+mono.filprop(1)*j; %rotation about filament axis
             
-            r1 = rotmat(rotax,theta);
-            r2 = rotmat(vecc,deg2rad(filang));
-            ovcheck = vertcat(particles(ol).adat{:});
-            ovcheck = ovcheck(:,1:3)*r1*r2+pos-vecc*step/2;
+            r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
+            %ovcheck = vertcat(particles(ol).adat{:});
+            ovcheck = particles(ol).perim*r1*r2+pos-vecc*step/2;
             
             err = proxtest(dyn{1},ovcheck,tol);
             if err==0
@@ -70,7 +70,10 @@ for i=1:iters
     fn = fieldnames(fil);
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
-        dyn{1} = [dyn{1};fil.(fn{fsl})(:,1:3)];
+        n = size(fil.(fn{fsl}),1);
+        ix = randperm(n); ix = ix(1:round(n/10));
+        lim = fil.(fn{fsl})(ix,1:3);
+        dyn{1} = [dyn{1};lim];
         %fil.(fn{fsl}) = zeros(0,4);
     end
     fil = struct;
@@ -81,7 +84,7 @@ end
 
 % done the thing
 profile viewer
-
+clear dyn
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
 sliceViewer(atlas);
 
