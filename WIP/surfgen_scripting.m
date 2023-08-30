@@ -9,7 +9,7 @@ sz = sz+pad*2;
 %padding
 %pruning square back down to target size
 
-ptsep = 2;
+ptsep = 3;
 [X,Y] = ndgrid(1:ptsep:sz(1),1:ptsep:sz(2));
 i = min(X-1,sz(1)-X+1); j = min(Y-1,sz(2)-Y+1);
 H = exp(-.5*(i.^2+j.^2)/n^2);
