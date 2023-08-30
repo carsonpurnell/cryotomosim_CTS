@@ -51,7 +51,7 @@ pix = 10;
 boxsize = pix*[400,300,50]; %curvature is anisotropic, nonsquare grid has uneven noise
 sz = [max(boxsize),max(boxsize)]; n = 4+pix^1.6;
 
-pts = surfgen_scripting(sz,n);
+pts = surfgen_scripting(sz,n,500);
 
 bshell = repmat(pts,[4,1]);
 d2 = 12;%rand(size(bshell))*12;
@@ -81,13 +81,13 @@ vol = helper_atoms2vol(pix,bvol,boxsize);
 sliceViewer(vol);
 
 %% borders for atomic 
-pix = 12;
-boxsize = pix*[400,300,50]; %curvature is anisotropic, nonsquare grid has uneven noise
+pix = 10;
+boxsize = pix*[300,200,50]; %curvature is anisotropic, nonsquare grid has uneven noise
 sz = [max(boxsize),max(boxsize)]; 
 n = 4+pix^1.5;
-sc = 1000;
+sc = 1200;
 
-pts = surfgen_scripting(sz,n/2,sc*3); %pts{2} = surfgen_scripting(sz,n);
+pts = surfgen_scripting(sz,n/2,sc*2); %pts{2} = surfgen_scripting(sz,n);
 
 %plot3(pts(:,1),pts(:,2),pts(:,3),'.'); axis equal
 borderpts = pts;
@@ -99,3 +99,20 @@ end
 borderpts = [borderpts+[0,0,24];borderpts+[0,0,boxsize(3)-24]];
 borderpts(:,4) = 6;
 
+vol = helper_atoms2vol(pix,pts);%,boxsize);
+sliceViewer(vol);
+
+%% cleaned up border constraints attempt
+pix = 10;
+boxsize = pix*[300,200,50]; %curvature is anisotropic, nonsquare grid has uneven noise
+sz = [max(boxsize),max(boxsize)]; 
+n = 4+pix^1.5;
+sc = 2400;
+
+ptsb = surfgen_scripting(sz,n/2,sc*1)-[0,0,5*pix];
+ptst = surfgen_scripting(sz,n/2,sc*1)+[0,0,5*pix+boxsize(3)];
+con = [ptsb;ptst];
+
+vol = helper_atoms2vol(pix,con,boxsize);
+%sliceViewer(vol);
+plot3p(ptsb,'.'); axis equal

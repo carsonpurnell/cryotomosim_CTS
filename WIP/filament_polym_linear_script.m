@@ -11,8 +11,16 @@ iters = 20;
 % do the thing
 %profile on
 
+%pix = 10;
+%boxsize = pix*[300,200,50]; %curvature is anisotropic, nonsquare grid has uneven noise
+n = 4+pix^1.5;
+sc = 2400;
+con = internal_atomcon(box,pix,n,sc);
+plot3p(con,'.'); axis equal
+
 ori = [0,0,1]; tol = 2;
-dyn{1} = single(zeros(0,3)); dyn{2} = 0; retry = 3;
+dyn{1} = con; 
+dyn{2} = 0; retry = 3;
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
     pts.(mn{i}) = zeros(0,4);
@@ -71,7 +79,7 @@ for i=1:iters
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         n = size(fil.(fn{fsl}),1);
-        ix = randperm(n); ix = ix(1:round(n/10));
+        ix = randperm(n); ix = ix(1:round(n/20));
         lim = fil.(fn{fsl})(ix,1:3);
         dyn{1} = [dyn{1};lim];
         %fil.(fn{fsl}) = zeros(0,4);
@@ -84,7 +92,7 @@ end
 
 % done the thing
 profile viewer
-clear dyn
+%clear dyn
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
 sliceViewer(atlas);
 
@@ -579,6 +587,22 @@ sliceViewer(vol);
 %}
 
 %% internal functions
+function con = internal_atomcon(box,pix,n,sc)
+sz = [max(box),max(box)]; 
+dl = pix;
+ptsb = surfgen_scripting(sz,n/2,sc*1)-[0,0,dl*5];
+pts = zeros(0,3);
+for i=1:5
+    pts = [pts;ptsb-[0,0,dl*i]];
+end
+ptst = surfgen_scripting(sz,n/2,sc*1)+[0,0,dl*5+box(3)];
+for i=1:5
+    pts = [pts;ptst+[0,0,dl*i]];
+end
+
+con = pts;
+%con = [ptsb;ptsb-[0,0,5*pix];ptst;ptst+[0,0,5*pix]];
+end
 
 function err = proxtest(c,pts,tol)
 l = min(pts,[],1)-tol; h = max(pts,[],1)+tol; %low and high bounds per dimension
