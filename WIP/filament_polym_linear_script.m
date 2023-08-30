@@ -16,7 +16,7 @@ iters = 20;
 n = 4+pix^1.5;
 sc = 2400;
 con = internal_atomcon(box,pix,n,sc);
-plot3p(con,'.'); axis equal
+%plot3p(con,'.'); axis equal
 
 ori = [0,0,1]; tol = 2;
 dyn{1} = con; 
@@ -48,6 +48,10 @@ for i=1:iters
             vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
             pos = pos+vecc([1,2,3])*step; %0-centered placement location from vector path
             
+            if all(pos+100<0) || all(pos-100>box)
+                err = 1; %if pos is too far out of box, bail early
+                fprintf('err ')
+            else
             rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
             theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
             filang = rang+mono.filprop(1)*j; %rotation about filament axis
@@ -55,8 +59,8 @@ for i=1:iters
             r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
             %ovcheck = vertcat(particles(ol).adat{:});
             ovcheck = particles(ol).perim*r1*r2+pos-vecc*step/2;
-            
             err = proxtest(dyn{1},ovcheck,tol);
+            end
             if err==0
                 for iix=1:numel(mono.adat) %loop through and cumulate atoms
                     tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
@@ -589,14 +593,13 @@ sliceViewer(vol);
 %% internal functions
 function con = internal_atomcon(box,pix,n,sc)
 sz = [max(box),max(box)]; 
-dl = pix;
+dl = 6;
+%lr = 3;
 ptsb = surfgen_scripting(sz,n/2,sc*1)-[0,0,dl*5];
-pts = zeros(0,3);
-for i=1:5
-    pts = [pts;ptsb-[0,0,dl*i]];
-end
 ptst = surfgen_scripting(sz,n/2,sc*1)+[0,0,dl*5+box(3)];
-for i=1:5
+pts = zeros(0,3);
+for i=1:4
+    pts = [pts;ptsb-[0,0,dl*i]];
     pts = [pts;ptst+[0,0,dl*i]];
 end
 
