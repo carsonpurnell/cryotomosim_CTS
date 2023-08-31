@@ -32,9 +32,9 @@ for i=1:iters
     mono = particles(ol);
     step = mono.filprop(2);
     ml = mono.filprop(4);
-    l=0; fail=0;
+    l=0; fail=0; fil = struct; END=0;
     for j=1:ml*5
-        if fail==0
+        if fail==0 && END~=1
         for il=1:retry
             if l==0 %new start vals until initial placement found
                 veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
@@ -60,6 +60,7 @@ for i=1:iters
             end
             
             if err==0, break; end %if good placement found, early exit
+            if err~=0 && il==retry, END=1; fprintf('end'); end
         end
         end
         
@@ -76,6 +77,7 @@ for i=1:iters
                 tmp(:,org) = tmp(:,org)*r1*r2+pos-vecc*step/2; %move to halfway along current vector
                 fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
             end
+            %fprintf('%i,',fail)
             %fail = 0;
             veci = vecc; l=l+1; %store current vector as prior, increment length tracker
         else%if il==retry
@@ -95,7 +97,7 @@ for i=1:iters
         %fil.(fn{fsl}) = zeros(0,4);
     end
     end
-    fil = struct; l=0;
+    %fil = struct; l=0;
     if fail==0; ct = ct+1; end
 end
 fprintf('did a loop, placed %i out of %i \n',ct,iters)
