@@ -26,7 +26,7 @@ for i=1:numel(mn)
 end
 %ol=2;
 for ol=1:numel(particles)
-    iters = particles(ol).filprop(4)*5;
+    iters = 0.2*particles(ol).filprop(4)^2;
 for i=1:iters
     mono = particles(ol);
     %ang = mono.filprop(1);
