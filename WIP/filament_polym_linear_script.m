@@ -1,20 +1,18 @@
 
+
 %% integrated polymer walk - atomistic
 profile on
 pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
-box = [400,300,50]*pix; % box size in A
+box = [400,300,60]*pix; % box size in A
 
-iters = 200;
-%
+%iters = 200;
+
 % do the thing
 %profile on
 
-%pix = 10;
-%boxsize = pix*[300,200,50]; %curvature is anisotropic, nonsquare grid has uneven noise
-n = 4+pix^1.5;
-sc = 2400;
+n = 4+pix^1.5; sc = 2400;
 con = internal_atomcon(box,pix,n,sc);
 %plot3p(con,'.'); axis equal
 
@@ -28,7 +26,7 @@ for i=1:numel(mn)
 end
 %ol=2;
 for ol=1:numel(particles)
-    
+    iters = particles(ol).filprop(4)*5;
 for i=1:iters
     mono = particles(ol);
     %ang = mono.filprop(1);
@@ -36,13 +34,14 @@ for i=1:iters
     %flex = mono.filprop(3);
     ml = mono.filprop(4);
     l=0;
-    
-    %kdt = 
     for j=1:ml*5
         
         for il=1:retry
             if l==0 %new start vals until initial placement found
-                veci = []; rang = rand*360; pos = rand(1,3).*box;
+                veci = []; 
+                veci = randc(1,3,ori,deg2rad([60,120]));
+                rang = rand*360; pos = rand(1,3).*box;
+                %random horizontal start vector for better efficiency?
                 for mmm=1:numel(mono.modelname)
                     fil.(mono.modelname{mmm}) = zeros(0,4);
                 end
@@ -51,16 +50,14 @@ for i=1:iters
             vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
             pos = pos+vecc([1,2,3])*step; %0-centered placement location from vector path
             
-            if any(pos+500<0) || any(pos-500>box)
+            if any(pos+200<0) || any(pos-200>box)
                 err = 1; %if pos is too far out of box, bail early
-                %fprintf('err ')
             else
                 rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
                 theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
                 filang = rang+mono.filprop(1)*j; %rotation about filament axis
                 
                 r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
-                %ovcheck = vertcat(particles(ol).adat{:});
                 ovcheck = particles(ol).perim*r1*r2+pos-vecc*step/2;
                 err = proxtest(dyn{1},ovcheck,tol);
             end
@@ -72,22 +69,16 @@ for i=1:iters
         end
         
         if err==0
-            %fprintf('p')
             for iix=1:numel(mono.adat) %loop through and cumulate atoms
                 tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
                 org = [1,2,3]; %or [2,1,3] to invert xy
-                tmp(:,org) = tmp(:,org)*r1; %rotate to the filament orientation
-                tmp(:,org) = tmp(:,org)*r2; %rotate about the filament axis
-                tmp(:,org) = tmp(:,org)+pos-vecc*step/2; %move to halfway along current vector
+                %tmp(:,org) = tmp(:,org)*r1; %rotate to the filament orientation
+                %tmp(:,org) = tmp(:,org)*r2; %rotate about the filament axis
+                tmp(:,org) = tmp(:,org)*r1*r2+pos-vecc*step/2; %move to halfway along current vector
                 fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
             end
-            
             veci = vecc; l=l+1; %store current vector as prior, increment length tracker
-            
-            %break %need to reorganize so the loop outside this one can be broken
         else%if il==retry
-            %disp('placement fail')
-            %fil
             break
         end
         %fprintf('%i',l)
@@ -785,6 +776,9 @@ end
 
 function vec = randc(row,col,ax,ang)
 if isempty(ax), ax = randv(1,3); end %if no axis given, randomize one
+%if ang is 1x2, use 1st for min 2nd max?
+if numel(ang)==1, ang(2)=ang(1); ang(1)=0; end
+ang(2) = ang(2)-ang(1); %store difference from min for simpler following code
 %ang is IN RADIANS
 nrep = row/size(ax,1); %number of replicates needed to match matrix size for cross
 ax = ax/norm(ax); %unitize target vector to avoid miscalculation
@@ -793,7 +787,7 @@ rotax = cross(repmat(ax,nrep,1),rax); %compute orthogonal axes to rotate
 rotax = (rotax'./vecnorm(rotax'))'; %unitize orthogonal axes
 vec = zeros(row,col);
 for i=1:row
-    R = rotmat(rotax(i,:),rand*ang); %rotation vector
+    R = rotmat(rotax(i,:),rand*ang(2)+ang(1)); %rotation vector
     vec(i,:) = ax*R;
 end
 end
