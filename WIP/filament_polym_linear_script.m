@@ -27,13 +27,14 @@ end
 
 for ol=1:numel(particles)
     iters = 0.2*particles(ol).filprop(4)^2;
+    ct = 0;
 for i=1:iters
     mono = particles(ol);
     step = mono.filprop(2);
     ml = mono.filprop(4);
-    l=0;
+    l=0; fail=0;
     for j=1:ml*5
-        
+        if fail==0
         for il=1:retry
             if l==0 %new start vals until initial placement found
                 veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
@@ -60,8 +61,13 @@ for i=1:iters
             
             if err==0, break; end %if good placement found, early exit
         end
+        end
         
-        if err==0
+        if err==1
+            fail = 1;
+            %fprintf('t')
+            break
+        elseif err==0 && fail==0
             for iix=1:numel(mono.adat) %loop through and cumulate atoms
                 tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
                 org = [1,2,3]; %or [2,1,3] to invert xy
@@ -70,14 +76,16 @@ for i=1:iters
                 tmp(:,org) = tmp(:,org)*r1*r2+pos-vecc*step/2; %move to halfway along current vector
                 fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
             end
+            %fail = 0;
             veci = vecc; l=l+1; %store current vector as prior, increment length tracker
         else%if il==retry
-            break
+            %fail = 1;
+            break %this break still seems to fail sometimes. pass-through filaments still happen
         end
     end
     
-    if l>ml*1.5
-    fn = fieldnames(fil);
+    if l>ml*1.0 %&& fail==0
+    fn = fieldnames(fil); fail = 0;
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         n = size(fil.(fn{fsl}),1);
@@ -88,9 +96,9 @@ for i=1:iters
     end
     end
     fil = struct; l=0;
-    
+    if fail==0; ct = ct+1; end
 end
-fprintf('did a loop, placed XX \n')
+fprintf('did a loop, placed %i out of %i \n',ct,iters)
 end
 
 % done the thing
