@@ -2,7 +2,7 @@
 
 %% integrated polymer walk - atomistic
 profile on
-pix = 8;
+pix = 12;
 input = {'MT.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
 box = [400,300,60]*pix; % box size in A
@@ -34,6 +34,7 @@ for i=1:iters
     ml = mono.filprop(4);
     l=0; fail=0; fil = struct; END=0;
     for j=1:ml*5
+        if END==1; fprintf('this is a bail '); break; end
         if fail==0 && END~=1
         for il=1:retry
             if l==0 %new start vals until initial placement found
@@ -60,15 +61,15 @@ for i=1:iters
             end
             
             if err==0, break; end %if good placement found, early exit
-            if err~=0 && il==retry, END=1; fprintf('end'); end
+            if err~=0 && il==retry, END=1; end %still failing at times
         end
         end
         
-        if err==1
+        if err==1 || END==1
             fail = 1;
             %fprintf('t')
             break
-        elseif err==0 && fail==0
+        elseif err==0 && fail==0 && END==0
             for iix=1:numel(mono.adat) %loop through and cumulate atoms
                 tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
                 org = [1,2,3]; %or [2,1,3] to invert xy
