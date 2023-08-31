@@ -2,10 +2,10 @@
 
 %% integrated polymer walk - atomistic
 profile on
-pix = 12;
+pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
-box = [400,300,60]*pix; % box size in A
+box = [500,400,80]*pix; % box size in A
 %iters = 200;
 
 %profile on
@@ -17,7 +17,7 @@ ori = [0,0,1]; tol = 2;
 if isempty(con)
     dyn{1} = zeros(0,3);
 else
-    dyn{1} = con; 
+    dyn{1} = con;
 end
 dyn{2} = 0; retry = 5;
 mn = [particles.modelname]; %round up all names for models
@@ -30,10 +30,10 @@ for ol=1:numel(particles)
     ct = 0;
 for i=1:iters
     mono = particles(ol);
-    step = mono.filprop(2);
-    ml = mono.filprop(4);
+    %step = mono.filprop(2);
+    %ml = mono.filprop(4);
     l=0; fail=0; fil = struct; END=0;
-    for j=1:ml*5
+    for j=1:mono.filprop(4)*10
         if END==1; fprintf('this is a bail '); break; end
         if fail==0 && END~=1
         for il=1:retry
@@ -46,7 +46,7 @@ for i=1:iters
             end
             
             vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
-            pos = pos+vecc([1,2,3])*step; %0-centered placement location from vector path
+            pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
             
             if any(pos+200<0) || any(pos-200>box)
                 err = 1; %if pos is too far out of box, retry without pointless proxtesting
@@ -56,26 +56,31 @@ for i=1:iters
                 filang = rang+mono.filprop(1)*j; %rotation about filament axis
                 
                 r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
-                ovcheck = particles(ol).perim*r1*r2+pos-vecc*step/2;
+                com = pos-vecc*mono.filprop(2)/2;
+                ovcheck = particles(ol).perim*r1*r2+com;
                 err = proxtest(dyn{1},ovcheck,tol);
             end
             
             if err==0, break; end %if good placement found, early exit
-            if err~=0 && il==retry, END=1; end %still failing at times
+            if err~=0 && il==retry, END=1; fail=1; end %still failing at times
         end
+        else
+            fprintf('avoided '); %never reaches this point?fail and end both don't work at all?
         end
         
+        %{
         if err==1 || END==1
             fail = 1;
-            %fprintf('t')
-            break
-        elseif err==0 && fail==0 && END==0
+            fprintf('t')
+            break; %this break does not work
+            %}
+        if err==0 && fail==0 && END==0
             for iix=1:numel(mono.adat) %loop through and cumulate atoms
                 tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
                 org = [1,2,3]; %or [2,1,3] to invert xy
                 %tmp(:,org) = tmp(:,org)*r1; %rotate to the filament orientation
                 %tmp(:,org) = tmp(:,org)*r2; %rotate about the filament axis
-                tmp(:,org) = tmp(:,org)*r1*r2+pos-vecc*step/2; %move to halfway along current vector
+                tmp(:,org) = tmp(:,org)*r1*r2+com; %move to halfway along current vector
                 fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
             end
             %fprintf('%i,',fail)
@@ -83,12 +88,13 @@ for i=1:iters
             veci = vecc; l=l+1; %store current vector as prior, increment length tracker
         else%if il==retry
             %fail = 1;
+            %fprintf('%i,',i)
             break %this break still seems to fail sometimes. pass-through filaments still happen
         end
     end
     
-    if l>ml*1.0 %&& fail==0
-    fn = fieldnames(fil); fail = 0;
+    if l>mono.filprop(4)*1.0 %&& fail==0
+    fn = fieldnames(fil); fail = 0; pos = []; l=0;
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         n = size(fil.(fn{fsl}),1);
