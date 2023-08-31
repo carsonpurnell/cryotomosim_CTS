@@ -6,42 +6,38 @@ pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
 box = [400,300,60]*pix; % box size in A
-
 %iters = 200;
 
-% do the thing
 %profile on
 
 n = 4+pix^1.5; sc = 2400;
 con = internal_atomcon(box,pix,n,sc);
-%plot3p(con,'.'); axis equal
 
 ori = [0,0,1]; tol = 2;
-dyn{1} = con; 
-%dyn{1} = zeros(0,3);
-dyn{2} = 0; retry = 3;
+if isempty(con)
+    dyn{1} = zeros(0,3);
+else
+    dyn{1} = con; 
+end
+dyn{2} = 0; retry = 5;
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
     pts.(mn{i}) = zeros(0,4);
 end
-%ol=2;
+
 for ol=1:numel(particles)
     iters = 0.2*particles(ol).filprop(4)^2;
 for i=1:iters
     mono = particles(ol);
-    %ang = mono.filprop(1);
     step = mono.filprop(2);
-    %flex = mono.filprop(3);
     ml = mono.filprop(4);
     l=0;
     for j=1:ml*5
         
         for il=1:retry
             if l==0 %new start vals until initial placement found
-                veci = []; 
-                veci = randc(1,3,ori,deg2rad([60,120]));
-                rang = rand*360; pos = rand(1,3).*box;
-                %random horizontal start vector for better efficiency?
+                veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
+                rang = rand*360; pos = rand(1,3).*box; %prob need better in-box randomizing
                 for mmm=1:numel(mono.modelname)
                     fil.(mono.modelname{mmm}) = zeros(0,4);
                 end
@@ -51,7 +47,7 @@ for i=1:iters
             pos = pos+vecc([1,2,3])*step; %0-centered placement location from vector path
             
             if any(pos+200<0) || any(pos-200>box)
-                err = 1; %if pos is too far out of box, bail early
+                err = 1; %if pos is too far out of box, retry without pointless proxtesting
             else
                 rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
                 theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
@@ -62,10 +58,7 @@ for i=1:iters
                 err = proxtest(dyn{1},ovcheck,tol);
             end
             
-            if err==0
-                break
-            end
-            
+            if err==0, break; end %if good placement found, early exit
         end
         
         if err==0
@@ -81,8 +74,6 @@ for i=1:iters
         else%if il==retry
             break
         end
-        %fprintf('%i',l)
-        
     end
     
     if l>ml*1.5
