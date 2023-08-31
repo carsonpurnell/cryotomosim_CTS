@@ -48,7 +48,7 @@ for i=1:iters
             vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
             pos = pos+vecc([1,2,3])*step; %0-centered placement location from vector path
             
-            if all(pos+100<0) || all(pos-100>box)
+            if any(pos+500<0) || any(pos-500>box)
                 err = 1; %if pos is too far out of box, bail early
                 fprintf('err ')
             else
@@ -61,24 +61,31 @@ for i=1:iters
             ovcheck = particles(ol).perim*r1*r2+pos-vecc*step/2;
             err = proxtest(dyn{1},ovcheck,tol);
             end
+            
             if err==0
-                for iix=1:numel(mono.adat) %loop through and cumulate atoms
-                    tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
-                    org = [1,2,3]; %or [2,1,3] to invert xy
-                    tmp(:,org) = tmp(:,org)*r1; %rotate to the filament orientation
-                    tmp(:,org) = tmp(:,org)*r2; %rotate about the filament axis
-                    tmp(:,org) = tmp(:,org)+pos-vecc*step/2; %move to halfway along current vector
-                    fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
-                end
-                veci = vecc; l=1+1; %store current vector as prior, increment length tracker
                 break
-            elseif il==retry
-                l=0;
             end
+            
+        end
+        
+        if err==0
+            for iix=1:numel(mono.adat) %loop through and cumulate atoms
+                tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
+                org = [1,2,3]; %or [2,1,3] to invert xy
+                tmp(:,org) = tmp(:,org)*r1; %rotate to the filament orientation
+                tmp(:,org) = tmp(:,org)*r2; %rotate about the filament axis
+                tmp(:,org) = tmp(:,org)+pos-vecc*step/2; %move to halfway along current vector
+                fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
+            end
+            veci = vecc; l=1+1; %store current vector as prior, increment length tracker
+            %break %need to reorganize so the loop outside this one can be broken
+        elseif il==retry
+            break
         end
         
     end
     
+    if l>=ml
     fn = fieldnames(fil);
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
@@ -87,6 +94,7 @@ for i=1:iters
         lim = fil.(fn{fsl})(ix,1:3);
         dyn{1} = [dyn{1};lim];
         %fil.(fn{fsl}) = zeros(0,4);
+    end
     end
     fil = struct;
     
