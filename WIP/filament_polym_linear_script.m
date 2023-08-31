@@ -6,7 +6,7 @@ input = {'MT.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
 box = [400,300,50]*pix; % box size in A
 
-iters = 20;
+iters = 200;
 %
 % do the thing
 %profile on
@@ -38,7 +38,7 @@ for i=1:iters
     l=0;
     
     %kdt = 
-    for j=1:ml*4
+    for j=1:ml*5
         
         for il=1:retry
             if l==0 %new start vals until initial placement found
@@ -94,8 +94,7 @@ for i=1:iters
         
     end
     
-    
-    if l>=ml
+    if l>ml*1.5
     fn = fieldnames(fil);
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
