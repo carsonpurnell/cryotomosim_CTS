@@ -20,6 +20,7 @@ con = internal_atomcon(box,pix,n,sc);
 
 ori = [0,0,1]; tol = 2;
 dyn{1} = con; 
+%dyn{1} = zeros(0,3);
 dyn{2} = 0; retry = 3;
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
@@ -38,6 +39,7 @@ for i=1:iters
     
     %kdt = 
     for j=1:ml*4
+        
         for il=1:retry
             if l==0 %new start vals until initial placement found
                 veci = []; rang = rand*360; pos = rand(1,3).*box;
@@ -45,21 +47,22 @@ for i=1:iters
                     fil.(mono.modelname{mmm}) = zeros(0,4);
                 end
             end
+            
             vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
             pos = pos+vecc([1,2,3])*step; %0-centered placement location from vector path
             
             if any(pos+500<0) || any(pos-500>box)
                 err = 1; %if pos is too far out of box, bail early
-                fprintf('err ')
+                %fprintf('err ')
             else
-            rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
-            theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
-            filang = rang+mono.filprop(1)*j; %rotation about filament axis
-            
-            r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
-            %ovcheck = vertcat(particles(ol).adat{:});
-            ovcheck = particles(ol).perim*r1*r2+pos-vecc*step/2;
-            err = proxtest(dyn{1},ovcheck,tol);
+                rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
+                theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
+                filang = rang+mono.filprop(1)*j; %rotation about filament axis
+                
+                r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
+                %ovcheck = vertcat(particles(ol).adat{:});
+                ovcheck = particles(ol).perim*r1*r2+pos-vecc*step/2;
+                err = proxtest(dyn{1},ovcheck,tol);
             end
             
             if err==0
@@ -69,6 +72,7 @@ for i=1:iters
         end
         
         if err==0
+            %fprintf('p')
             for iix=1:numel(mono.adat) %loop through and cumulate atoms
                 tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
                 org = [1,2,3]; %or [2,1,3] to invert xy
@@ -77,13 +81,19 @@ for i=1:iters
                 tmp(:,org) = tmp(:,org)+pos-vecc*step/2; %move to halfway along current vector
                 fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
             end
-            veci = vecc; l=1+1; %store current vector as prior, increment length tracker
+            
+            veci = vecc; l=l+1; %store current vector as prior, increment length tracker
+            
             %break %need to reorganize so the loop outside this one can be broken
-        elseif il==retry
+        else%if il==retry
+            %disp('placement fail')
+            %fil
             break
         end
+        %fprintf('%i',l)
         
     end
+    
     
     if l>=ml
     fn = fieldnames(fil);
@@ -96,7 +106,7 @@ for i=1:iters
         %fil.(fn{fsl}) = zeros(0,4);
     end
     end
-    fil = struct;
+    fil = struct; l=0;
     
 end
 fprintf('did a loop, placed XX \n')
