@@ -35,7 +35,8 @@ for i=1:iters
     l=0; fail=0; fil = struct; END=0;
     for j=1:mono.filprop(4)*10
         if END==1; fprintf('this is a bail '); break; end
-        if fail==0 && END~=1
+        if fail==0 && END==0
+            
         for il=1:retry
             if l==0 %new start vals until initial placement found
                 veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
@@ -68,6 +69,7 @@ for i=1:iters
             fprintf('avoided '); %never reaches this point?fail and end both don't work at all?
         end
         
+        if err~=0, END=1; fail=1; end
         %{
         if err==1 || END==1
             fail = 1;
