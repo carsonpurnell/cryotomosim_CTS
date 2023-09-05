@@ -609,8 +609,8 @@ sliceViewer(vol);
 function con = internal_atomcon(box,pix,n,sc)
 sz = [max(box),max(box)]; 
 dl = 6;
-ptsb = internal_gen_atomborder(sz,n/2,sc*1,4)-[0,0,dl*randi(6)];
-ptst = internal_gen_atomborder(sz,n/2,sc*1,4)+[0,0,dl*randi(6)+box(3)];
+ptsb = internal_gen_atomborder(sz,n/2,sc*1,5)-[0,0,dl*randi(6)];
+ptst = internal_gen_atomborder(sz,n/2,sc*1,5)+[0,0,dl*randi(6)+box(3)];
 pts = zeros(0,3);
 for i=1:4
     pts = [pts;ptsb-[0,0,dl*i]]; pts = [pts;ptst+[0,0,dl*i]];
@@ -619,15 +619,13 @@ con = pts;
 end
 
 function pts = internal_gen_atomborder(sz,n,sc,sep)
-%sz = [400,300];
 %n = 2.5; % noise magnitude
 %sc = 500; % scale of Z noise
-len = max(sz);
-pad = 20; %padding - scale by input size maybe? prune afterward?
-sz = sz+pad*2;
 %sep = 3;
-[X,Y] = ndgrid(1:sep:sz(1),1:sep:sz(2));
-i = min(X-1,sz(1)-X+1); j = min(Y-1,sz(2)-Y+1);
+pad = 20; %padding - scale by input size maybe? prune afterward?
+sd = max(sz)+pad*2;
+[X,Y] = ndgrid(1:sep:sd,1:sep:sd);
+i = min(X-1,sd-X+1); j = min(Y-1,sd-Y+1);
 H = exp(-.5*(i.^2+j.^2)/n^2);
 Z = real(ifft2(H.*fft2(randn(size(X))))); % 0-centered, approximately normal
 
@@ -635,6 +633,7 @@ pts = [X(:),Y(:),Z(:)*sc];
 n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/5));
 pts = pts(ix,:);
 pts(:,1:2) = pts(:,1:2)-pad;
+%size(pts)
 end
 
 function err = proxtest(c,pts,tol)
