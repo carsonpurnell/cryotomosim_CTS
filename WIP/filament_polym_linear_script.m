@@ -779,9 +779,11 @@ end
 end
 
 function vec = randc(row,col,ax,ang)
+if isempty(ang) || ang==0
+    vec = randv(row,col); return %if no angle given, random whole circle vectors
+end
 if isempty(ax), ax = randv(1,3); end %if no axis given, randomize one
-%if ang is 1x2, use 1st for min 2nd max?
-if numel(ang)==1, ang(2)=ang(1); ang(1)=0; end
+if numel(ang)==1, ang(2)=ang(1); ang(1)=0; end %if only one angle given use 0 as minimum
 ang(2) = ang(2)-ang(1); %store difference from min for simpler following code
 %ang is IN RADIANS
 nrep = row/size(ax,1); %number of replicates needed to match matrix size for cross
