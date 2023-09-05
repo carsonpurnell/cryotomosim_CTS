@@ -6,9 +6,6 @@ pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
 box = [500,400,80]*pix; % box size in A
-%iters = 200;
-
-%profile on
 
 n = 4+pix^1.5; sc = 2400;
 con = internal_atomcon(box,pix,n,sc);
@@ -115,9 +112,7 @@ fprintf('did a loop, placed %i out of %i \n',ct,iters)
 end
 %}
 
-% done the thing
 profile viewer
-%clear dyn
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
 sliceViewer(atlas);
 
