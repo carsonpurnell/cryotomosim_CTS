@@ -1,7 +1,5 @@
 function [pts,dyn] = helper_fil_atomic(box,particles,con)
 
-
-
 ori = [0,0,1]; tol = 2;
 if isempty(con)
     dyn{1} = zeros(0,3);
@@ -49,10 +47,11 @@ for i=1:iters
                 com = pos-vecc*mono.filprop(2)/2;
                 ovcheck = particles(ol).perim*r1*r2+com;
                 err = proxtest(dyn{1},ovcheck,tol);
-                
+                %{
                 %modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
                 %[~,d] = rangesearch(kdt,ovcheck,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
                 %d = [d{:}]; if any(d<tol), err=1; else err=0; end
+                %}
             end
             
             if err==0, break; end %if good placement found, early exit
@@ -105,6 +104,7 @@ for i=1:iters
         dyn{1} = [dyn{1};lim];
         %fil.(fn{fsl}) = zeros(0,4);
     end
+    fil = struct;
     end
     %fil = struct; l=0;
     if fail==0; ct = ct+1; end
