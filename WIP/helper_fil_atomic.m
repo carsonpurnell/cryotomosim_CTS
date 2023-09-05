@@ -22,8 +22,9 @@ for i=1:iters
     %step = mono.filprop(2);
     %ml = mono.filprop(4);
     l=0; fail=0; fil = struct; END=0;
+    kdt = KDTreeSearcher(dyn{1},'bucketsize',500); %much slower than boxprox
     for j=1:mono.filprop(4)*10
-        if END==1 || fail==1; fprintf('bail,'); break; end %never bails here for some reason
+        if END==1 || fail==1; break; fprintf('bail,'); break; end %never bails here for some reason
         if fail==0 && END==0
         for il=1:retry
             if l==0 %new start vals until initial placement found
@@ -47,7 +48,11 @@ for i=1:iters
                 r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
                 com = pos-vecc*mono.filprop(2)/2;
                 ovcheck = particles(ol).perim*r1*r2+com;
-                err = proxtest(dyn{1},ovcheck,tol);
+                %err = proxtest(dyn{1},ovcheck,tol);
+                
+                %modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
+                [~,d] = rangesearch(kdt,ovcheck,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
+                d = [d{:}]; if any(d<tol), err=1; else err=0; end
             end
             
             if err==0, break; end %if good placement found, early exit
