@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.3.9](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.9) - 2023-09-05 13:27:36
+
+*No description*
+
 ## [v0.3.8](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.3.8) - 2023-08-29 17:41:13
 
 fixed atlas generation of filaments within models, slightly improved generation speed. still quite slow, expect >5min runtimes.
