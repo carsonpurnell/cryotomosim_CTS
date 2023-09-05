@@ -13,6 +13,8 @@ box = [500,400,80]*pix; % box size in A
 n = 4+pix^1.5; sc = 2400;
 con = internal_atomcon(box,pix,n,sc);
 
+[pts,dyn] = helper_fil_atomic(box,particles,con);
+%{
 ori = [0,0,1]; tol = 2;
 if isempty(con)
     dyn{1} = zeros(0,3);
@@ -100,7 +102,7 @@ for i=1:iters
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         n = size(fil.(fn{fsl}),1);
-        ix = randperm(n); ix = ix(1:round(n/20));
+        ix = randperm(n); ix = ix(1:round(n/50));
         lim = fil.(fn{fsl})(ix,1:3);
         dyn{1} = [dyn{1};lim];
         %fil.(fn{fsl}) = zeros(0,4);
@@ -111,6 +113,7 @@ for i=1:iters
 end
 fprintf('did a loop, placed %i out of %i \n',ct,iters)
 end
+%}
 
 % done the thing
 profile viewer
@@ -613,8 +616,8 @@ function con = internal_atomcon(box,pix,n,sc)
 sz = [max(box),max(box)]; 
 dl = 6;
 %lr = 3;
-ptsb = surfgen_scripting(sz,n/2,sc*1)-[0,0,dl*5];
-ptst = surfgen_scripting(sz,n/2,sc*1)+[0,0,dl*5+box(3)];
+ptsb = surfgen_scripting(sz,n/2,sc*1)-[0,0,dl*randi(6)];
+ptst = surfgen_scripting(sz,n/2,sc*1)+[0,0,dl*randi(6)+box(3)];
 pts = zeros(0,3);
 for i=1:4
     pts = [pts;ptsb-[0,0,dl*i]];
