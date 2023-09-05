@@ -21,7 +21,7 @@ for i=1:iters
     %ml = mono.filprop(4);
     l=0; fail=0; fil = struct; END=0;
     %kdt = KDTreeSearcher(dyn{1},'bucketsize',500); %much slower than boxprox
-    for j=1:mono.filprop(4)*10
+    for j=1:mono.filprop(4)*20
         if END==1 || fail==1; break; fprintf('bail,'); break; end %never bails here for some reason
         if fail==0 && END==0
         for il=1:retry
