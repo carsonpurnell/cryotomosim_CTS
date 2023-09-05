@@ -120,8 +120,7 @@ l = min(pts,[],1)-tol; h = max(pts,[],1)+tol; %low and high bounds per dimension
 ix = c>l & c<h; % compare all points against the prospective box
 ix = all(ix,2); % filter to index of pts inside the box
 if ~any(ix), ix=[]; end % check for early end if no points in the box
-%ix = find(ix>0); %bottleneck - just too many points. mutable octree should be faster overall
-err=0; %with n=100 exhaustive is only slightly slower than kdtree search, but progressive slowdown
+err=0; 
 if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     buck = 100;%round( size(c,1)/7650 ); %very rough, is probably not linear scale
     % probably needs some sort of depth-based metric, not a flat one depth = log2 (n/leaf)
