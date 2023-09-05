@@ -615,17 +615,13 @@ sliceViewer(vol);
 function con = internal_atomcon(box,pix,n,sc)
 sz = [max(box),max(box)]; 
 dl = 6;
-%lr = 3;
 ptsb = surfgen_scripting(sz,n/2,sc*1)-[0,0,dl*randi(6)];
 ptst = surfgen_scripting(sz,n/2,sc*1)+[0,0,dl*randi(6)+box(3)];
 pts = zeros(0,3);
 for i=1:4
-    pts = [pts;ptsb-[0,0,dl*i]];
-    pts = [pts;ptst+[0,0,dl*i]];
+    pts = [pts;ptsb-[0,0,dl*i]]; pts = [pts;ptst+[0,0,dl*i]];
 end
-
 con = pts;
-%con = [ptsb;ptsb-[0,0,5*pix];ptst;ptst+[0,0,5*pix]];
 end
 
 function err = proxtest(c,pts,tol)
