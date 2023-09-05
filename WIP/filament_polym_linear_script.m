@@ -609,8 +609,8 @@ sliceViewer(vol);
 function con = internal_atomcon(box,pix,n,sc)
 sz = [max(box),max(box)]; 
 dl = 6;
-ptsb = surfgen_scripting(sz,n/2,sc*1)-[0,0,dl*randi(6)];
-ptst = surfgen_scripting(sz,n/2,sc*1)+[0,0,dl*randi(6)+box(3)];
+ptsb = internal_gen_atomborder(sz,n/2,sc*1,4)-[0,0,dl*randi(6)];
+ptst = internal_gen_atomborder(sz,n/2,sc*1,4)+[0,0,dl*randi(6)+box(3)];
 pts = zeros(0,3);
 for i=1:4
     pts = [pts;ptsb-[0,0,dl*i]]; pts = [pts;ptst+[0,0,dl*i]];
@@ -618,16 +618,15 @@ end
 con = pts;
 end
 
-function pts = internal_gen_atomborder(sz,n,sc)
+function pts = internal_gen_atomborder(sz,n,sc,sep)
 %sz = [400,300];
 %n = 2.5; % noise magnitude
 %sc = 500; % scale of Z noise
 len = max(sz);
 pad = 20; %padding - scale by input size maybe? prune afterward?
 sz = sz+pad*2;
-
-ptsep = 3;
-[X,Y] = ndgrid(1:ptsep:sz(1),1:ptsep:sz(2));
+%sep = 3;
+[X,Y] = ndgrid(1:sep:sz(1),1:sep:sz(2));
 i = min(X-1,sz(1)-X+1); j = min(Y-1,sz(2)-Y+1);
 H = exp(-.5*(i.^2+j.^2)/n^2);
 Z = real(ifft2(H.*fft2(randn(size(X))))); % 0-centered, approximately normal
