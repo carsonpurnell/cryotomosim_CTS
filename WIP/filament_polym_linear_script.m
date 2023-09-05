@@ -8,108 +8,7 @@ box = [500,400,80]*pix; % box size in A
 
 n = 4+pix^1.5; sc = 2400;
 con = internal_atomcon(box,pix,n,sc);
-
 [pts,dyn] = helper_fil_atomic(box,particles,con);
-%{
-ori = [0,0,1]; tol = 2;
-if isempty(con)
-    dyn{1} = zeros(0,3);
-else
-    dyn{1} = con;
-end
-dyn{2} = 0; retry = 5;
-mn = [particles.modelname]; %round up all names for models
-for i=1:numel(mn)
-    pts.(mn{i}) = zeros(0,4);
-end
-
-for ol=1:numel(particles)
-    iters = 0.2*particles(ol).filprop(4)^2;
-    ct = 0;
-for i=1:iters
-    mono = particles(ol);
-    %step = mono.filprop(2);
-    %ml = mono.filprop(4);
-    l=0; fail=0; fil = struct; END=0;
-    for j=1:mono.filprop(4)*10
-        if END==1; fprintf('this is a bail '); break; end
-        if fail==0 && END==0
-            
-        for il=1:retry
-            if l==0 %new start vals until initial placement found
-                veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
-                rang = rand*360; pos = rand(1,3).*box; %prob need better in-box randomizing
-                for mmm=1:numel(mono.modelname)
-                    fil.(mono.modelname{mmm}) = zeros(0,4);
-                end
-            end
-            
-            vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
-            pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
-            
-            if any(pos+200<0) || any(pos-200>box)
-                err = 1; %if pos is too far out of box, retry without pointless proxtesting
-            else
-                rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
-                theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
-                filang = rang+mono.filprop(1)*j; %rotation about filament axis
-                
-                r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
-                com = pos-vecc*mono.filprop(2)/2;
-                ovcheck = particles(ol).perim*r1*r2+com;
-                err = proxtest(dyn{1},ovcheck,tol);
-            end
-            
-            if err==0, break; end %if good placement found, early exit
-            if err~=0 && il==retry, END=1; fail=1; end %still failing at times
-        end
-        else
-            fprintf('avoided '); %never reaches this point?fail and end both don't work at all?
-        end
-        
-        if err~=0, END=1; fail=1; end
-        %{
-        if err==1 || END==1
-            fail = 1;
-            fprintf('t')
-            break; %this break does not work
-            %}
-        if err==0 && fail==0 && END==0
-            for iix=1:numel(mono.adat) %loop through and cumulate atoms
-                tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
-                org = [1,2,3]; %or [2,1,3] to invert xy
-                %tmp(:,org) = tmp(:,org)*r1; %rotate to the filament orientation
-                %tmp(:,org) = tmp(:,org)*r2; %rotate about the filament axis
-                tmp(:,org) = tmp(:,org)*r1*r2+com; %move to halfway along current vector
-                fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
-            end
-            %fprintf('%i,',fail)
-            %fail = 0;
-            veci = vecc; l=l+1; %store current vector as prior, increment length tracker
-        else%if il==retry
-            %fail = 1;
-            %fprintf('%i,',i)
-            break %this break still seems to fail sometimes. pass-through filaments still happen
-        end
-    end
-    
-    if l>mono.filprop(4)*1.0 %&& fail==0
-    fn = fieldnames(fil); fail = 0; pos = []; l=0;
-    for fsl=1:numel(fn)
-        pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
-        n = size(fil.(fn{fsl}),1);
-        ix = randperm(n); ix = ix(1:round(n/50));
-        lim = fil.(fn{fsl})(ix,1:3);
-        dyn{1} = [dyn{1};lim];
-        %fil.(fn{fsl}) = zeros(0,4);
-    end
-    end
-    %fil = struct; l=0;
-    if fail==0; ct = ct+1; end
-end
-fprintf('did a loop, placed %i out of %i \n',ct,iters)
-end
-%}
 
 profile viewer
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
@@ -630,7 +529,7 @@ H = exp(-.5*(i.^2+j.^2)/n^2);
 Z = real(ifft2(H.*fft2(randn(size(X))))); % 0-centered, approximately normal
 
 pts = [X(:),Y(:),Z(:)*sc];
-n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/5));
+n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/6));
 pts = pts(ix,:);
 pts(:,1:2) = pts(:,1:2)-pad;
 %size(pts)
