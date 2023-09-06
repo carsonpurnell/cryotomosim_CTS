@@ -24,6 +24,8 @@ function [detected, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param
 %dynamotable         default 0
 %if 1, generates dynamo .tbl files for each target particle of the simulation model
 %
+%ctford        default 1
+%changes order of CTF/electron dose modulations. 1 is dose first, 2 is dose second.
 %
 %  Outputs
 %
@@ -43,6 +45,7 @@ arguments
     opt.suffix string = ''
     opt.atlasindividual = 0
     opt.dynamotable = 0
+    opt.ctford = 1
 end
 if iscell(param), param = param_simulate(param{:}); end %parse params if given as argument input
 
@@ -80,7 +83,7 @@ else
 end
 
 %run the simulation itself within the subfunction. might extend 'real' to also 'ideal' later
-[detected, conv, tiltseries, ctf] = internal_sim(vol,filename,param,'real');
+[detected, conv, tiltseries, ctf] = internal_sim(vol,filename,param,'real',opt.ctford);
 
 if isstruct(cts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
     atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable);
@@ -89,7 +92,8 @@ end
 cd(userpath) %return to the user directory
 end
 
-function [detected, convolved, tilt, ctf] = internal_sim(in,filename,param,type)
+
+function [detected, convolved, tilt, ctf] = internal_sim(in,filename,param,type,order)
 pix = param.pix;
 
 base = append(filename,'.mrc'); 
@@ -121,7 +125,7 @@ prev = tbase; disp(cmd); [~] = evalc('system(cmd)'); %run command, capture conso
 if strcmp(type,'real') %electron detection and CTF
 tilt = ReadMRC(prev); %load the projected tiltseries as a volume
 
-order = 1; %electron detection changable order thing
+%order = 1; %electron detection changable order thing
 if order==1 %dose first, seems to get better levels of roughness and ice features
     param.raddamage = param.raddamage*1; param.dose = param.dose*1; %adjust base values to work
     detected = helper_electrondetect(tilt,param);
