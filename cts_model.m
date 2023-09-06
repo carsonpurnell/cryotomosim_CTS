@@ -96,6 +96,7 @@ end
 
 % filament placement WIP block
 if isstruct(param.filaments)
+    fprintf('Generating filaments   ')
     [cts.vol,fsplit] = helper_randfill_fil(cts.vol,constraint,pix,param.filaments);
 end
 
