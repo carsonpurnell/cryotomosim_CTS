@@ -508,8 +508,8 @@ sliceViewer(vol);
 function con = internal_atomcon(box,pix,n,sc)
 sz = [max(box),max(box)]; 
 dl = 6;
-ptsb = internal_gen_atomborder(sz,n/2,sc*1,5)-[0,0,dl*randi(6)];
-ptst = internal_gen_atomborder(sz,n/2,sc*1,5)+[0,0,dl*randi(6)+box(3)];
+ptsb = internal_gen_atomborder(sz,n/2,sc*1,4)-[0,0,dl*randi(6)];
+ptst = internal_gen_atomborder(sz,n/2,sc*1,4)+[0,0,dl*randi(6)+box(3)];
 pts = zeros(0,3);
 for i=1:4
     pts = [pts;ptsb-[0,0,dl*i]]; pts = [pts;ptst+[0,0,dl*i]];
@@ -529,7 +529,7 @@ H = exp(-.5*(i.^2+j.^2)/n^2);
 Z = real(ifft2(H.*fft2(randn(size(X))))); % 0-centered, approximately normal
 
 pts = [X(:),Y(:),Z(:)*sc];
-n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/7));
+n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/8));
 pts = pts(ix,:);
 pts(:,1:2) = pts(:,1:2)-pad;
 %size(pts)
