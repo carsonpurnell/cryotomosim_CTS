@@ -105,7 +105,8 @@ WriteMRC(in,pix,prev) %write as initial model and for tiltprojection
 donoise = 0; convolved = 0; %noised = 0;
 if strcmp(type,'real')
 %future tilt randomization here?
-file = fopen('tiltangles.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(file);
+file = fopen('tiltanglesT.txt','w'); fprintf(file,'%i\n',param.tilt+param.tilterr); fclose(file);
+file = fopen('tiltanglesR.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(file);
 
 if donoise==1
 samplenoised = helper_noisegen(in,pixelsize); %add multifactor noise
@@ -118,7 +119,7 @@ tbase = append('1_tilt_',base);
 w = string(round(param.size(1)*1)); %need to make width useful for avoiding empty ends of tilt
 %better to use width or x/y min max extents?
 %how to compute the width to use to avoid edge loss? also requires cropping the atlas to match
-cmd = append('xyzproj -axis ', param.tiltax, ' -width ',w,' -tiltfile tiltangles.txt ',prev,' ',tbase);
+cmd = append('xyzproj -axis ', param.tiltax, ' -width ',w,' -tiltfile tiltanglesT.txt ',prev,' ',tbase);
 %-ray borks up smaller width completely, -constant makes beads slightly weird
 prev = tbase; disp(cmd); [~] = evalc('system(cmd)'); %run command, capture console spam
 
@@ -158,7 +159,7 @@ thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
 %lower second number sharper cutoff? or fill value past cutoff?
 %-hamminglikefilter should work similarly but only needs one input
 %-radial default 0.35 0.035
-cmd = append('tilt -tiltfile tiltangles.txt -RADIAL 0.35,0.035 -width ',w,...
+cmd = append('tilt -tiltfile tiltanglesR.txt -RADIAL 0.35,0.035 -width ',w,...
     ' -thickness ',thick,' ',prev,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
 cmd = append('trimvol -rx temp.mrc ',append('5_recon_',base)); %#ok<NASGU>
