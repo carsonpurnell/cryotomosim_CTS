@@ -2,11 +2,12 @@ function [pts,dyn] = helper_fil_atomic(box,particles,con)
 
 ori = [0,0,1]; tol = 2;
 if isempty(con)
-    dyn{1} = zeros(0,3);
+    dyn = zeros(0,3);
 else
-    dyn{1} = con;
+    dyn = con;
 end
-dyn{2} = 0; retry = 5;
+%dyn{2} = 0; 
+retry = 5;
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
     pts.(mn{i}) = zeros(0,4);
@@ -19,15 +20,21 @@ for i=1:iters
     mono = particles(ol);
     %step = mono.filprop(2);
     %ml = mono.filprop(4);
-    l=0; fail=0; fil = struct; END=0;
+    l=0; fail=0; fil = struct; END=0; pos = []; veci=[];
+    for mmm=1:numel(mono.modelname)
+        fil.(mono.modelname{mmm}) = zeros(0,4);
+    end
     %kdt = KDTreeSearcher(dyn{1},'bucketsize',500); %much slower than boxprox
     for j=1:mono.filprop(4)*40
         if END==1 || fail==1; break; fprintf('bail,'); break; end %never bails here for some reason
         if fail==0 && END==0
+            %find monomer placement loop
+            [err,r1,r2,com,pos,veci] = int_retry(dyn,box,pos,veci,mono,j,l);
+            %{
         for il=1:retry
             if l==0 %new start vals until initial placement found
                 veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
-                rang = rand*360; pos = rand(1,3).*box; %prob need better in-box randomizing
+                rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
                 for mmm=1:numel(mono.modelname)
                     fil.(mono.modelname{mmm}) = zeros(0,4);
                 end
@@ -57,6 +64,7 @@ for i=1:iters
             if err==0, break; end %if good placement found, early exit
             if err~=0 && il==retry, END=1; fail=1; end %is reporting here %, fprintf('c%i,',i)
         end
+        %}
         else
             fprintf('avoided '); %never reaches this point? fail and end both don't work at all?
         end
@@ -94,14 +102,14 @@ for i=1:iters
         end
     end
     
-    if l>mono.filprop(4)*1.0 %&& fail==0
+    if l>mono.filprop(4)*1.5 %&& fail==0
     fn = fieldnames(fil); fail = 0; pos = []; l=0;
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         n = size(fil.(fn{fsl}),1);
         ix = randperm(n); ix = ix(1:round(n/40));
         lim = fil.(fn{fsl})(ix,1:3);
-        dyn{1} = [dyn{1};lim];
+        dyn = [dyn;lim];
         %fil.(fn{fsl}) = zeros(0,4);
     end
     fil = struct;
@@ -114,6 +122,42 @@ end
 
 
 end
+
+%% internal functions
+
+function [err,r1,r2,com,pos,veci] = int_retry(dyn,box,pos,veci,mono,j,l)
+ori = [0,0,1]; retry = 5; tol = 2;
+for il=1:retry
+    if l==0 %new start vals until initial placement found
+        veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
+        rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
+        %{
+        for mmm=1:numel(mono.modelname)
+            fil.(mono.modelname{mmm}) = zeros(0,4);
+        end
+        %}
+    end
+    
+    vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
+    pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
+    
+    if any(pos+200<0) || any(pos-200>box)
+        err = 1; %if pos is too far out of box, retry without pointless proxtesting
+    else
+        rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
+        theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
+        filang = rang+mono.filprop(1)*j; %rotation about filament axis
+        
+        r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
+        com = pos-vecc*mono.filprop(2)/2;
+        ovcheck = mono.perim*r1*r2+com;
+        err = proxtest(dyn,ovcheck,tol);
+    end
+    
+    if err==0, break; end %if good placement found, early exit
+    if err~=0 && il==retry, END=1; fail=1; end %is reporting here %, fprintf('c%i,',i)
+end
+end        
 
 function err = proxtest(c,pts,tol)
 l = min(pts,[],1)-tol; h = max(pts,[],1)+tol; %low and high bounds per dimension
