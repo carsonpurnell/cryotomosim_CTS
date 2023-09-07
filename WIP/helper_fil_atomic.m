@@ -20,7 +20,7 @@ for i=1:iters
     mono = particles(ol);
     %step = mono.filprop(2);
     %ml = mono.filprop(4);
-    l=0; fail=0; fil = struct; END=0; pos = []; veci=[];
+    l=0; fail=0; fil = struct; END=0; pos = []; veci=[]; vecc=[]; rang=[];
     for mmm=1:numel(mono.modelname)
         fil.(mono.modelname{mmm}) = zeros(0,4);
     end
@@ -29,7 +29,8 @@ for i=1:iters
         if END==1 || fail==1; break; fprintf('bail,'); break; end %never bails here for some reason
         if fail==0 && END==0
             %find monomer placement loop
-            [err,r1,r2,com,pos,veci] = int_retry(dyn,box,pos,veci,mono,j,l);
+            %nest_retry
+            [err,r1,r2,com,pos,veci,rang] = int_retry(dyn,box,pos,veci,mono,j,l,rang);
             %{
         for il=1:retry
             if l==0 %new start vals until initial placement found
@@ -53,7 +54,7 @@ for i=1:iters
                 r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
                 com = pos-vecc*mono.filprop(2)/2;
                 ovcheck = particles(ol).perim*r1*r2+com;
-                err = proxtest(dyn{1},ovcheck,tol);
+                err = proxtest(dyn,ovcheck,tol);
                 %{
                 %modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
                 %[~,d] = rangesearch(kdt,ovcheck,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
@@ -120,12 +121,47 @@ end
 fprintf('Layer %i, placed %i out of %i \n',ol,ct,iters)
 end
 
+%{
+    function nest_retry
+ori = [0,0,1]; retry = 5; tol = 2;
+for il=1:retry
+    if l==0 %new start vals until initial placement found
+        veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
+        rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
+        %{
+        for mmm=1:numel(mono.modelname)
+            fil.(mono.modelname{mmm}) = zeros(0,4);
+        end
+        %}
+    end
+    
+    vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
+    pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
+    
+    if any(pos+200<0) || any(pos-200>box)
+        err = 1; %if pos is too far out of box, retry without pointless proxtesting
+    else
+        rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
+        theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
+        filang = rang+mono.filprop(1)*j; %rotation about filament axis
+        
+        r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
+        com = pos-vecc*mono.filprop(2)/2;
+        ovcheck = mono.perim*r1*r2+com;
+        err = proxtest(dyn,ovcheck,tol);
+    end
+    
+    if err==0, break; end %if good placement found, early exit
+    if err~=0 && il==retry, END=1; fail=1; end %is reporting here %, fprintf('c%i,',i)
+end
+    end
+%}
 
 end
 
 %% internal functions
 
-function [err,r1,r2,com,pos,veci] = int_retry(dyn,box,pos,veci,mono,j,l)
+function [err,r1,r2,com,pos,vecc,rang] = int_retry(dyn,box,pos,veci,mono,j,l,rang)
 ori = [0,0,1]; retry = 5; tol = 2;
 for il=1:retry
     if l==0 %new start vals until initial placement found
