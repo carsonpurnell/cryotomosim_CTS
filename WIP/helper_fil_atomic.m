@@ -20,10 +20,14 @@ for i=1:iters
     mono = particles(ol);
     %step = mono.filprop(2);
     %ml = mono.filprop(4);
-    l=0; fail=0; fil = struct; END=0; pos = []; veci=[]; vecc=[]; rang=[];
+    
     for mmm=1:numel(mono.modelname)
         fil.(mono.modelname{mmm}) = zeros(0,4);
     end
+    [err,fil] = int_filpoly(mono,fil);
+    
+    %{
+    l=0; fail=0; fil = struct; END=0; pos = []; veci=[]; vecc=[]; rang=[];
     %kdt = KDTreeSearcher(dyn{1},'bucketsize',500); %much slower than boxprox
     for j=1:mono.filprop(4)*40
         if END==1 || fail==1; break; fprintf('bail,'); break; end %never bails here for some reason
@@ -102,6 +106,7 @@ for i=1:iters
             break %this break still seems to fail sometimes. pass-through filaments still happen
         end
     end
+    %}
     
     if l>mono.filprop(4)*1.5 %&& fail==0
     fn = fieldnames(fil); fail = 0; pos = []; l=0;
@@ -160,6 +165,84 @@ end
 end
 
 %% internal functions
+
+function [err,fil] = int_filpoly(mono,fil)
+l=0; fail=0; fil = struct; END=0; pos = []; veci=[]; vecc=[]; rang=[];
+%kdt = KDTreeSearcher(dyn{1},'bucketsize',500); %much slower than boxprox
+for j=1:mono.filprop(4)*40
+    if END==1 || fail==1; break; fprintf('bail,'); break; end %never bails here for some reason
+    if fail==0 && END==0
+        %find monomer placement loop
+        %nest_retry
+        %[err,r1,r2,com,pos,veci,rang] = int_retry(dyn,box,pos,veci,mono,j,l,rang);
+        %
+        for il=1:retry
+            if l==0 %new start vals until initial placement found
+                veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
+                rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
+                for mmm=1:numel(mono.modelname)
+                    fil.(mono.modelname{mmm}) = zeros(0,4);
+                end
+            end
+            
+            vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
+            pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
+            
+            if any(pos+200<0) || any(pos-200>box)
+                err = 1; %if pos is too far out of box, retry without pointless proxtesting
+            else
+                rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
+                theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
+                filang = rang+mono.filprop(1)*j; %rotation about filament axis
+                
+                r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
+                com = pos-vecc*mono.filprop(2)/2;
+                ovcheck = particles(ol).perim*r1*r2+com;
+                err = proxtest(dyn,ovcheck,tol);
+            end
+            
+            if err==0, break; end %if good placement found, early exit
+            if err~=0 && il==retry, END=1; fail=1; end %is reporting here %, fprintf('c%i,',i)
+        end
+        %}
+    else
+        fprintf('avoided '); %never reaches this point? fail and end both don't work at all?
+    end
+    
+    if err~=0, END=1; fail=1; end
+    %{
+        if err==1 || END==1
+            fail = 1;
+            fprintf('t')
+            break; %this break does not work
+    %}
+    if err==1 || fail==1 || END==1
+        %fprintf('a%i,',i) %this is the only break that gets hit
+        %break
+    elseif err==0 && fail==0 && END==0
+        for iix=1:numel(mono.adat) %loop through and cumulate atoms
+            tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
+            org = [1,2,3]; %or [2,1,3] to invert xy
+            %tmp(:,org) = tmp(:,org)*r1; %rotate to the filament orientation
+            %tmp(:,org) = tmp(:,org)*r2; %rotate about the filament axis
+            tmp(:,org) = tmp(:,org)*r1*r2+com; %move to halfway along current vector
+            fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
+        end
+        %fprintf('%i,',fail) %fail = 0;
+        veci = vecc; l=l+1; %store current vector as prior, increment length tracker
+    else%if il==retry
+        %{
+            for mmm=1:numel(mono.modelname)
+                    fil.(mono.modelname{mmm}) = zeros(0,4);
+            end
+        %}
+        %fail = 1;
+        fprintf('b%i,',i) %now never reaches, caught by first check
+        break %this break still seems to fail sometimes. pass-through filaments still happen
+    end
+end
+end
+
 
 function [err,r1,r2,com,pos,vecc,rang] = int_retry(dyn,box,pos,veci,mono,j,l,rang)
 ori = [0,0,1]; retry = 5; tol = 2;
