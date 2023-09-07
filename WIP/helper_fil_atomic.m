@@ -30,8 +30,8 @@ for i=1:iters
         if fail==0 && END==0
             %find monomer placement loop
             %nest_retry
-            [err,r1,r2,com,pos,veci,rang] = int_retry(dyn,box,pos,veci,mono,j,l,rang);
-            %{
+            %[err,r1,r2,com,pos,veci,rang] = int_retry(dyn,box,pos,veci,mono,j,l,rang);
+            %
         for il=1:retry
             if l==0 %new start vals until initial placement found
                 veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
