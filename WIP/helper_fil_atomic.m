@@ -24,7 +24,7 @@ for i=1:iters
     for mmm=1:numel(mono.modelname)
         fil.(mono.modelname{mmm}) = zeros(0,4);
     end
-    [err,fil] = int_filpoly(mono,fil);
+    [err,fil,dyn,l] = int_filpoly(mono,fil,dyn,box,ol,i);
     
     %{
     l=0; fail=0; fil = struct; END=0; pos = []; veci=[]; vecc=[]; rang=[];
@@ -69,10 +69,11 @@ for i=1:iters
             if err==0, break; end %if good placement found, early exit
             if err~=0 && il==retry, END=1; fail=1; end %is reporting here %, fprintf('c%i,',i)
         end
-        %}
+        %
         else
             fprintf('avoided '); %never reaches this point? fail and end both don't work at all?
         end
+    %
         
         if err~=0, END=1; fail=1; end
         %{
@@ -108,6 +109,7 @@ for i=1:iters
     end
     %}
     
+    fail =1;
     if l>mono.filprop(4)*1.5 %&& fail==0
     fn = fieldnames(fil); fail = 0; pos = []; l=0;
     for fsl=1:numel(fn)
@@ -166,16 +168,18 @@ end
 
 %% internal functions
 
-function [err,fil] = int_filpoly(mono,fil)
-l=0; fail=0; fil = struct; END=0; pos = []; veci=[]; vecc=[]; rang=[];
+function [err,fil,dyn,l] = int_filpoly(mono,fil,dyn,box,ol,i)
+l=0; fil = struct;
+retry = 5; ori = [0,0,1]; tol = 2;
+endloop=0; fail=0; %pos = []; veci=[]; vecc=[]; rang=[];
 %kdt = KDTreeSearcher(dyn{1},'bucketsize',500); %much slower than boxprox
 for j=1:mono.filprop(4)*40
-    if END==1 || fail==1; break; fprintf('bail,'); break; end %never bails here for some reason
-    if fail==0 && END==0
-        %find monomer placement loop
-        %nest_retry
-        %[err,r1,r2,com,pos,veci,rang] = int_retry(dyn,box,pos,veci,mono,j,l,rang);
-        %
+    if endloop==1 || fail==1
+        disp('q')
+        return
+        break; %fprintf('bail,'); break; 
+    end %never bails here for some reason
+    if fail==0 && endloop==0
         for il=1:retry
             if l==0 %new start vals until initial placement found
                 veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
@@ -189,7 +193,8 @@ for j=1:mono.filprop(4)*40
             pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
             
             if any(pos+200<0) || any(pos-200>box)
-                err = 1; %if pos is too far out of box, retry without pointless proxtesting
+                err = 1; l=0; %if pos is too far out of box, retry without pointless proxtesting
+                fprintf('x')
             else
                 rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
                 theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
@@ -197,29 +202,29 @@ for j=1:mono.filprop(4)*40
                 
                 r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
                 com = pos-vecc*mono.filprop(2)/2;
-                ovcheck = particles(ol).perim*r1*r2+com;
+                ovcheck = mono.perim*r1*r2+com;
                 err = proxtest(dyn,ovcheck,tol);
+                %fprintf('%i,',err) %somehow ALSO unconditionally 1
             end
             
             if err==0, break; end %if good placement found, early exit
-            if err~=0 && il==retry, END=1; fail=1; end %is reporting here %, fprintf('c%i,',i)
+            %this is the only return that seems to happen
+            if err~=0 && il==retry, endloop=1; fail=1; fprintf('%i-%i,',j,err); return; end % 
         end
-        %}
+        %fprintf('\n')
     else
+        disp('j')
+        return
         fprintf('avoided '); %never reaches this point? fail and end both don't work at all?
     end
     
-    if err~=0, END=1; fail=1; end
-    %{
-        if err==1 || END==1
-            fail = 1;
-            fprintf('t')
-            break; %this break does not work
-    %}
-    if err==1 || fail==1 || END==1
+    if err~=0, endloop=1; fail=1; disp('g'); return; end
+    if err==1 || fail==1 || endloop==1
         %fprintf('a%i,',i) %this is the only break that gets hit
         %break
-    elseif err==0 && fail==0 && END==0
+        disp('m')
+        return
+    elseif err==0 && fail==0 && endloop==0
         for iix=1:numel(mono.adat) %loop through and cumulate atoms
             tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
             org = [1,2,3]; %or [2,1,3] to invert xy
@@ -231,16 +236,22 @@ for j=1:mono.filprop(4)*40
         %fprintf('%i,',fail) %fail = 0;
         veci = vecc; l=l+1; %store current vector as prior, increment length tracker
     else%if il==retry
-        %{
-            for mmm=1:numel(mono.modelname)
-                    fil.(mono.modelname{mmm}) = zeros(0,4);
-            end
-        %}
         %fail = 1;
         fprintf('b%i,',i) %now never reaches, caught by first check
         break %this break still seems to fail sometimes. pass-through filaments still happen
     end
+    
+    %fail never changes from 0?
+    %fprintf('%i,',j)
+    
+    %somehow err IS ALWAYS 0, it impossibly never hits 1
+    if err~=0
+        fprintf(j)
+    end
+    %fprintf('%i,',err)
+    %fprintf('%i-%i-%i,',j,endloop,fail)
 end
+
 end
 
 
