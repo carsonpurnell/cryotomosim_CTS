@@ -10,21 +10,22 @@ end
 retry = 5;
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
-    pts.(mn{i}) = zeros(0,4);
+    pts.(mn{i}) = zeros(0,4); %initialize storage struct for each submodel
 end
 
 for ol=1:numel(particles)
-    iters = 0.2*particles(ol).filprop(4)^2;
-    ct = 0;
-for i=1:iters
     mono = particles(ol);
+    iters = 0.2*mono.filprop(4)^2;
+    ct = 0; e=0;
+for i=1:iters
     %step = mono.filprop(2);
     %ml = mono.filprop(4);
-    
+    %{
     for mmm=1:numel(mono.modelname)
         fil.(mono.modelname{mmm}) = zeros(0,4);
     end
-    [err,fil,dyn,l] = int_filpoly(mono,fil,dyn,box,ol,i);
+    %}
+    [~,fil,~,l] = int_filpoly(mono,dyn,box,i);
     
     %{
     l=0; fail=0; fil = struct; END=0; pos = []; veci=[]; vecc=[]; rang=[];
@@ -115,7 +116,7 @@ for i=1:iters
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         n = size(fil.(fn{fsl}),1);
-        ix = randperm(n); ix = ix(1:round(n/40));
+        ix = randperm(n); ix = ix(1:round(n/50));
         lim = fil.(fn{fsl})(ix,1:3);
         dyn = [dyn;lim];
         %fil.(fn{fsl}) = zeros(0,4);
@@ -123,7 +124,7 @@ for i=1:iters
     fil = struct;
     end
     %fil = struct; l=0;
-    if fail==0; ct = ct+1; end
+    if fail==0; ct = ct+1; else e=e+1; end
 end
 fprintf('Layer %i, placed %i out of %i \n',ol,ct,iters)
 end
@@ -168,14 +169,16 @@ end
 
 %% internal functions
 
-function [err,fil,dyn,l] = int_filpoly(mono,fil,dyn,box,ol,i)
+function [err,fil,dyn,l] = int_filpoly(mono,dyn,box,i)
 l=0; fil = struct;
-retry = 5; ori = [0,0,1]; tol = 2;
+retry = 5; ori = [0,0,1]; tol = 2; e=0;
 endloop=0; fail=0; %pos = []; veci=[]; vecc=[]; rang=[];
 %kdt = KDTreeSearcher(dyn{1},'bucketsize',500); %much slower than boxprox
-for j=1:mono.filprop(4)*40
+j=0;
+while j<mono.filprop(4)*20 && endloop==0 && fail==0
+    j=j+1;
     if endloop==1 || fail==1
-        disp('q')
+        disp('q') %never displayed, check never true?
         return
         break; %fprintf('bail,'); break; 
     end %never bails here for some reason
@@ -194,7 +197,7 @@ for j=1:mono.filprop(4)*40
             
             if any(pos+200<0) || any(pos-200>box)
                 err = 1; l=0; %if pos is too far out of box, retry without pointless proxtesting
-                fprintf('x')
+                %fprintf('x')
             else
                 rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
                 theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
@@ -204,21 +207,24 @@ for j=1:mono.filprop(4)*40
                 com = pos-vecc*mono.filprop(2)/2;
                 ovcheck = mono.perim*r1*r2+com;
                 err = proxtest(dyn,ovcheck,tol);
+                %if err~=0, fprintf('%i,',j); end
                 %fprintf('%i,',err) %somehow ALSO unconditionally 1
             end
             
             if err==0, break; end %if good placement found, early exit
             %this is the only return that seems to happen
-            if err~=0 && il==retry, endloop=1; fail=1; fprintf('%i-%i,',j,err); return; end % 
+            if err~=0 && il==retry, endloop=1; fail=1; e=e+1; term=1; end%return; end %  fprintf('%i-%i,',i,j);
+            %try relocating fil-filler to here and returning? might be more resilient
         end
-        %fprintf('\n')
+        %if il==retry; fprintf('\n'); end
+        
     else
         disp('j')
         return
         fprintf('avoided '); %never reaches this point? fail and end both don't work at all?
     end
     
-    if err~=0, endloop=1; fail=1; disp('g'); return; end
+    %if err~=0, endloop=1; fail=1; disp('g'); return; end %only catch that ever displays
     if err==1 || fail==1 || endloop==1
         %fprintf('a%i,',i) %this is the only break that gets hit
         %break
@@ -251,7 +257,7 @@ for j=1:mono.filprop(4)*40
     %fprintf('%i,',err)
     %fprintf('%i-%i-%i,',j,endloop,fail)
 end
-
+%fprintf('ers:%i',e)
 end
 
 
