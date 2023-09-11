@@ -242,7 +242,6 @@ for j=1:mono.filprop(4)*20% && endloop==0 && fail==0
             fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
         end
         comlist = [comlist;com]; %cat list of placement locs for break checking
-        %fprintf('%i,',fail) %fail = 0;
         veci = vecc; l=l+1; %store current vector as prior, increment length tracker
     else%if il==retry
         %fail = 1;
@@ -250,21 +249,9 @@ for j=1:mono.filprop(4)*20% && endloop==0 && fail==0
         break %this break still seems to fail sometimes. pass-through filaments still happen
     end
     
-    %fail never changes from 0?
-    %fprintf('%i,',j)
-    
-    %somehow err IS ALWAYS 0, it impossibly never hits 1
-    if err~=0
-        fprintf(j)
-    end
-    %fprintf('%i,',err)
-    %fprintf('%i-%i-%i,',j,endloop,fail)
 end
 
 
-% empty out filaments that are discontinuous - effective, but extremely slow
-%try again with a pos line and check via step lengths?
-%comlist
 kill = 0;
 if size(comlist,1) < mono.filprop(4) %check against length for kill flagging
     kill = 1;
