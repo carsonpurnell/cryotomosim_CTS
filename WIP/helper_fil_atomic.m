@@ -15,8 +15,8 @@ end
 
 for ol=1:numel(particles)
     mono = particles(ol);
-    iters = 0.2*mono.filprop(4)^2;
-    ct = 0; e=0;
+    iters = 0.5*mono.filprop(4)^2;
+    ct = 0; e = 0;
 for i=1:iters
     %step = mono.filprop(2);
     %ml = mono.filprop(4);
@@ -25,7 +25,7 @@ for i=1:iters
         fil.(mono.modelname{mmm}) = zeros(0,4);
     end
     %}
-    [~,fil,~,l] = int_filpoly(mono,dyn,box,i);
+    [~,fil,~,l] = int_filpoly(mono,dyn,box);
     
     %{
     l=0; fail=0; fil = struct; END=0; pos = []; veci=[]; vecc=[]; rang=[];
@@ -111,12 +111,12 @@ for i=1:iters
     %}
     
     fail =1;
-    if l>mono.filprop(4)*1.5 %&& fail==0
+    if l>mono.filprop(4)*1.0 %&& fail==0
     fn = fieldnames(fil); fail = 0; pos = []; l=0;
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         n = size(fil.(fn{fsl}),1);
-        ix = randperm(n); ix = ix(1:round(n/75));
+        ix = randperm(n); ix = ix(1:round(n/50));
         lim = fil.(fn{fsl})(ix,1:3);
         dyn = [dyn;lim];
         %fil.(fn{fsl}) = zeros(0,4);
@@ -169,17 +169,19 @@ end
 
 %% internal functions
 
-function [err,fil,dyn,l] = int_filpoly(mono,dyn,box,i)
+function [err,fil,dyn,l] = int_filpoly(mono,dyn,box)
 l=0; fil = struct;
 retry = 5; ori = [0,0,1]; tol = 2; e=0;
 endloop=0; fail=0; %pos = []; veci=[]; vecc=[]; rang=[];
 %kdt = KDTreeSearcher(dyn,'bucketsize',500); %much slower than boxprox
 comlist = zeros(0,3);
 for j=1:mono.filprop(4)*20
+    %{
     if endloop==1 || fail==1
         disp('q') %never displayed, check never true?
         break;
     end %never bails here for some reason
+    %}
     
     if fail==0 && endloop==0
         for il=1:retry
@@ -206,11 +208,10 @@ for j=1:mono.filprop(4)*20
                 ovcheck = mono.perim*r1*r2+com;
                 err = proxtest(dyn,ovcheck,tol);
                 %if err~=0, fprintf('%i,',j); end
-                %fprintf('%i,',err) %somehow ALSO unconditionally 1
             end
             
             if err==0, break; end %if good placement found, early exit
-            if err~=0 && il==retry, fprintf('c,'); endloop=1; fail=1; e=e+1; term=1; end
+            if err~=0 && il==retry,  endloop=1; fail=1; e=e+1; end %fprintf('c,');
         end
         %if il==retry; fprintf('\n'); end
         %{
@@ -221,13 +222,16 @@ for j=1:mono.filprop(4)*20
         %}
     end
     
-    if err~=0, endloop=1; fail=1; disp('g'); return; end %only catch that ever displays
+    %if err~=0, endloop=1; fail=1; disp('g'); return; end %only catch that ever displays
+    %{
     if err==1 || fail==1 || endloop==1
         %fprintf('a%i,',i) %this is the only break that gets hit
         disp('m')
         break
         %return
-    elseif err==0 && fail==0 && endloop==0
+    else
+        %}
+    if err==0 && fail==0 && endloop==0
         for iix=1:numel(mono.adat) %loop through and cumulate atoms
             tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
             org = [1,2,3]; %or [2,1,3] to invert xy
@@ -240,7 +244,7 @@ for j=1:mono.filprop(4)*20
         veci = vecc; l=l+1; %store current vector as prior, increment length tracker
     else%if il==retry
         %fail = 1;
-        fprintf('b%i,',i) %now never reaches, caught by first check
+        %fprintf('b%i,',i) %now never reaches, caught by first check
         break %this break still seems to fail sometimes. pass-through filaments still happen
     end
     
