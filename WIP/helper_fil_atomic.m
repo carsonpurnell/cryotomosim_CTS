@@ -174,9 +174,10 @@ l=0; fil = struct;
 retry = 5; ori = [0,0,1]; tol = 2; e=0;
 endloop=0; fail=0; %pos = []; veci=[]; vecc=[]; rang=[];
 %kdt = KDTreeSearcher(dyn{1},'bucketsize',500); %much slower than boxprox
-j=0;
-while j<mono.filprop(4)*20 && endloop==0 && fail==0
-    j=j+1;
+%j=0;
+comlist = zeros(0,3);
+for j=1:mono.filprop(4)*20% && endloop==0 && fail==0
+    %j=j+1;
     if endloop==1 || fail==1
         disp('q') %never displayed, check never true?
         %return
@@ -228,7 +229,7 @@ while j<mono.filprop(4)*20 && endloop==0 && fail==0
     if err==1 || fail==1 || endloop==1
         %fprintf('a%i,',i) %this is the only break that gets hit
         %break
-        disp('m')
+        %disp('m')
         break
         %return
     elseif err==0 && fail==0 && endloop==0
@@ -240,6 +241,7 @@ while j<mono.filprop(4)*20 && endloop==0 && fail==0
             tmp(:,org) = tmp(:,org)*r1*r2+com; %move to halfway along current vector
             fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
         end
+        comlist = [comlist;com]; %cat list of placement locs for break checking
         %fprintf('%i,',fail) %fail = 0;
         veci = vecc; l=l+1; %store current vector as prior, increment length tracker
     else%if il==retry
@@ -258,6 +260,31 @@ while j<mono.filprop(4)*20 && endloop==0 && fail==0
     %fprintf('%i,',err)
     %fprintf('%i-%i-%i,',j,endloop,fail)
 end
+
+
+% empty out filaments that are discontinuous - effective, but extremely slow
+%try again with a pos line and check via step lengths?
+%comlist
+kill = 0;
+if size(comlist,1) < mono.filprop(4)
+    %obvious fails length requirement, turn on delete flag
+    kill = 1;
+else
+    ddd = pdist2(comlist,comlist,'euclidean','Smallest',3);
+    %ddd(2:3,2:end-1) %drop ends, they will always have a step*2 distance
+    fff = ddd(2:3,2:end-1)<(mono.filprop(2)*3); %check distances against stepsize
+    if ~all(fff,'all')
+        kill = 1;
+    end
+end
+
+if kill==1 %clear fils if break detected
+for iix=1:numel(mono.adat) %loop through and cumulate atoms
+    fil.(mono.modelname{iix}) = zeros(0,4);
+end
+end
+%}
+
 %fprintf('ers:%i',e)
 end
 
