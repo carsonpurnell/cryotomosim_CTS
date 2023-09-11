@@ -179,7 +179,7 @@ while j<mono.filprop(4)*20 && endloop==0 && fail==0
     j=j+1;
     if endloop==1 || fail==1
         disp('q') %never displayed, check never true?
-        return
+        %return
         break; %fprintf('bail,'); break; 
     end %never bails here for some reason
     if fail==0 && endloop==0
@@ -220,7 +220,7 @@ while j<mono.filprop(4)*20 && endloop==0 && fail==0
         
     else
         disp('j')
-        return
+        %return
         fprintf('avoided '); %never reaches this point? fail and end both don't work at all?
     end
     
@@ -229,7 +229,8 @@ while j<mono.filprop(4)*20 && endloop==0 && fail==0
         %fprintf('a%i,',i) %this is the only break that gets hit
         %break
         disp('m')
-        return
+        break
+        %return
     elseif err==0 && fail==0 && endloop==0
         for iix=1:numel(mono.adat) %loop through and cumulate atoms
             tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
