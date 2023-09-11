@@ -83,7 +83,7 @@ for i=1:iters
             comlist = [comlist;com]; %cat list of placement locs for break checking
             veci = vecc; l=l+1; %store current vector as prior, increment length tracker
         else%if il==retry
-            fprintf('b%i,',i) %now never reaches, caught by first check
+            %fprintf('b%i,',i) %can actually reach now
             break %this break still seems to fail sometimes. pass-through filaments still happen
         end
     end
