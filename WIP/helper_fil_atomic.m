@@ -173,16 +173,14 @@ function [err,fil,dyn,l] = int_filpoly(mono,dyn,box,i)
 l=0; fil = struct;
 retry = 5; ori = [0,0,1]; tol = 2; e=0;
 endloop=0; fail=0; %pos = []; veci=[]; vecc=[]; rang=[];
-%kdt = KDTreeSearcher(dyn{1},'bucketsize',500); %much slower than boxprox
-%j=0;
+%kdt = KDTreeSearcher(dyn,'bucketsize',500); %much slower than boxprox
 comlist = zeros(0,3);
-for j=1:mono.filprop(4)*20% && endloop==0 && fail==0
-    %j=j+1;
+for j=1:mono.filprop(4)*20
     if endloop==1 || fail==1
         disp('q') %never displayed, check never true?
-        %return
-        break; %fprintf('bail,'); break; 
+        break;
     end %never bails here for some reason
+    
     if fail==0 && endloop==0
         for il=1:retry
             if l==0 %new start vals until initial placement found
@@ -198,7 +196,6 @@ for j=1:mono.filprop(4)*20% && endloop==0 && fail==0
             
             if any(pos+200<0) || any(pos-200>box)
                 err = 1; l=0; %if pos is too far out of box, retry without pointless proxtesting
-                %fprintf('x')
             else
                 rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
                 theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
@@ -213,23 +210,21 @@ for j=1:mono.filprop(4)*20% && endloop==0 && fail==0
             end
             
             if err==0, break; end %if good placement found, early exit
-            %this is the only return that seems to happen
-            if err~=0 && il==retry, endloop=1; fail=1; e=e+1; term=1; end%return; end %  fprintf('%i-%i,',i,j);
-            %try relocating fil-filler to here and returning? might be more resilient
+            if err~=0 && il==retry, fprintf('c,'); endloop=1; fail=1; e=e+1; term=1; end
         end
         %if il==retry; fprintf('\n'); end
-        
+        %{
     else
         disp('j')
         %return
         fprintf('avoided '); %never reaches this point? fail and end both don't work at all?
+        %}
     end
     
-    %if err~=0, endloop=1; fail=1; disp('g'); return; end %only catch that ever displays
+    if err~=0, endloop=1; fail=1; disp('g'); return; end %only catch that ever displays
     if err==1 || fail==1 || endloop==1
         %fprintf('a%i,',i) %this is the only break that gets hit
-        %break
-        %disp('m')
+        disp('m')
         break
         %return
     elseif err==0 && fail==0 && endloop==0
