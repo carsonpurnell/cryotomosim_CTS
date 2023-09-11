@@ -25,7 +25,83 @@ for i=1:iters
         fil.(mono.modelname{mmm}) = zeros(0,4);
     end
     %}
-    [~,fil,~,l] = int_filpoly(mono,dyn,box);
+    %[~,fil,~,l] = int_filpoly(mono,dyn,box);
+    l=0; fil = struct;
+    retry = 5; ori = [0,0,1]; tol = 2; e=0;
+    endloop=0; fail=0; %pos = []; veci=[]; vecc=[]; rang=[];
+    %kdt = KDTreeSearcher(dyn,'bucketsize',500); %much slower than boxprox
+    comlist = zeros(0,3);
+    for j=1:mono.filprop(4)*20
+        %{
+    if endloop==1 || fail==1
+        disp('q') %never displayed, check never true?
+        break;
+    end %never bails here for some reason
+        %}
+        
+        if fail==0 && endloop==0
+            for il=1:retry
+                if l==0 %new start vals until initial placement found
+                    veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
+                    rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
+                    for mmm=1:numel(mono.modelname)
+                        fil.(mono.modelname{mmm}) = zeros(0,4);
+                    end
+                end
+                
+                vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
+                pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
+                
+                if any(pos+200<0) || any(pos-200>box)
+                    err = 1; l=0; %if pos is too far out of box, retry without pointless proxtesting
+                else
+                    rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
+                    theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
+                    filang = rang+mono.filprop(1)*j; %rotation about filament axis
+                    
+                    r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
+                    com = pos-vecc*mono.filprop(2)/2;
+                    ovcheck = mono.perim*r1*r2+com;
+                    err = proxtest(dyn,ovcheck,tol);
+                    %if err~=0, fprintf('%i,',j); end
+                end
+                
+                if err==0, break; end %if good placement found, early exit
+                if err~=0 && il==retry,  endloop=1; fail=1; e=e+1; end %fprintf('c,');
+            end
+        end
+        
+        if err==0 && fail==0 && endloop==0
+            for iix=1:numel(mono.adat) %loop through and cumulate atoms
+                tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
+                org = [1,2,3]; %or [2,1,3] to invert xy
+                %tmp(:,org) = tmp(:,org)*r1; %rotate to the filament orientation
+                %tmp(:,org) = tmp(:,org)*r2; %rotate about the filament axis
+                tmp(:,org) = tmp(:,org)*r1*r2+com; %move to halfway along current vector
+                fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
+            end
+            comlist = [comlist;com]; %cat list of placement locs for break checking
+            veci = vecc; l=l+1; %store current vector as prior, increment length tracker
+        else%if il==retry
+            fprintf('b%i,',i) %now never reaches, caught by first check
+            break %this break still seems to fail sometimes. pass-through filaments still happen
+        end
+    end
+    
+    kill = 0;
+    if size(comlist,1) < mono.filprop(4) %check against length for kill flagging
+        kill = 1;
+    else %if long enough, check for continuous COM distances
+        ddd = pdist2(comlist,comlist,'euclidean','Smallest',3); %nearest two points and self
+        fff = ddd(2:3,2:end-1)<(mono.filprop(2)*1.2); %check distances against stepsize, drop start/end
+        if ~all(fff,'all'), kill = 1; end %if break in distances, flag kill
+    end
+    
+    if kill==1 %clear fil struct if break detected
+        for iix=1:numel(mono.adat) %loop through and cumulate atoms
+            fil.(mono.modelname{iix}) = zeros(0,4);
+        end
+    end
     
     %{
     l=0; fail=0; fil = struct; END=0; pos = []; veci=[]; vecc=[]; rang=[];
@@ -110,9 +186,9 @@ for i=1:iters
     end
     %}
     
-    fail =1;
-    if l>mono.filprop(4)*1.0 %&& fail==0
-    fn = fieldnames(fil); fail = 0; pos = []; l=0;
+    %fail =1;
+    if l>mono.filprop(4)*1.0
+    fn = fieldnames(fil); pos = []; l=0;
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         n = size(fil.(fn{fsl}),1);
