@@ -32,11 +32,11 @@ for i=1:iters
     %kdt = KDTreeSearcher(dyn,'bucketsize',500); %much slower than boxprox
     comlist = zeros(0,3);
     for j=1:mono.filprop(4)*20
-        %{
-    if endloop==1 || fail==1
-        disp('q') %never displayed, check never true?
-        break;
-    end %never bails here for some reason
+        %
+        if endloop==1 || fail==1
+            disp('q') %never displayed, check never true?
+            break;
+        end
         %}
         
         if fail==0 && endloop==0
