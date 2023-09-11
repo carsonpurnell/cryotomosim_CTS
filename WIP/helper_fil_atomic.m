@@ -116,7 +116,7 @@ for i=1:iters
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         n = size(fil.(fn{fsl}),1);
-        ix = randperm(n); ix = ix(1:round(n/50));
+        ix = randperm(n); ix = ix(1:round(n/75));
         lim = fil.(fn{fsl})(ix,1:3);
         dyn = [dyn;lim];
         %fil.(fn{fsl}) = zeros(0,4);
@@ -266,24 +266,19 @@ end
 %try again with a pos line and check via step lengths?
 %comlist
 kill = 0;
-if size(comlist,1) < mono.filprop(4)
-    %obvious fails length requirement, turn on delete flag
+if size(comlist,1) < mono.filprop(4) %check against length for kill flagging
     kill = 1;
-else
-    ddd = pdist2(comlist,comlist,'euclidean','Smallest',3);
-    %ddd(2:3,2:end-1) %drop ends, they will always have a step*2 distance
-    fff = ddd(2:3,2:end-1)<(mono.filprop(2)*3); %check distances against stepsize
-    if ~all(fff,'all')
-        kill = 1;
-    end
+else %if long enough, check for continuous COM distances
+    ddd = pdist2(comlist,comlist,'euclidean','Smallest',3); %nearest two points and self
+    fff = ddd(2:3,2:end-1)<(mono.filprop(2)*1.2); %check distances against stepsize, drop start/end
+    if ~all(fff,'all'), kill = 1; end %if break in distances, flag kill
 end
 
-if kill==1 %clear fils if break detected
+if kill==1 %clear fil struct if break detected
 for iix=1:numel(mono.adat) %loop through and cumulate atoms
     fil.(mono.modelname{iix}) = zeros(0,4);
 end
 end
-%}
 
 %fprintf('ers:%i',e)
 end
