@@ -194,8 +194,8 @@ for i=1:iters
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         n = size(fil.(fn{fsl}),1);
-        ix = randperm(n); ix = ix(1:round(n/50)); %need to keep extra pts, perim only would be fewer
-        lim = fil.(fn{fsl})(ix,1:3);
+        %ix = randperm(n); ix = ix(1:round(n/50)); %need to keep extra pts, perim only would be fewer
+        %lim = fil.(fn{fsl})(ix,1:3);
         dyn = [dyn;fp]; %can't use ovcheck because it doesn't accumulate
     end
     %fil = struct;
