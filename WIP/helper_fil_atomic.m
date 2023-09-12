@@ -15,7 +15,7 @@ end
 
 for ol=1:numel(particles)
     mono = particles(ol);
-    iters = 0.2*mono.filprop(4)^2;
+    iters = round(0.2*mono.filprop(4)^2);
     ct = 0; e = 0;
 for i=1:iters
     %step = mono.filprop(2);
