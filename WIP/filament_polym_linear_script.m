@@ -3,7 +3,7 @@
 rng(11)
 profile on
 pix = 8;
-input = {'MT.fil','actin.fil','cofilactin.fil','actin.fil'};
+input = {'MT.fil','actin.fil','cofilactin.fil'};%,'actin.fil'};
 particles = helper_filinput(pix,input);
 box = [500,400,80]*pix; % box size in A
 
