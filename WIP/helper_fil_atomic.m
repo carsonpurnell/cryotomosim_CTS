@@ -43,14 +43,14 @@ for i=1:iters
         if fail==0 && endloop==0
             for il=1:retry
                 if l==0 %new start vals until initial placement found
-                    veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
+                    veci = randv(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
                     rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
                     for mmm=1:numel(mono.modelname)
                         fil.(mono.modelname{mmm}) = zeros(0,4);
                     end
                 end
                 
-                vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
+                vecc = randv(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
                 pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
                 
                 if any(pos+200<0) || any(pos-200>box)
@@ -265,14 +265,14 @@ for j=1:mono.filprop(4)*20
     if fail==0 && endloop==0
         for il=1:retry
             if l==0 %new start vals until initial placement found
-                veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
+                veci = randv(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
                 rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
                 for mmm=1:numel(mono.modelname)
                     fil.(mono.modelname{mmm}) = zeros(0,4);
                 end
             end
             
-            vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
+            vecc = randv(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
             pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
             
             if any(pos+200<0) || any(pos-200>box)
@@ -353,7 +353,7 @@ function [err,r1,r2,com,pos,vecc,rang] = int_retry(dyn,box,pos,veci,mono,j,l,ran
 ori = [0,0,1]; retry = 5; tol = 2;
 for il=1:retry
     if l==0 %new start vals until initial placement found
-        veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
+        veci = randv(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
         rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
         %{
         for mmm=1:numel(mono.modelname)
@@ -362,7 +362,7 @@ for il=1:retry
         %}
     end
     
-    vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
+    vecc = randv(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
     pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
     
     if any(pos+200<0) || any(pos-200>box)
@@ -404,24 +404,25 @@ if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
 end
 end
 
-function vec = randc(row,col,ax,ang)
-if isempty(ax), ax = randv(1,3); end %if no axis given, randomize one
+function vec = randv(row,col,ang,ax) %ang IN RADIANS
+rax = randvec(row,col); %random vectors - finished or to cross with the center axis
+if isempty(ax) && isempty(ang), return; end
+if isempty(ax), ax = randvec(1,3); end %if no axis given, randomize one
 %if ang is 1x2, use 1st for min 2nd max?
 if numel(ang)==1, ang(2)=ang(1); ang(1)=0; end
 ang(2) = ang(2)-ang(1); %store difference from min for simpler following code
-%ang is IN RADIANS
 nrep = row/size(ax,1); %number of replicates needed to match matrix size for cross
 ax = ax/norm(ax); %unitize target vector to avoid miscalculation
-rax = randv(row,col); %random axes to cross with the center axis
 rotax = cross(repmat(ax,nrep,1),rax); %compute orthogonal axes to rotate 
 rotax = (rotax'./vecnorm(rotax'))'; %unitize orthogonal axes
 vec = zeros(row,col);
-for i=1:row
-    R = rotmat(rotax(i,:),rand*ang(2)+ang(1)); %rotation vector
-    vec(i,:) = ax*R;
+for i=1:row %loop because matrix multiplication can't be vectorized?
+    R = rotmat(rotax(i,:),rand*ang(2)+ang(1)); %rotation matrix for the point
+    vec(i,:) = ax*R; %vector of rotated point away form cone center
 end
 end
-function [vec] = randv(row,col)
+
+function [vec] = randvec(row,col)
 vec = randn(row,col); %random normal numbers for evenly-distributed vector directions
 vec = (vec'./vecnorm(vec'))'; %unitize vectors to length 1 for sphere vectors
 end
