@@ -5,7 +5,7 @@ function list = util_loadfiles(filter,prompt,multi)
 %prompt = 'Select input structure files';
 %filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
 arguments
-    filter = '*.mat'
+    filter = '*.mat' %default backstop filetype filter
     prompt = 'Select input files' %window display title
     multi = []; %empty vector to multiselect
 end
