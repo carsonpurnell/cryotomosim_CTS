@@ -43,7 +43,7 @@ for i=1:iters
         if fail==0 && endloop==0
             for il=1:retry
                 if l==0 %new start vals until initial placement found
-                    veci = randc(1,3,ori,deg2rad([70,110])); %random in horizontal disc for efficiency
+                    veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
                     rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
                     for mmm=1:numel(mono.modelname)
                         fil.(mono.modelname{mmm}) = zeros(0,4);
