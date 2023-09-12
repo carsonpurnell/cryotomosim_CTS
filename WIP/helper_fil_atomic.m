@@ -187,20 +187,21 @@ for i=1:iters
     %}
     
     %fail =1;
-    if l>mono.filprop(4)*1.0
+    if kill==0 %l>mono.filprop(4)*1.0
     fn = fieldnames(fil); pos = []; l=0;
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
         n = size(fil.(fn{fsl}),1);
-        ix = randperm(n); ix = ix(1:round(n/50));
+        ix = randperm(n); ix = ix(1:round(n/50)); %need to keep extra pts, perim only would be fewer
         lim = fil.(fn{fsl})(ix,1:3);
-        dyn = [dyn;lim];
-        %fil.(fn{fsl}) = zeros(0,4);
+        dyn = [dyn;lim]; %can't use ovcheck because it doesn't accumulate
     end
-    fil = struct;
+    %fil = struct;
+    ct = ct+1;
     end
-    %fil = struct; l=0;
-    if fail==0; ct = ct+1; else e=e+1; end
+    %l=0;
+    fil = struct; l=0;
+    %if kill==0; ct = ct+1; else e=e+1; end
 end
 fprintf('Layer %i, placed %i out of %i \n',ol,ct,iters)
 end
