@@ -529,7 +529,7 @@ H = exp(-.5*(i.^2+j.^2)/n^2);
 Z = real(ifft2(H.*fft2(randn(size(X))))); % 0-centered, approximately normal
 
 pts = [X(:),Y(:),Z(:)*sc];
-n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/8));
+n = size(pts,1); ix = randperm(n); ix = ix(1:round(n/10));
 pts = pts(ix,:);
 pts(:,1:2) = pts(:,1:2)-pad;
 %size(pts)
