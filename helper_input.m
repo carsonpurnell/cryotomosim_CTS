@@ -15,7 +15,9 @@ end
 if isstruct(list) && isfield(list,'type') %if the input is a formatted particle list, record and end
     particleset = list; return
 end
-list = internal_load(list); %internal call to either uipickfiles or uigetfiles
+%list = internal_load(list); %internal call to either uipickfiles or uigetfiles
+filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
+list = util_loadfiles(filter);
 
 %types = {'single','bundle','complex','cluster','group','assembly','memplex','membrane','inmem','outmem'};
 %complex one flag to make it place everything separately, rather than needing a complex for each type
@@ -157,7 +159,6 @@ for i=1:numel(list)
     
     tmp.file = {filename}; %tmp.id = id; %store filename and classification id of object
     
-    
     %{
     %id specification from filename
     if numel(tmp.vol)==1 || numel(tmp.vol)==numel(id)-2
@@ -179,11 +180,18 @@ end
 end
 
 function list = internal_load(list)
-if strcmp(list,'gui') && exist('uipickfiles','file')==2 %preferred method of using GUI to find target files
-    list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$|\.pdb1$|\.cif$|\.mmcif$'); 
+prompt = 'Select input structure files';
+filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
+multi = [];
+if strcmp(list,'gui') && exist('uipickfiles','file')==2 &&6==8%preferred method of using GUI to find target files
+    filter = replace(filter,'*','\'); filter = replace(filter,';','$|'); %replace separators
+    filter = append(filter,'$'); %append maybe important last symbol
+    %list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$|\.pdb1$|\.cif$|\.mmcif$','Prompt',prompt); 
+    list = uipickfiles('REFilter',filter,'Prompt',prompt,'NumFiles',multi); 
     if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
 elseif strcmp(list,'gui')
-    [list, path] = uigetfile({'*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif'},'Select input files','MultiSelect','on');
+    if isempty(multi), multi='on'; else multi='off'; end %parse multiselect flag
+    [list, path] = uigetfile({filter},prompt,'MultiSelect',multi);
     if numel(string(list))==1, list={list}; end
     if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
     for i=1:numel(list) %make the list full file paths rather than just names so it works off-path

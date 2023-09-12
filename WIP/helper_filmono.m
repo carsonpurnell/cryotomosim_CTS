@@ -1,5 +1,5 @@
 function particle = helper_filmono(input,pix,prop)
-% particle = helper_filmono(input,prop)
+% particle = helper_filmono(input,pix,prop)
 %
 %
 % need to add an option to save the struct as a .fil, use the same location and probably filename
@@ -8,11 +8,9 @@ arguments
     pix
     prop = 'gui'
 end
-%input = 'actin_mono_fil2.cif'; 
-%ang = -166.15; step = 27.3; flex = 12; minL = 20;
-%prop = [-166.15,27.3,12,20];
+
 if strcmp(input,'gui')
-    [input, path] = uigetfile({'*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif'},'Select input file'); %select file
+    [input, path] = uigetfile({'*.pdb;*.pdb1;*.mat;*.cif;*.mmcif'},'Select input file'); %select file
     input = fullfile(path,input); %parse filename for functional off-path use
 end
 %if ~isfile(input), error('file does not appear to exist - use "gui" for off-path files'); end
@@ -38,4 +36,5 @@ particle.modelname = dat.modelname;
 
 % example test filaments?
 % script with a single 3d filament curve test and a second module for filling some volume?
+% option for generating a preview filament from input properties?
 end
