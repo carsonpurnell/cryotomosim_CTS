@@ -1,5 +1,6 @@
 
 %% integrated polymer walk - atomistic
+rng(11)
 profile on
 pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};
