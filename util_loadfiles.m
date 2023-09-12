@@ -1,9 +1,10 @@
 function list = util_loadfiles(filter,prompt,multi)
 % utility to automatically use the superior uipickfiles if found, otherwise use matlab's file UI
+% inputs
+%filter: file extension filter string, in the format '*.mmcif;*.mat'  defaults to '*.mat'
+%prompt: window display title as string, default 'Select input structure files'
+%multi: exact number of input files, or [min,max]. empty vector [] allows any number, and is default
 %
-%
-%prompt = 'Select input structure files';
-%filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
 arguments
     filter = '*.mat' %default backstop filetype filter
     prompt = 'Select input files' %window display title
@@ -11,7 +12,8 @@ arguments
 end
 
 if exist('uipickfiles','file')==2 %&& strcmp(list,'gui') % preferred method of using GUI to find target files
-    filter = replace(filter,'*','\'); filter = replace(filter,';','$|'); %replace separators
+    %filter = replace(filter,'*','\'); filter = replace(filter,';','$|'); %replace separators
+    filter = replace(replace(filter,'*','\'),';','$|'); %replace separators
     filter = append(filter,'$'); %append maybe important last symbol
     %list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$|\.pdb1$|\.cif$|\.mmcif$','Prompt',prompt); 
     list = uipickfiles('REFilter',filter,'Prompt',prompt,'NumFiles',multi); 
