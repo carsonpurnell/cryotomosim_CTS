@@ -13,8 +13,8 @@ end
 
 if exist('uipickfiles','file')==2 %&& strcmp(list,'gui') % preferred method of using GUI to find target files
     %filter = replace(filter,'*','\'); filter = replace(filter,';','$|'); %replace separators
-    filter = replace(replace(filter,'*','\'),';','$|'); %replace separators
-    filter = append(filter,'$'); %append maybe important last symbol
+    %filter = replace(replace(filter,'*','\'),';','$|'); %append maybe important last symbol
+    filter = append(replace(replace(filter,'*','\'),';','$|'),'$'); %parse filter
     %list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$|\.pdb1$|\.cif$|\.mmcif$','Prompt',prompt); 
     list = uipickfiles('REFilter',filter,'Prompt',prompt,'NumFiles',multi); 
     if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
