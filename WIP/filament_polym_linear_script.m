@@ -4,9 +4,9 @@ rng(11)
 profile on
 pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};%,'actin.fil'};
-input = {'actin.fil','cofilactin.fil'};
+input = {'actin.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
-box = [500,400,80]*pix; % box size in A
+box = [500,400,50]*pix; % box size in A
 
 n = 4+pix^1.5; sc = 2400;
 con = internal_atomcon(box,pix,n,sc);
