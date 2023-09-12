@@ -15,7 +15,7 @@ end
 
 for ol=1:numel(particles)
     mono = particles(ol);
-    iters = 0.5*mono.filprop(4)^2;
+    iters = 0.2*mono.filprop(4)^2;
     ct = 0; e = 0;
 for i=1:iters
     %step = mono.filprop(2);
@@ -27,6 +27,7 @@ for i=1:iters
     %}
     %[~,fil,~,l] = int_filpoly(mono,dyn,box);
     l=0; fil = struct;
+    fp = zeros(0,3);
     retry = 5; ori = [0,0,1]; tol = 2; e=0;
     endloop=0; fail=0; %pos = []; veci=[]; vecc=[]; rang=[];
     %kdt = KDTreeSearcher(dyn,'bucketsize',500); %much slower than boxprox
@@ -80,6 +81,7 @@ for i=1:iters
                 tmp(:,org) = tmp(:,org)*r1*r2+com; %move to halfway along current vector
                 fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
             end
+            fp = [fp;ovcheck];
             comlist = [comlist;com]; %cat list of placement locs for break checking
             veci = vecc; l=l+1; %store current vector as prior, increment length tracker
         else%if il==retry
@@ -194,7 +196,7 @@ for i=1:iters
         n = size(fil.(fn{fsl}),1);
         ix = randperm(n); ix = ix(1:round(n/50)); %need to keep extra pts, perim only would be fewer
         lim = fil.(fn{fsl})(ix,1:3);
-        dyn = [dyn;lim]; %can't use ovcheck because it doesn't accumulate
+        dyn = [dyn;fp]; %can't use ovcheck because it doesn't accumulate
     end
     %fil = struct;
     ct = ct+1;
