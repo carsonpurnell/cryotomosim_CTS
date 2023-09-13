@@ -1,11 +1,16 @@
 function vec = randv(row,col,ax,ang) %ang IN RADIANS
-%
-%
-%
-%asin to correct for center bias?
+% vec = randv(row,col)
+% generates an array the size of row*col, with one unitized vector per row
+% advanced usage for nx3 vectors:  vec = randv(row,col,ax,ang)
+% these vectors are incread constrained about the vector ax by the limits ang
+% ax must be a 1x3 vector, or empty. if empty, a random axis is used for the entire set
+% ang are the constraints in radians. either [min,max] or [max] that defaults to min=0
+% this is the deflection angle from ax. [0,pi] for hemisphere, [80,100] for a narrow belt, etc
+% the per-vector angle is generated with a uniform distribution, producing a density bias near ax and -ax
+
 rax = randvec(row,col); %random vectors - finished or to cross with the center axis
-if isempty(ax) && isempty(ang)
-    vec=rax; %if no ax/ang, end and return random vecs
+if (isempty(ax) && isempty(ang)) || col~=3
+    vec=rax; % if ax and ang are empty, return the random unconstrained vectors
 else
     if isempty(ax), ax = randvec(1,3); end %if no axis given, randomize one
     if numel(ang)==1, ang(2)=ang(1); ang(1)=0; end %if only 1 ang, use as max against min 0
