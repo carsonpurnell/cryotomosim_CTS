@@ -23,8 +23,8 @@ end
 end
 
 function [vec] = randvec(row,col)
-vec = randn(row,col); %random normal numbers for evenly-distributed vector directions
-vec = (vec'./vecnorm(vec'))'; %unitize vectors to length 1 for sphere vectors
+vec = randn(col,row); %random normal numbers for evenly-distributed vector directions
+vec = (vec./vecnorm(vec))'; %unitize vectors to length 1 for sphere vectors
 end
 
 function t = rotmat(ax,rad)
