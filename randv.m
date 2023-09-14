@@ -1,6 +1,6 @@
 function vec = randv(row,col,ax,ang) %ang IN RADIANS
 % vec = randv(row,col)
-% generates an array the size of row*col, with one unitized vector per row
+% generates an array the size of row*col, with one vector per row on a uniform unit sphere
 % advanced usage for nx3 vectors:  vec = randv(row,col,ax,ang)
 % these vectors are incread constrained about the vector ax by the limits ang
 % ax must be a 1x3 vector, or empty. if empty, a random axis is used for the entire set
@@ -16,6 +16,7 @@ else
     if numel(ang)==1, ang(2)=ang(1); ang(1)=0; end %if only 1 ang, use as max against min 0
     %ang(2) = ang(2)-ang(1); %store difference from min for simpler following code
     %nrep = row/size(ax,1); %number of replicates needed to match matrix size for cross
+    %might be able to rework ax to be a column of axes. need to be vecnormed.
     ax = ax/norm(ax); %unitize target vector to avoid miscalculation
     rotax = cross(repmat(ax,row/size(ax,1),1),rax); %compute orthogonal axes to rotate
     rotax = (rotax'./vecnorm(rotax'))'; %unitize orthogonal axes

@@ -1,8 +1,10 @@
-function [pts,dyn] = helper_fil_atomic(box,particles,con)
+function [pts,dyn,fil] = helper_fil_atomic(box,particles,con)
 
 ori = [0,0,1]; tol = 2;
 if isempty(con)
-    dyn = zeros(0,3);
+    dyn = zeros(0,3); 
+    dyn = [-300,-300,-300];
+    dyn = repmat(dyn,5,1);
 else
     dyn = con;
 end
@@ -28,11 +30,12 @@ for i=1:iters
     %[~,fil,~,l] = int_filpoly(mono,dyn,box);
     l=0; fil = struct;
     fp = zeros(0,3);
+    comlist = zeros(0,3);
     retry = 5; ori = [0,0,1]; tol = 2; e=0;
     endloop=0; fail=0; %pos = []; veci=[]; vecc=[]; rang=[];
     %kdt = KDTreeSearcher(dyn,'bucketsize',500); %much slower than boxprox
-    comlist = zeros(0,3);
     for j=1:mono.filprop(4)*20
+        %fprintf('%i',l)
         %
         if endloop==1 || fail==1
             disp('q') %never displayed, check never true?
@@ -53,8 +56,9 @@ for i=1:iters
                 vecc = randv(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
                 pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
                 
-                if any(pos+200<0) || any(pos-200>box)
-                    err = 1; l=0; %if pos is too far out of box, retry without pointless proxtesting
+                if any(pos+100<0) || any(pos-100>box)
+                    err = 1; %l=0; %if pos is too far out of box, retry without pointless proxtesting
+                    %disp('boxout')
                 else
                     rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
                     theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
@@ -64,11 +68,13 @@ for i=1:iters
                     com = pos-vecc*mono.filprop(2)/2;
                     ovcheck = mono.perim*r1*r2+com;
                     err = proxtest(dyn,ovcheck,tol);
-                    %if err~=0, fprintf('%i,',j); end
+                    %if err==1, fprintf('%i,',j); end
                 end
                 
+                if il==retry, endloop=1; fail=1; e=e+1; end
                 if err==0, break; end %if good placement found, early exit
-                if err~=0 && il==retry,  endloop=1; fail=1; e=e+1; end %fprintf('c,');
+                if err~=0 && il==retry, endloop=1; fail=1; e=e+1; end %fprintf('c,');
+                %fprintf('%i,',il); % empty dyn, so err always 0
             end
         end
         
@@ -82,10 +88,11 @@ for i=1:iters
                 fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
             end
             fp = [fp;ovcheck];
+            %fprintf('g,%i, ',j);%size(fp,1))
             comlist = [comlist;com]; %cat list of placement locs for break checking
             veci = vecc; l=l+1; %store current vector as prior, increment length tracker
         else%if il==retry
-            %fprintf('b%i,',i) %can actually reach now
+            %fprintf('g,%i, ',j);%size(fp,1)) %never?
             break %this break still seems to fail sometimes. pass-through filaments still happen
         end
     end
@@ -93,17 +100,22 @@ for i=1:iters
     kill = 0;
     if size(comlist,1) < mono.filprop(4) %check against length for kill flagging
         kill = 1;
+        %disp('shortkill') %appears to be never
     else %if long enough, check for continuous COM distances
         ddd = pdist2(comlist,comlist,'euclidean','Smallest',3); %nearest two points and self
         fff = ddd(2:3,2:end-1)<(mono.filprop(2)*1.2); %check distances against stepsize, drop start/end
         if ~all(fff,'all'), kill = 1; end %if break in distances, flag kill
+        %disp('breakkill') % 100% of kill instances - retry is doing runaway placements?
     end
     
-    if kill==1 %clear fil struct if break detected
+    if kill==1 &&1==3 %clear fil struct if break detected
         for iix=1:numel(mono.adat) %loop through and cumulate atoms
             fil.(mono.modelname{iix}) = zeros(0,4);
         end
     end
+    %l
+    %kill
+    %fil
     
     %{
     l=0; fail=0; fil = struct; END=0; pos = []; veci=[]; vecc=[]; rang=[];
@@ -187,22 +199,25 @@ for i=1:iters
         end
     end
     %}
-    
+    %fprintf('%i,%i, ',j,kill);%,size(fp,1))
+    %if kill==0, fprintf('t,'); end %always kills without using con points
     %fail =1;
     if kill==0 %l>mono.filprop(4)*1.0
     fn = fieldnames(fil); pos = []; l=0;
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
-        n = size(fil.(fn{fsl}),1);
+        %n = size(fil.(fn{fsl}),1);
         %ix = randperm(n); ix = ix(1:round(n/50)); %need to keep extra pts, perim only would be fewer
         %lim = fil.(fn{fsl})(ix,1:3);
         dyn = [dyn;fp]; %can't use ovcheck because it doesn't accumulate
+        %size(dyn) %never reaches, kill always 1
     end
     %fil = struct;
     ct = ct+1;
     end
     %l=0;
-    fil = struct; l=0;
+    %fil = struct; 
+    l=0;
     %if kill==0; ct = ct+1; else e=e+1; end
 end
 fprintf('Layer %i, placed %i out of %i \n',ol,ct,iters)
@@ -387,9 +402,10 @@ function err = proxtest(c,pts,tol)
 l = min(pts,[],1)-tol; h = max(pts,[],1)+tol; %low and high bounds per dimension
 ix = c>l & c<h; % compare all points against the prospective box
 ix = all(ix,2); % filter to index of pts inside the box
-if ~any(ix), ix=[]; end % check for early end if no points in the box
-err=0; 
-if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
+%if ~any(ix), ix=[]; end % check for early end if no points in the box
+if ~any(ix)
+    err=0; 
+else% ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     buck = 100;%round( size(c,1)/7650 ); %very rough, is probably not linear scale
     % probably needs some sort of depth-based metric, not a flat one depth = log2 (n/leaf)
     %ot = OcTree(c(ix,:),'binCapacity',buck); %significantly slower than kdt build
@@ -397,11 +413,13 @@ if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     %mutree = octcubetree(c(ix,:),'leafmax',500); %slightly faster than kd building
     %err = mutreetest(mutree,pts); %WAYYY slower than knn search
     %err = any(err);
+    %disp('gg')
     
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
-    d = [d{:}]; if any(d<tol), err=1; end %test if any points closer than tol
+    d = [d{:}]; if any(d<tol), err=1; else err=0; end %test if any points closer than tol
 end
+%fprintf('%i',err)
 end
 
 %{

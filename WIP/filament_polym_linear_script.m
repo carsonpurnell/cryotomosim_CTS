@@ -8,11 +8,14 @@ pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};%,'actin.fil'};
 %input = {'actin.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
-box = [500,400,60]*pix; % box size in A
+box = [400,300,60]*pix; % box size in A
 
 n = 4+pix^1.5; sc = 2400;
 con = internal_atomcon(box,pix,n,sc);
-[pts,dyn] = helper_fil_atomic(box,particles,con);
+%con = []; %prevents placements somehow? appears to need other points in box/nearby to place?
+%everything seems to work, up until adding to dyn/pts then it does nothing - never terminates polymerization?
+%
+[pts,dyn,fil] = helper_fil_atomic(box,particles,con);
 
 profile viewer
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
@@ -511,9 +514,10 @@ sliceViewer(vol);
 %% internal functions
 function con = internal_atomcon(box,pix,n,sc)
 sz = [max(box),max(box)]; 
-dl = 6;
-ptsb = internal_gen_atomborder(sz,n/2,sc*1,4)-[0,0,dl*randi(6)];
-ptst = internal_gen_atomborder(sz,n/2,sc*1,4)+[0,0,dl*randi(6)+box(3)];
+dl = 10;
+w = 1;
+ptsb = internal_gen_atomborder(sz,n/2,sc*1,4)-[0,0,dl*randi(6)*w];
+ptst = internal_gen_atomborder(sz,n/2,sc*1,4)+[0,0,dl*randi(6)*w+box(3)];
 pts = zeros(0,3);
 for i=1:4
     pts = [pts;ptsb-[0,0,dl*i]]; pts = [pts;ptst+[0,0,dl*i]];
