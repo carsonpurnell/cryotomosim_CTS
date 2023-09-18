@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.4.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.4.2) - 2023-09-18 19:23:43
+
+improving filament IO and file handling
+
 ## [v0.4.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.4.1) - 2023-09-18 18:05:17
 
 Better atomic filament generation when possible
