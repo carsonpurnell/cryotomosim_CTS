@@ -7,6 +7,7 @@ profile on
 pix = 8;
 input = {'MT.fil','actin.fil','cofilactin.fil'};%,'actin.fil'};
 %input = {'actin.fil','actin.fil','cofilactin.fil'};
+input = {'cofil_actin_split.fil'};
 particles = helper_filinput(pix,input);
 box = [400,300,60]*pix; % box size in A
 
