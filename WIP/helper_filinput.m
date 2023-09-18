@@ -7,7 +7,7 @@ end
 
 if strcmp(list,'gui') %select the files themselves
     filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.fil';
-    list = util_loadfiles(filter);
+    list = util_loadfiles(filter); %auto parser for both uigetfile and uipickfiles
     %{
     [list, path] = uigetfile({filter},'Select input files','MultiSelect','on');
     if numel(string(list))==1, list={list}; end
@@ -36,10 +36,14 @@ for i=1:numel(list) %loop through and parse inputs through filmono for structs a
             particle(i) = helper_filmono(list{i},pix); %#ok<AGROW> %disimilar structures errors
             %not properly parsing this somehow, was there a change in data? perim borking it?
     end
-    tmp = vertcat(particle(i).adat{:}); %cat all partitions for perim testing
-    alphat = alphaShape(double(tmp(:,1:3)),12); 
-    [~,p] = boundaryFacets(alphat);
-    particle(i).perim = p; %#ok<AGROW>
+    %
+    if particle(i).perim == 0
+        tmp = vertcat(particle(i).adat{:}); %cat all partitions for perim testing
+        alphat = alphaShape(double(tmp(:,1:3)),12);
+        [~,p] = boundaryFacets(alphat);
+        particle(i).perim = p; %#ok<AGROW>
+    end
+    %}
 end
 
 end
