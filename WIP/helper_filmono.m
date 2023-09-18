@@ -51,8 +51,6 @@ if filesave==1
     save(sname,'monomer')
 end
 
-%if save save as .fil file
-
 % example test filaments?
 % script with a single 3d filament curve test and a second module for filling some volume?
 % option for generating a preview filament from input properties?
