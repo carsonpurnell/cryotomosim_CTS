@@ -95,9 +95,25 @@ end
 %}
 
 % filament placement WIP block
-if isstruct(param.filaments)
+if isstruct(param.filaments) && (param.mem{1}~=0 || param.grid(1)~=0)
     fprintf('Generating filaments   ')
     [cts.vol,fsplit] = helper_randfill_fil(cts.vol,constraint,pix,param.filaments);
+elseif isstruct(param.filaments) && param.mem{1}==0 && param.grid(1)==0 %atomic version needs atomic inputs
+    fprintf('Generating filaments   ')
+    box = size(vol)*pix; % box size in A
+    if any(constraint)
+        n = 4+pix^1.5; sc = 2400;
+        %con = internal_atomcon(box,pix,n,sc); %needs rejiggering and made into a function
+        con = [];
+    else
+        con = [];
+    end
+    [pts] = helper_fil_atomic(box,param.filaments,con);
+    fn = fieldnames(pts);
+    for fi=1:numel(fn)
+        pts.(fn{fi})(:,4) = pts.(fn{fi})(:,4)*2.5; %lazy temp intensity scaling fix
+    end
+    [cts.vol,~,~,fsplit] = helper_atoms2vol(pix,pts,box);
 end
 
 %generate model and add (in case input vol had stuff in it)

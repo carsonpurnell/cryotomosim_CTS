@@ -2,13 +2,10 @@ function [pts,dyn,fil] = helper_fil_atomic(box,particles,con)
 
 ori = [0,0,1]; tol = 2;
 if isempty(con)
-    dyn = zeros(0,3); 
-    dyn = [-300,-300,-300];
-    dyn = repmat(dyn,5,1);
+    dyn = zeros(0,3);
 else
     dyn = con;
 end
-%dyn{2} = 0; 
 retry = 5;
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
@@ -201,23 +198,19 @@ for i=1:iters
     %}
     %fprintf('%i,%i, ',j,kill);%,size(fp,1))
     %if kill==0, fprintf('t,'); end %always kills without using con points
-    %fail =1;
+    %fail = 1;
     if kill==0 %l>mono.filprop(4)*1.0
     fn = fieldnames(fil); pos = []; l=0;
     for fsl=1:numel(fn)
         pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
-        %n = size(fil.(fn{fsl}),1);
-        %ix = randperm(n); ix = ix(1:round(n/50)); %need to keep extra pts, perim only would be fewer
+        %n = size(fil.(fn{fsl}),1); ix = randperm(n); ix = ix(1:round(n/50)); %temp instead of perim
         %lim = fil.(fn{fsl})(ix,1:3);
-        dyn = [dyn;fp]; %can't use ovcheck because it doesn't accumulate
-        %size(dyn) %never reaches, kill always 1
+        dyn = [dyn;fp]; %dynamic overlap testing points
     end
     %fil = struct;
     ct = ct+1;
     end
-    %l=0;
-    %fil = struct; 
-    l=0;
+    %l=0; %fil = struct; 
     %if kill==0; ct = ct+1; else e=e+1; end
 end
 fprintf('Layer %i, placed %i out of %i \n',ol,ct,iters)
