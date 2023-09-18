@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [v0.4.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.4.1) - 2023-09-18 18:05:17
+
+Better atomic filament generation when possible
+
+### Bug Fixes
+
+- general:
+  - fix filament skip breaks (demo only) ([2f0b013](https://github.com/carsonpurnell/cryotomosim_CTS/commit/2f0b013989f9870ce1babae4608a8d7cbeec0a63))
+
 ## [v0.4.0](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.4.0) - 2023-09-06 18:09:38
 
 *No description*
