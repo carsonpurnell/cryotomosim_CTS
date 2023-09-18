@@ -1,4 +1,4 @@
-function particle = helper_filmono(input,pix,prop)
+function particle = helper_filmono(input,pix,prop,filesave)
 % particle = helper_filmono(input,pix,prop)
 %
 %
@@ -7,6 +7,7 @@ arguments
     input
     pix
     prop = 'gui'
+    filesave = 0
 end
 
 if strcmp(input,'gui')
@@ -40,6 +41,15 @@ tmp = vertcat(dat.adat{:}); %cat all partitions for perim testing
 alphat = alphaShape(double(tmp(:,1:3)),12);
 [~,p] = boundaryFacets(alphat);
 particle.perim = p; 
+
+if filesave==1
+    monomer = particle;
+    [path,fn] = fileparts(input);
+    fn = fullfile(path,fn);
+    %sname = strrep(input,'.cif','.fil')
+    sname = append(fn,'.fil');
+    save(sname,'monomer')
+end
 
 %if save save as .fil file
 

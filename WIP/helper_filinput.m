@@ -33,8 +33,9 @@ for i=1:numel(list) %loop through and parse inputs through filmono for structs a
             particle(i).vol = split;  %#ok<AGROW>
             particle(i).sum = sum*convfac; %#ok<AGROW>
         case {'.cif','.mmcif','.pdb','.pdb1','.mat'}
-            particle(i) = helper_filmono(list{i},pix); %#ok<AGROW> %disimilar structures errors
+            particle(i) = helper_filmono(list{i},pix,'gui',1); %#ok<AGROW> %disimilar structures errors
             %not properly parsing this somehow, was there a change in data? perim borking it?
+            %monomer = particle(i); 
     end
     %
     if particle(i).perim == 0
