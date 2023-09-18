@@ -43,12 +43,8 @@ alphat = alphaShape(double(tmp(:,1:3)),12);
 particle.perim = p; 
 
 if filesave==1
-    monomer = particle;
-    [path,fn] = fileparts(input);
-    fn = fullfile(path,fn);
-    %sname = strrep(input,'.cif','.fil')
-    sname = append(fn,'.fil');
-    save(sname,'monomer')
+    [path,fn] = fileparts(input); fn = fullfile(path,fn); sname = append(fn,'.fil');
+    monomer = particle; save(sname,'monomer') %saving with uniform variable name for proper load
 end
 
 % example test filaments?
