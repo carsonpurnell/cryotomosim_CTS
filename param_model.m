@@ -17,6 +17,8 @@ function param = param_model(pix,param)
 %     change to 0 to not generate vitreous ice in the model
 %mem            default 0, otherwise an integer
 %    1 to generate a super janktastic not at all realistic fascimile of a cell membrane
+%filaments      default 0, otherwise 1
+%    1 to generate flexible polymers from separate input structures - example cytoskeletal filaments
 %graph          default 0
 %    1 to have a plot continuously update with particle placement success/failure numbers
 %
