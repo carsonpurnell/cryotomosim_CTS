@@ -7,6 +7,7 @@ else
     dyn = con;
 end
 retry = 5;
+%retry = 5; ori = [0,0,1]; tol = 2; 
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
     pts.(mn{i}) = zeros(0,4); %initialize storage struct for each submodel
@@ -14,8 +15,8 @@ end
 
 for ol=1:numel(particles)
     mono = particles(ol);
-    iters = round(0.2*mono.filprop(4)^2);
-    ct = 0; e = 0;
+    iters = round(0.2*mono.filprop(4)^1.8);
+    ct = 0; %e = 0;
 for i=1:iters
     %step = mono.filprop(2);
     %ml = mono.filprop(4);
@@ -28,14 +29,13 @@ for i=1:iters
     l=0; fil = struct;
     fp = zeros(0,3);
     comlist = zeros(0,3);
-    retry = 5; ori = [0,0,1]; tol = 2; e=0;
+    e=0;
     endloop=0; fail=0; %pos = []; veci=[]; vecc=[]; rang=[];
     %kdt = KDTreeSearcher(dyn,'bucketsize',500); %much slower than boxprox
     for j=1:mono.filprop(4)*20
-        %fprintf('%i',l)
         %
         if endloop==1 || fail==1
-            disp('q') %never displayed, check never true?
+            fprintf('a') %never displayed, check never true?
             break;
         end
         %}
@@ -68,9 +68,9 @@ for i=1:iters
                     %if err==1, fprintf('%i,',j); end
                 end
                 
-                if il==retry, endloop=1; fail=1; e=e+1; end
+                if il==retry, endloop=1; fail=1; e=e+1; fprintf('b,'); end
                 if err==0, break; end %if good placement found, early exit
-                if err~=0 && il==retry, endloop=1; fail=1; e=e+1; end %fprintf('c,');
+                if err~=0 && il==retry, endloop=1; fail=1; e=e+1; fprintf('c,'); end %
                 %fprintf('%i,',il); % empty dyn, so err always 0
             end
         end
