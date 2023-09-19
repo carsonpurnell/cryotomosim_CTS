@@ -9,7 +9,7 @@ input = {'MT.fil','actin.fil','cofilactin.fil'};%,'actin.fil'};
 %input = {'actin.fil','actin.fil','cofilactin.fil'};
 %input = {'cofil_actin_split.fil'};
 particles = helper_filinput(pix,input);
-box = [500,400,60]*pix; % box size in A
+box = [400,300,60]*pix; % box size in A
 
 n = 4+pix^1.5; sc = 2400;
 con = internal_atomcon(box,pix,n,sc);
