@@ -47,7 +47,7 @@ for i=1:iters
                 
                 if il==retry, endloop=1; end
                 if err==0, break; end %if good placement found, early exit
-                %if err~=0 && il==retry, endloop=1; end
+                %if err~=0 && il==retry, endloop=1; end %appears redundant
             end
         %end
         
