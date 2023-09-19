@@ -1,13 +1,12 @@
 function [pts,dyn,fil] = helper_fil_atomic(box,particles,con)
 
-ori = [0,0,1]; org = [1,2,3]; tol = 2;
+ori = [0,0,1]; org = [1,2,3]; tol = 2; retry = 5; ct = 0;
 if isempty(con)
     dyn = zeros(0,3);
 else
     dyn = con;
 end
-retry = 5;
-%retry = 5; ori = [0,0,1]; tol = 2; 
+
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
     pts.(mn{i}) = zeros(0,4); %initialize storage struct for each submodel
@@ -16,25 +15,11 @@ end
 for ol=1:numel(particles)
     mono = particles(ol);
     iters = round(0.2*mono.filprop(4)^1.8);
-    ct = 0; %e = 0;
 for i=1:iters
-    %step = mono.filprop(2);
-    %ml = mono.filprop(4);
-    %{
-    for mmm=1:numel(mono.modelname)
-        fil.(mono.modelname{mmm}) = zeros(0,4);
-    end
-    %}
-    %[~,fil,~,l] = int_filpoly(mono,dyn,box);
     l=0; fil = struct;
-    fp = zeros(0,3);
-    comlist = zeros(0,3);
-    %e=0;
+    fp = zeros(0,3); comlist = zeros(0,3);
     endloop=0;
-    %pos = []; veci=[]; vecc=[]; rang=[];
-    %kdt = KDTreeSearcher(dyn,'bucketsize',500); %much slower than boxprox
     for j=1:mono.filprop(4)*20
-        
         %if endloop==0 
             for il=1:retry
                 if l==0 %new start vals until initial placement found
@@ -54,7 +39,6 @@ for i=1:iters
                     rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %normal axis to direction vector
                     theta = -acos( dot(ori,vecc) ); %angle between initial and final pos (negative for matlab)
                     filang = rang+mono.filprop(1)*j; %rotation about filament axis
-                    
                     r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang)); %rotation matrices
                     com = pos-vecc*mono.filprop(2)/2; %translation vector, halfway along step vector
                     ovcheck = mono.perim*r1*r2+com; %apply rotations (order dependent!) and translation
@@ -73,8 +57,7 @@ for i=1:iters
                 tmp(:,org) = tmp(:,org)*r1*r2+com; %apply rotations and translation
                 fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
             end
-            fp = [fp;ovcheck];
-            comlist = [comlist;com]; %cat list of placement locs for break checking
+            fp = [fp;ovcheck]; comlist = [comlist;com];  %#ok<AGROW> %store com and perim pts
             veci = vecc; l=l+1; %store current vector as prior, increment length tracker
         else
             break %if not successful, end filament extension
@@ -90,14 +73,6 @@ for i=1:iters
         if ~all(fff,'all'), kill = 1; end %if break in distances, flag kill
     end
     
-    %{
-    if kill==1 %&&1==3 %clear fil struct if break detected
-        for iix=1:numel(mono.adat)
-            fil.(mono.modelname{iix}) = zeros(0,4);
-        end
-    end
-    %}
-    
     if kill==0
         fn = fieldnames(fil); pos = []; l=0; ct = ct+1;
         dyn = [dyn;fp]; %#ok<AGROW> %dynamic overlap testing points
@@ -112,7 +87,7 @@ end
 end
 
 %% internal functions
-
+%{
 function [err,fil,dyn,l] = int_filpoly(mono,dyn,box)
 l=0; fil = struct;
 retry = 5; ori = [0,0,1]; tol = 2; e=0;
@@ -213,7 +188,6 @@ end
 %fprintf('ers:%i',e)
 end
 
-
 function [err,r1,r2,com,pos,vecc,rang] = int_retry(dyn,box,pos,veci,mono,j,l,rang)
 ori = [0,0,1]; retry = 5; tol = 2;
 for il=1:retry
@@ -247,7 +221,7 @@ for il=1:retry
     if err~=0 && il==retry, END=1; fail=1; end %is reporting here %, fprintf('c%i,',i)
 end
 end        
-
+%}
 function err = proxtest(c,pts,tol)
 l = min(pts,[],1)-tol; h = max(pts,[],1)+tol; %low and high bounds per dimension
 ix = c>l & c<h; % compare all points against the prospective box
@@ -267,7 +241,12 @@ else% ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimizatio
     
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
-    d = [d{:}]; if any(d<tol), err=1; else err=0; end %test if any points closer than tol
+    d = [d{:}]; 
+    if any(d<tol)
+        err=1; 
+    else
+        err=0;
+    end %test if any points closer than tol
 end
 %fprintf('%i',err)
 end
