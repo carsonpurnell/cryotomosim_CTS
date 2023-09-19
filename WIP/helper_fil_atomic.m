@@ -1,6 +1,6 @@
 function [pts,dyn,fil] = helper_fil_atomic(box,particles,con)
 
-ori = [0,0,1]; tol = 2;
+ori = [0,0,1]; org = [1,2,3]; tol = 2;
 if isempty(con)
     dyn = zeros(0,3);
 else
@@ -29,18 +29,13 @@ for i=1:iters
     l=0; fil = struct;
     fp = zeros(0,3);
     comlist = zeros(0,3);
-    e=0;
-    endloop=0; fail=0; %pos = []; veci=[]; vecc=[]; rang=[];
+    %e=0;
+    endloop=0;
+    %pos = []; veci=[]; vecc=[]; rang=[];
     %kdt = KDTreeSearcher(dyn,'bucketsize',500); %much slower than boxprox
     for j=1:mono.filprop(4)*20
-        %
-        if endloop==1 || fail==1
-            fprintf('a') %never displayed, check never true?
-            break;
-        end
-        %}
         
-        if fail==0 && endloop==0
+        %if endloop==0 
             for il=1:retry
                 if l==0 %new start vals until initial placement found
                     veci = randv(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
@@ -53,204 +48,66 @@ for i=1:iters
                 vecc = randv(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
                 pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
                 
-                if any(pos+100<0) || any(pos-100>box)
-                    err = 1; %l=0; %if pos is too far out of box, retry without pointless proxtesting
-                    %disp('boxout')
+                if any(pos+100<0) || any(pos-100>box) %fast precheck check for out-of-bounds pos
+                    err = 1;
                 else
-                    rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
-                    theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
+                    rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %normal axis to direction vector
+                    theta = -acos( dot(ori,vecc) ); %angle between initial and final pos (negative for matlab)
                     filang = rang+mono.filprop(1)*j; %rotation about filament axis
                     
-                    r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
-                    com = pos-vecc*mono.filprop(2)/2;
-                    ovcheck = mono.perim*r1*r2+com;
+                    r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang)); %rotation matrices
+                    com = pos-vecc*mono.filprop(2)/2; %translation vector, halfway along step vector
+                    ovcheck = mono.perim*r1*r2+com; %apply rotations (order dependent!) and translation
                     err = proxtest(dyn,ovcheck,tol);
-                    %if err==1, fprintf('%i,',j); end
                 end
                 
-                if il==retry, endloop=1; fail=1; e=e+1; fprintf('b,'); end
+                if il==retry, endloop=1; end
                 if err==0, break; end %if good placement found, early exit
-                if err~=0 && il==retry, endloop=1; fail=1; e=e+1; fprintf('c,'); end %
-                %fprintf('%i,',il); % empty dyn, so err always 0
+                if err~=0 && il==retry, endloop=1; end
             end
-        end
+        %end
         
-        if err==0 && fail==0 && endloop==0
+        if err==0 && endloop==0
             for iix=1:numel(mono.adat) %loop through and cumulate atoms
                 tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
-                org = [1,2,3]; %or [2,1,3] to invert xy
-                %tmp(:,org) = tmp(:,org)*r1; %rotate to the filament orientation
-                %tmp(:,org) = tmp(:,org)*r2; %rotate about the filament axis
-                tmp(:,org) = tmp(:,org)*r1*r2+com; %move to halfway along current vector
+                tmp(:,org) = tmp(:,org)*r1*r2+com; %apply rotations and translation
                 fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
             end
             fp = [fp;ovcheck];
-            %fprintf('g,%i, ',j);%size(fp,1))
             comlist = [comlist;com]; %cat list of placement locs for break checking
             veci = vecc; l=l+1; %store current vector as prior, increment length tracker
-        else%if il==retry
-            %fprintf('g,%i, ',j);%size(fp,1)) %never?
-            break %this break still seems to fail sometimes. pass-through filaments still happen
+        else
+            break %if not successful, end filament extension
         end
     end
     
     kill = 0;
     if size(comlist,1) < mono.filprop(4) %check against length for kill flagging
         kill = 1;
-        %disp('shortkill') %appears to be never
     else %if long enough, check for continuous COM distances
         ddd = pdist2(comlist,comlist,'euclidean','Smallest',3); %nearest two points and self
         fff = ddd(2:3,2:end-1)<(mono.filprop(2)*1.2); %check distances against stepsize, drop start/end
         if ~all(fff,'all'), kill = 1; end %if break in distances, flag kill
-        %disp('breakkill') % 100% of kill instances - retry is doing runaway placements?
     end
     
-    if kill==1 &&1==3 %clear fil struct if break detected
-        for iix=1:numel(mono.adat) %loop through and cumulate atoms
+    %{
+    if kill==1 %&&1==3 %clear fil struct if break detected
+        for iix=1:numel(mono.adat)
             fil.(mono.modelname{iix}) = zeros(0,4);
         end
     end
-    %l
-    %kill
-    %fil
-    
-    %{
-    l=0; fail=0; fil = struct; END=0; pos = []; veci=[]; vecc=[]; rang=[];
-    %kdt = KDTreeSearcher(dyn{1},'bucketsize',500); %much slower than boxprox
-    for j=1:mono.filprop(4)*40
-        if END==1 || fail==1; break; fprintf('bail,'); break; end %never bails here for some reason
-        if fail==0 && END==0
-            %find monomer placement loop
-            %nest_retry
-            %[err,r1,r2,com,pos,veci,rang] = int_retry(dyn,box,pos,veci,mono,j,l,rang);
-            %
-        for il=1:retry
-            if l==0 %new start vals until initial placement found
-                veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
-                rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
-                for mmm=1:numel(mono.modelname)
-                    fil.(mono.modelname{mmm}) = zeros(0,4);
-                end
-            end
-            
-            vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
-            pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
-            
-            if any(pos+200<0) || any(pos-200>box)
-                err = 1; %if pos is too far out of box, retry without pointless proxtesting
-            else
-                rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
-                theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
-                filang = rang+mono.filprop(1)*j; %rotation about filament axis
-                
-                r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
-                com = pos-vecc*mono.filprop(2)/2;
-                ovcheck = particles(ol).perim*r1*r2+com;
-                err = proxtest(dyn,ovcheck,tol);
-                %{
-                %modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
-                %[~,d] = rangesearch(kdt,ovcheck,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
-                %d = [d{:}]; if any(d<tol), err=1; else err=0; end
-                %}
-            end
-            
-            if err==0, break; end %if good placement found, early exit
-            if err~=0 && il==retry, END=1; fail=1; end %is reporting here %, fprintf('c%i,',i)
-        end
-        %
-        else
-            fprintf('avoided '); %never reaches this point? fail and end both don't work at all?
-        end
-    %
-        
-        if err~=0, END=1; fail=1; end
-        %{
-        if err==1 || END==1
-            fail = 1;
-            fprintf('t')
-            break; %this break does not work
-            %}
-        if err==1 || fail==1 || END==1
-            %fprintf('a%i,',i) %this is the only break that gets hit
-            %break
-        elseif err==0 && fail==0 && END==0
-            for iix=1:numel(mono.adat) %loop through and cumulate atoms
-                tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
-                org = [1,2,3]; %or [2,1,3] to invert xy
-                %tmp(:,org) = tmp(:,org)*r1; %rotate to the filament orientation
-                %tmp(:,org) = tmp(:,org)*r2; %rotate about the filament axis
-                tmp(:,org) = tmp(:,org)*r1*r2+com; %move to halfway along current vector
-                fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
-            end
-            %fprintf('%i,',fail) %fail = 0;
-            veci = vecc; l=l+1; %store current vector as prior, increment length tracker
-        else%if il==retry
-            %{
-            for mmm=1:numel(mono.modelname)
-                    fil.(mono.modelname{mmm}) = zeros(0,4);
-            end
-            %}
-            %fail = 1;
-            fprintf('b%i,',i) %now never reaches, caught by first check
-            break %this break still seems to fail sometimes. pass-through filaments still happen
-        end
-    end
     %}
-    %fprintf('%i,%i, ',j,kill);%,size(fp,1))
-    %if kill==0, fprintf('t,'); end %always kills without using con points
-    %fail = 1;
-    if kill==0 %l>mono.filprop(4)*1.0
-    fn = fieldnames(fil); pos = []; l=0;
-    for fsl=1:numel(fn)
-        pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; 
-        %n = size(fil.(fn{fsl}),1); ix = randperm(n); ix = ix(1:round(n/50)); %temp instead of perim
-        %lim = fil.(fn{fsl})(ix,1:3);
-        dyn = [dyn;fp]; %dynamic overlap testing points
+    
+    if kill==0
+        fn = fieldnames(fil); pos = []; l=0; ct = ct+1;
+        dyn = [dyn;fp]; %#ok<AGROW> %dynamic overlap testing points
+        for fsl=1:numel(fn)
+            pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; %write fil to pts structure
+        end
     end
-    %fil = struct;
-    ct = ct+1;
-    end
-    %l=0; %fil = struct; 
-    %if kill==0; ct = ct+1; else e=e+1; end
 end
 fprintf('Layer %i, placed %i out of %i \n',ol,ct,iters)
 end
-
-%{
-    function nest_retry
-ori = [0,0,1]; retry = 5; tol = 2;
-for il=1:retry
-    if l==0 %new start vals until initial placement found
-        veci = randc(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
-        rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
-        %{
-        for mmm=1:numel(mono.modelname)
-            fil.(mono.modelname{mmm}) = zeros(0,4);
-        end
-        %}
-    end
-    
-    vecc = randc(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
-    pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
-    
-    if any(pos+200<0) || any(pos-200>box)
-        err = 1; %if pos is too far out of box, retry without pointless proxtesting
-    else
-        rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %compute the normal axis from the rotation angle
-        theta = -acos( dot(ori,vecc) ); %compute angle between initial and final pos (negative for matlab)
-        filang = rang+mono.filprop(1)*j; %rotation about filament axis
-        
-        r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang));
-        com = pos-vecc*mono.filprop(2)/2;
-        ovcheck = mono.perim*r1*r2+com;
-        err = proxtest(dyn,ovcheck,tol);
-    end
-    
-    if err==0, break; end %if good placement found, early exit
-    if err~=0 && il==retry, END=1; fail=1; end %is reporting here %, fprintf('c%i,',i)
-end
-    end
-%}
 
 end
 
