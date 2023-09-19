@@ -12,7 +12,8 @@ rax = randvec(row,col); %random vectors - finished or to cross with the center a
 if (isempty(ax) && isempty(ang)) || col~=3
     vec=rax; % if ax and ang are empty, return the random unconstrained vectors
 else
-    if isempty(ax), ax = randvec(1,3); end %if no axis given, randomize one
+    %if isempty(ax), ax = randvec(1,3); end %if no axis given, randomize one
+    if isempty(ax), ax = randn(col,row); ax = (ax./vecnorm(ax))'; end %if no axis given, randomize one
     if numel(ang)==1, ang(2)=ang(1); ang(1)=0; end %if only 1 ang, use as max against min 0
     %ang(2) = ang(2)-ang(1); %store difference from min for simpler following code
     %nrep = row/size(ax,1); %number of replicates needed to match matrix size for cross
@@ -29,8 +30,7 @@ end
 end
 
 function [vec] = randvec(row,col)
-vec = randn(col,row); %random normal numbers for evenly-distributed vector directions
-vec = (vec./vecnorm(vec))'; %unitize vectors to length 1 for sphere vectors
+vec = randn(col,row); vec = (vec./vecnorm(vec))'; % random uniform vectors on unit sphere
 end
 
 function t = rotmat(ax,rad)
