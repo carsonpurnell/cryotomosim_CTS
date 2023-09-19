@@ -8,7 +8,8 @@ function vec = randv(row,col,ax,ang) %ang IN RADIANS
 % this is the deflection angle from ax. [0,pi] for hemisphere, [80,100] for a narrow belt, etc
 % the per-vector angle is generated with a uniform distribution, producing a density bias near ax and -ax
 
-rax = randvec(row,col); %random vectors - finished or to cross with the center axis
+%rax = randvec(row,col); %random vectors - finished or to cross with the center axis
+rax = randn(col,row); rax = (rax./vecnorm(rax))'; %random initial vectors
 if (isempty(ax) && isempty(ang)) || col~=3
     vec=rax; % if ax and ang are empty, return the random unconstrained vectors
 else
