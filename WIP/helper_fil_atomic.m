@@ -226,10 +226,9 @@ function err = proxtest(c,pts,tol)
 l = min(pts,[],1)-tol; h = max(pts,[],1)+tol; %low and high bounds per dimension
 ix = c>l & c<h; % compare all points against the prospective box
 ix = all(ix,2); % filter to index of pts inside the box
-%if ~any(ix), ix=[]; end % check for early end if no points in the box
-if ~any(ix)
+if ~any(ix) %early end if no points in test box area
     err=0; 
-else% ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
+else% ~isempty(ix)
     buck = 100;%round( size(c,1)/7650 ); %very rough, is probably not linear scale
     % probably needs some sort of depth-based metric, not a flat one depth = log2 (n/leaf)
     %ot = OcTree(c(ix,:),'binCapacity',buck); %significantly slower than kdt build
@@ -237,18 +236,12 @@ else% ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimizatio
     %mutree = octcubetree(c(ix,:),'leafmax',500); %slightly faster than kd building
     %err = mutreetest(mutree,pts); %WAYYY slower than knn search
     %err = any(err);
-    %disp('gg')
     
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
-    d = [d{:}]; 
-    if any(d<tol)
-        err=1; 
-    else
-        err=0;
-    end %test if any points closer than tol
+    d = [d{:}]; err=0;
+    if any(d<tol), err=1; end
 end
-%fprintf('%i',err)
 end
 
 %{
