@@ -231,7 +231,6 @@ if ~any(ix) %early end if no points in test box area
 else% ~isempty(ix)
     buck = 100;%round( size(c,1)/7650 ); %very rough, is probably not linear scale
     % probably needs some sort of depth-based metric, not a flat one depth = log2 (n/leaf)
-    %ot = OcTree(c(ix,:),'binCapacity',buck); %significantly slower than kdt build
     
     %mutree = octcubetree(c(ix,:),'leafmax',500); %slightly faster than kd building
     %err = mutreetest(mutree,pts); %WAYYY slower than knn search
