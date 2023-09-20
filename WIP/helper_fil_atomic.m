@@ -1,6 +1,6 @@
 function [pts,dyn,fil] = helper_fil_atomic(box,particles,con)
 
-ori = [0,0,1]; org = [1,2,3]; tol = 2; retry = 5; ct = 0;
+ori = [0,0,1]; org = [1,2,3]; tol = 2; retry = 5;
 if isempty(con)
     dyn = zeros(0,3);
 else
@@ -13,8 +13,9 @@ for i=1:numel(mn)
 end
 
 for ol=1:numel(particles)
-    mono = particles(ol);
-    iters = round(0.2*mono.filprop(4)^1.8);
+    mono = particles(ol); ct = 0;
+    iters = round(0.2*mono.filprop(4)^1.7); %10 33
+    iters = round(prod(box)*(mono.filprop(4)^1.6)*2e-11);
 for i=1:iters
     l=0; fil = struct;
     fp = zeros(0,3); comlist = zeros(0,3);
