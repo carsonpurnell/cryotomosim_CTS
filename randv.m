@@ -13,7 +13,7 @@ rax = randn(col,row); rax = (rax./vecnorm(rax))'; %random initial vectors
 if (isempty(ax) && isempty(ang)) || col~=3
     vec=rax; % if ax and ang are empty, return the random unconstrained vectors
 else
-    if isempty(ax), ax = randn(col,row); ax = (ax./vecnorm(ax))'; end %if no axis given, randomize one
+    if isempty(ax), ax = randn(col,1); ax = (ax./vecnorm(ax))'; end %if no axis given, randomize one
     if numel(ang)==1, ang(2)=ang(1); ang(1)=0; end %if only 1 ang, use as max against min 0
     %nrep = row/size(ax,1); %number of replicates needed to match matrix size for cross
     %might be able to rework ax to be a column of axes. need to be vecnormed.
