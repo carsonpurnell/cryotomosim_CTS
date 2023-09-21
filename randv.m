@@ -6,7 +6,7 @@ function vec = randv(row,col,ax,ang) %ang IN RADIANS
 % ax must be a 1x3 vector, or empty. if empty, a random axis is used for the entire set
 % ang are the constraints in radians. either [min,max] or [max] that defaults to min=0
 % this is the deflection angle from ax. [0,pi] for hemisphere, [80,100] for a narrow belt, etc
-% the per-vector angle is generated with a uniform distribution, producing a density bias near ax and -ax
+% the per-vector angle is generated with a uniform distribution, producing a density bias near ax poles
 
 %rax = randvec(row,col); %random vectors - finished or to cross with the center axis
 rax = randn(col,row); rax = (rax./vecnorm(rax))'; %random initial vectors
