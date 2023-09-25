@@ -8,13 +8,13 @@ pix = 12;
 input = {'MT.fil','actin.fil','cofilactin.fil','actin.fil'};
 %input = {'actin.fil','actin.fil','cofilactin.fil'};
 %input = {'cofil_actin_split.fil'};
-particles = helper_filinput(pix,'gui');
+particles = helper_filinput(pix,input);
 box = [400,300,50]*pix; % box size in A
 
 n = 4+pix^1.5; sc = 2400;
 con = internal_atomcon(box,pix,n,sc);
 %con = []; % now actually working again 
-[pts,dyn] = helper_fil_atomic(box,particles,con);
+[pts,dyn,fil] = helper_fil_atomic(box,particles,con);
 
 profile viewer
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
