@@ -639,10 +639,12 @@ if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     buck = 100;%round( size(c,1)/7650 ); %very rough, is probably not linear scale
     % probably needs some sort of depth-based metric, not a flat one depth = log2 (n/leaf)
     %ot = OcTree(c(ix,:),'binCapacity',buck); %significantly slower than kdt build
-    
-    mutree = octcubetree(c(ix,:),'leafmax',500); %slightly faster than kd building
-    err = mutreetest(mutree,pts); %WAYYY slower than knn search
-    err = any(err);
+    %leaf = 1e3;
+    %mutree = octcubetree(c(ix,:),'leafmax',leaf); %slightly faster than kd building
+    %err = mutreetest(mutree,pts); %WAYYY slower than knn search
+    %err = any(err);
+    %mutreec = octcubetree_cell(c(ix,:),'leafmax',leaf); %slightly faster than kd building
+    %err = mutreetest_cell(mutreec,pts);
     
     modeltree = KDTreeSearcher(c(ix,:),'Bucketsize',buck); %67 with 1K %32 with 10K, 18 100K
     [~,d] = rangesearch(modeltree,pts,tol,'SortIndices',0); %?? 1K,11.4 10K, 85 100K
