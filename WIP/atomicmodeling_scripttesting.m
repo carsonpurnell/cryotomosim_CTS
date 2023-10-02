@@ -59,7 +59,8 @@ tic; [split,dyn] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 outpix = pix;
 [vol,solv,atlas,splitvol] = helper_atoms2vol(outpix,split,boxsize);
 sliceViewer(vol+solv);
-%WriteMRC(vol+solv,outpix,'upscaletest_5.mrc');
+WriteMRC(vol+solv,outpix,'upscaletest_5.mrc');
+WriteMRC(atlas,outpix,'atlas_5.mrc');
 
 %{
 %{
