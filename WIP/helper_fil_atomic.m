@@ -6,7 +6,7 @@ if isempty(con)
 else
     dyn = con;
 end
-leaf = 1e5;
+leaf = 1e4;
 mu = mu_build(con,'leafmax',leaf);
 
 mn = [particles.modelname]; %round up all names for models
@@ -46,7 +46,7 @@ for i=1:iters
                     com = pos-vecc*mono.filprop(2)/2; %translation vector, halfway along step vector
                     ovcheck = mono.perim*r1*r2+com; %apply rotations (order dependent!) and translation
                     err = proxtest(dyn,ovcheck,tol);
-                    [ermu,muix] = mu_search(mu,ovcheck,tol,'short',0);
+                    [ermu,muix] = mu_search(mu,ovcheck,tol,'short',1);
                 end
                 
                 if il==retry, endloop=1; end
