@@ -1,4 +1,4 @@
-function [pts,dyn,fil] = helper_fil_atomic(box,particles,con)
+function [pts,dyn,fil,mu] = helper_fil_atomic(box,particles,con)
 
 ori = [0,0,1]; org = [1,2,3]; tol = 2; retry = 10;
 if isempty(con)
@@ -6,7 +6,7 @@ if isempty(con)
 else
     dyn = con;
 end
-leaf = 1e4;
+leaf = 1e5; 
 mu = mu_build(con,'leafmax',leaf);
 
 mn = [particles.modelname]; %round up all names for models
@@ -20,7 +20,7 @@ for ol=1:numel(particles)
     iters = round(prod(box)*(mono.filprop(4)^1.6)*2e-11);
 for i=1:iters
     l=0; fil = struct;
-    fp = zeros(0,3); comlist = zeros(0,3);
+    fp = zeros(0,3); comlist = zeros(0,3); muix = zeros(2,0);
     endloop=0;
     for j=1:mono.filprop(4)*20
         %if endloop==0 
@@ -45,8 +45,11 @@ for i=1:iters
                     r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang)); %rotation matrices
                     com = pos-vecc*mono.filprop(2)/2; %translation vector, halfway along step vector
                     ovcheck = mono.perim*r1*r2+com; %apply rotations (order dependent!) and translation
-                    err = proxtest(dyn,ovcheck,tol);
-                    %[ermu,muix] = mu_search(mu,ovcheck,tol,'short',1);
+                    
+                    [err2,ix] = mu_search(mu,ovcheck,tol,'short',0); %slightly faster!
+                    %err2
+                    err2 = any(err2>0)
+                    err = proxtest(dyn,ovcheck,tol)
                 end
                 
                 if il==retry, endloop=1; end
@@ -62,6 +65,7 @@ for i=1:iters
                 fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
             end
             fp = [fp;ovcheck]; comlist = [comlist;com];  %#ok<AGROW> %store com and perim pts
+            muix = [muix,ix]; %concatenate search ix
             veci = vecc; l=l+1; %store current vector as prior, increment length tracker
         else
             break %if not successful, end filament extension
@@ -80,7 +84,7 @@ for i=1:iters
     if kill==0
         fn = fieldnames(fil); pos = []; l=0; ct = ct+1;
         dyn = [dyn;fp]; %#ok<AGROW> %dynamic overlap testing points
-        %mu = mu_build(fp,muix,mu,'leafmax',leaf);
+        mu = mu_build(fp,muix,mu,'leafmax',leaf);
         for fsl=1:numel(fn)
             pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; %write fil to pts structure
         end
