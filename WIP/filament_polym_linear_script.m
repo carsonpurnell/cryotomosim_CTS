@@ -4,7 +4,7 @@
 % problem: won't work with membranes, which are still non-atomic. can do fil instead of mem though
 %rng(11)
 profile on
-pix = 12;
+pix = 10;
 input = {'MT.fil','actin.fil','cofilactin.fil'};%,'actin.fil'};
 %input = {'actin.fil','actin.fil','cofilactin.fil'};
 %input = {'cofil_actin_split.fil'};
