@@ -48,8 +48,9 @@ for i=1:iters
                     
                     [err2,ix] = mu_search(mu,ovcheck,tol,'short',0); %slightly faster!
                     %err2
-                    err2 = any(err2>0)
-                    err = proxtest(dyn,ovcheck,tol)
+                    err2 = any(err2>0);
+                    err = proxtest(dyn,ovcheck,tol);
+                    if err2~=err, fprintf('%i,%i,\n'); end
                 end
                 
                 if il==retry, endloop=1; end
