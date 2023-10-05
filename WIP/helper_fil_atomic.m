@@ -6,8 +6,8 @@ if isempty(con)
 else
     dyn = con;
 end
-leaf = 1e5; 
-mu = mu_build(con,'leafmax',leaf);
+leaf = 1e4; 
+mu = mu_build(con,'leafmax',leaf,'maxdepth',2);
 
 mn = [particles.modelname]; %round up all names for models
 for i=1:numel(mn)
@@ -85,7 +85,7 @@ for i=1:iters
     if kill==0
         fn = fieldnames(fil); pos = []; l=0; ct = ct+1;
         dyn = [dyn;fp]; %#ok<AGROW> %dynamic overlap testing points
-        mu = mu_build(fp,muix,mu,'leafmax',leaf);
+        mu = mu_build(fp,muix,mu,'leafmax',leaf,'maxdepth',2);
         for fsl=1:numel(fn)
             pts.(fn{fsl}) = [pts.(fn{fsl});fil.(fn{fsl})]; %write fil to pts structure
         end
