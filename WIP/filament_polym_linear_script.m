@@ -11,8 +11,7 @@ input = {'MT.fil','actin.fil','cofilactin.fil'};%,'actin.fil'};
 particles = helper_filinput(pix,input);
 box = [400,300,50]*pix; % box size in A
 
-n = 4+pix^1.5; sc = 2400;
-con = internal_atomcon(box,pix,n,sc);
+con = internal_atomcon(box,pix);
 %con = []; % now actually working again 
 [pts,dyn,fil,mu] = helper_fil_atomic(box,particles,con);
 
@@ -512,6 +511,10 @@ sliceViewer(vol);
 
 %% internal functions
 function con = internal_atomcon(box,pix,n,sc)
+if nargin<3
+    n = 4+pix^1.5;
+    sc = 2400;
+end
 sz = [max(box),max(box)]; 
 dl = 10;
 w = 1;
