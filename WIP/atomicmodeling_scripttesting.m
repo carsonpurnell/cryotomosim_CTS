@@ -53,7 +53,7 @@ memnum = 10;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
 %atomic border constraints - top/bottom only
-%
+% %close comment block with %{
 con = internal_atomcon(boxsize,pix); 
 dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; 
 dyn{2}=dyn{2}+size(con,1)-1;
