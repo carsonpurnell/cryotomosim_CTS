@@ -46,10 +46,9 @@ for i=1:iters
                     ovcheck = mono.perim*r1*r2+com; %apply rotations (order dependent!) and translation
                     
                     [err,ix] = mu_search(mu,ovcheck,tol,'short',0); %slightly faster!
-                    %err2
                     err = any(err>0);
-                    err2 = proxtest(dyn,ovcheck,tol);
-                    if err2~=err, fprintf('%i,%i,\n',err,err2); end
+                    %err2 = proxtest(dyn,ovcheck,tol);
+                    %if err2~=err, fprintf('%i,%i,\n',err,err2); end
                 end
                 
                 if il==retry, endloop=1; end
