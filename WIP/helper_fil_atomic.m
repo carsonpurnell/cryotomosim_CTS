@@ -1,5 +1,4 @@
 function [pts,dyn,fil,mu] = helper_fil_atomic(box,particles,con)
-
 ori = [0,0,1]; org = [1,2,3]; tol = 2; retry = 10;
 if isempty(con)
     dyn = zeros(0,3);
