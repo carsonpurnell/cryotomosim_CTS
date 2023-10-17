@@ -1,9 +1,9 @@
 %% load input structures as atomic data
 rng(2);
-pix = 12; clear particles;
+pix = 4; clear particles;
 input = {'actin__6t1y_13x2.pdb',...
     'tric__tric__6nra-open_7lum-closed.group.pdb',...
-    'ribo__ribo__4ug0_4v6x.group.pdb'};%,...
+    'ribo__ribo__4ug0_4v6x.group.pdb','MT__6o2tx3.pdb'};%,...
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
 tic
 
@@ -47,7 +47,7 @@ end
 
 %% functionalized model gen part
 %rng(1);
-boxsize = pix*[400,300,50];
+boxsize = pix*[400,300,50]*2;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 memnum = 0;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
