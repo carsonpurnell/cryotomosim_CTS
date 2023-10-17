@@ -3,6 +3,8 @@ function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %projects a list of points as a 3d density volume
 %4th dimension sets the weight value for each point, otherwise all weights are 1
 
+%round the values and combine outside the loop for speed?
+
 %additional arguments or reuse sz/offset for a 0-centered unbounded output?
 %collapse sz/offset into a corner-to-counter bound, with a single 2x3 input
 %if only 1x3 input, then first corner is assumped 0,0,0
