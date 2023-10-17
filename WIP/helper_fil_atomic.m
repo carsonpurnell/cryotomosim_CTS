@@ -16,7 +16,7 @@ end
 for ol=1:numel(particles)
     mono = particles(ol); ct = 0;
     iters = round(0.2*mono.filprop(4)^1.7); %10 33
-    iters = round(prod(box)*(mono.filprop(4)^1.6)*2e-11);
+    iters = round(prod(box)*(mono.filprop(4)^2.6)*2e-11);
 for i=1:iters
     l=0; fil = struct;
     fp = zeros(0,3); comlist = zeros(0,3); muix = zeros(2,0);
