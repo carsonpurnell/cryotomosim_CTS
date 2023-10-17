@@ -1,9 +1,9 @@
 %% load input structures as atomic data
 rng(2);
-pix = 10; clear particles;
-input = {'actin__6t1y_13x2.pdb'};%,...
-    %'tric__tric__6nra-open_7lum-closed.group.pdb',...
-    %%'ribo__ribo__4ug0_4v6x.group.pdb'};%,...
+pix = 12; clear particles;
+input = {'actin__6t1y_13x2.pdb',...
+    'tric__tric__6nra-open_7lum-closed.group.pdb',...
+    'ribo__ribo__4ug0_4v6x.group.pdb'};%,...
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
 tic
 
@@ -49,7 +49,7 @@ end
 %rng(1);
 boxsize = pix*[400,300,50];
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 10;
+memnum = 0;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
 %atomic border constraints - top/bottom only
@@ -62,7 +62,10 @@ dyn{2}=dyn{2}+size(con,1)-1;
 %%
 n = 500;
 %splitin.border = borderpts;
-tic; [split,dyn] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
+rng(9)
+%profile on
+tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
+%profile viewer
 
 %% function for vol, atlas, and split generation + water solvation
 outpix = pix;
@@ -449,11 +452,14 @@ function [splitin,memhull,dyn] = fn_modgenmembrane(memnum,vesarg,layers)
 
 end
 
-function [err,loc,tform,ovcheck] = anyloc(boxsize,tperim,dyn,retry,tol)
+function [err,loc,tform,ovcheck,ix] = anyloc(boxsize,tperim,dyn,retry,tol,mu)
 for r=1:retry
     loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
     ovcheck = transformPointsForward(tform,tperim)+loc; %transform test points
-    err = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol); %prune and test atom collision
+    %err2 = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol); %prune and test atom collision
+    [err,ix] = mu_search(mu,ovcheck,tol,'short',0); %slightly faster!
+    err = any(err>0);
+    %if err2~=err, fprintf('%i,%i,\n',err,err2); end
     if err==0, break; end
 end
 end
@@ -527,10 +533,12 @@ split.(splitname)(tdx:e,:) = tpts; dx.(splitname) = tdx+l;
 end
 
 
-function [split,dyn] = fn_modelgen(layers,boxsize,niter,split,dx,dyn)
+function [split,dyn,mu] = fn_modelgen(layers,boxsize,niter,split,dx,dyn)
 if nargin<6
     dyn{1} = single(zeros(0,3)); dyn{2} = 0;
 end
+leaf = 1e3;
+mu = mu_build(dyn{1},'leafmax',leaf,'maxdepth',2);
 if nargin<4
     split = struct; %ixincat = 1; %dynpts = single(zeros(0,3));
 else
@@ -604,7 +612,7 @@ for i=1:n
     which=randi(numel(particles));
     sel = particles(which); sub = randi(numel(sel.adat));
     
-    [err,loc,tform,ovcheck] = anyloc(boxsize,sel.perim{sub},dyn,retry,tol); % just as fast
+    [err,loc,tform,ovcheck,muix] = anyloc(boxsize,sel.perim{sub},dyn,retry,tol,mu); % just as fast
     %{
     for r=1:retry    
         loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
@@ -621,7 +629,9 @@ for i=1:n
         tpts = sel.adat{sub};
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
+        
         [dyn] = dyncell(ovcheck,dyn); %.15
+        mu = mu_build(ovcheck,muix,mu,'leafmax',leaf,'maxdepth',2);
         [split,dx] = dynsplit(tpts,split,dx,sel.modelname{sub}); %3.6
         %{
         %[dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
