@@ -3,7 +3,7 @@ rng(2);
 pix = 10; clear particles;
 input = {'actin__6t1y_13x2.pdb',...
     'tric__tric__6nra-open_7lum-closed.group.pdb',...
-    'ribo__ribo__4ug0_4v6x.group.pdb','MT__6o2tx3.pdb'};%,...
+    'ribo__ribo__4ug0_4v6x.group.pdb','MT__6o2tx3.pdb','MT__6o2tx2.pdb'};%,...
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
 tic
 
@@ -54,15 +54,14 @@ tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize
 
 %atomic border constraints - top/bottom only
 % %close comment block with %{
-con = internal_atomcon(boxsize,pix); 
-dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; 
-dyn{2}=dyn{2}+size(con,1)-1;
-%}
+%con = internal_atomcon(boxsize,pix); 
+con = helper_atomcon(boxsize,pix); 
+dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 
 %%
 n = 500;
 %splitin.border = borderpts;
-rng(11)
+%rng(11)
 %profile on
 tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 %profile viewer
