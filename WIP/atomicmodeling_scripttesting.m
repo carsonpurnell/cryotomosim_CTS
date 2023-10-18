@@ -953,7 +953,6 @@ ix = ix(ix>0);
 %}
 end
 
-
 function err = sskdtrange(kdt,pts,tol)
 err = 0;
 for i=1:size(pts,1)
