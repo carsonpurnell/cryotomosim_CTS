@@ -11,7 +11,8 @@ input = {'MT.fil','actin.fil','cofilactin.fil'};%,'actin.fil'};
 particles = helper_filinput(pix,input);
 box = [400,300,50]*pix; % box size in A
 
-con = internal_atomcon(box,pix);
+%con = internal_atomcon(box,pix);
+con = helper_atomcon(box,pix);
 %con = []; % now actually working again 
 [pts,dyn,fil,mu] = helper_fil_atomic(box,particles,con);
 
@@ -526,7 +527,6 @@ for i=1:4
 end
 con = pts;
 end
-
 function pts = internal_gen_atomborder(sz,n,sc,sep)
 %n = 2.5; % noise magnitude
 %sc = 500; % scale of Z noise
