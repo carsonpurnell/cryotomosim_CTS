@@ -76,7 +76,7 @@ for i=1:n
     
     which=randi(numel(particles));
     sel = particles(which); sub = randi(numel(sel.adat));
-    tpts = sel.adat{sub}(:,1:3);
+    tpts = sel.perim{sub};
     [err,loc,tform,ovcheck,muix] = anyloc(boxsize,tpts,dyn,retry,tol,mu); % just as fast
     %{
     for r=1:retry    
@@ -147,4 +147,34 @@ for i=1:numel(sn)
     split.(sn{i})(tdx:end,:) = [];
 end
 
+end
+
+
+function [err,loc,tform,ovcheck,ix] = anyloc(boxsize,tperim,dyn,retry,tol,mu)
+for r=1:retry
+    loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
+    ovcheck = transformPointsForward(tform,tperim)+loc; %transform test points
+    %err2 = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol); %prune and test atom collision
+    [err,ix] = mu_search(mu,ovcheck,tol,'short',0); %slightly faster!
+    err = any(err>0);
+    %if err2~=err, fprintf('%i,%i,\n',err,err2); end
+    if err==0, break; end
+end
+
+end
+function [dyn] = dyncell(addpts,dyn)
+    l = size(addpts,1); e = dyn{2}+l-1;
+    if e>size(dyn{1},1)
+        dyn{1}(dyn{2}:(size(dyn{1},1)+l)*3,:) = 0;
+    end
+    dyn{1}(dyn{2}:e,:) = addpts;
+    dyn{2} = dyn{2}+l;
+end
+function [split,dx] = dynsplit(tpts,split,dx,splitname) %slower than inlined a bit
+tdx = dx.(splitname);
+l = size(tpts,1); e = tdx+l-1;
+if e>size(split.(splitname),1)
+    split.(splitname)(tdx:(tdx+l)*2,:) = 0;
+end
+split.(splitname)(tdx:e,:) = tpts; dx.(splitname) = tdx+l;
 end
