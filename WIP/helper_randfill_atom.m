@@ -87,12 +87,13 @@ for i=1:n
         count.f=count.f+1;
     end
 end
+%{
 if lc==1
     %tic; sh=alphaShape(double(dynpts),12); toc; %plot(sh); drawnow;
 end
+%}
 fprintf('  placed %i, failed %i \n',count.s,count.f);
 %all(dyn{1}==dynpts) %all(dynfn==dynpts)
-
 end
 sn = fieldnames(split); %trimming trailing zeros from split arrays to prevent atom2vol weirdness
 for i=1:numel(sn)
