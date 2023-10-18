@@ -610,8 +610,8 @@ for i=1:n
     
     which=randi(numel(particles));
     sel = particles(which); sub = randi(numel(sel.adat));
-    
-    [err,loc,tform,ovcheck,muix] = anyloc(boxsize,sel.perim{sub},dyn,retry,tol,mu); % just as fast
+    tpts = sel.adat{sub}(:,1:3);
+    [err,loc,tform,ovcheck,muix] = anyloc(boxsize,tpts,dyn,retry,tol,mu); % just as fast
     %{
     for r=1:retry    
         loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
