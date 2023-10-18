@@ -14,42 +14,10 @@ else
         %tmp = split.(fn{i})(ix,1:3);
         %l = size(tmp,1); %dynpts(end+1:end+l,:) = tmp;
         %dynpts = [dynpts;tmp];
-        %dynpts = [dynpts;split.(fn{i})(:,1:3)];
     end
 end
-%ixincat = size(dynpts,1)+1; %where to start the indexing
-%dynfn = dynpts; dynfnix = ixincat;
-%dyn = {dynfn,dynfnix};
+%ixincat = size(dynpts,1)+1;
 
-% available location mapping - probably not going to be faster due to needing to prune full list after
-% each successful placement
-%instead, after octree tech, do a basic check to see how many points are nearby
-%need the dynamic octree!
-%{
-gridmaptol = 12;
-n = prod(boxsize)/((gridmaptol*1)^3); %number of map points
-locgrid = rand(n,3).*boxsize; %generate map points
-gtree = KDTreeSearcher(dynpts);
-[~,d] = rangesearch(gtree,locgrid,gridmaptol,'SortIndices',0);
-p = zeros(1,numel(d));
-for i=1:numel(d)
-    if isempty(d{i}), p(i) = 1; end
-end
-locgrid = locgrid(logical(p),:);
-
-%[lgridvol] = helper_atoms2vol(6,locgrid,boxsize);
-%sliceViewer(lgridvol);
-%}
-
-%d = [d{:}]; %if any(d<gridmaptol), err=1; end
-%locgrid = locgrid(d>gridmaptol,:);
-%size(locgrid)
-%plot3(locgrid(:,1),locgrid(:,2),locgrid(:,3),'.'); axis equal
-%[lgridvol] = helper_atoms2vol(6,locgrid,boxsize);
-%sliceViewer(lgridvol);
-
-%tmp = fieldnames(split);
-%dynpts = split;
 tol = 2; %tolerance for overlap testing
 retry = 4; %retry attempts per iteration
 count.s = 0; count.f = 0;
@@ -76,24 +44,12 @@ for i=1:n
     
     which=randi(numel(particles));
     sel = particles(which); sub = randi(numel(sel.adat));
-    tpts = sel.perim{sub};
-    [err,loc,tform,ovcheck,muix] = anyloc(boxsize,tpts,dyn,retry,tol,mu); % just as fast
-    %{
-    for r=1:retry    
-        loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
-        
-        ovcheck = transformPointsForward(tform,sel.perim{sub})+loc; %transform test points
-        err = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol); %prune and test atom collision
-        %err = proxtest(dynpts(1:ixincat-1,:),ovcheck,tol); %prune and test atom collision
-        %need to replace either with mutable quadtree or short-circuit kdtree, it's ~80% of runtime
-        if err==0, break; end
-    end
-    %}
+    %tpts = sel.perim{sub};
+    [err,loc,tform,ovcheck,muix] = anyloc(boxsize,sel.perim{sub},dyn,retry,tol,mu); % just as fast
     
     if err==0
         tpts = sel.adat{sub};
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
-        
         
         [dyn] = dyncell(ovcheck,dyn); %.15
         mu = mu_build(ovcheck,muix,mu,'leafmax',leaf,'maxdepth',2);
