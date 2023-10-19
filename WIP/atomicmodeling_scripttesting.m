@@ -49,7 +49,7 @@ tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize
 con = helper_atomcon(boxsize,pix); % pseudonatural ice border (wavy flat, no curvature)
 dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 
-%%
+%
 n = 500;
 %splitin.border = borderpts;
 %rng(11)
