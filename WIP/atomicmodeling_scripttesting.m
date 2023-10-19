@@ -5,8 +5,8 @@ input = {'actin__6t1y_13x2.pdb',...
     'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb','MT__6o2tx3.pdb','MT__6o2tx2.pdb'};%,...
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
+    
 tic
-
 %need to streamline atomic symbol to Z converter, and link into a Z to scatterval dictionary.
 %extend it to work for pdb2vol as well, and the other older cts_model components.
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
@@ -35,15 +35,9 @@ for i=1:numel(particles)
 end
 
 %might need to make atom id vector a row vector for memory write reasons
-%atomid = (data{1,1}); %atomid = atomdict(atomid);
 %need atomdict function that accepts vector of atomic symbols and returns vector of Z/e- values
-
 %}
 
-% constraint border atoms on planes
-%first try just flat top/bottom z planes
-%might try wavy version, definitely figure out x/y implementation as well
-%obviates need for starting points in the model too
 
 %% functionalized model gen part
 %rng(1);
