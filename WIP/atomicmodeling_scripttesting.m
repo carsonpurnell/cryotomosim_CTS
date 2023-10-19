@@ -46,10 +46,7 @@ boxsize = pix*[400,300,50]*1;
 memnum = 0;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
-%atomic border constraints - top/bottom only
-% %close comment block with %{
-%con = internal_atomcon(boxsize,pix); 
-con = helper_atomcon(boxsize,pix); 
+con = helper_atomcon(boxsize,pix); % pseudonatural ice border (wavy flat, no curvature)
 dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 
 %%
@@ -391,16 +388,10 @@ solv = solv(~ol,:); %remaining waters that are not overlapping particles
 toc
 %}
 
-%{
-watervol = fnpt2vol(pix,solv,ones(1,size(solv,1))*2/distfrac,boxsize);
-%sliceViewer(watervol)
-sliceViewer(em+watervol);
-%}
 %}
 %}
 
 %% internal functions
-
 % need a single wrapper that runs carbon, membrane, memprots, allprots sequentially and carries dyn
 % nesting is heavy jank and makes subcalls confusing, can't reuse code as much
 
