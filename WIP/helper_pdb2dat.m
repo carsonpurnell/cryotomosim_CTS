@@ -129,6 +129,9 @@ ix = randperm(n); ix = repmat(ix,[2,1]);
 iters = 5;
 l = round(n/iters);
 alpha = 12;
+%4 111
+%12 
+%20 
 
 b = cell(1,iters);
 for i=1:iters
