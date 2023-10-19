@@ -130,8 +130,9 @@ iters = 5;
 l = round(n/iters);
 alpha = 12;
 %4 111
-%12 
-%20 
+%10 
+%12 55
+%20 70
 
 b = cell(1,iters);
 for i=1:iters
