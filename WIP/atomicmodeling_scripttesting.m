@@ -1,5 +1,5 @@
 %% load input structures as atomic data
-rng(2);
+%rng(2);
 pix = 10; clear particles;
 input = {'actin__6t1y_13x2.pdb',...
     'tric__tric__6nra-open_7lum-closed.group.pdb',...
