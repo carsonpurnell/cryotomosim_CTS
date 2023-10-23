@@ -124,27 +124,32 @@ end
 
 function piter = boundaryiter(pts)
 %pts = unique(pts,'rows');
+[pts,uix] = unique(round(pts/1),'rows'); %condense points a bit?
 n = size(pts,1);
 ix = randperm(n); ix = repmat(ix,[2,1]);
 iters = 5;
 l = round(n/iters);
 alpha = 12;
-%4 111
-%10 
-%12 55
-%20 70
+%4 111 
+%8 29/126
+%10 29/92
+%12 28/65 24/78 27/170 29/121 25/73
+%14 25/52
+%16 25/45 minor overlaps
+%18 24/43 minor overlaps
+%20 23/36 multiple overlaps
 
 b = cell(1,iters);
 for i=1:iters
     j = ix(1+l*(i-1):i*l);
     tmp = unique(pts(j,:),'rows');
-    shape = alphaShape(tmp,alpha*2);
+    shape = alphaShape(tmp,alpha*2); %larger alpha much faster
     [~,b{i}] = boundaryFacets(shape);
 end
 pcat = cat(1,b{:}); %concatenate boundary points
 pcat = unique(pcat,'rows');
 
-sh = alphaShape(pcat,alpha);
+sh = alphaShape(pcat,alpha/2);
 [~,piter] = boundaryFacets(sh);
 end
 
