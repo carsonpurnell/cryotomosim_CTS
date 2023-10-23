@@ -125,7 +125,7 @@ end
 function piter = boundaryiter(pts)
 %pts = unique(pts,'rows');
 
-[~,uix] = unique(round(pts/5,0),'rows'); %condense points a bit?
+[~,uix] = unique(round(pts/4,0),'rows'); %condense points a bit?
 %size(pts,1)-size(uix,1)
 pts = pts(uix,:); %strip pts down
 n = size(pts,1);
