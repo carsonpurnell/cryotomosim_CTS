@@ -124,10 +124,13 @@ end
 
 function piter = boundaryiter(pts)
 %pts = unique(pts,'rows');
-[pts,uix] = unique(round(pts/1),'rows'); %condense points a bit?
+
+[~,uix] = unique(round(pts/5,0),'rows'); %condense points a bit?
+size(pts,1)-size(uix,1)
+pts = pts(uix,:); %strip pts down
 n = size(pts,1);
 ix = randperm(n); ix = repmat(ix,[2,1]);
-iters = 5;
+iters = 1;
 l = round(n/iters);
 alpha = 12;
 %4 111 
