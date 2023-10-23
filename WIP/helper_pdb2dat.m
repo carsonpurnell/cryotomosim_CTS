@@ -125,7 +125,7 @@ end
 function piter = boundaryiter(pts)
 %pts = unique(pts,'rows');
 
-[~,uix] = unique(round(pts/1,0),'rows'); %condense points a bit?
+[~,uix] = unique(round(pts/5,0),'rows'); %condense points a bit?
 %size(pts,1)-size(uix,1)
 pts = pts(uix,:); %strip pts down
 n = size(pts,1);
@@ -146,7 +146,7 @@ b = cell(1,iters);
 for i=1:iters
     j = ix(1+l*(i-1):i*l);
     tmp = unique(pts(j,:),'rows');
-    shape = alphaShape(tmp,alpha*2); %larger alpha much faster
+    shape = alphaShape(tmp);%,alpha*2); %larger alpha much faster
     [~,b{i}] = boundaryFacets(shape);
 end
 pcat = cat(1,b{:}); %concatenate boundary points
