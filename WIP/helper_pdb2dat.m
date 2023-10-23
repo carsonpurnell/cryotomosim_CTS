@@ -133,14 +133,6 @@ ix = randperm(n); ix = repmat(ix,[2,1]);
 iters = 5;
 l = round(n/iters);
 alpha = 12;
-%4 111 
-%8 29/126
-%10 29/92
-%12 28/65 24/78 27/170 29/121 25/73
-%14 25/52
-%16 25/45 minor overlaps
-%18 24/43 minor overlaps
-%20 23/36 multiple overlaps
 
 b = cell(1,iters);
 for i=1:iters
