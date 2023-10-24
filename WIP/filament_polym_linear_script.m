@@ -11,9 +11,7 @@ input = {'MT.fil','actin.fil','cofilactin.fil'};%,'actin.fil'};
 particles = helper_filinput(pix,input);
 box = [400,300,50]*pix; % box size in A
 
-%con = internal_atomcon(box,pix);
-con = helper_atomcon(box,pix);
-%con = []; % now actually working again 
+con = helper_atomcon(box,pix); %con = internal_atomcon(box,pix);
 [pts,dyn,fil,mu] = helper_fil_atomic(box,particles,con);
 
 profile viewer
