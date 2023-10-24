@@ -19,7 +19,7 @@ for ol=1:numel(particles)
     iters = round(prod(box)*(mono.filprop(4)^1.6)*1e-10);
 for i=1:iters
     
-    [fp,comlist,muix,fil] = int_filpoly(mono,box,mu);
+    [fp,comlist,muix,fil,kill] = int_filpoly(mono,box,mu);
     % % start section generating single filament
     %{
     l=0; fil = struct;
@@ -79,6 +79,7 @@ for i=1:iters
     % % end section generating single filament
     %}
     
+    %{
     kill = 0;
     if size(comlist,1) < mono.filprop(4) %check against length for kill flagging
         kill = 1;
@@ -87,9 +88,11 @@ for i=1:iters
         fff = ddd(2:3,2:end-1)<(mono.filprop(2)*1.2); %check distances against stepsize, drop start/end
         if ~all(fff,'all'), kill = 1; end %if break in distances, flag kill
     end
+    %}
     
     if kill==0
-        fn = fieldnames(fil); pos = []; l=0; ct = ct+1;
+        fn = fieldnames(fil); %pos = []; l=0; 
+        ct = ct+1;
         dyn = [dyn;fp]; %#ok<AGROW> %dynamic overlap testing points
         mu = mu_build(fp,muix,mu,'leafmax',leaf,'maxdepth',2);
         for fsl=1:numel(fn)
@@ -104,7 +107,7 @@ end
 
 %% internal functions
 
-function [fp,comlist,muix,fil] = int_filpoly(mono,box,mu)
+function [fp,comlist,muix,fil,kill] = int_filpoly(mono,box,mu)
 ori = [0,0,1]; org = [1,2,3]; tol = 2; retry = 10;
 
 l=0; fil = struct;
@@ -158,6 +161,14 @@ for j=1:mono.filprop(4)*20
     end
 end
 
+kill = 0;
+if size(comlist,1) < mono.filprop(4) %check against length for kill flagging
+    kill = 1;
+else %if long enough, check for continuous COM distances
+    ddd = pdist2(comlist,comlist,'euclidean','Smallest',3); %nearest two points and self
+    fff = ddd(2:3,2:end-1)<(mono.filprop(2)*1.2); %check distances against stepsize, drop start/end
+    if ~all(fff,'all'), kill = 1; end %if break in distances, flag kill
+end
 
 end
 
