@@ -5,7 +5,6 @@ input = {'actin__6t1y_13x2.pdb',...
     'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb','MT__6o2tx3.pdb','MT__6o2tx2.pdb'};%,...
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
-    
 tic
 %need to streamline atomic symbol to Z converter, and link into a Z to scatterval dictionary.
 %extend it to work for pdb2vol as well, and the other older cts_model components.
@@ -49,10 +48,7 @@ tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize
 con = helper_atomcon(boxsize,pix); % pseudonatural ice border (wavy flat, no curvature)
 dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 
-%
 n = 500;
-%splitin.border = borderpts;
-rng(11)
 %profile on
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 tic; [split,dyn,mu] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
@@ -893,6 +889,7 @@ for i=1:numel(atomint)
 end
 end
 
+%{
 function idx = rangesearchvect(c,r,pts) %slower, likely memory alloc problems vectorized
 s = sum((pts-c).^2,2);
 idx=find(s<(r+2)^2);
@@ -1031,6 +1028,7 @@ idx=find(fidx);
 dist=s(fidx);
 end
 end
+%}
 
 function atomint = atomdict(atomid,mode)
 if nargin<2, mode='z'; end
