@@ -2,7 +2,7 @@
 %% integrated polymer walk - atomistic
 % working, faster than vol implementation, looks better, and doesn't have pass-through errors
 % problem: won't work with membranes, which are still non-atomic. can do fil instead of mem though
-rng(11) %1 275/277/333   %2 84/109/110
+%rng(11) %1 275/277/333   %2 84/109/110
 profile on
 pix = 10;
 input = {'MT.fil','actin.fil','cofilactin.fil'};%,'actin.fil'};
