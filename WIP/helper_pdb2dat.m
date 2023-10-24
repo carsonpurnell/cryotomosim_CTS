@@ -130,7 +130,7 @@ function piter = boundaryiter(pts)
 pts = pts(uix,:); %strip pts down
 n = size(pts,1);
 ix = randperm(n); ix = repmat(ix,[2,1]);
-iters = 5;
+iters = 2;
 l = round(n/iters);
 alpha = 12;
 
