@@ -5,7 +5,7 @@
 %rng(11) %1 275/277/333   %2 84/109/110
 profile on
 pix = 10;
-input = {'MT.fil','actin.fil','cofilactin.fil'};%,'actin.fil'};
+input = {'MT.fil','actin.fil','cofilactin.fil','actin.fil'};
 %input = {'actin.fil','actin.fil','cofilactin.fil'};
 %input = {'cofil_actin_split.fil'};
 particles = helper_filinput(pix,input);
