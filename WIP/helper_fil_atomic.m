@@ -18,6 +18,10 @@ for ol=1:numel(particles)
     %iters = round(0.2*mono.filprop(4)^1.7); %10 33
     iters = round(prod(box)*(mono.filprop(4)^1.6)*1e-10);
 for i=1:iters
+    
+    [fp,comlist,muix,fil] = int_filpoly(mono,box,mu);
+    % % start section generating single filament
+    %{
     l=0; fil = struct;
     fp = zeros(0,3); comlist = zeros(0,3); muix = zeros(2,0);
     endloop=0;
@@ -55,6 +59,8 @@ for i=1:iters
                 if err==0, break; end %if good placement found, early exit
                 %if err~=0 && il==retry, endloop=1; end %appears redundant
             end
+            
+            
         %end
         
         if err==0 && endloop==0
@@ -70,6 +76,8 @@ for i=1:iters
             break %if not successful, end filament extension
         end
     end
+    % % end section generating single filament
+    %}
     
     kill = 0;
     if size(comlist,1) < mono.filprop(4) %check against length for kill flagging
@@ -95,6 +103,65 @@ end
 end
 
 %% internal functions
+
+function [fp,comlist,muix,fil] = int_filpoly(mono,box,mu)
+ori = [0,0,1]; org = [1,2,3]; tol = 2; retry = 10;
+
+l=0; fil = struct;
+fp = zeros(0,3); comlist = zeros(0,3); muix = zeros(2,0);
+endloop=0;
+for j=1:mono.filprop(4)*20
+    for il=1:retry
+        if l==0 %new start vals until initial placement found
+            veci = randv(1,3,ori,deg2rad([60,120])); %random in horizontal disc for efficiency
+            rang = rand*360; pos = rand(1,3).*(box+50)-25; %prob need better in-box randomizing
+            for mmm=1:numel(mono.modelname)
+                fil.(mono.modelname{mmm}) = zeros(0,4);
+            end
+        end
+        
+        vecc = randv(1,3,veci,deg2rad(mono.filprop(3)+(il-1)*2)); %random deviation vector
+        pos = pos+vecc([1,2,3])*mono.filprop(2); %0-centered placement location from vector path
+        
+        if any(pos+200<0) || any(pos-200>box) %fast precheck check for out-of-bounds pos
+            err = 1;
+        else
+            rotax=cross(ori,vecc); rotax = rotax/norm(rotax); %normal axis to direction vector
+            theta = -acos( dot(ori,vecc) ); %angle between initial and final pos (negative for matlab)
+            filang = rang+mono.filprop(1)*j; %rotation about filament axis
+            r1 = rotmat(rotax,theta); r2 = rotmat(vecc,deg2rad(filang)); %rotation matrices
+            com = pos-vecc*mono.filprop(2)/2; %translation vector, halfway along step vector
+            ovcheck = mono.perim*r1*r2+com; %apply rotations (order dependent!) and translation
+            
+            [err,ix] = mu_search(mu,ovcheck,tol,'short',0); %slightly faster!
+            err = any(err>0);
+            %err2 = proxtest(dyn,ovcheck,tol);
+            %if err2~=err, fprintf('%i,%i,\n',err,err2); end
+        end
+        
+        if il==retry, endloop=1; end
+        if err==0, break; end %if good placement found, early exit
+        %if err~=0 && il==retry, endloop=1; end %appears redundant
+    end
+    
+    if err==0 && endloop==0
+        for iix=1:numel(mono.adat) %loop through and cumulate atoms
+            tmp = mono.adat{iix}; %fetch atoms, needed to operate on partial dimensions
+            tmp(:,org) = tmp(:,org)*r1*r2+com; %apply rotations and translation
+            fil.(mono.modelname{iix}) = [fil.(mono.modelname{iix});tmp];
+        end
+        fp = [fp;ovcheck]; comlist = [comlist;com];  %#ok<AGROW> %store com and perim pts
+        muix = [muix,ix]; %concatenate search ix
+        veci = vecc; l=l+1; %store current vector as prior, increment length tracker
+    else
+        break %if not successful, end filament extension
+    end
+end
+
+
+end
+
+
 %{
 function [err,fil,dyn,l] = int_filpoly(mono,dyn,box)
 l=0; fil = struct;
