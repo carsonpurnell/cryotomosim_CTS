@@ -17,7 +17,7 @@ con = helper_atomcon(box,pix); %con = internal_atomcon(box,pix);
 profile viewer
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
 sliceViewer(vol+solv);
-WriteMRC(vol+solv,pix,'filtest.mrc')
+%%WriteMRC(vol+solv,pix,'filtest.mrc')
 
 %requires atomistic grid and membrane though, and then projecting as a vol
 %need to recheck when membrane normals are generated and if they'd break
