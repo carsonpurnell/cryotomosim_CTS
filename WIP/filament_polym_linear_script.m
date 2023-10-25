@@ -4,7 +4,7 @@
 % problem: won't work with membranes, which are still non-atomic. can do fil instead of mem though
 %rng(11) %1 275/277/333   %2 84/109/110
 profile on
-pix = 10;
+pix = 12;
 input = {'MT.fil','actin.fil','cofilactin.fil','actin.fil'};
 input = {'actin.fil','actin.fil','cofilactin.fil'};
 input = {'MT.fil','cofil_actin_split.fil','actin.fil','cofilactin.fil'};
@@ -17,9 +17,8 @@ con = helper_atomcon(box,pix); %con = internal_atomcon(box,pix);
 profile viewer
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
 sliceViewer(vol+solv);
+WriteMRC(vol+solv,pix,'filtest.mrc')
 
-%try an atom-based version, could be much faster (and less rounding jigger)
-%only need to remake model trees if a new filament was placed, no weirdness with CoM
 %requires atomistic grid and membrane though, and then projecting as a vol
 %need to recheck when membrane normals are generated and if they'd break
 
