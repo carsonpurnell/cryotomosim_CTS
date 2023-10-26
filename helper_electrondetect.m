@@ -63,9 +63,9 @@ for i=1:size(tilt,3)
         radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins - what is good scale?
         addrad = randn(size(radmap))*accum*radscale.*(radmap+1); %scaled gaussian 0-center noise field
         
-        sigma = sqrt(radscale*(accum)*0.1); %might need to scale filter size with pixel size
+        sigma = sqrt(radscale*(accum)*0.2); %might need to scale filter size with pixel size
         proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',3);
-        irad = proj*1+tilt(:,:,i)*0+addrad*1;
+        irad = proj*1+tilt(:,:,i)*0+addrad*0.5;
         rad(:,:,i) = proj; %store radiation maps for review
     else
         irad = tilt(:,:,i);
