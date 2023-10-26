@@ -70,6 +70,7 @@ for i=1:size(data,1)
     %if tmpatomint~=tmpint, disp('nonidentity'); end
     particles.adat{i} = [tmpco,tmpint];
     
+    
     tmpco = double(unique(tmpco,'rows'));
     
     %instead of alphashape on everything, prune to fraction of points and AS that - much faster
@@ -84,12 +85,14 @@ for i=1:size(data,1)
     %[f,pfree] = freeBoundary(tr);
     
     %k = boundary(tmpco,0.1); p2 = tmpco(k,:); %boundary is slower, just alphashape/facets with more overhead
-    
+    %{
     n = size(tmpco,1);
     ix = randperm(n); ix = ix(1:round(n/500));
     pi = tmpco(ix,1:3);
     p = single([p;pi]); %need to add back 1-3% or so of points to prevent inside placements
-    particles.perim{i} = unique(p,'rows');
+    p = unique(p,'rows');
+    %}
+    particles.perim{i} = p;
     mn = data{i,3};
     if strcmp(mn,'NA')
         particles.modelname{i} = id{min(i,end)};
@@ -146,6 +149,12 @@ pcat = unique(pcat,'rows');
 
 sh = alphaShape(pcat,alpha/2);
 [~,piter] = boundaryFacets(sh);
+
+n = size(pts,1);
+ix = randperm(n); ix = ix(1:round(n/500));
+pi = pts(ix,1:3);
+piter = single([piter;pi]); %need to add back 1-3% or so of points to prevent inside placements
+piter = unique(piter,'rows');
 end
 
 
