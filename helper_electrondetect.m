@@ -61,11 +61,12 @@ for i=1:size(tilt,3)
         
         %need to use the pre-CTF tilt for the rad map to avoid CTF impacts
         radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins - what is good scale?
-        addrad = randn(size(radmap))*accum*radscale.*(radmap+1); %scaled gaussian 0-center noise field
+        addrad = randn(size(radmap))*accum*radscale.*(radmap+1)/10*0; %scaled gaussian 0-center noise field
+        addrad = addrad+rand(size(radmap))*(param.pix)*accum/10;
         
         sigma = sqrt(radscale*(accum)*0.2); %might need to scale filter size with pixel size
         proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',3);
-        irad = proj*1+tilt(:,:,i)*0+addrad*0.5;
+        irad = proj*0+tilt(:,:,i)*1+addrad*0.5;
         rad(:,:,i) = proj; %store radiation maps for review
     else
         irad = tilt(:,:,i);
