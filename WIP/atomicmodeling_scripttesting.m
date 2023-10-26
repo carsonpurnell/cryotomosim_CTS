@@ -1,15 +1,18 @@
 %% load input structures as atomic data
 %rng(2);
-pix = 10; clear particles;
+pix = 5; clear particles;
 input = {'actin__6t1y_13x2.pdb',...
     'tric__tric__6nra-open_7lum-closed.group.pdb',...
     'ribo__ribo__4ug0_4v6x.group.pdb','MT__6o2tx3.pdb','MT__6o2tx2.pdb'};%,...
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
+    input = {'CaMK2a__5u6y.pdb','CaMK2a_3soa.pdb','both_camk2_mixedhalves.pdb',};%};
 tic
 %need to streamline atomic symbol to Z converter, and link into a Z to scatterval dictionary.
 %extend it to work for pdb2vol as well, and the other older cts_model components.
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
-    particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
+    particles(i) = helper_pdb2dat(input{i},pix,2,1,0);
+    particles(i).perim = {vertcat(particles(i).perim{:})};
+    particles(i).adat = {vertcat(particles(i).adat{:})};
 end
 layers{1} = particles; fprintf('loaded %i structure files  ',numel(input));
 toc
@@ -40,7 +43,7 @@ end
 
 %% functionalized model gen part
 %rng(1);
-boxsize = pix*[400,300,50]*1;
+boxsize = pix*[500,400,40]*1;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 memnum = 0;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
