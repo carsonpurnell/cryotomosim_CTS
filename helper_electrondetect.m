@@ -52,6 +52,8 @@ dw = thickscatter.*dose*DQE; %correct distributed dose based on maximum DQE and 
 accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; rad = tilt*0; %pre-initialize output arrays
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
+blurmean = imgaussfilt(tilt,0.5);
+
 for i=1:size(tilt,3)
     
     if param.raddamage>0 %block for raadiation-induced noise and blurring
@@ -62,11 +64,11 @@ for i=1:size(tilt,3)
         %need to use the pre-CTF tilt for the rad map to avoid CTF impacts
         radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins - what is good scale?
         %bidirectional general noise - general SNR reduction
-        radgauss = randn(size(radmap))*1/100; % 0-centered unstructured noise field
+        radgauss = randn(size(radmap))*(1/4)*1; % 0-centered unstructured noise field
         % divide by pixel size to reduce impact at lower resolutions?
         % smoothed independent noise field on top?
-        radclose = rand(size(radmap)).*(mean(tilt(:,:,i))-tilt(:,:,i))*1*0; % contrast-reducing noise add
-        %prob do mean of smoothed for more local noise measures
+        radclose = rand(size(radmap)).*(blurmean(:,:,i)-tilt(:,:,i))*(3/1)*1; % contrast-reducing noise add
+        % accum still flips into positive intensity total, need to plateu at the mean
         addrad = randn(size(radmap))*accum*radscale.*(radmap+1)/10*0; %scaled gaussian 0-center noise field
         %additive noise biased to low density - reduce contrast/signal differentiation
         addrad = addrad+blurmap(:,:,i).*abs(rand(size(radmap)))*(param.pix)*accum*radscale/1e2;
