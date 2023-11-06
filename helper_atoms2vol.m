@@ -40,40 +40,19 @@ elseif all(sz==[0,0,0]) %if box 0, keep the object centered in the volume
 elseif nargin<4 %box limit only, output corner starting at 0
     offset = [0,0,0];
 end
-%{
-if iscell(pts) %this is a mess, subfunct/streamline
-    s = numel(pts); t=1;
-    if nargin<3
-        dd = cat(1,pts{:}); %failing without a sz already given
-        offset = min(dd(:,1:3),[],1)-pix;
-        sz = vertcat(pts{:});
-        sz = max(sz(:,1:3),[],1)+pix-offset;
-    elseif nargin<4
-        offset = [0,0,0];
-    end
-else
-    s = 1; t=0;
-    if nargin<3
-        offset = min(pts(:,1:3),[],1)-pix;
-        sz = max(pts(:,1:3),[],1)+pix-offset;
-    elseif nargin<4
-        offset = [0,0,0];
-    end
-end
-%}
-%if nargin<4, offset=[0,0,0]; end
-%if nargin<3, sz = max(catpts(:,1:3),[],1)+pix; end
 %if size(pts,2)<4, pts(:,end+1)=1; end %intensity==1 if not given by 4th column
-%need rough estimate of average volume for organic atoms
-%very approximately 1.8a radii
-%should do individual radii individually
-avol = 4/3*pi*(1.7^3); %eyeballed volume of the average organic atom
+% rough constants - need improved values, per-atom vol especially
+avol = 4/3*pi*(1.7^3); %eyeballed volume of the average organic atom (radii approx 1.8A)- get per-atom measure?
 h20 = 3.041/2; %computed scatter factor for H2O - /2 for similarity to vol and simulate defaults
 wd = 6.022e23/18/(1e8)^3; %molecules of water per a^3 - ~1/30 for liquid water
 wvol = 32; %eyeballed volume of amorphous ice molecules in angstroms
 
 emsz = floor(sz/pix); 
-solv = (rand(emsz)-0.5)*0.8*pix^2+(pix^3); %set initial solvent density
+solv = (rand(emsz)-0.6)*1.5*pix^2+(pix^3); %set initial solvent density
+%sliceViewer(solv)
+solv = imgaussfilt3(solv,0.5); % smoother solvation test
+%figure(); sliceViewer(solv);
+% need more random initial density - higher peaks, also smooth the data a bit for smoother density waves?
 
 sptmp = cell(1,s);
 %split = sptmp;
