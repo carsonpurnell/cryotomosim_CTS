@@ -68,7 +68,7 @@ end
 %very approximately 1.8a radii
 %should do individual radii individually
 avol = 4/3*pi*(1.7^3); %eyeballed volume of the average organic atom
-h20 = 3.041; %computed scatter factor for H2O
+h20 = 3.041/2; %computed scatter factor for H2O - /2 for similarity to vol and simulate defaults
 wd = 6.022e23/18/(1e8)^3; %molecules of water per a^3 - ~1/30 for liquid water
 wvol = 30; %eyeballed volume of amorphous ice molecules in angstroms
 
