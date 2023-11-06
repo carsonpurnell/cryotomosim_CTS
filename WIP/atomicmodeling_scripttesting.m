@@ -63,7 +63,7 @@ outpix = pix;
 [vol,solv,atlas,splitvol] = helper_atoms2vol(outpix,split,boxsize);
 sliceViewer(vol+solv);
 %
-WriteMRC(vol+solv,outpix,'radtestingmix_8a.mrc');
+WriteMRC(vol+solv,outpix,'solv0.5.mrc');
 WriteMRC(atlas,outpix,'radtestingmix_8a_atlas.mrc');
 %}
 
