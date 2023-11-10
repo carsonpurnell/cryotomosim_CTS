@@ -10,6 +10,7 @@ function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %if only 1x3 input, then first corner is assumped 0,0,0
 %if input is only 0 or [] empty, center and trim?
 %if input is [0,0,0] keep center at 0?
+
 %corners = [offset;sz]; 
 %if all(size(corners)==[2,3]) use for start and end corners of box
 %elseif all(corners==[0,0,0]) keep 0-centered
