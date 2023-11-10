@@ -41,7 +41,6 @@ end
 %need atomdict function that accepts vector of atomic symbols and returns vector of Z/e- values
 %}
 
-
 %% functionalized model gen part
 %rng(1);
 boxsize = pix*[500,400,50]*1;
@@ -343,14 +342,6 @@ sliceViewer(em);
 %subtract volume from each voxel, estimate waters per voxel from remaining volume with random portion
 %works well, need better values and improved randomization. should probably be built into helper_pt2vol
 %now is built in. kind of.
-%{
-tic
-allatoms = vertcat(split{2:end,1});
-%solvvol = ifcn_solv(pix,allatoms(:,1:3),boxsize); %similar to helper_pt2vol
-[vol,solv] = helper_atoms2vol(pix,allatoms,boxsize);
-sliceViewer(solv+vol);
-toc
-%}
 
 %% solvation testing with explicit water particles - way too slow for even small models
 %just too slow to prune millions of points.
