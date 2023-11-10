@@ -10,10 +10,8 @@ else
     fn = fieldnames(split);
     for i=1:numel(fn) %add split into dynpts
         s = size(split.(fn{i})(:,1:3),1);
-        %ix = randi(s,round(s/50),1); ix = unique(ix);
-        %tmp = split.(fn{i})(ix,1:3);
-        %l = size(tmp,1); %dynpts(end+1:end+l,:) = tmp;
-        %dynpts = [dynpts;tmp];
+        %ix = randi(s,round(s/50),1); ix = unique(ix); %tmp = split.(fn{i})(ix,1:3);
+        %l = size(tmp,1); %dynpts(end+1:end+l,:) = tmp; %dynpts = [dynpts;tmp];
     end
 end
 %ixincat = size(dynpts,1)+1;
@@ -21,8 +19,6 @@ end
 tol = 2; %tolerance for overlap testing
 retry = 4; %retry attempts per iteration
 count.s = 0; count.f = 0;
-%index 1 to overwrite the initial preallocation point, 2 preserves it
-%split = cell(1,numel(particles)+0); %split{1} = zeros(0,4); %single([0,0,0,0]);
 for i=1:numel(layers)
 namelist = [layers{i}.modelname]; %slower than cell, but more consistent
 for j=1:numel(namelist)
