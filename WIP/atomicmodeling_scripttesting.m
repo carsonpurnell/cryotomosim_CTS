@@ -36,7 +36,6 @@ for i=1:numel(particles)
         %clear com alphat %p pi
     end
 end
-
 %might need to make atom id vector a row vector for memory write reasons
 %need atomdict function that accepts vector of atomic symbols and returns vector of Z/e- values
 %}
