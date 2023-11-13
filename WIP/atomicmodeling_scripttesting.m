@@ -749,17 +749,6 @@ pts = [pts,in];
 end
 
 %{
-%nah, need to build into atom2vol
-function [atlas,splitvol] = fnc_atlasgen(pix,pts,sz,offset)
-for i=1:size(split,1)
-    %splitvol(:,:,:,i) = fnpt2vol(pix,split{i,1}(:,1:3),split{i,1}(:,4),boxsize,[0,0,0]);
-    splitvol(:,:,:,i) = helper_pt2vol(pix,split{i,1},boxsize,offset);
-end
-[~,atlas] = max(splitvol,[],4); 
-
-end
-%}
-%{
 function [vol,solv] = helper_atoms2vol_i(pix,pts,sz,offset)
 if nargin<4, offset=[0,0,0]; end
 if nargin<3, sz = max(pts,[],1)+pix; end
