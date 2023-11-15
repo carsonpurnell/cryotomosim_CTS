@@ -53,7 +53,6 @@ if mdepth>1
     end
 end
 
-
 %loop through points
 for i=1:n
     %ix(:,i)
@@ -63,7 +62,7 @@ for i=1:n
         %it = ix(:,i);
     elseif size(mu{ix(1,i),1}{1,ix(2,i)},2)==3 %if points in leaf no nav
         %it = ix(:,i);
-    elseif size(mu{ix(1,i),1}{3,ix(2,i)},1)==2 %if corners no nav
+    %elseif size(mu{ix(1,i),1}{3,ix(2,i)},1)==2 %if corners no nav
         %it = ix(:,i); %appears redundant with above, should always be pts if there are corners
     else
         ix(:,i) = nav(mu,bm,test(i,:),ix(1,i),ix(2,i)); %still too common, bin check not deep?
