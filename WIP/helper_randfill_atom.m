@@ -37,10 +37,8 @@ for lc = 1:numel(layers)
     
 for i=1:n
     if rem(i,n/20)==0; fprintf('%i,',i); end
-    
     which=randi(numel(particles));
     sel = particles(which); sub = randi(numel(sel.adat));
-    %tpts = sel.perim{sub};
     [err,loc,tform,ovcheck,muix] = anyloc(boxsize,sel.perim{sub},dyn,retry,tol,mu); % just as fast
     
     if err==0
