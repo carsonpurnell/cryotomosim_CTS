@@ -507,7 +507,6 @@ end
 split.(splitname)(tdx:e,:) = tpts; dx.(splitname) = tdx+l;
 end
 
-
 function [split,dyn,mu] = fn_modelgen(layers,boxsize,niter,split,dx,dyn)
 if nargin<6
     dyn{1} = single(zeros(0,3)); dyn{2} = 0;
@@ -682,7 +681,6 @@ if ~isempty(ix) %this thing is taking SO VERY LONG, need more pre-optimization
     d = [d{:}]; if any(d<tol), err=1; end %test if any points closer than tol
 end
 end
-
 
 function [dyn] = dyncell(addpts,dyn)
     l = size(addpts,1); e = dyn{2}+l-1;
