@@ -1,4 +1,6 @@
 function [carbon,perim] = gen_carbon(vol,pix,opt)
+%[carbon,perim] = gen_carbon(vol,pix,opt)
+%
 
 arguments
     vol (1,3)
@@ -46,7 +48,6 @@ pi = carbon(ix,1:3);
 perim = single([perim;pi;cperim]);
 perim = unique(perim,'rows');
 
-
 carbon(:,4) = 2.5088*1.5*atomfrac;
 
 if pix>0
@@ -70,7 +71,7 @@ ps(:,3) = ps(:,3)+(vol(3)-opt.thick)/2; %adjust grid to the center of the volume
 
 vec = randn(size(ps)); mag = rand(size(ps,1),1)*60;
 vec = mag.*vec./vecnorm(vec,2,2);
-pts = ps+vec;
+%pts = ps+vec;
 
-edge = alphaShape(pts,40); %get the shape itself
+edge = alphaShape(ps+vec,40); %get the shape itself
 end
