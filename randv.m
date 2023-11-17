@@ -22,6 +22,7 @@ else
     rotax = cross(repmat(ax,row/size(ax,1),1),rax); %compute orthogonal axes to rotate
     rotax = (rotax'./vecnorm(rotax'))'; %unitize orthogonal axes
     vec = zeros(row,col);
+    
     for i=1:row %loop because matrix multiplication can't be vectorized?
         R = rotmat(rotax(i,:),rand*(ang(2)-ang(1))+ang(1)); %rot matrix about axis, random angle within range
         vec(i,:) = ax*R; %vector of rotated point away form cone center
