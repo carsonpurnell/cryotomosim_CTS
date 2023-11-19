@@ -14,11 +14,11 @@ else
         %l = size(tmp,1); %dynpts(end+1:end+l,:) = tmp; %dynpts = [dynpts;tmp];
     end
 end
-%ixincat = size(dynpts,1)+1;
+%ixincat = size(dynpts,1)+1; %deprecated counter for starting point for dyncat insertions
 
 tol = 2; %tolerance for overlap testing
 retry = 4; %retry attempts per iteration
-count.s = 0; count.f = 0;
+count.s = 0; count.f = 0; %success and failure counters
 for i=1:numel(layers)
 namelist = [layers{i}.modelname]; %slower than cell, but more consistent
 for j=1:numel(namelist)
