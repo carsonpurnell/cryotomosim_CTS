@@ -33,6 +33,7 @@ input = 'MTring2.cif'; prop = [0,85,5,10];
 monomer = helper_filmono(input,pix,prop); monomer.modelname{1} = 'MT';
 input = 'cof_fix3.cif'; prop = [-162,24,10,20];
 monomercof = helper_filmono(input,pix,prop); monomercof.modelname{1} = 'cofilactin';
+
 %{
 %input = 'actin_mono_fil2.cif'; %ang = -166.15; step = 27.3; flex = 12; minL = 20;
 %input = 'MTring2.cif'; %ang = 0; step = 85; flex = 5; minL = 8;
