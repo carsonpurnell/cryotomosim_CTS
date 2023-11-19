@@ -5,7 +5,7 @@ if isempty(con)
 else
     dyn = con;
 end
-leaf = 1e3; 
+leaf = 1e4; 
 mu = mu_build(con,'leafmax',leaf,'maxdepth',2);
 
 mn = [particles.modelname]; %round up all names for models
