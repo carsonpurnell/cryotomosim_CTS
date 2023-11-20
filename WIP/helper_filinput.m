@@ -27,7 +27,6 @@ for i=1:numel(list) %loop through and parse inputs through filmono for structs a
             qq = load(list{i},'-mat'); qq.monomer.perim = 0;
             particle(i) = qq.monomer;  %#ok<AGROW>
             [sum,~,~,split] = helper_atoms2vol(pix,particle(i).adat,[0,0,0]); 
-            %if ~iscell(split)
             convfac = 3; %approximate conversion factor from scatter value to Z numbers
             for j=1:numel(split)
                 split{j} = split{j}*convfac;
@@ -39,7 +38,6 @@ for i=1:numel(list) %loop through and parse inputs through filmono for structs a
             %not properly parsing this somehow, was there a change in data? perim borking it?
             %monomer = particle(i); 
     end
-    %
     if particle(i).perim == 0
         tmp = vertcat(particle(i).adat{:}); %cat all partitions for perim testing
         alphat = alphaShape(double(tmp(:,1:3)),12);
