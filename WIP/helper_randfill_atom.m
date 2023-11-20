@@ -100,7 +100,6 @@ end
 
 end
 
-
 function [err,loc,tform,ovcheck,ix] = anyloc(boxsize,tperim,dyn,retry,tol,mu)
 for r=1:retry
     loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
@@ -111,8 +110,8 @@ for r=1:retry
     %if err2~=err, fprintf('%i,%i,\n',err,err2); end
     if err==0, break; end
 end
-
 end
+
 function [dyn] = dyncell(addpts,dyn)
     l = size(addpts,1); e = dyn{2}+l-1;
     if e>size(dyn{1},1)
