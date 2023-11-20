@@ -44,7 +44,6 @@ for i=1:numel(list) %loop through and parse inputs through filmono for structs a
         [~,p] = boundaryFacets(alphat);
         particle(i).perim = p; %#ok<AGROW>
     end
-    %}
 end
 
 end
