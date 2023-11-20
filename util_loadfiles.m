@@ -9,11 +9,11 @@ arguments
     prompt = 'Select input files' %window display title
     multi = []; %empty vector to multiselect
 end
-if exist('uipickfiles','file')== 2 %&& strcmp(list,'gui') %better FEX browser UI
+if exist('uipickfiles','file')== 2 %better FEX browser UI
     filter = append(replace(replace(filter,'*','\'),';','$|'),'$'); %parse filter
     list = uipickfiles('REFilter',filter,'Prompt',prompt,'NumFiles',multi); 
     if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
-else%if strcmp(list,'gui')
+else
     if isempty(multi), multi='on'; else multi='off'; end %#ok<SEPEX> %parse multiselect flag
     [list, path] = uigetfile({filter},prompt,'MultiSelect',multi);
     if numel(string(list))==1, list={list}; end %fix single selection not being in a cell
