@@ -4,12 +4,12 @@
 % problem: won't work with membranes, which are still non-atomic. can do fil instead of mem though
 %rng(11) %1 275/277/333   %2 84/109/110
 profile on
-pix = 12;
+pix = 10;
 input = {'MT.fil','actin.fil','cofilactin.fil','actin.fil'};
 input = {'actin.fil','actin.fil','cofilactin.fil'};
 input = {'MT.fil','cofil_actin_split.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
-box = [400,300,50]*pix; % box size in A
+box = [500,400,60]*pix; % box size in A
 
 con = helper_atomcon(box,pix); %con = internal_atomcon(box,pix);
 [pts,dyn,fil,mu] = helper_fil_atomic(box,particles,con);
