@@ -36,7 +36,7 @@ end
 
 function t = rotmat(ax,rad)
 ax = ax/norm(ax);
-x = ax(1,1); y = ax(1,2); z = ax(1,3);
+x = ax(1); y = ax(2); z = ax(3);
 c = cos(rad); s = sin(rad);
 
 t1 = c + x^2*(1-c);
