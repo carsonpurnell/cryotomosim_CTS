@@ -17,15 +17,17 @@ else
     if numel(ang)==1, ang(2)=ang(1); ang(1)=0; end %if only 1 ang, use as max against min 0
     %nrep = row/size(ax,1); %number of replicates needed to match matrix size for cross
     %might be able to rework ax to be a column of axes. need to be vecnormed.
-    
-    ax = ax/norm(ax); %unitize target vector
-    rotax = cross(repmat(ax,row/size(ax,1),1),rax); %compute orthogonal axes to rotate
+    ax
+    ax = (ax'./vecnorm(ax'))' %unitize target vector
+    nrep = ceil(row/size(ax,1)); %replicates of axes to outputs
+    axrep = repmat(ax,nrep,1); axrep = axrep(1:row,1:col);
+    rotax = cross(axrep,rax,2); %compute orthogonal axes to rotate
     rotax = (rotax'./vecnorm(rotax'))'; %unitize orthogonal axes
     vec = zeros(row,col);
     
     for i=1:row %loop because matrix multiplication can't be vectorized?
         R = rotmat(rotax(i,:),rand*(ang(2)-ang(1))+ang(1)); %rot matrix about axis, random angle within range
-        vec(i,:) = ax*R; %vector of rotated point away form cone center
+        vec(i,:) = axrep(i,1:3)*R; %vector of rotated point away form cone center
     end
 end
 end
