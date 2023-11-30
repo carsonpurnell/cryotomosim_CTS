@@ -4,6 +4,7 @@ function [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,sz,offset)
 %4th dimension sets the weight value for each point, otherwise all weights are 1
 
 %round the values and combine outside the loop for speed?
+%combining appears much slower, unique requires sorting
 
 %additional arguments or reuse sz/offset for a 0-centered unbounded output?
 %collapse sz/offset into a corner-to-counter bound, with a single 2x3 input
@@ -117,6 +118,7 @@ end
 
 function [vl,solv] = internal_accum(p,mag,avol,emsz,solv)
 vl = zeros(emsz);
+%[u,ua,ub] = unique(p,'rows'); %slower than the rest due to needing to sort
 
 for i=1:3
     ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %index points inside the box
