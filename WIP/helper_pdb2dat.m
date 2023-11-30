@@ -43,7 +43,6 @@ end
 names = '';
 sumvol = 0;
 vol = {0};
-%data
 %disp(filename)
 id = strsplit(filename,{'__','.'});
 
@@ -216,21 +215,17 @@ end
 end
 
 function [data] = internal_cifparse(pdb)
-fid = fileread(pdb); 
-text = textscan(fid,'%s','delimiter','\n'); %read in each line of the text file as strings
+%fid = fileread(pdb); 
+text = textscan(fileread(pdb),'%s','delimiter','\n'); %read in each line of the text file as strings
 text = text{1}; %fix being inside a 1x1 cell array
 
 modnames = text(strncmp(text,'data_',5)); %retrieve lines storing model names
 modnames = strrep(modnames,'data_',''); %remove the leading line identifier from names
 %need to remove trailing numbers
-%disp(modnames)
 modnames = regexprep(modnames,'\_\d$',''); %remove trailing numbers so submodels don't get split
 modnames = erase(modnames,'.'); %remove periods that would break use as fieldnames
 %disp(modnames)
 %other special characters that would break fieldnames?
-%probably want to modularize this back into multiple functions for better access
-
-%ix = strncmp(text,'HETATM',6); text(ix) = []; %clear hetatm lines to keep CNOPS atoms only
 
 headstart = find(strncmp(text,'_atom_site.group_PDB',20)); %header id start
 headend = find(strncmp(text,'_atom_site.pdbx_PDB_model_num',29)); %header id end
@@ -254,7 +249,6 @@ for i=1:numel(headstart)
     
     data{i,1} = atoms; data{i,2} = single(coord)'; data{i,3} = modnames{i};
 end
-
 
 end
 
