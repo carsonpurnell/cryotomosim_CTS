@@ -59,7 +59,7 @@ tic; [split,dyn,mu] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
 %% function for vol, atlas, and split generation + water solvation
 outpix = pix;
 [vol,solv,atlas,splitvol] = helper_atoms2vol(outpix,split,boxsize);
-sliceViewer(vol*1+solv);
+%sliceViewer(vol*1+solv);
 %{
 WriteMRC(vol+solv,outpix,'solv_n1.mrc');
 %WriteMRC(atlas,outpix,'radtestingmix_8a_atlas.mrc');
