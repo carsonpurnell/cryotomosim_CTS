@@ -45,8 +45,7 @@ perim = edge.Points; %perimeter pts of shape
 n = size(carbon,1);
 ix = randperm(n); ix = ix(1:round(n/50));
 pi = carbon(ix,1:3);
-perim = single([perim;pi;cperim]);
-perim = unique(perim,'rows');
+perim = single([perim;pi;cperim]); perim = unique(perim,'rows');
 
 carbon(:,4) = 2.5088*1.5*atomfrac;
 
