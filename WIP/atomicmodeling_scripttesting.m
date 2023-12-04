@@ -50,7 +50,7 @@ tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize
 con = helper_atomcon(boxsize,pix); % pseudonatural ice border (wavy flat, no curvature)
 dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 
-n = 10;
+n = 500;
 %profile on
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 tic; [split,dyn,mu] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
