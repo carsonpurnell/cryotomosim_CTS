@@ -34,33 +34,9 @@ end
 %bsxfun nav simply not fast when going through so many individual points
 %bsxfun apply to all prelim leaf points?
 if mdepth>1
-    [uix,ia,ic] = unique(ix','rows'); %size(uix), disp(uix)
-    [fuix,idC,idx1,idx2,b,k] = fastunique(ix'); 
-    uix = ix(:,fuix)'; %size(fuix), disp(fuix) %definitely ~25% faster
-    uix = b; %b seems to be already sorted uniques, just re-use
-    %size(ic)
-    %size(idC)
-    %all(ic==idC)
-    %uix
-    %size(ia) %same size as idx2
-    %size(fuix)
-    %all(ia==fuix) %appear to be identical
-    %ia
-    %size(idx1)
-    %size(idx2) %same size as ia
-    %idx2
-    %size(b) %similar to ia/idx2, but 2 columns
-    %b %is uix
-    %all(b==uix) %did i miss B being the sorted uniques?
-    %size(k) %similar to ia/idx2, but 1 more row
-    %k % is idx2 with an extra element at the end
-    %ic same size as idx1, ia same size as idx2
-    %size(ia),disp(ia) 
-    %size(idx2),disp(idx2) %not identical to ia
-    %disp(ic), disp(idx1), %too large for manual comparison
-    %size(idx1),  %size(b)
-    %disp(b)
-    %if uix~=fuix; disp(uix);disp(fuix); end
+    [uix,ia,ic] = fastunique(ix');
+    [uixo,iao,ico] = unique(ixin,'rows'); %size(uix), disp(uix)
+    %if ~all(all(uixo==uix)) || ~all(all(iao==ia)) || ~all(all(ico==ic)); disp('e'); end
     for i=1:size(uix,1)
         d = uix(i,1); br = uix(i,2); %start bin to work with
         if numel(mu{d,1}{3,br})==8 %if no points, don't nav
@@ -101,21 +77,19 @@ for i=1:n
     end
 end
 if opt.short==0 %pdist 2 faster for searching few bins with many points, short-circuit not as powerful
-    [branchdet,~,bix] = unique(ix','rows'); %more bins = better ss, but slower pdist2
-    [fbr,bix2] = fastunique(ix'); uix = ix(:,fbr)';
-    %need indices to find unsort from uniques, not indices of uniques
-    %if bix~=bix2; disp(bix);disp(bix2); end
-    %if bix~=bix2; printf('ineq,'); end
+    [branchdet,~,bix] = fastunique(ix');
+    %[branchdeto,~,bixo] = unique(ix','rows'); %more bins = better ss, but slower pdist2
+    %if ~all(all(bix==bixo)) || ~all(all(branchdet==branchdeto)); disp(1); end
     d2 = zeros(size(ix,2),1)+tol^2;
     for i=1:size(branchdet,1)
         bpts = mu{branchdet(i,1),1}{1,branchdet(i,2)};
         if ~isempty(bpts)%, err=0; end;%break; end
-        d2(bix==i,:) = pdist2(bpts,test(bix==i,:),'euclidean','Smallest',1);
-        %
-        if any(d2<(tol))
-            err=1; break
-        end
-        %}
+            d2(bix==i,:) = pdist2(bpts,test(bix==i,:),'euclidean','Smallest',1);
+            %
+            if any(d2<(tol))
+                err=1; break
+            end
+            %}
         end
         %}
     end
@@ -124,12 +98,12 @@ end
 
 end
 
-function [idx,indC,idx1,idx2,b,k] = fastunique(A)
+function [uq,ia,ic,idx1,idx2,k] = fastunique(A)
 [A_sorted, idx1] = sortrows(A); %sort faster than sortrows?
 k    = find([true; any(diff(A_sorted, 1, 1), 2); true]);
 idx2 = k(diff(k) >= 1);
-idx  = idx1(idx2);
-b    = A(idx, :);
+ia  = idx1(idx2);
+uq    = A(ia, :);
 
 % attempt to replicate other unique outputs - ia and ic (mainly ic, really need that one)
 
@@ -162,8 +136,8 @@ if (numRows ~=0)
 end
 
 groupsSortA = full(groupsSortA); 
-indC = cumsum(groupsSortA);                % Lists position, starting at 1.
-indC(idx1) = indC;                     % Re-reference indC to indexing of sortA.
+ic = cumsum(groupsSortA);                % Lists position, starting at 1.
+ic(idx1) = ic;                     % Re-reference indC to indexing of sortA.
 end
 
 
