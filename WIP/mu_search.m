@@ -107,7 +107,7 @@ end
 
 end
 
-function [idx,idx1,idx2,b] = fastunique(A)
+function [idx,indC,idx1,idx2,b] = fastunique(A)
 [A_sorted, idx1] = sortrows(A); %sort faster than sortrows?
 k    = find([true; any(diff(A_sorted, 1, 1), 2); true]);
 idx2 = k(diff(k) >= 1);
@@ -116,7 +116,7 @@ b    = A(idx1(idx2), :);
 
 % attempt to replicate other unique outputs - ia and ic (mainly ic, really need that one)
 
-
+order = 'stable'; %same thing as 'first' in unique code
 numRows = size(a,1);
 numCols = size(a,2);
 
@@ -131,6 +131,16 @@ if isSortedA
     indSortA = (1:size(A,1))';
 else
     [sortA,indSortA] = sortrows(a);
+end
+
+groupsSortA = sortA(1:numRows-1,:) ~= sortA(2:numRows,:);
+groupsSortA = any(groupsSortA,2);
+if (numRows ~=0)
+    if strcmp(order, 'last')
+        groupsSortA = [groupsSortA; true];          % Final row is always member of unique list.
+    else  % if (strcmp(order, 'sorted') || strcmp(order, 'stable'))
+        groupsSortA = [true; groupsSortA];          % First row is always a member of unique list.
+    end
 end
 
 groupsSortA = full(groupsSortA); 
