@@ -34,12 +34,12 @@ end
 %bsxfun nav simply not fast when going through so many individual points
 %bsxfun apply to all prelim leaf points?
 if mdepth>1
-    [uix,ia,ic] = unique(ix','rows'); %size(uix), disp(uix)
+    %[uix,ia,ic] = unique(ix','rows'); %size(uix), disp(uix)
     [fuix,idx1,idx2,b] = fastunique(ix'); uix = ix(:,fuix)'; %size(fuix), disp(fuix) %definitely ~25% faster
     % size(ic)
     %ic same size as idx1, ia same size as idx2
     %size(ia),disp(ia) 
-    %size(idx2),disp(idx2) %not identical
+    %size(idx2),disp(idx2) %not identical to ia
     %disp(ic), disp(idx1), %too large for manual comparison
     %size(idx1),  %size(b)
     %disp(b)
