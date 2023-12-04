@@ -113,6 +113,29 @@ k    = find([true; any(diff(A_sorted, 1, 1), 2); true]);
 idx2 = k(diff(k) >= 1);
 idx  = idx1(idx2);
 b    = A(idx1(idx2), :);
+
+% attempt to replicate other unique outputs - ia and ic (mainly ic, really need that one)
+
+
+numRows = size(a,1);
+numCols = size(a,2);
+
+% Sort A and get the indices if needed.
+isSortedA = false;
+if isnumeric(a) && ~isobject(a)
+    isSortedA = issortedrows(a);
+end
+
+if isSortedA
+    sortA = a;
+    indSortA = (1:size(A,1))';
+else
+    [sortA,indSortA] = sortrows(a);
+end
+
+groupsSortA = full(groupsSortA); 
+indC = cumsum(groupsSortA);                % Lists position, starting at 1.
+indC(indSortA) = indC;                     % Re-reference indC to indexing of sortA.
 end
 
 
