@@ -38,12 +38,12 @@ if mdepth>1
     [fuix,idx1,idx2,b] = fastunique(ix'); uix = ix(:,fuix)'; %size(fuix), disp(fuix) %definitely ~25% faster
     % size(ic)
     %ic same size as idx1, ia same size as idx2
-    size(ia),disp(ia) 
-    size(idx2),disp(idx2) %not identical
+    %size(ia),disp(ia) 
+    %size(idx2),disp(idx2) %not identical
     %disp(ic), disp(idx1), %too large for manual comparison
     %size(idx1),  %size(b)
     %disp(b)
-    %if uix~=fuix; disp(uix);disp(fuix); end
+    if uix~=fuix; disp(uix);disp(fuix); end
     for i=1:size(uix,1)
         d = uix(i,1); br = uix(i,2); %start bin to work with
         if numel(mu{d,1}{3,br})==8 %if no points, don't nav
