@@ -35,7 +35,7 @@ end
 %bsxfun apply to all prelim leaf points?
 if mdepth>1
     [uix,ia,ic] = fastunique(ix');
-    [uixo,iao,ico] = unique(ixin,'rows'); %size(uix), disp(uix)
+    %[uixo,iao,ico] = unique(ix','rows');
     %if ~all(all(uixo==uix)) || ~all(all(iao==ia)) || ~all(all(ico==ic)); disp('e'); end
     for i=1:size(uix,1)
         d = uix(i,1); br = uix(i,2); %start bin to work with
@@ -99,45 +99,30 @@ end
 end
 
 function [uq,ia,ic,idx1,idx2,k] = fastunique(A)
-[A_sorted, idx1] = sortrows(A); %sort faster than sortrows?
+%[A_sorted, idx1] = sortrows(A); % 5.09, 7.8/5.06
+%[A_sorted, idx1] = sortrows(A,2); % 3.84, 7.1/4.3, %apparently the fastest, is it as stable?
+[A_sorted, idx1] = sortrows(A,[2,1]); % 4.77, 7.3,4.6
 k    = find([true; any(diff(A_sorted, 1, 1), 2); true]);
 idx2 = k(diff(k) >= 1);
 ia  = idx1(idx2);
 uq    = A(ia, :);
 
-% attempt to replicate other unique outputs - ia and ic (mainly ic, really need that one)
-
 order = 'stable'; %same thing as 'first' in unique code
 numRows = size(A,1); numCols = size(A,2);
-
-%{
-% Sort A and get the indices if needed.
-isSortedA = false;
-if isnumeric(A) && ~isobject(A)
-    isSortedA = issortedrows(A);
-end
-
-if isSortedA
-    %sortA = A;
-    indSortA = (1:size(A,1))';
-else
-    %[sortA,indSortA] = sortrows(A);
-end
-%}
 
 groupsSortA = A_sorted(1:numRows-1,:) ~= A_sorted(2:numRows,:);
 groupsSortA = any(groupsSortA,2);
 if (numRows ~=0)
-    if strcmp(order, 'last')
-        groupsSortA = [groupsSortA; true];          % Final row is always member of unique list.
-    else  % if (strcmp(order, 'sorted') || strcmp(order, 'stable'))
-        groupsSortA = [true; groupsSortA];          % First row is always a member of unique list.
-    end
+    %if strcmp(order, 'last')
+    %    groupsSortA = [groupsSortA; true];       % Final row is always member of unique list.
+    %else  % if (strcmp(order, 'sorted') || strcmp(order, 'stable'))
+    groupsSortA = [true; groupsSortA];       % First row is always a member of unique list.
+    %end
 end
 
 groupsSortA = full(groupsSortA); 
-ic = cumsum(groupsSortA);                % Lists position, starting at 1.
-ic(idx1) = ic;                     % Re-reference indC to indexing of sortA.
+ic = cumsum(groupsSortA);               % Lists position, starting at 1.
+ic(idx1) = ic;                          % Re-reference indC to indexing of sortA.
 end
 
 
