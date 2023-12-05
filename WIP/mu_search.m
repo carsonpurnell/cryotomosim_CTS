@@ -116,8 +116,7 @@ if no>1
         groupsSortA = [true; groupsSortA];       % First row is always a member of unique list.
     end
     
-    groupsSortA = full(groupsSortA);
-    ic = cumsum(groupsSortA);               % Lists position, starting at 1.
+    ic = cumsum(full(groupsSortA));               % Lists position, starting at 1.
     ic(idx1) = ic;                          % Re-reference indC to indexing of sortA.
 end
 end
