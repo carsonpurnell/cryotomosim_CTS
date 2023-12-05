@@ -34,7 +34,7 @@ end
 %bsxfun nav simply not fast when going through so many individual points
 %bsxfun apply to all prelim leaf points?
 if mdepth>1
-    [uix,ia,ic] = fastunique(ix');
+    [uix] = fastunique(ix');
     %[uixo,iao,ico] = unique(ix','rows');
     %if ~all(all(uixo==uix)) || ~all(all(iao==ia)) || ~all(all(ico==ic)); disp('e'); end
     for i=1:size(uix,1)
@@ -107,22 +107,19 @@ idx2 = k(diff(k) >= 1);
 ia  = idx1(idx2);
 uq    = A(ia, :);
 
-order = 'stable'; %same thing as 'first' in unique code
-numRows = size(A,1); numCols = size(A,2);
-
-groupsSortA = A_sorted(1:numRows-1,:) ~= A_sorted(2:numRows,:);
-groupsSortA = any(groupsSortA,2);
-if (numRows ~=0)
-    %if strcmp(order, 'last')
-    %    groupsSortA = [groupsSortA; true];       % Final row is always member of unique list.
-    %else  % if (strcmp(order, 'sorted') || strcmp(order, 'stable'))
-    groupsSortA = [true; groupsSortA];       % First row is always a member of unique list.
-    %end
+no = nargout(); %number of outputs declared - is there a positional version? don't need it now
+if no>1
+    numRows = size(A,1); %numCols = size(A,2);
+    groupsSortA = A_sorted(1:numRows-1,:) ~= A_sorted(2:numRows,:);
+    groupsSortA = any(groupsSortA,2);
+    if (numRows ~=0)
+        groupsSortA = [true; groupsSortA];       % First row is always a member of unique list.
+    end
+    
+    groupsSortA = full(groupsSortA);
+    ic = cumsum(groupsSortA);               % Lists position, starting at 1.
+    ic(idx1) = ic;                          % Re-reference indC to indexing of sortA.
 end
-
-groupsSortA = full(groupsSortA); 
-ic = cumsum(groupsSortA);               % Lists position, starting at 1.
-ic(idx1) = ic;                          % Re-reference indC to indexing of sortA.
 end
 
 
