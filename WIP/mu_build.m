@@ -235,9 +235,10 @@ len = round(h-l,-1); %length of each axis
 cen = (h+l)/2; %center of space
 %cen*2
 
+split = 2;
 %cubifying does seem slightly faster overall, not sure how much or what context is most important
 %need some metric to force breaking lowest axis length into smaller increments to ensure more roots
-cubel = min(len)/2; ch = cubel/2; %cube full and half length for mesh compaction
+cubel = min(len)/split; ch = cubel/split; %cube full and half length for mesh compaction
 len = ceil(len/cubel)*cubel; %length of axes in cube segmentations
 cn = len/cubel; %number of cubes per axis
 %cubel = len/cn

@@ -41,7 +41,7 @@ end
 %}
 
 %% functionalized model gen part
-%rng(1);
+rng(1);
 boxsize = pix*[500,400,50]*1;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 memnum = 0;
