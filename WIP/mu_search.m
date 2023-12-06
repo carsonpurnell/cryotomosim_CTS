@@ -19,6 +19,14 @@ ix = ones(2,n); %initialization for index
 roots = vertcat(mu{1,1}{2,:}); %all top-level centers
 %check for multiple roots to avoid slow pdist 2 check?
 [~,rix] = pdist2(roots,test,'squaredeuclidean','Smallest',1);
+D = distEucSq(roots,test); 
+[~,rix] = min(D,[],1); %appears slightly faster
+% add indices as nargout if check
+
+%size(rix),size(D),size(r2)
+%sum(r2==rix)
+%rix(1:4),r2(1:4)
+%[D] = mypdist2(roots,test); %would need to filter afterward - and too slow anyway
 ix(1,:) = 1; ix(2,:) = rix; %level and layer to start with
 mdepth = size(mu,1); %depth of tree
 %histogram(rix)
@@ -35,7 +43,7 @@ end
 %bsxfun apply to all prelim leaf points?
 if mdepth>1
     [uix] = fastunique(ix');
-    %[uixo,iao,ico] = unique(ix','rows');
+    %[uixo] = unique(ix','rows'); %[uixo,iao,ico] = unique(ix','rows');
     %if ~all(all(uixo==uix)) || ~all(all(iao==ia)) || ~all(all(ico==ic)); disp('e'); end
     for i=1:size(uix,1)
         d = uix(i,1); br = uix(i,2); %start bin to work with
@@ -96,6 +104,32 @@ if opt.short==0 %pdist 2 faster for searching few bins with many points, short-c
     err = any(d2<(tol));
 end
 
+end
+
+function D = distEucSq( X, Y )
+Yt = Y';
+XX = sum(X.*X,2);
+YY = sum(Yt.*Yt,1);
+D = bsxfun(@plus,XX,YY)-2*X*Yt;
+end
+
+function [D] = mypdist2(X,Y)
+%PDIST2 computes the squared euclidean distance between rows of X and rows
+%of Y
+%input:
+% X - n*d n rows in d dimensions
+% Y - m*d m rows in d dimensions
+%output:
+% D - n*m D_ij = norm(X(i,:)-Y(j,:))^2
+
+[n,dx] = size(X);
+[m,dy] = size(Y);
+assert(dx==dy,'X and Y must have same column dimension');
+nx = dot(X,X,2);
+ny = dot(Y,Y,2);
+Nx = repmat(nx,1,m);
+Ny = repmat(ny,1,n);
+D = Nx + Ny' - 2*X*Y';
 end
 
 function [uq,ia,ic,idx1,idx2,k] = fastunique(A)
