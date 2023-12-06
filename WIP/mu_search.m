@@ -16,8 +16,9 @@ n = size(test,1);
 err = zeros(1,n); %array for overlap results per point
 mdepth = size(mu,1); % current depth of mutree
 
-ix = rootsplit(mu,test);
+ix = rootsplit(mu,test); %125
 %{
+%170 inlined - subfunct faster due to cleanup?
 ix = ones(2,n); %initialization for index
 roots = vertcat(mu{1,1}{2,:}); %all top-level centers
 %check for multiple roots to avoid slow pdist 2 check?
@@ -87,6 +88,8 @@ for i=1:n
     end
 end
 if opt.short==0 %pdist 2 faster for searching few bins with many points, short-circuit not as powerful
+    [err] = bincheck(mu,test,ix);
+    %{
     [branchdet,~,bix] = fastunique(ix');
     %[branchdeto,~,bixo] = unique(ix','rows'); %more bins = better ss, but slower pdist2
     %if ~all(all(bix==bixo)) || ~all(all(branchdet==branchdeto)); disp(1); end
@@ -100,32 +103,46 @@ if opt.short==0 %pdist 2 faster for searching few bins with many points, short-c
             if any(d2<(tol))
                 err=1; break
             end
-            %}
+            %
         end
-        %}
+        %
     end
     err = any(d2<(tol));
+    %}
 end
 
 end
 
-function ix = rsplit2(mu,pts,ix,bin)
+function [err] = bincheck(mu,pts,ix,bin)
+tol = 2;
+[branchdet,~,bix] = fastunique(ix'); % more bins= faster SS, slower pdist2. split bins?
+%[branchdeto,~,bixo] = unique(ix','rows'); %more bins = better ss, but slower pdist2 via more runs?
+%if ~all(all(bix==bixo)) || ~all(all(branchdet==branchdeto)); disp(1); end
+d2 = zeros(size(ix,2),1)+tol^2;
+for i=1:size(branchdet,1)
+    bpts = mu{branchdet(i,1),1}{1,branchdet(i,2)};
+    if ~isempty(bpts)%, err=0; end;%break; end
+        d2(bix==i,:) = pdist2(bpts,pts(bix==i,:),'euclidean','Smallest',1);
+        if any(d2<(tol)); err=1; break; end %early exit if collision
+    end
+end
+err = any(d2<(tol));
+
+end
+
+function [ix,err] = rsplit2(mu,pts,ix,bin) %split a bin of pts across branches
 % get branches from mu based on bin - will need to deal with 0/empty tree to streamline later
-% if isempty(bin), bin=[0,0]; end
 d = bin(1); br = bin(2); %depth and branch of the bin of test points
 
-if numel(mu{d,1}{3,br})==8 %if no points, don't nav
+err=0;
+if numel(mu{d,1}{3,br})==8 % only split when the bin has branches
     ix2 = all(ix==(bin'),1); %logical index of pts in the root to split
-    tmp = pts(ix2,:); %which pts being worked with
-    
+    %tmp = pts(ix2,:); %which pts being worked with
     leaves = mu{d,1}{3,br}; %indices of leaves from branch
-    bcp = vertcat(mu{d+1,1}{2,leaves}); %centers for child nodes for pdist2
-    %mu{d+1,1}{3,leaves}
-    [~,c2] = pdist2(bcp,tmp,'squaredeuclidean','Smallest',1); %which branch for the bin pts
-    %D = distEucSq(bcp,tmp); [~,cc] = min(D,[],1); %slower
+    bcp = vertcat(mu{d+1,1}{2,leaves}); %centers of child nodes for nearest search
+    [~,c2] = pdist2(bcp,pts(ix2,:),'squaredeuclidean','Smallest',1); %which branch for the bin pts
     t2 = zeros(2,numel(c2))+d+1;
-    t2(2,:) = leaves(c2);
-    ix(:,ix2) = t2;%[d+1,c2]';
+    t2(2,:) = leaves(c2); ix(:,ix2) = t2;%[d+1,c2]';
 end
 
 end
