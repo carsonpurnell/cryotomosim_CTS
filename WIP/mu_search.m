@@ -45,7 +45,8 @@ if mdepth>1
     %[uixo] = unique(ix','rows'); %[uixo,iao,ico] = unique(ix','rows');
     %if ~all(all(uixo==uix)) || ~all(all(iao==ia)) || ~all(all(ico==ic)); disp('e'); end
     for i=1:size(uix,1)
-        ix = rsplit2(mu,test,ix,uix(i,:));
+        [ix,err] = rsplit2(mu,test,ix,uix(i,:));
+        if err==1; break; end %short if collision  disp('e2');
         %{
         d = uix(i,1); br = uix(i,2); %start bin to work with
         if numel(mu{d,1}{3,br})==8 %if no points, don't nav
@@ -66,10 +67,12 @@ if mdepth>1
 end
 
 %loop through points
+%need to avoid doing this if at all possible
+if ~any(err==0)
 for i=1:n
     %ix(:,i)
     %size(mu{ix(1,i),1}{1,ix(2,i)},2); %size(mu{ix(1,i),1}{3,ix(2,i)},1)
-    if ix(1,i)==mdepth %if bottom of tree no nav
+    if ix(1,i)==mdepth || err==1 %if bottom of tree no nav
         %it = ix(:,i);
     elseif size(mu{ix(1,i),1}{1,ix(2,i)},2)==3 %if points in leaf no nav
         %it = ix(:,i);
@@ -87,7 +90,9 @@ for i=1:n
         err(i) = te;
     end
 end
-if opt.short==0 %pdist 2 faster for searching few bins with many points, short-circuit not as powerful
+end
+if opt.short==0 && any(err==1) && 1==3
+    %pdist 2 faster for searching few bins with many points, short-circuit not as powerful
     [err] = bincheck(mu,test,ix);
     %{
     [branchdet,~,bix] = fastunique(ix');
@@ -143,7 +148,9 @@ if numel(mu{d,1}{3,br})==8 % only split when the bin has branches
     [~,c2] = pdist2(bcp,pts(ix2,:),'squaredeuclidean','Smallest',1); %which branch for the bin pts
     t2 = zeros(2,numel(c2))+d+1;
     t2(2,:) = leaves(c2); ix(:,ix2) = t2;%[d+1,c2]';
+    [err] = bincheck(mu,pts(ix2,:),ix(:,ix2));
 end
+%if err==1; disp('e'); end
 
 end
 
@@ -155,7 +162,6 @@ roots = vertcat(mu{1,1}{2,:}); %all top-level centers
 %check for multiple roots to avoid slow pdist 2 check?
 %D = distEucSq(roots,test); [~,rix] = min(D,[],1); % slower under most conditions
 [~,rix] = pdist2(roots,test,'squaredeuclidean','Smallest',1);
-%[D] = mypdist2(roots,test); %would need to filter afterward - and too slow anyway
 ix(1,:) = 1; ix(2,:) = rix;
 end
 
