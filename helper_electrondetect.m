@@ -42,9 +42,14 @@ IMFP = 3800; %inelastic mean free path, average distance before inelastic electr
 %IMFP estimated to be 350nm for water ice, is probabaly somewhat different for vitreous (higher)
 %electronpath = thick*(1+abs(tand(tiltangs))); %compute the path length of electrons through ice
 electronpath = thick./cosd(tiltangs); %corrected trig, very slightly better appearance
+
+%make thickscatter a map? random variation in ice thickness (should be highly smooth)
 thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not inelastically/lossly scattered
 %change IMFP to instead be per pixel, so more electrons are lost at high density AND thickness?
 %scattering map inside the loop, using pixel intensities to scale the IMFP/path?
+%problematic: single map of thickness- kind of wrong because thickness is directional, not location
+%potential: 2 mats, thickness above/below center (inc. model thickness) - measure thickness at angles
+%   need some sort of interpolation to match together at arbitrary angles, direct array math will be wrong
 
 radscale = .01*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
@@ -53,6 +58,8 @@ accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; rad = tilt*0; %pre-initialize output arrays
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
 blurmean = imgaussfilt(tilt,0.5);
+
+%separate subfunction for doing radiation for modularity
 
 for i=1:size(tilt,3)
     
@@ -64,21 +71,21 @@ for i=1:size(tilt,3)
         %need to use the pre-CTF tilt for the rad map to avoid CTF impacts
         radmap = rescale(blurmap(:,:,i),0,sqrt(param.pix))*1; %increase noise at proteins - what is good scale?
         %bidirectional general noise - general SNR reduction
-        radgauss = randn(size(radmap))*(1/4)*1; % 0-centered unstructured noise field
+        radgauss = randn(size(radmap))*(1/2)*1; % 0-centered unstructured noise field
         % divide by pixel size to reduce impact at lower resolutions?
         % smoothed independent noise field on top?
-        radclose = rand(size(radmap)).*(blurmean(:,:,i)-tilt(:,:,i))*(3/1)*1; % contrast-reducing noise add
+        radclose = rand(size(radmap)).*(blurmean(:,:,i)-tilt(:,:,i))*(2/1)*1; % contrast-reducing noise add
         % accum still flips into positive intensity total, need to plateu at the mean
         addrad = randn(size(radmap))*accum*radscale.*(radmap+1)/10*0; %scaled gaussian 0-center noise field
         %additive noise biased to low density - reduce contrast/signal differentiation
         addrad = addrad+blurmap(:,:,i).*abs(rand(size(radmap)))*(param.pix)*accum*radscale/1e2;
         
-        sigma = sqrt(radscale*(accum)*0.2); %might need to scale filter size with pixel size
+        sigma = sqrt(radscale*(accum)*0.2)*1; %might need to scale filter size with pixel size
         %smoothing noise - reduce resolution and contrast
-        proj = imgaussfilt(tilt(:,:,i),sigma,'FilterSize',3);
+        proj = imgaussfilt(tilt(:,:,i),sigma);%,'FilterSize',filt);
         
-        irad = proj*0+tilt(:,:,i)*1+accum*radscale*(radgauss+radclose);
-        rad(:,:,i) = proj; %store radiation maps for review
+        irad = proj*1+tilt(:,:,i)*0+accum*radscale*(radgauss+radclose);
+        rad(:,:,i) = proj*1+tilt(:,:,i)*0+accum*radscale*(radgauss+radclose); %store radiation maps for review
     else
         irad = tilt(:,:,i);
     end
