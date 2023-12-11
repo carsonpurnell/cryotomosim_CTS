@@ -4,7 +4,7 @@ if nargin<3
     sc = 2400;
 end
 sz = [max(box),max(box)]; 
-dl = 10;
+dl = 2;
 w = 1;
 ptsb = internal_gen_atomborder(sz,n/2,sc*1,4)-[0,0,dl*randi(6)*w];
 ptst = internal_gen_atomborder(sz,n/2,sc*1,4)+[0,0,dl*randi(6)*w+box(3)];
