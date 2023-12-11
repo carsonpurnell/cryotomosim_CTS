@@ -129,7 +129,7 @@ tilt = ReadMRC(prev); %load the projected tiltseries as a volume
 %order = 1; %electron detection changable order thing
 if order==1 %dose first, seems to get better levels of roughness and ice features
     param.raddamage = param.raddamage*1; param.dose = param.dose*1; %adjust base values to work
-    detected = helper_electrondetect(tilt,param);
+    [detected,rad] = helper_electrondetect(tilt,param);
     WriteMRC(detected,pix,append('2_dosetilt_',base));
     [convolved,ctf] = helper_ctf(detected,param); %per-tilt ctf convolution
     prev = append('3_ctf_',base);
@@ -140,10 +140,11 @@ if order==2 %dose second, reduces pixel size effect so more generalized but valu
     prev = append('3_ctf_',base);
     WriteMRC(convolved,pix,prev); %save the convolved image for review
     convolved = rescale(convolved,min(tilt,[],'all'),max(tilt,[],'all')); %janky infeasible fix negative CTF
-    detected = helper_electrondetect(convolved,param);
+    [detected,rad] = helper_electrondetect(convolved,param);
     prev = append('4_dose_',base);
     WriteMRC(detected,pix,prev);
 end
+WriteMRC(rad,pix,append('2_rad_',base));
 
 if donoise==1 %hard coded multifactorial noise toggle
 noised = helper_noisegen(convolved,pix); %add multifactor noise
