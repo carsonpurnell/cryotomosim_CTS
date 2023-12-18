@@ -169,6 +169,7 @@ https://books.google.com/books?hl=en&lr=&id=hu8T_kI1LrkC&oi=fnd&pg=PR11&ots=jLzw
 names = data(:,3);
 ix = find(contains(names,'origin')); %get the index, if any, of the name origin in the model
 %check to clear out other dummy submodels?
+
 %very much need to condense the accumulated goblin code
 if centering==1 %&& isempty(ix)
     trim=0; %don't trim if the modeled is centered, because that uncenters it
