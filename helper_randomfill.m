@@ -36,6 +36,7 @@ end
 ismem = 0;
 if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     ismem = 1;
+    
     %{
     %memvol = sum( cat(4,vesvol{:}) ,4); %this is terrible, they need to be one volume
     bw = bwdist(~memvol); %calculate distances inside the shape
