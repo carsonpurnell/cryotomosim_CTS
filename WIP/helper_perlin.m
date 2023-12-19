@@ -1,18 +1,16 @@
 function [field,layers] = helper_perlin(gridxy,pix,octaves,startoct)
-
+%[field,layers] = helper_perlin(gridxy,pix,octaves,startoct)
 arguments
     gridxy
     pix
     octaves = 10
     startoct = 8
 end
-%sz = size(grid);
-%w = size(grid);
+%sz = size(grid); %w = size(grid);
 i = startoct-round(log2(pix)); %adjust frequency based on pixel size
 e = i+octaves;
 octaves = i:1:e;
-%l = zeros(0);
-%j = i:e;%,e,e]
+%l = zeros(0); %j = i:e;%,e,e]
 pad = 0; sz = size(gridxy)+pad;
 layers = zeros(sz(1),sz(2),numel(octaves));
 %m = zeros(size(grid)+pad);
