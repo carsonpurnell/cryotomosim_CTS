@@ -11,7 +11,7 @@ pad = 10;
 m = zeros(size(m)+pad);
 %i = 4;
 %change loop to a resolution-based metric - wavelength or frequency?
-for i=numel(j)%while 2 > 1 && i<e
+for i=1:numel(j)%while 2 > 1 && i<e
     %i = i + 2;%1;
     jj = j(i);
     %i=j(jj);
@@ -21,8 +21,8 @@ for i=numel(j)%while 2 > 1 && i<e
         d = d(1:size(m,1), 1:size(m,2));
     end
     %d = rescale(d,-1,1);
-    l(:,:,end+1) = (1.35^i) *2* d(1:size(m,1), 1:size(m,2));
-    s = s + l(:,:,end);
+    layers(:,:,i) = (1.35^i) *2* d(1:size(m,1), 1:size(m,2));
+    s = s + layers(:,:,i);
     %w = w - ceil(w/2 - 1);
 end
 s = s(pad+1:pad+w(1),pad+1:pad+w(2));
