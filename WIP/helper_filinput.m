@@ -42,6 +42,13 @@ for i=1:numel(list) %loop through and parse inputs through filmono for structs a
         tmp = vertcat(particle(i).adat{:}); %cat all partitions for perim testing
         alphat = alphaShape(double(tmp(:,1:3)),12);
         [~,p] = boundaryFacets(alphat);
+        n = size(tmp,1); 
+        ix = randperm(n); 
+        ix = ix(1:round(n/10));
+        size(p)
+        size(ix)
+        size(tmp)
+        p = [p;tmp(ix,:)];
         particle(i).perim = p; %#ok<AGROW>
     end
 end
