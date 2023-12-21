@@ -8,9 +8,10 @@ arguments
     startoct = 8
 end
 %sz = size(grid); %w = size(grid);
-i = startoct-round(log2(pix)); %adjust frequency based on pixel size
+adj = round(log2(pix));
+i = startoct-adj; %adjust frequency based on pixel size
 e = i+octaves;
-octaves = [i-4,i:1:e];
+octaves = [4-adj,i:1:i+octaves];
 %l = zeros(0); %j = i:e;%,e,e]
 pad = 0; sz = size(gridxy)+pad;
 layers = zeros(sz(1),sz(2),numel(octaves));
