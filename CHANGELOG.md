@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.4.4](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.4.4) - 2023-12-21 03:25:05
+
+*No description*
+
 ## [v0.4.3](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.4.3) - 2023-09-19 15:19:29
 
 cleanup of filament code, speed increase and smaller filesize
