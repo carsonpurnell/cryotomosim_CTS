@@ -23,7 +23,7 @@ for i=1:numel(octaves)
         d = interp2(d, 1, 'spline');
         d = d(1:sz(1), 1:sz(2));
     end
-    layers(:,:,i) = (1.32^oc) *mag* d(1:sz(1), 1:sz(2));
+    layers(:,:,i) = (1.4^oc) *mag* d(1:sz(1), 1:sz(2));
     %s = s + layers(:,:,i);
 end
 %s = s(pad+1:pad+size(grid,1),pad+1:pad+size(grid,2));
