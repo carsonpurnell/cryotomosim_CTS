@@ -126,10 +126,9 @@ function pts = regrid(pts,box,pix)
 tmp = [round(pts(:,1:2)/pix),pts(:,3)];
 tmp = prune(tmp,box/pix); %prune first because accum can't handle out-of-bounds
 tmp = sortrows(tmp);
-pts = accumarray(tmp(:,1:2),tmp(:,3),box(1:2)/pix,@mean);%,mean(tmp(:,3)));
-sm = accumarray(tmp(:,1:2),tmp(:,3),box(1:2)/pix);
-c = accumarray(tmp(:,1:2),1,box(1:2)/pix);
-sp = sm./c;
+%pts = accumarray(tmp(:,1:2),tmp(:,3),box(1:2)/pix,@mean);%,mean(tmp(:,3))); %mean 300x slower
+pts = accumarray(tmp(:,1:2),tmp(:,3),box(1:2)/pix)./accumarray(tmp(:,1:2),1,box(1:2)/pix);
+%pts = sm./c;
 %mint = mean(pts(pts>0),'all'); pts(pts==0)=mint;
 end
 
