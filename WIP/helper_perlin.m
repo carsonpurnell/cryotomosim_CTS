@@ -19,7 +19,7 @@ layers = zeros(sz(1),sz(2),numel(octaves));
 for i=1:numel(octaves)
     oc = octaves(i);
     % prep interpolation, start with a small grid and expand to size for speed?
-    prep = 16;
+    prep = 32;
     d = randn(round(sz/prep+4));
     for k=1:log2(prep)
         d = interp2(d, 1, 'spline');
@@ -28,9 +28,6 @@ for i=1:numel(octaves)
         d = interp2(d, 1, 'spline');
         d = d(1:sz(1), 1:sz(2));
     end
-    sz
-    size(layers(:,:,i))
-    size(d)
     layers(:,:,i) = (1.4^oc) *mag* d(1:sz(1), 1:sz(2));
     %s = s + layers(:,:,i);
 end
