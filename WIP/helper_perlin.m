@@ -11,7 +11,8 @@ end
 adj = round(log2(pix));
 i = startoct-adj; %adjust frequency based on pixel size
 e = i+octaves;
-octaves = [4-adj,i:1:i+octaves];
+octaves = [i:1:i+octaves];
+prep = i-1; %faster prelim interp up to before first octave
 %l = zeros(0); %j = i:e;%,e,e]
 pad = 0; sz = size(gridxy)+pad;
 layers = zeros(sz(1),sz(2),numel(octaves));
@@ -19,12 +20,12 @@ layers = zeros(sz(1),sz(2),numel(octaves));
 for i=1:numel(octaves)
     oc = octaves(i);
     % prep interpolation, start with a small grid and expand to size for speed?
-    prep = 32;
-    d = randn(round(sz/prep+4));
-    for k=1:log2(prep)
+    %prep = 64;
+    d = randn(round(sz/(2^prep)+4));
+    for k=1:prep
         d = interp2(d, 1, 'spline');
     end
-    for k=log2(prep)+1:oc %do iterative refinements and shrinking rather than 2^k expansion in one step
+    for k=prep+1:oc %do iterative refinements and shrinking rather than 2^k expansion in one step
         d = interp2(d, 1, 'spline');
         d = d(1:sz(1), 1:sz(2));
     end
