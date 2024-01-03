@@ -18,11 +18,19 @@ layers = zeros(sz(1),sz(2),numel(octaves));
 %m = zeros(size(grid)+pad);
 for i=1:numel(octaves)
     oc = octaves(i);
-    d = randn(sz);
-    for k=1:oc %do iterative refinements and shrinking rather than 2^k expansion in one step
+    % prep interpolation, start with a small grid and expand to size for speed?
+    prep = 16;
+    d = randn(round(sz/prep+4));
+    for k=1:log2(prep)
+        d = interp2(d, 1, 'spline');
+    end
+    for k=log2(prep)+1:oc %do iterative refinements and shrinking rather than 2^k expansion in one step
         d = interp2(d, 1, 'spline');
         d = d(1:sz(1), 1:sz(2));
     end
+    sz
+    size(layers(:,:,i))
+    size(d)
     layers(:,:,i) = (1.4^oc) *mag* d(1:sz(1), 1:sz(2));
     %s = s + layers(:,:,i);
 end
