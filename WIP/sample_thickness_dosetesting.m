@@ -42,8 +42,9 @@ sampsurf{2} = [x(:),y(:),-pts2(:)-box(3)*sc(2)/2];
 %im = perlin(size(x),'correl',0.1); im = rescale(im,-1,1)*sc(1);
 %unfortunately quite slow due to stepwise interpolations
 %[im,l] = perlin2D(x,pix); %sliceViewer(l); %histogram(im)
-[field,layers] = helper_perlin(x,pix,2,7,8);
-mv = mean(field,'all')*0.5; field = field-mv; %hold on; %histogram(im)
+[field,layers] = helper_perlin(x,pix,2,9,7);
+mv = mean(field,'all')*0.5; if mv<0; mv=mv-sqrt(abs(mv)); end
+field = field-mv; %hold on; %histogram(im)
 %im = rescale(im,-1,1)*sc(1);
 sampsurf{1} = [x(:),y(:),field(:)+box(3)*sc(2)/2];
 
