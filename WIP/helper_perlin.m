@@ -8,7 +8,7 @@ arguments
     startoct = 8
 end
 %sz = size(grid); %w = size(grid);
-adj = round(log2(pix));
+adj = round(log2(pix)); %adjustment to keep noise octaves on the same magnitude across diff pixel sizes
 i = startoct-adj; %adjust frequency based on pixel size
 e = i+octaves;
 octaves = [i:1:i+octaves];
@@ -29,7 +29,7 @@ for i=1:numel(octaves)
         d = interp2(d, 'spline');
         d = d(1:sz(1), 1:sz(2));
     end
-    layers(:,:,i) = (1.4^oc) *mag* d(1:sz(1), 1:sz(2));
+    layers(:,:,i) = (1.3^oc) *mag* d(1:sz(1), 1:sz(2));
     %s = s + layers(:,:,i);
 end
 %s = s(pad+1:pad+size(grid,1),pad+1:pad+size(grid,2));
