@@ -1,7 +1,7 @@
 % testing thickness computation from surface points
 pix = 10;
 box = [200,300,50]*pix;
-angles = -20:5:20;
+angles = -60:5:60;
 
 mang = max(abs(angles));
 mtilt = tand(mang); %high angle requires grids far too large to I/FFT in reasonable time
@@ -48,6 +48,8 @@ field = field-mv; %hold on; %histogram(im)
 %im = rescale(im,-1,1)*sc(1);
 sampsurf{1} = [x(:),y(:),field(:)+box(3)*sc(2)/2];
 
+sampsurf{2} = gensurf(x,y,box,pix,-sc);
+
 % rotate both surfaces by the same angle about 0
 %sampsurfrot = rotsurf(sampsurf,box,pi/15,[0,1,0]);
 % s1rot = sampsurf{1}; %s2rot = sampsurf{2}; %initial test: no rotation!
@@ -68,6 +70,16 @@ sampsurf{1} = [x(:),y(:),field(:)+box(3)*sc(2)/2];
 % s1regrid = [round(s1rot(:,1:2)/10),s1rot(:,3)];
 % s1regrid = prune(s1regrid,box/pix); %prune first because accum can't handle out-of-bounds
 % s1mat = accumarray(s1regrid(:,1:2),s1regrid(:,3),box(1:2)/pix,@mean,mean(s1regrid(:,3)));
+
+function gridsurf = gensurf(x,y,box,pix,sc)
+[field,layers] = helper_perlin(x,pix,2.5,9,8);
+mv = mean(field,'all')*0.5; 
+if mv<0&&sc(2)>0; mv=mv*2-0*sqrt(abs(mv)); end
+if mv>0&&sc(2)<0; mv=mv*2-0*sqrt(abs(mv)); end
+field = field-mv; %hold on; %histogram(im)
+%im = rescale(im,-1,1)*sc(1);
+gridsurf = [x(:),y(:),field(:)+box(3)*sc(2)/2];
+end
 
 function [s,l] = perlin2D(m,pix)
 s = 0;%zeros(size(m));     % Prepare output image (size: m x m)
