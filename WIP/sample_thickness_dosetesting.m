@@ -1,7 +1,7 @@
 % testing thickness computation from surface points
 pix = 10;
 box = [200,300,50]*pix;
-angles = -60:5:60;
+angles = -20:5:20;
 
 mang = max(abs(angles));
 mtilt = tand(mang); %high angle requires grids far too large to I/FFT in reasonable time
@@ -48,6 +48,7 @@ field = field-mv; %hold on; %histogram(im)
 %im = rescale(im,-1,1)*sc(1);
 sampsurf{1} = [x(:),y(:),field(:)+box(3)*sc(2)/2];
 
+sampsurf{1} = gensurf(x,y,box,pix,sc);
 sampsurf{2} = gensurf(x,y,box,pix,-sc);
 
 % rotate both surfaces by the same angle about 0
