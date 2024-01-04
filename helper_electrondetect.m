@@ -38,8 +38,9 @@ else
 end
 
 thick = param.size(3)*param.pix; %compute thickness from depth of original model
-IMFP = 3800; %inelastic mean free path, average distance before inelastic electron scatter (for water/ice)
+IMFP = 3100; %inelastic mean free path, average distance before inelastic electron scatter (for water/ice)
 %IMFP estimated to be 350nm for water ice, is probabaly somewhat different for vitreous (higher)
+%3100A (at 300keV) from https://www.sciencedirect.com/science/article/pii/S0304399122000456#b17 
 %electronpath = thick*(1+abs(tand(tiltangs))); %compute the path length of electrons through ice
 electronpath = thick./cosd(tiltangs); %corrected trig, slightly better appearance
 
