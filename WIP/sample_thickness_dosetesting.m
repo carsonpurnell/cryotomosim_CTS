@@ -1,8 +1,8 @@
 % testing thickness computation from surface points
 pix = 10;
 box = [400,300,40]*pix;
-angles = -60:5:60;
-
+angles = -20:5:20;
+rng(7)
 mang = max(abs(angles));
 mtilt = tand(mang); %high angle requires grids far too large to I/FFT in reasonable time
 % make surfaces - displaced in Z
