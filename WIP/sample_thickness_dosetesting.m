@@ -1,6 +1,6 @@
 % testing thickness computation from surface points
 pix = 10;
-box = [200,300,50]*pix;
+box = [400,300,40]*pix;
 angles = -20:5:20;
 
 mang = max(abs(angles));
@@ -14,26 +14,27 @@ pad(axis) = round(max(box)*mtilt*1.1); %massive pad value to fill holes from hig
 %should only pad for the direction lost to tilting
 [x,y] = meshgrid(pix/2-pad(1):res:box(1)+pad(1),pix/2-pad(2):res:box(2)+pad(2));
 %surfinit = [x(:),y(:)];
-n = pix; sc = 4800; sep = 0.5;
+%n = pix; sc = 4800; sep = 0.5;
+sc = [20*pix,1.2];
 %pts = border(max(box),n,sc,sep);
 %pts = border2(box,pix);
 %definition: s{1} is the top/first E interaction, s{2} is the bottom/last interaction
-sampsurf(1:2) = {[x(:),y(:)]}; 
+%sampsurf(1:2) = {[x(:),y(:)]}; 
 %s1 = surfinit; s2 = surfinit;
-sampsurf{1}(:,3) = box(3)/2+sin(x(:)/90).*sqrt(x(:)+200);
-sampsurf{2}(:,3) = -box(3)/2;%+randn(size(surfinit,1),1)*5;%+sin(x(:)/90).*sqrt(x(:));
+%sampsurf{1}(:,3) = box(3)/2+sin(x(:)/90).*sqrt(x(:)+200);
+%sampsurf{2}(:,3) = -box(3)/2;%+randn(size(surfinit,1),1)*5;%+sin(x(:)/90).*sqrt(x(:));
 %noise = rand(size(x))*9-5; sm = imgaussfilt(noise,27,'FilterSize',171)*40;
 %sampsurf{2} = [x(:),y(:),sm(:)];
-sampsurf{1} = border(max(box),n*2,sc*2,pix/2)+[0,0,box(3)/2];
+%sampsurf{1} = border(max(box),n*2,sc*2,pix/2)+[0,0,box(3)/2];
 %sampsurf{2} = border(max(box),n,sc,sep)-[0,0,box(3)/2];
 %plot3p([s1;s2],'.');
 %sampsurf{1} = pts+[0,0,box(3)/2*1.1];
-sc = [20*pix,1.2];
+
 %pts1 = surfice(size(x),pix)*sc(1); %pts = rescale(pts,0,100);
 %sampsurf{1} = [x(:),y(:),pts1(:)+box(3)*sc(2)/2];
 %w = box(3)/2; scale = 0.5;
-pts2 = surfice(size(x),pix)*sc(1); %pts = rescale(pts,w,w+w*scale);
-sampsurf{2} = [x(:),y(:),-pts2(:)-box(3)*sc(2)/2];
+%pts2 = surfice(size(x),pix)*sc(1); %pts = rescale(pts,w,w+w*scale);
+%sampsurf{2} = [x(:),y(:),-pts2(:)-box(3)*sc(2)/2];
 %pts = znoise(x)*sc(1);
 %[pts,wn] = colored_noise(max(size(x)),2,-2); pts = pts(1:size(x,1),1:size(x,2))*sc(1);
 %sampsurf{1} = [x(:),y(:),pts(:)+box(3)*sc(2)/2];
