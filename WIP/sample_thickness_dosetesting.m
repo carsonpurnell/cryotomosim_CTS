@@ -42,14 +42,13 @@ sampsurf{2} = [x(:),y(:),-pts2(:)-box(3)*sc(2)/2];
 %im = perlin(size(x),'correl',0.1); im = rescale(im,-1,1)*sc(1);
 %unfortunately quite slow due to stepwise interpolations
 %[im,l] = perlin2D(x,pix); %sliceViewer(l); %histogram(im)
-[field,layers] = helper_perlin(x,pix,2.5,9,8);
-mv = mean(field,'all')*0.5; if mv<0; mv=mv*2-0*sqrt(abs(mv)); end
-field = field-mv; %hold on; %histogram(im)
+%[field,layers] = helper_perlin(x,pix,2.5,9,8);
+%mv = mean(field,'all')*0.5; if mv<0; mv=mv*2-0*sqrt(abs(mv)); end
+%field = field-mv; %hold on; %histogram(im)
 %im = rescale(im,-1,1)*sc(1);
-sampsurf{1} = [x(:),y(:),field(:)+box(3)*sc(2)/2];
+%sampsurf{1} = [x(:),y(:),field(:)+box(3)*sc(2)/2];
 
-sampsurf{1} = gensurf(x,y,box,pix,sc);
-sampsurf{2} = gensurf(x,y,box,pix,-sc);
+
 
 % rotate both surfaces by the same angle about 0
 %sampsurfrot = rotsurf(sampsurf,box,pi/15,[0,1,0]);
@@ -63,7 +62,6 @@ sampsurf{2} = gensurf(x,y,box,pix,-sc);
 %s1rot = prune(sampsurfrot{1},box); s1regrid = regrid(s1rot,box,pix);
 %s2rot = prune(sampsurfrot{2},box); s2regrid = regrid(s2rot,box,pix);
 
-[tilts,gridt] = thicktilts(sampsurf,box,pix,angles); sliceViewer(tilts);
 %output pruned 0* surfaces for viewing?
 
 %thick = s1regrid-s2regrid;
@@ -71,6 +69,10 @@ sampsurf{2} = gensurf(x,y,box,pix,-sc);
 % s1regrid = [round(s1rot(:,1:2)/10),s1rot(:,3)];
 % s1regrid = prune(s1regrid,box/pix); %prune first because accum can't handle out-of-bounds
 % s1mat = accumarray(s1regrid(:,1:2),s1regrid(:,3),box(1:2)/pix,@mean,mean(s1regrid(:,3)));
+
+sampsurf{1} = gensurf(x,y,box,pix,sc);
+sampsurf{2} = gensurf(x,y,box,pix,-sc);
+[tilts,gridt] = thicktilts(sampsurf,box,pix,angles); sliceViewer(tilts);
 
 function gridsurf = gensurf(x,y,box,pix,sc)
 [field,layers] = helper_perlin(x,pix,2.5,8,8);
