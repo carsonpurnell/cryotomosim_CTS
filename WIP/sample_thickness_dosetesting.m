@@ -1,16 +1,16 @@
 % testing thickness computation from surface points
 pix = 10;
-box = [300,200,40]*pix;
-angles = -70:20:70;
+box = [400,300,40]*pix;
+angles = -60:5:60;
 %rng(7)
 mang = max(abs(angles));
-mtilt = tand(mang); %high angle requires grids far too large to I/FFT in reasonable time
+mtilt = tand(mang)*0.6; % angle for initial grid padding to cover tilt area - don't know why 0.6 is enough
 % make surfaces - displaced in Z
 % trying with identical surf pairs first
 res = pix/2; %oversample to prevent holes in data
 %need to stretch coverage a lot, fill values are static and not NN or average of near edge
 pad = [pix*2,pix*2]; axis = 1; % huge padding only against tilt axis, otherwise small
-pad(axis) = round(box(axis)*mtilt*0.5); % huge padding to cover for tilting
+pad(axis) = round(box(axis)*mtilt); % huge padding to cover for tilting
 [x,y] = meshgrid(pix/2-pad(1):res:box(1)+pad(1),pix/2-pad(2):res:box(2)+pad(2));
 %{
 %surfinit = [x(:),y(:)];
