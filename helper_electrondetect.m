@@ -65,7 +65,7 @@ newscatter = exp(-(newpath*param.scatter)/IMFP);
 
 radscale = .01*param.raddamage;%/param.pix^2; %damage scaling calculation to revert scaling by pixel size
 
-dw = thickscatter.*dose*DQE; %correct distributed dose based on maximum DQE and inelastic scattering loss
+dw = dose*DQE; %correct distributed dose based on maximum DQE and inelastic scattering loss
 accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; rad = tilt*0; %pre-initialize output arrays
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
@@ -76,7 +76,7 @@ blurmean = imgaussfilt(tilt,0.5);
 for i=1:size(tilt,3)
     
     if param.raddamage>0 %block for raadiation-induced noise and blurring
-        accum = accum+dw(i); %add to accumulated dose delivered, including first tilt
+        accum = accum+dw*thickscatter(i); %add to accumulated dose delivered, including first tilt
         %this radiation count is inappropriate. needs to increase at higher tilt, and ignore DQE/etc.
         %use raw dose number and adjust for angle? or precompute rad scalars outside loop?
         
@@ -102,7 +102,8 @@ for i=1:size(tilt,3)
         irad = tilt(:,:,i);
     end
     
-    detect(:,:,i) = poissrnd(irad*dw(i),size(irad)); %sample electrons from scaled poisson distribution
+    detect(:,:,i) = poissrnd(irad.*newscatter(:,:,i)*dw,size(irad)); 
+    %sample electrons from scaled poisson distribution
 end
 rad = rad(:,:,ixr);
 detect = detect(:,:,ixr); %reverse the sort so the output tiltseries is a continuous rotation
