@@ -45,7 +45,7 @@ axis = 1;
 sc = [2.5,1.2]; % [perlin magnitude, surface centering
 %rng(7)
 surfaces = helper_surf(box,param.pix,tiltangs,axis,sc);
-[newpath,gridt] = thicktilts(surfaces,box,param.pix,tiltangs); 
+[newpath,gridt] = helper_thickfromsurf(surfaces,box,param.pix,tiltangs); 
 
 thick = param.size(3)*param.pix; %compute thickness from depth of original model
 IMFP = 3100; %inelastic mean free path, average distance before inelastic electron scatter (for water/ice)
