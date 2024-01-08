@@ -73,7 +73,7 @@ sampsurf{2} = gensurf(x,y,box,pix,-sc);
 % s1mat = accumarray(s1regrid(:,1:2),s1regrid(:,3),box(1:2)/pix,@mean,mean(s1regrid(:,3)));
 
 function gridsurf = gensurf(x,y,box,pix,sc)
-[field,layers] = helper_perlin(x,pix,2.5,9,8);
+[field,layers] = helper_perlin(x,pix,2.5,8,8);
 mv = mean(field,'all')*0.5; 
 if mv<0&&sc(2)>0; mv=mv*2-0*sqrt(abs(mv)); end
 if mv>0&&sc(2)<0; mv=mv*2-0*sqrt(abs(mv)); end
