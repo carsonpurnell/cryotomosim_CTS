@@ -37,6 +37,16 @@ else
     dose = dose(ix); %for weighting just sort the weights to the tilts
 end
 
+
+%pix = 10;
+box = size(tilt(:,:,1))*param.pix; %calc from input data
+%angles = -60:5:60;
+axis = 1;
+sc = [2.5,1.2]; % [perlin magnitude, surface centering
+%rng(7)
+surfaces = helper_surf(box,param.pix,tiltangs,axis,sc);
+[newpath,gridt] = thicktilts(surfaces,box,param.pix,angles); 
+
 thick = param.size(3)*param.pix; %compute thickness from depth of original model
 IMFP = 3100; %inelastic mean free path, average distance before inelastic electron scatter (for water/ice)
 %IMFP estimated to be 350nm for water ice, is probabaly somewhat different for vitreous (higher)
@@ -46,6 +56,7 @@ electronpath = thick./cosd(tiltangs); %corrected trig, slightly better appearanc
 
 %make thickscatter a map? random variation in ice thickness (should be highly smooth)
 thickscatter = exp(-(electronpath*param.scatter)/IMFP); %compute electrons not inelastically/lossly scattered
+newscatter = exp(-(newpath*param.scatter)/IMFP);
 %change IMFP to instead be per pixel, so more electrons are lost at high density AND thickness?
 %scattering map inside the loop, using pixel intensities to scale the IMFP/path?
 %problematic: single map of thickness- kind of wrong because thickness is directional, not location
