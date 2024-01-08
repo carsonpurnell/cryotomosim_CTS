@@ -42,7 +42,7 @@ end
 box = param.size*param.pix; %calc from input data
 %angles = -60:5:60;
 axis = 1;
-sc = [2.5,1.2]; % [perlin magnitude, surface centering
+sc = [1.5,1.2]; % [perlin magnitude, surface centering
 %rng(7)
 surfaces = helper_surf(box,param.pix,tiltangs,axis,sc);
 [newpath,gridt] = helper_thickfromsurf(surfaces,box,param.pix,tiltangs); 
