@@ -19,7 +19,7 @@ surfaces{2} = gensurf(x,y,box,pix,-sc);
 end
 
 function gridsurf = gensurf(x,y,box,pix,sc)
-[field,layers] = helper_perlin(x,pix,sc(1),6,10);
+[field,layers] = helper_perlin(x,pix,sc(1),2,10);
 mv = mean(field,'all')*0.5; 
 if mv<0&&sc(2)>0; mv=mv*2-0*sqrt(abs(mv)); end
 if mv>0&&sc(2)<0; mv=mv*2-0*sqrt(abs(mv)); end
