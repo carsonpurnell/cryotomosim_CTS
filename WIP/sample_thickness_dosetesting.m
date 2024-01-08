@@ -2,7 +2,14 @@
 pix = 10;
 box = [400,300,40]*pix;
 angles = -60:5:60;
+axis = 1;
+sc = [2.5,1.2]; % [perlin magnitude, surface centering
 %rng(7)
+surfaces = helper_surf(box,pix,angles,axis,sc);
+[tilts,gridt] = thicktilts(surfaces,box,pix,angles); 
+sliceViewer(tilts);
+
+%{
 mang = max(abs(angles));
 mtilt = tand(mang)*0.6; % angle for initial grid padding to cover tilt area - don't know why 0.6 is enough
 % make surfaces - displaced in Z
@@ -74,6 +81,7 @@ sc = [2.5,1.2];
 sampsurf{1} = gensurf(x,y,box,pix,sc);
 sampsurf{2} = gensurf(x,y,box,pix,-sc);
 [tilts,gridt] = thicktilts(sampsurf,box,pix,angles); sliceViewer(tilts);
+%}
 
 function gridsurf = gensurf(x,y,box,pix,sc)
 [field,layers] = helper_perlin(x,pix,sc(1),8,8);
