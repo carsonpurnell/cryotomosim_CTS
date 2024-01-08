@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.4.5](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.4.5) - 2024-01-08 04:07:32
+
+Dose modulation by thickness on a pixel level per tilt
+
 ## [v0.4.4](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.4.4) - 2023-12-21 03:25:05
 
 *No description*
