@@ -2,7 +2,7 @@
 pix = 10;
 box = [400,300,40]*pix;
 angles = -20:5:20;
-rng(7)
+%rng(7)
 mang = max(abs(angles));
 mtilt = tand(mang); %high angle requires grids far too large to I/FFT in reasonable time
 % make surfaces - displaced in Z
@@ -15,7 +15,7 @@ pad(axis) = round(max(box)*mtilt*1.1); %massive pad value to fill holes from hig
 [x,y] = meshgrid(pix/2-pad(1):res:box(1)+pad(1),pix/2-pad(2):res:box(2)+pad(2));
 %surfinit = [x(:),y(:)];
 %n = pix; sc = 4800; sep = 0.5;
-sc = [20*pix,1.2];
+
 %pts = border(max(box),n,sc,sep);
 %pts = border2(box,pix);
 %definition: s{1} is the top/first E interaction, s{2} is the bottom/last interaction
@@ -71,17 +71,17 @@ sc = [20*pix,1.2];
 % s1regrid = prune(s1regrid,box/pix); %prune first because accum can't handle out-of-bounds
 % s1mat = accumarray(s1regrid(:,1:2),s1regrid(:,3),box(1:2)/pix,@mean,mean(s1regrid(:,3)));
 
+sc = [2.5,1.2];
 sampsurf{1} = gensurf(x,y,box,pix,sc);
 sampsurf{2} = gensurf(x,y,box,pix,-sc);
 [tilts,gridt] = thicktilts(sampsurf,box,pix,angles); sliceViewer(tilts);
 
 function gridsurf = gensurf(x,y,box,pix,sc)
-[field,layers] = helper_perlin(x,pix,2.5,8,8);
+[field,layers] = helper_perlin(x,pix,sc(1),8,8);
 mv = mean(field,'all')*0.5; 
 if mv<0&&sc(2)>0; mv=mv*2-0*sqrt(abs(mv)); end
 if mv>0&&sc(2)<0; mv=mv*2-0*sqrt(abs(mv)); end
-field = field-mv; %hold on; %histogram(im)
-%im = rescale(im,-1,1)*sc(1);
+field = field-mv;
 gridsurf = [x(:),y(:),field(:)+box(3)*sc(2)/2];
 end
 
