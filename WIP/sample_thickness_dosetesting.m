@@ -1,7 +1,7 @@
 % testing thickness computation from surface points
 pix = 10;
 box = [400,300,40]*pix;
-angles = -20:5:20;
+angles = -60:15:60;
 %rng(7)
 mang = max(abs(angles));
 mtilt = tand(mang); %high angle requires grids far too large to I/FFT in reasonable time
@@ -9,10 +9,10 @@ mtilt = tand(mang); %high angle requires grids far too large to I/FFT in reasona
 % trying with identical surf pairs first
 res = pix/2; %oversample to prevent holes in data
 %need to stretch coverage a lot, fill values are static and not NN or average of near edge
-pad = [pix*2,pix*2]; axis = 1; %for assigning it to the correct tilt axis
-pad(axis) = round(max(box)*mtilt*1.1); %massive pad value to fill holes from high rotations
-%should only pad for the direction lost to tilting
+pad = [pix*2,pix*2]; axis = 1; % huge padding only against tilt axis, otherwise small
+pad(axis) = round(max(box)*mtilt*1.0); % huge padding to cover for tilting
 [x,y] = meshgrid(pix/2-pad(1):res:box(1)+pad(1),pix/2-pad(2):res:box(2)+pad(2));
+%{
 %surfinit = [x(:),y(:)];
 %n = pix; sc = 4800; sep = 0.5;
 
@@ -49,8 +49,6 @@ pad(axis) = round(max(box)*mtilt*1.1); %massive pad value to fill holes from hig
 %im = rescale(im,-1,1)*sc(1);
 %sampsurf{1} = [x(:),y(:),field(:)+box(3)*sc(2)/2];
 
-
-
 % rotate both surfaces by the same angle about 0
 %sampsurfrot = rotsurf(sampsurf,box,pi/15,[0,1,0]);
 % s1rot = sampsurf{1}; %s2rot = sampsurf{2}; %initial test: no rotation!
@@ -70,6 +68,7 @@ pad(axis) = round(max(box)*mtilt*1.1); %massive pad value to fill holes from hig
 % s1regrid = [round(s1rot(:,1:2)/10),s1rot(:,3)];
 % s1regrid = prune(s1regrid,box/pix); %prune first because accum can't handle out-of-bounds
 % s1mat = accumarray(s1regrid(:,1:2),s1regrid(:,3),box(1:2)/pix,@mean,mean(s1regrid(:,3)));
+%}
 
 sc = [2.5,1.2];
 sampsurf{1} = gensurf(x,y,box,pix,sc);
