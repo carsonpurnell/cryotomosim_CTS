@@ -19,7 +19,7 @@ surfaces{2} = gensurf(x,y,box,pix,-sc);
 end
 
 function gridsurf = gensurf(x,y,box,pix,sc)
-[field,layers] = helper_perlin(x,pix,sc(1),7,9);
+[field,layers] = helper_perlin(x,pix,sc(1),6,10);
 mv = mean(field,'all')*0.5; 
 if mv<0&&sc(2)>0; mv=mv*2-0*sqrt(abs(mv)); end
 if mv>0&&sc(2)<0; mv=mv*2-0*sqrt(abs(mv)); end
@@ -40,7 +40,7 @@ end
 adj = round(log2(pix)); %adjustment to keep noise octaves on the same magnitude across diff pixel sizes
 i = startoct-adj; %adjust frequency based on pixel size
 e = i+octaves;
-octaves = [i:1:i+octaves];
+octaves = i:2:i+octaves;
 prep = i-1; %faster prelim interp up to before first octave
 %l = zeros(0); %j = i:e;%,e,e]
 pad = 0; sz = size(gridxy)+pad;
@@ -54,6 +54,7 @@ for i=1:numel(octaves)
     for k=1:prep
         d = interp2(d, 'spline');
     end
+    d = d(1:sz(1), 1:sz(2));
     for k=prep+1:oc %do iterative refinements and shrinking rather than 2^k expansion in one step
         d = interp2(d, 'spline');
         d = d(1:sz(1), 1:sz(2));
