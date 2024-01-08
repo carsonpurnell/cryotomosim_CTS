@@ -1,9 +1,7 @@
-function surfaces = helper_surf(box,pix,angles,axis)
-
+function surfaces = helper_surf(box,pix,angles,axis,sc)
 %pix = 10;
 %box = [400,300,40]*pix;
 %angles = -60:5:60;
-%rng(7)
 mang = max(abs(angles));
 mtilt = tand(mang)*0.6; % angle for initial grid padding to cover tilt area - don't know why 0.6 is enough
 % make surfaces - displaced in Z
@@ -14,9 +12,9 @@ pad = [pix*2,pix*2]; %axis = 1; % huge padding only against tilt axis, otherwise
 pad(axis) = round(box(axis)*mtilt); % huge padding to cover for tilting
 [x,y] = meshgrid(pix/2-pad(1):res:box(1)+pad(1),pix/2-pad(2):res:box(2)+pad(2));
 
-sc = [2.5,1.2];
-sampsurf{1} = gensurf(x,y,box,pix,sc);
-sampsurf{2} = gensurf(x,y,box,pix,-sc);
+%sc = [2.5,1.2];
+surfaces{1} = gensurf(x,y,box,pix,sc);
+surfaces{2} = gensurf(x,y,box,pix,-sc);
 
 end
 
