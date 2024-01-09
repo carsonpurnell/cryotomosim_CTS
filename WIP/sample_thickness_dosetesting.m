@@ -1,12 +1,13 @@
 % testing thickness computation from surface points
 pix = 10;
-box = [400,300,40]*pix;
-angles = -20:5:20;
-axis = 1;
+box = [400,200,50]*pix;
+angles = -60:5:60;
+axis = 1; %spec 1 smaller sometimes?
+axspec = zeros(1,3); axspec(1+rem(axis,2)) = 1;
 sc = [2.5,1.2]; % [perlin magnitude, surface centering
 %rng(7)
 surfaces = helper_surf(box,pix,angles,axis,sc);
-[tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,[0,1,0]); 
+[tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,axspec); 
 sliceViewer(tilts);
 
 %{
