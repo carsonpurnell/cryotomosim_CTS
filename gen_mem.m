@@ -1,6 +1,5 @@
 function [atoms,perim,vol] = gen_mem(sz,pix,sp,thick)
 
-
 arguments
     sz
     pix = []
@@ -99,11 +98,11 @@ shell = alphaShape(shellpts,24);
 end
 
 function [pts,head,tail] = shell2pts(shell,atomfrac)
-surfvar = 10;
+surfvar = 8;
 %atomfrac = 2; %make operable? 4 super rough at higher pixel sizes, but 1 very slow for atomic gen
 
 tail = randtess(0.03/atomfrac,shell,'v'); % need larger hydrophobic dict
-head = randtess(1.1/atomfrac,shell,'s'); %was 20,testing for less bilayer
+head = randtess(1.2/atomfrac,shell,'s'); %was 20,testing for less bilayer
 
 vec = randn(size(head));
 spd = rand(size(vec,1),1)*surfvar+0;
