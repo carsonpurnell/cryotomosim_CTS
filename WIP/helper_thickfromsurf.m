@@ -8,20 +8,33 @@ regridt(1:2) = {zeros(box(1)/pix,box(2)/pix,numel(angles))};%cell(1,2);
 for i=1:numel(angles)
     sampsurfrot = rotsurf(sampsurf,box,deg2rad(angles(i)),axis);
     regridt{1}(:,:,i) = regrid(sampsurfrot{1},box,pix);
+    if ~all(isfinite(regridt{1}(:,:,i)),'all')
+        fprintf('top infinite at angle %i \n',angles(i))
+    end
     regridt{2}(:,:,i) = regrid(sampsurfrot{2},box,pix);
+    if ~all(isfinite(regridt{2}(:,:,i)),'all')
+        fprintf('bot infinite at angle %i \n',angles(i))
+    end
     thick = regridt{1}(:,:,i)-regridt{2}(:,:,i); 
     tilts(:,:,i) = thick;
 end
 end
 
 function surfcell = rotsurf(surfcell,box,theta,ax)
-cen = [1,1,0]-ax
+%cen = [0,0,0]; cen(ax)=box(ax)/2;
+spec = find(ax); %spec = 1+rem(spec,2)
+%cen = cen*box(spec);
+cen = zeros(1,3); cen(spec) = box(spec)/2;
+%cen = [box(1)/2,0,0] %not appropriate for X tilt
 for i=1:2
-    cen = [box(1)/2,0,0]; %not appropriate for X tilt
     R = rotmat(ax,theta);
     %R2 = makehgtform('xrotate',pi/12); R3 = makehgtform('yrotate',pi/12);
     surfcell{i} = (surfcell{i}-cen)*R+cen;
+    if ~all(isfinite(surfcell{i}),'all')
+        fprintf('infinite at angle %i',rad2deg(theta))
+    end
 end
+
 end
 
 function pts = regrid(pts,box,pix)
