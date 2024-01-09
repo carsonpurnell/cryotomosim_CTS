@@ -40,7 +40,7 @@ end
 adj = round(log2(pix)); %adjustment to keep noise octaves on the same magnitude across diff pixel sizes
 i = startoct-adj; %adjust frequency based on pixel size
 e = i+octaves;
-octaves = i:2:i+octaves;
+octaves = i:1:i+octaves;
 prep = i-1; %faster prelim interp up to before first octave
 %l = zeros(0); %j = i:e;%,e,e]
 pad = 0; sz = size(gridxy)+pad;
