@@ -1,15 +1,13 @@
-function [tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles)
-[tilts,gridt] = thicktilts(surfaces,box,pix,angles);
+function [tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,axis)
+[tilts,gridt] = thicktilts(surfaces,box,pix,angles,axis);
 end
 
-function [tilts,regridt] = thicktilts(sampsurf,box,pix,angles)
+function [tilts,regridt] = thicktilts(sampsurf,box,pix,angles,axis)
 tilts = zeros(box(1)/pix,box(2)/pix,numel(angles));
 regridt(1:2) = {zeros(box(1)/pix,box(2)/pix,numel(angles))};%cell(1,2);
 for i=1:numel(angles)
-    sampsurfrot = rotsurf(sampsurf,box,deg2rad(angles(i)),[0,1,0]);
-    %s1rot = prune(sampsurfrot{1},box); 
+    sampsurfrot = rotsurf(sampsurf,box,deg2rad(angles(i)),axis);
     regridt{1}(:,:,i) = regrid(sampsurfrot{1},box,pix);
-    %s2rot = prune(sampsurfrot{2},box); 
     regridt{2}(:,:,i) = regrid(sampsurfrot{2},box,pix);
     thick = regridt{1}(:,:,i)-regridt{2}(:,:,i); 
     tilts(:,:,i) = thick;
@@ -17,8 +15,8 @@ end
 end
 
 function surfcell = rotsurf(surfcell,box,theta,ax)
+cen = [1,1,0]-ax
 for i=1:2
-    %s1rot = surfcell{i}; %s2rot = sampsurf{2}; %initial test: no rotation!
     cen = [box(1)/2,0,0]; %not appropriate for X tilt
     R = rotmat(ax,theta);
     %R2 = makehgtform('xrotate',pi/12); R3 = makehgtform('yrotate',pi/12);
