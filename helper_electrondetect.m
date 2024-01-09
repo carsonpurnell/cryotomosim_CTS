@@ -37,15 +37,18 @@ else
     dose = dose(ix); %for weighting just sort the weights to the tilts
 end
 
-
 %pix = 10;
 box = param.size*param.pix; %calc from input data
+if strcmp(param.tiltax,'X'), box=box([2,1,3]); end
 %angles = -60:5:60;
+%if strcmp(param.tiltax,'Y'), axis=1; else axis=2; end
 axis = 1;
+axspec = zeros(1,3); axspec(1+rem(axis,2)) = 1;
+%axis = 1;
 sc = [2.0,1.2]; % [perlin magnitude, surface centering
 %rng(7)
 surfaces = helper_surf(box,param.pix,tiltangs,axis,sc);
-[newpath,gridt] = helper_thickfromsurf(surfaces,box,param.pix,tiltangs); 
+[newpath,gridt] = helper_thickfromsurf(surfaces,box,param.pix,tiltangs,axspec); 
 
 thick = param.size(3)*param.pix; %compute thickness from depth of original model
 IMFP = 3100; %inelastic mean free path, average distance before inelastic electron scatter (for water/ice)
@@ -70,7 +73,6 @@ accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; rad = tilt*0; %pre-initialize output arrays
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
 blurmean = imgaussfilt(tilt,0.5);
-
 %separate subfunction for doing radiation for modularity
 
 for i=1:size(tilt,3)
@@ -101,7 +103,8 @@ for i=1:size(tilt,3)
     else
         irad = tilt(:,:,i);
     end
-    
+    size(irad)
+    size(newscatter(:,:,i))
     detect(:,:,i) = poissrnd(irad.*newscatter(:,:,i)*dw,size(irad)); 
     %sample electrons from scaled poisson distribution
 end

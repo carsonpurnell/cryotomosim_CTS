@@ -2,7 +2,7 @@
 pix = 10;
 box = [400,200,50]*pix;
 angles = -60:5:60;
-axis = 1; %spec 1 smaller sometimes?
+axis = 1; % axis still not working the same
 axspec = zeros(1,3); axspec(1+rem(axis,2)) = 1;
 sc = [2.5,1.2]; % [perlin magnitude, surface centering
 %rng(7)

@@ -4,7 +4,7 @@ function surfaces = helper_surf(box,pix,angles,axis,sc)
 %angles = -60:5:60;
 mang = max(abs(angles));
 axspec = 1+rem(axis,2);
-mtilt = tand(mang)*1.1; % angle for initial grid padding to cover tilt area - don't know why 0.6 is enough
+mtilt = tand(mang)*1.2; % angle for initial grid padding to cover tilt area - don't know why 0.6 is enough
 % make surfaces - displaced in Z
 % trying with identical surf pairs first
 res = pix/2; %oversample to prevent holes in data
