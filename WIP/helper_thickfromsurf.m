@@ -1,7 +1,5 @@
 function [tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles)
-
 [tilts,gridt] = thicktilts(surfaces,box,pix,angles);
-
 end
 
 function [tilts,regridt] = thicktilts(sampsurf,box,pix,angles)
@@ -16,7 +14,6 @@ for i=1:numel(angles)
     thick = regridt{1}(:,:,i)-regridt{2}(:,:,i); 
     tilts(:,:,i) = thick;
 end
-
 end
 
 function surfcell = rotsurf(surfcell,box,theta,ax)
@@ -31,9 +28,10 @@ end
 
 function pts = regrid(pts,box,pix)
 %tmp = [round(pts(:,1:2)/pix),pts(:,3)];
-p = round(pts(:,1:2)/pix); v = pts(:,3);
-[p,v] = prune2(p,v,box/pix);
 %tmp = prune(tmp,box/pix); %prune first because accum can't handle out-of-bounds
+p = round(pts(:,1:2)/pix); 
+v = pts(:,3);
+[p,v] = prune2(p,v,box/pix);
 %tmp = sortrows(tmp); %takes more time than it saves from accumarray
 %pts = accumarray(tmp(:,1:2),tmp(:,3),box(1:2)/pix,@mean);%,mean(tmp(:,3))); %mean 300x slower
 pts = accumarray(p,v,box(1:2)/pix)./accumarray(p,1,box(1:2)/pix);
