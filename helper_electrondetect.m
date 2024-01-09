@@ -103,8 +103,8 @@ for i=1:size(tilt,3)
     else
         irad = tilt(:,:,i);
     end
-    size(irad)
-    size(newscatter(:,:,i))
+    %size(irad)
+    %size(newscatter(:,:,i))
     detect(:,:,i) = poissrnd(irad.*newscatter(:,:,i)*dw,size(irad)); 
     %sample electrons from scaled poisson distribution
 end
