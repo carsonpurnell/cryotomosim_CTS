@@ -1,6 +1,5 @@
 function [tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,axis)
-%[tilts,gridt] = thicktilts(surfaces,box,pix,angles,axis);
-
+%[tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,axis)
 tilts = zeros(box(1)/pix,box(2)/pix,numel(angles));
 gridt(1:2) = {zeros(box(1)/pix,box(2)/pix,numel(angles))};
 for i=1:numel(angles)
@@ -9,8 +8,8 @@ for i=1:numel(angles)
     %if ~all(isfinite(gridt{1}(:,:,i)),'all'), fprintf('top infinite at angle %i \n',angles(i)); end
     gridt{2}(:,:,i) = regrid(sampsurfrot{2},box,pix);
     %if ~all(isfinite(gridt{2}(:,:,i)),'all'), fprintf('bot infinite at angle %i \n',angles(i)); end
-    thick = gridt{1}(:,:,i)-gridt{2}(:,:,i); 
-    tilts(:,:,i) = thick;
+    %thick = gridt{1}(:,:,i)-gridt{2}(:,:,i); 
+    tilts(:,:,i) = gridt{1}(:,:,i)-gridt{2}(:,:,i);
 end
 end
 
@@ -49,17 +48,14 @@ end
 end
 
 function pts = regrid(pts,box,pix)
-%tmp = [round(pts(:,1:2)/pix),pts(:,3)];
-%tmp = prune(tmp,box/pix); %prune first because accum can't handle out-of-bounds
-p = round(pts(:,1:2)/pix); 
-v = pts(:,3);
+%tmp = [round(pts(:,1:2)/pix),pts(:,3)]; %tmp = prune(tmp,box/pix); 
+%prune first because accum can't handle out-of-bounds
+p = round(pts(:,1:2)/pix); v = pts(:,3);
 [p,v] = prune2(p,v,box/pix);
 %tmp = sortrows(tmp); %takes more time than it saves from accumarray
 %pts = accumarray(tmp(:,1:2),tmp(:,3),box(1:2)/pix,@mean);%,mean(tmp(:,3))); %mean 300x slower
 pts = accumarray(p,v,box(1:2)/pix)./accumarray(p,1,box(1:2)/pix);
 %pts2 = accumarray(tmp(:,1:2),tmp(:,3),box(1:2)/pix)./accumarray(tmp(:,1:2),1,box(1:2)/pix);
-%pts = sm./c;
-%mint = mean(pts(pts>0),'all'); pts(pts==0)=mint;
 end
 
 function [p,v] = prune2(p,v,box)
