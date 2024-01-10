@@ -45,7 +45,7 @@ arguments
     opt.suffix string = ''
     opt.atlasindividual = 0
     opt.dynamotable = 0
-    opt.ctford = 1
+    opt.ctford = 2
 end
 if iscell(param), param = param_simulate(param{:}); end %parse params if given as argument input
 
