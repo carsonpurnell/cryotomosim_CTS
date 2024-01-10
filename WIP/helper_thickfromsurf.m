@@ -1,5 +1,21 @@
 function [tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,axis)
-[tilts,gridt] = thicktilts(surfaces,box,pix,angles,axis);
+%[tilts,gridt] = thicktilts(surfaces,box,pix,angles,axis);
+
+tilts = zeros(box(1)/pix,box(2)/pix,numel(angles));
+gridt(1:2) = {zeros(box(1)/pix,box(2)/pix,numel(angles))};%cell(1,2);
+for i=1:numel(angles)
+    sampsurfrot = rotsurf(surfaces,box,deg2rad(angles(i)),axis);
+    gridt{1}(:,:,i) = regrid(sampsurfrot{1},box,pix);
+    if ~all(isfinite(gridt{1}(:,:,i)),'all')
+        fprintf('top infinite at angle %i \n',angles(i))
+    end
+    gridt{2}(:,:,i) = regrid(sampsurfrot{2},box,pix);
+    if ~all(isfinite(gridt{2}(:,:,i)),'all')
+        fprintf('bot infinite at angle %i \n',angles(i))
+    end
+    thick = gridt{1}(:,:,i)-gridt{2}(:,:,i); 
+    tilts(:,:,i) = thick;
+end
 end
 
 function [tilts,regridt] = thicktilts(sampsurf,box,pix,angles,axis)
