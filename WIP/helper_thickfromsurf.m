@@ -40,9 +40,7 @@ cen = zeros(1,3); cen(spec) = box(spec)/2;
 for i=1:2
     R = rotmat(ax,theta); %R2 = makehgtform('xrotate',theta); R3 = makehgtform('yrotate',theta);
     surfcell{i} = (surfcell{i}-cen)*R+cen;
-    if ~all(isfinite(surfcell{i}),'all')
-        fprintf('infinite at angle %i',rad2deg(theta))
-    end
+    %if ~all(isfinite(surfcell{i}),'all'),fprintf('infinite at angle %i',rad2deg(theta)); end
 end
 
 end
