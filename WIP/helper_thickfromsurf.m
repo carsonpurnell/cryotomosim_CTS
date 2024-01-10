@@ -2,22 +2,19 @@ function [tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,axis)
 %[tilts,gridt] = thicktilts(surfaces,box,pix,angles,axis);
 
 tilts = zeros(box(1)/pix,box(2)/pix,numel(angles));
-gridt(1:2) = {zeros(box(1)/pix,box(2)/pix,numel(angles))};%cell(1,2);
+gridt(1:2) = {zeros(box(1)/pix,box(2)/pix,numel(angles))};
 for i=1:numel(angles)
     sampsurfrot = rotsurf(surfaces,box,deg2rad(angles(i)),axis);
     gridt{1}(:,:,i) = regrid(sampsurfrot{1},box,pix);
-    if ~all(isfinite(gridt{1}(:,:,i)),'all')
-        fprintf('top infinite at angle %i \n',angles(i))
-    end
+    %if ~all(isfinite(gridt{1}(:,:,i)),'all'), fprintf('top infinite at angle %i \n',angles(i)); end
     gridt{2}(:,:,i) = regrid(sampsurfrot{2},box,pix);
-    if ~all(isfinite(gridt{2}(:,:,i)),'all')
-        fprintf('bot infinite at angle %i \n',angles(i))
-    end
+    %if ~all(isfinite(gridt{2}(:,:,i)),'all'), fprintf('bot infinite at angle %i \n',angles(i)); end
     thick = gridt{1}(:,:,i)-gridt{2}(:,:,i); 
     tilts(:,:,i) = thick;
 end
 end
 
+%{
 function [tilts,regridt] = thicktilts(sampsurf,box,pix,angles,axis)
 tilts = zeros(box(1)/pix,box(2)/pix,numel(angles));
 regridt(1:2) = {zeros(box(1)/pix,box(2)/pix,numel(angles))};%cell(1,2);
@@ -35,16 +32,14 @@ for i=1:numel(angles)
     tilts(:,:,i) = thick;
 end
 end
+%}
 
 function surfcell = rotsurf(surfcell,box,theta,ax)
-%cen = [0,0,0]; cen(ax)=box(ax)/2;
 spec = find(ax); %spec = 1+rem(spec,2)
-%cen = cen*box(spec);
 cen = zeros(1,3); cen(spec) = box(spec)/2;
 %cen = [box(1)/2,0,0] %not appropriate for X tilt
 for i=1:2
-    R = rotmat(ax,theta);
-    %R2 = makehgtform('xrotate',pi/12); R3 = makehgtform('yrotate',pi/12);
+    R = rotmat(ax,theta); %R2 = makehgtform('xrotate',theta); R3 = makehgtform('yrotate',theta);
     surfcell{i} = (surfcell{i}-cen)*R+cen;
     if ~all(isfinite(surfcell{i}),'all')
         fprintf('infinite at angle %i',rad2deg(theta))
