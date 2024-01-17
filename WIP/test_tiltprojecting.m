@@ -6,17 +6,26 @@ fullpath = fullfile(path,file);
 [img, head] = ReadMRC(fullpath);
 inv = rescale(img*-1,0,255);
 
+%{
 %% imrotate3 - output size wierdness
 theta = 15;
 ax = [0,1,0];
 rot = imrotate3(inv,theta,ax,'cubic','loose','FillValues',255);
 proj = sum(rot,3);
 %sliceViewer(rot);
+%}
 
-%% imwarp
+%% functionalized tilt projection
+angles = -60:5:60;
+ax = [1,0,0];
+
+[tilts,rot] = tiltproj(inv,angles,ax);
+%sliceViewer(rot)
+sliceViewer(tilts);
+
+%% imwarp-based 3d rotation
 theta = 15;
-ax = [0.0,1,0.0];
-
+ax = [0.0,1,0.1];
 
 %tformaff = randomAffine3d('rotation',[0 360]);
 R = rotmataff(ax,deg2rad(theta));
@@ -24,7 +33,7 @@ R = rotmataff(ax,deg2rad(theta));
 tform = affine3d;
 tform.T = R;
 
-rout = affineOutputView(size(inv),tform,'BoundsStyle','followOutput')
+rout = affineOutputView(size(inv),tform,'BoundsStyle','followOutput');
 %rout.XIntrinsicLimits = size(inv,1)+0.5;
 %rout.YIntrinsicLimits = size(inc,2)+0.5;
 outsz = size(inv); outsz(3)=rout.ImageSize(3);
@@ -37,9 +46,37 @@ yworld = rout.YWorldLimits+[ydiff,-ydiff];
 
 imrefst = imref3d(outsz,xworld,yworld,rout.ZWorldLimits);
 
-rot = imwarp(inv,tform,'OutputView',imrefst,'FillValues',mean(inv,'all'));
+rot = imwarp(inv,tform,'linear','OutputView',imrefst,'FillValues',0);%mean(inv,'all'));
 proj = sum(rot,3);
-%sliceViewer(rot);
+sliceViewer(rot);
+
+%% internal functions
+function [tilts,rot] = tiltproj(vol,angles,ax)
+tilts = zeros(size(vol,1),size(vol,2),numel(angles));
+
+for i=1:numel(angles)
+    theta = deg2rad(angles(i));
+    R = rotmataff(ax,theta);
+    tform = affine3d; tform.T = R;
+    
+    rout = affineOutputView(size(vol),tform,'BoundsStyle','followOutput');
+    %rout.XIntrinsicLimits = size(inv,1)+0.5;
+    %rout.YIntrinsicLimits = size(inc,2)+0.5;
+    outsz = size(vol); outsz(3)=rout.ImageSize(3);
+    
+    %crop x/y back to original image space, only clip out in Z
+    xdiff = (rout.ImageSize(2)-size(vol,2))/2;
+    xworld = rout.XWorldLimits+[xdiff,-xdiff];
+    ydiff = (rout.ImageSize(1)-size(vol,1))/2;
+    yworld = rout.YWorldLimits+[ydiff,-ydiff];
+    
+    imrefst = imref3d(outsz,xworld,yworld,rout.ZWorldLimits);
+    
+    rot = imwarp(vol,tform,'nearest','OutputView',imrefst,'FillValues',0);%mean(vol,'all'));
+    proj = sum(rot,3); mean(proj,'all')
+    tilts(:,:,i) = proj;
+end
+end
 
 function t = rotmataff(ax,rad)
 ax = ax/norm(ax);
