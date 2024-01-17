@@ -15,7 +15,7 @@ proj = sum(rot,3);
 
 %% imwarp
 theta = 15;
-ax = [0,1,0];
+ax = [0.0,1,0.0];
 
 
 %tformaff = randomAffine3d('rotation',[0 360]);
@@ -28,12 +28,17 @@ rout = affineOutputView(size(inv),tform,'BoundsStyle','followOutput')
 %rout.XIntrinsicLimits = size(inv,1)+0.5;
 %rout.YIntrinsicLimits = size(inc,2)+0.5;
 outsz = size(inv); outsz(3)=rout.ImageSize(3);
-xdiff = rout.Imagesize(2)-size(inv,1)
-ydiff
-%outsz(3) = rout.ImageSize(3);
-imrefst = imref3d(outsz,[0.5,size(inv,2)+0.5],rout.YWorldLimits,rout.ZWorldLimits)
 
-rot = imwarp(inv,tform,'OutputView',imrefst,'FillValues',255);
+%crop x/y back to original image space, only clip out in Z
+xdiff = (rout.ImageSize(2)-size(inv,2))/2;
+xworld = rout.XWorldLimits+[xdiff,-xdiff];
+ydiff = (rout.ImageSize(1)-size(inv,1))/2;
+yworld = rout.YWorldLimits+[ydiff,-ydiff];
+
+imrefst = imref3d(outsz,xworld,yworld,rout.ZWorldLimits);
+
+rot = imwarp(inv,tform,'OutputView',imrefst,'FillValues',mean(inv,'all'));
+proj = sum(rot,3);
 %sliceViewer(rot);
 
 function t = rotmataff(ax,rad)
