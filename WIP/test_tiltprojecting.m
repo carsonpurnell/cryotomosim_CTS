@@ -17,7 +17,7 @@ proj = sum(rot,3);
 
 %% functionalized tilt projection
 angles = -60:5:60;
-ax = [1,0.1,0];
+ax = [1,-0.1,0];
 
 [tilts,rot] = tiltproj(inv,angles,ax);
 %sliceViewer(rot)
@@ -72,7 +72,7 @@ for i=1:numel(angles)
     
     imrefst = imref3d(outsz,xworld,yworld,rout.ZWorldLimits);
     
-    rot = imwarp(vol,tform,'linear','OutputView',imrefst,'FillValues',0);%mean(vol,'all'));
+    rot = imwarp(vol,tform,'cubic','OutputView',imrefst,'FillValues',0);%mean(vol,'all'));
     proj = sum(rot,3); mean(proj,'all')
     tilts(:,:,i) = proj;
 end
