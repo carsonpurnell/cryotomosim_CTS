@@ -17,9 +17,13 @@ proj = sum(rot,3);
 
 %% functionalized tilt projection
 angles = -60:5:60;
-ax = [1,-0.1,0];
+ax = [1,0.1,0];
+% how to generate spiral/circular processiong, or cumulative random walk near 0?
 
-[tilts,rot] = tiltproj(inv,angles,ax);
+% what numerical scale for tilt images? not inverting to replicate current workflow
+% current is inverted and scaled to original min/max before xyzproj, unscaling inversion
+[tilts,rot,thick] = tiltproj(inv,angles,ax);
+%interpolation lines still appear even with cubic, need to rotate the atoms themselves
 %sliceViewer(rot)
 sliceViewer(tilts);
 
@@ -53,7 +57,7 @@ sliceViewer(rot);
 %}
 
 %% internal functions
-function [tilts,rot] = tiltproj(vol,angles,ax)
+function [tilts,rot,thick] = tiltproj(vol,angles,ax)
 tilts = zeros(size(vol,1),size(vol,2),numel(angles));
 
 for i=1:numel(angles)
@@ -76,8 +80,9 @@ for i=1:numel(angles)
     
     % cubic and NN both seem dramatically slower
     rot = imwarp(vol,tform,'linear','OutputView',imrefst,'FillValues',0);%mean(vol,'all'));
-    proj = sum(rot,3); mean(proj,'all')
-    tilts(:,:,i) = proj;
+    proj = sum(rot,3); %mean(proj,'all')
+    thick = sum(rot>0,3); thick = max(thick,1);
+    tilts(:,:,i) = proj;%./thick;
 end
 end
 
