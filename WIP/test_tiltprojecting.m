@@ -4,7 +4,7 @@
 %[file, path] = uigetfile({'*.mrc'},'Select MRC');
 fullpath = fullfile(path,file);
 [img, head] = ReadMRC(fullpath);
-inv = img;%rescale(img*-1,0,255);
+inv = rescale(img*-1,00,255);
 
 %{
 %% imrotate3 - output size wierdness
@@ -16,7 +16,7 @@ proj = sum(rot,3);
 %}
 
 %% functionalized tilt projection
-angles = -60:5:60;
+angles = -60:2:60;
 ax = [1,0.1,0];
 % how to generate spiral/circular processiong, or cumulative random walk near 0?
 
