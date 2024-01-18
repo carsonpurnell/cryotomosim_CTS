@@ -72,7 +72,7 @@ for i=1:numel(angles)
     
     imrefst = imref3d(outsz,xworld,yworld,rout.ZWorldLimits);
     
-    rot = imwarp(vol,tform,'cubic','OutputView',imrefst,'FillValues',0);%mean(vol,'all'));
+    rot = imwarp(vol,tform,'linear','OutputView',imrefst,'FillValues',0);%mean(vol,'all'));
     proj = sum(rot,3); mean(proj,'all')
     tilts(:,:,i) = proj;
 end
