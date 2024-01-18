@@ -1,7 +1,7 @@
 % matlab-only replacement for imod tiltproject
 
 %% pick image
-[file, path] = uigetfile({'*.mrc'},'Select MRC');
+%[file, path] = uigetfile({'*.mrc'},'Select MRC');
 fullpath = fullfile(path,file);
 [img, head] = ReadMRC(fullpath);
 inv = img;%rescale(img*-1,0,255);
@@ -23,6 +23,7 @@ ax = [1,-0.1,0];
 %sliceViewer(rot)
 sliceViewer(tilts);
 
+%{
 %% imwarp-based 3d rotation
 theta = 15;
 ax = [0.0,1,0.1];
@@ -49,6 +50,7 @@ imrefst = imref3d(outsz,xworld,yworld,rout.ZWorldLimits);
 rot = imwarp(inv,tform,'linear','OutputView',imrefst,'FillValues',0);%mean(inv,'all'));
 proj = sum(rot,3);
 sliceViewer(rot);
+%}
 
 %% internal functions
 function [tilts,rot] = tiltproj(vol,angles,ax)
@@ -72,6 +74,7 @@ for i=1:numel(angles)
     
     imrefst = imref3d(outsz,xworld,yworld,rout.ZWorldLimits);
     
+    % cubic and NN both seem dramatically slower
     rot = imwarp(vol,tform,'linear','OutputView',imrefst,'FillValues',0);%mean(vol,'all'));
     proj = sum(rot,3); mean(proj,'all')
     tilts(:,:,i) = proj;
