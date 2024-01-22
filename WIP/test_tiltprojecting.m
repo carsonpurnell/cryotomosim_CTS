@@ -16,14 +16,14 @@ proj = sum(rot,3);
 %}
 
 %% functionalized tilt projection
-angles = -60:2:60;
-ax = [1,0.1,0];
+angles = -60:4:60;
+ax = [1,0.2,0];
 % how to generate spiral/circular processiong, or cumulative random walk near 0?
 
 % what numerical scale for tilt images? not inverting to replicate current workflow
 % current is inverted and scaled to original min/max before xyzproj, unscaling inversion
 [tilts,rot,thick] = tiltproj(inv,angles,ax);
-%interpolation lines still appear even with cubic, need to rotate the atoms themselves
+% interpolation artifacts minor but visible - rotating atom set won't
 %sliceViewer(rot)
 sliceViewer(tilts);
 
