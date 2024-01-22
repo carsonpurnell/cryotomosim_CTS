@@ -1,5 +1,6 @@
 function [tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,axis)
 %[tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,axis)
+
 tilts = zeros(box(1)/pix,box(2)/pix,numel(angles));
 gridt(1:2) = {zeros(box(1)/pix,box(2)/pix,numel(angles))};
 for i=1:numel(angles)
@@ -53,7 +54,6 @@ p = round(pts(:,1:2)/pix); v = pts(:,3);
 %tmp = sortrows(tmp); %takes more time than it saves from accumarray
 %pts = accumarray(tmp(:,1:2),tmp(:,3),box(1:2)/pix,@mean);%,mean(tmp(:,3))); %mean 300x slower
 pts = accumarray(p,v,box(1:2)/pix)./accumarray(p,1,box(1:2)/pix);
-%pts2 = accumarray(tmp(:,1:2),tmp(:,3),box(1:2)/pix)./accumarray(tmp(:,1:2),1,box(1:2)/pix);
 end
 
 function [p,v] = prune2(p,v,box)
