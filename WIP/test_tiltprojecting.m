@@ -71,10 +71,8 @@ for i=1:numel(angles)
     outsz = size(vol); outsz(3)=rout.ImageSize(3);
     
     %crop x/y back to original image space, only clip out in Z
-    xdiff = (rout.ImageSize(2)-size(vol,2))/2;
-    xworld = rout.XWorldLimits+[xdiff,-xdiff];
-    ydiff = (rout.ImageSize(1)-size(vol,1))/2;
-    yworld = rout.YWorldLimits+[ydiff,-ydiff];
+    xdiff = (rout.ImageSize(2)-size(vol,2))/2; xworld = rout.XWorldLimits+[xdiff,-xdiff];
+    ydiff = (rout.ImageSize(1)-size(vol,1))/2; yworld = rout.YWorldLimits+[ydiff,-ydiff];
     
     imrefst = imref3d(outsz,xworld,yworld,rout.ZWorldLimits);
     
