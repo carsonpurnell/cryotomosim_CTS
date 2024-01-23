@@ -36,7 +36,7 @@ ice = ice.*map;
 iced = vol+ice;
 %}
 %orig straight up floor by ice globally
-iced = max(ice,vol); %for some reason the ice is much too dense with test TMD placement output
+%iced = max(ice,vol); %for some reason the ice is much too dense with test TMD placement output
 
 %new ice
 bb = imgaussfilt3(vol,1);
