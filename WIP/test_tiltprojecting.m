@@ -22,7 +22,7 @@ ax = [1,0.0,0.0];
 
 % what numerical scale for tilt images? not inverting to replicate current workflow
 % current is inverted and scaled to original min/max before xyzproj, unscaling inversion
-[tilts,rot,thick] = tiltproj(inv,angles,ax);
+[tilts,rot,thick,vol] = tiltproj(inv,angles,ax);
 % interpolation artifacts minor but visible - rotating atom set won't
 %sliceViewer(rot)
 sliceViewer(tilts);
@@ -57,10 +57,12 @@ sliceViewer(rot);
 %}
 
 %% internal functions
-function [tilts,rot,thick] = tiltproj(vol,angles,ax)
+function [tilts,rot,thick,vol] = tiltproj(vol,angles,ax)
 tilts = zeros(size(vol,1),size(vol,2),numel(angles));
 offeucentric = [0,0,20];
-vol = padarray(vol,[0,0,20]);
+size(vol)
+vol = padarray(vol,[0,0,100],'post');
+size(vol)
 
 for i=1:numel(angles)
     theta = deg2rad(angles(i));
