@@ -25,12 +25,12 @@ ax = [1,0.05,-0.0];
 [tilts,rot,thick] = tiltproj(inv,angles,ax);
 % interpolation artifacts minor but visible - rotating atom set won't
 %sliceViewer(rot)
-%sliceViewer(tilts);
+sliceViewer(tilts);
 
 
 %% 
-rs = rescale(tilts*-1,min(img,[],'all'),max(img,[],'all'));
-[convolved, ctf, param] = helper_ctf(rs,param_simulate);
+%rs = rescale(tilts,min(img,[],'all'),max(img,[],'all'));
+[convolved, ctf, param] = helper_ctf(tilts,param_simulate('pix',10));
 sliceViewer(convolved);
 
 %{
@@ -69,10 +69,11 @@ offeucentric = 50;%[0,0,20];
 %%vol = padarray(vol,[0,0,50],'pre');
 
 for i=1:numel(angles)
-    volstep = padarray(vol,[0,0,offeucentric+randi(11)-21],'pre');
+    volstep = padarray(vol,[0,0,offeucentric+randi(21)-11],'pre');
     theta = deg2rad(angles(i));
     R = rotmataff(ax,theta);
-    tform = affine3d; tform.T = R;
+    tform = affine3d; 
+    tform.T = R;
     
     rout = affineOutputView(size(volstep),tform,'BoundsStyle','followOutput');
     %rout.XIntrinsicLimits = size(inv,1)+0.5;
@@ -87,6 +88,8 @@ for i=1:numel(angles)
     
     % cubic and NN both seem dramatically slower
     rot = imwarp(volstep,tform,'linear','OutputView',imrefst,'FillValues',0);%mean(vol,'all'));
+    %tr = [randi(21)-11,randi(21)-11,randi(21)-11]; %translation matrix
+    %rot = imtranslate(rot,tr); % apply translation after rotation
     proj = sum(rot,3); %mean(proj,'all')
     thick = sum(rot>0,3); thick = max(thick,1);
     tilts(:,:,i) = proj;%./thick;
@@ -108,8 +111,8 @@ t7 = z*x*(1-c)-y*s;
 t8 = z*y*(1-c)+x*s;
 t9 = c+z^2*(1-c);
 
-t = [t1 t2 t3 0
-    t4 t5 t6 0
-    t7 t8 t9 0
+t = [t1 t2 t3 10
+    t4 t5 t6 20
+    t7 t8 t9 50
     0 0 0 1];
 end
