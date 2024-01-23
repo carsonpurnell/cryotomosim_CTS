@@ -98,7 +98,9 @@ pix = param.pix;
 
 base = append(filename,'.mrc'); 
 %do inversion differently to get better dose numbers? might use matlab imcomplement for simplicity
+% % arbitrary rescale, need to render obsolete
 in = rescale(in*-1,min(in,[],'all'),max(in,[],'all')); %rescale to same range to avoid 0 and clamping
+% % arbitrary rescale, need to render obsolete
 prev = append('0_model_',base);
 WriteMRC(in,pix,prev) %write as initial model and for tiltprojection
 
