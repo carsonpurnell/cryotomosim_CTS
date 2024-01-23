@@ -17,15 +17,21 @@ proj = sum(rot,3);
 
 %% functionalized tilt projection
 angles = -60:2:60;
-ax = [1,0.0,0.0];
+ax = [1,0.05,-0.0];
 % how to generate spiral/circular processiong, or cumulative random walk near 0?
 
 % what numerical scale for tilt images? not inverting to replicate current workflow
 % current is inverted and scaled to original min/max before xyzproj, unscaling inversion
-[tilts,rot,thick,vol] = tiltproj(inv,angles,ax);
+[tilts,rot,thick] = tiltproj(inv,angles,ax);
 % interpolation artifacts minor but visible - rotating atom set won't
 %sliceViewer(rot)
-sliceViewer(tilts);
+%sliceViewer(tilts);
+
+
+%% 
+rs = rescale(tilts*-1,min(img,[],'all'),max(img,[],'all'));
+[convolved, ctf, param] = helper_ctf(rs,param_simulate);
+sliceViewer(convolved);
 
 %{
 %% imwarp-based 3d rotation
@@ -57,31 +63,30 @@ sliceViewer(rot);
 %}
 
 %% internal functions
-function [tilts,rot,thick,vol] = tiltproj(vol,angles,ax)
+function [tilts,rot,thick] = tiltproj(vol,angles,ax)
 tilts = zeros(size(vol,1),size(vol,2),numel(angles));
-offeucentric = [0,0,20];
-size(vol)
-vol = padarray(vol,[0,0,100],'post');
-size(vol)
+offeucentric = 50;%[0,0,20];
+%%vol = padarray(vol,[0,0,50],'pre');
 
 for i=1:numel(angles)
+    volstep = padarray(vol,[0,0,offeucentric+randi(11)-21],'pre');
     theta = deg2rad(angles(i));
     R = rotmataff(ax,theta);
     tform = affine3d; tform.T = R;
     
-    rout = affineOutputView(size(vol),tform,'BoundsStyle','followOutput');
+    rout = affineOutputView(size(volstep),tform,'BoundsStyle','followOutput');
     %rout.XIntrinsicLimits = size(inv,1)+0.5;
     %rout.YIntrinsicLimits = size(inc,2)+0.5;
-    outsz = size(vol); outsz(3)=rout.ImageSize(3);
+    outsz = size(volstep); outsz(3)=rout.ImageSize(3);
     
     %crop x/y back to original image space, only clip out in Z
-    xdiff = (rout.ImageSize(2)-size(vol,2))/2; xworld = rout.XWorldLimits+[xdiff,-xdiff];
-    ydiff = (rout.ImageSize(1)-size(vol,1))/2; yworld = rout.YWorldLimits+[ydiff,-ydiff];
+    xdiff = (rout.ImageSize(2)-size(volstep,2))/2; xworld = rout.XWorldLimits+[xdiff,-xdiff];
+    ydiff = (rout.ImageSize(1)-size(volstep,1))/2; yworld = rout.YWorldLimits+[ydiff,-ydiff];
     
     imrefst = imref3d(outsz,xworld,yworld,rout.ZWorldLimits);
     
     % cubic and NN both seem dramatically slower
-    rot = imwarp(vol,tform,'linear','OutputView',imrefst,'FillValues',0);%mean(vol,'all'));
+    rot = imwarp(volstep,tform,'linear','OutputView',imrefst,'FillValues',0);%mean(vol,'all'));
     proj = sum(rot,3); %mean(proj,'all')
     thick = sum(rot>0,3); thick = max(thick,1);
     tilts(:,:,i) = proj;%./thick;
