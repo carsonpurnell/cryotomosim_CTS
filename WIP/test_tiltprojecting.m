@@ -16,8 +16,8 @@ proj = sum(rot,3);
 %}
 
 %% functionalized tilt projection
-angles = -60:4:60;
-ax = [1,0.2,0];
+angles = -60:2:60;
+ax = [1,0.0,0.0];
 % how to generate spiral/circular processiong, or cumulative random walk near 0?
 
 % what numerical scale for tilt images? not inverting to replicate current workflow
@@ -59,6 +59,8 @@ sliceViewer(rot);
 %% internal functions
 function [tilts,rot,thick] = tiltproj(vol,angles,ax)
 tilts = zeros(size(vol,1),size(vol,2),numel(angles));
+offeucentric = [0,0,20];
+vol = padarray(vol,[0,0,20]);
 
 for i=1:numel(angles)
     theta = deg2rad(angles(i));
