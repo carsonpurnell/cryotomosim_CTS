@@ -14,26 +14,6 @@ for i=1:numel(angles)
 end
 end
 
-%{
-function [tilts,regridt] = thicktilts(sampsurf,box,pix,angles,axis)
-tilts = zeros(box(1)/pix,box(2)/pix,numel(angles));
-regridt(1:2) = {zeros(box(1)/pix,box(2)/pix,numel(angles))};%cell(1,2);
-for i=1:numel(angles)
-    sampsurfrot = rotsurf(sampsurf,box,deg2rad(angles(i)),axis);
-    regridt{1}(:,:,i) = regrid(sampsurfrot{1},box,pix);
-    if ~all(isfinite(regridt{1}(:,:,i)),'all')
-        fprintf('top infinite at angle %i \n',angles(i))
-    end
-    regridt{2}(:,:,i) = regrid(sampsurfrot{2},box,pix);
-    if ~all(isfinite(regridt{2}(:,:,i)),'all')
-        fprintf('bot infinite at angle %i \n',angles(i))
-    end
-    thick = regridt{1}(:,:,i)-regridt{2}(:,:,i); 
-    tilts(:,:,i) = thick;
-end
-end
-%}
-
 function surfcell = rotsurf(surfcell,box,theta,ax)
 spec = find(ax); %spec = 1+rem(spec,2)
 cen = zeros(1,3); cen(spec) = box(spec)/2;
