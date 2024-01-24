@@ -73,7 +73,9 @@ for j=1:s
     mag = p(:,4); p = p(:,1:3); p = round( (p-offset)/pix+0.5 );
     %p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5); %very slow intermediate array assignments
     
+    [tmpvol,tmpsolv] = test_accumarray(p,mag,emsz,solv);
     [sptmp{j},solv] = internal_accum(p,mag,avol,emsz,solv);
+    all(tmpvol==sptmp{j},'all')
     
     %{
     for i=1:3
@@ -116,13 +118,26 @@ else
 end
 end
 
+
+
+function [tmpvol,tmpsolv] = test_accumarray(p,mag,emsz,solv)
+for i=1:3
+    ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %index points inside the box
+    p = p(ix,:); mag=mag(ix); %drop points outside the box
+    %fprintf('%i dropped \n',numel(ix)-sum(ix)) %diagnostic to check if any points eliminated
+end
+tmpvol = accumarray(p,mag,emsz);
+acount = accumarray(p,1,emsz);
+tmpsolv = (solv-acount);
+end
+
 function [vl,solv] = internal_accum(p,mag,avol,emsz,solv)
 vl = zeros(emsz);
 %[u,ua,ub] = unique(p,'rows'); %slower than the rest due to needing to sort
 
 for i=1:3
     ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %index points inside the box
-    p = p(ix,:); %drop points outside the box
+    p = p(ix,:); mag=mag(ix); %drop points outside the box
     %fprintf('%i dropped \n',numel(ix)-sum(ix)) %diagnostic to check if any points eliminated
 end
 for i=1:size(p,1)
