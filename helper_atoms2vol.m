@@ -73,8 +73,8 @@ for j=1:s
     mag = p(:,4); p = p(:,1:3); p = round( (p-offset)/pix+0.5 );
     %p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5); %very slow intermediate array assignments
     
-    [tmpvol,tmpsolv] = test_accumarray(p,mag,emsz,solv);
-    [sptmp{j},solv] = internal_accum(p,mag,avol,emsz,solv);
+    [sptmp{j},solv] = test_accumarray(p,mag,emsz,solv,avol);
+    %[sptmp{j},solv2] = internal_accum(p,mag,avol,emsz,solv);
     %all(tmpvol==sptmp{j},'all')
     
     %{
@@ -92,6 +92,8 @@ for j=1:s
     %sliceViewer(solv-sl)
     %[a,b] = bounds(vl{1}-split,'all')
 end
+%need to compute spread via smoothing
+solv = imgaussfilt3(solv,2.5);
 solv = max(solv,0)/wvol*h20; %compute waters in pixels from remaining volume
 %{
 size(sptmp{1})
@@ -119,21 +121,18 @@ end
 end
 
 
-function [tmpvol,tmpsolv] = test_accumarray(p,mag,emsz,solv)
+function [tmpvol,tmpsolv] = test_accumarray(p,mag,emsz,solv,avol)
 ixf = ones(size(mag));
 for i=1:3
     ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %index points inside the box
     %p = p(ix,:); mag=mag(ix); %drop points outside the box
     ixf = ixf.*ix;
-    %sum(ixf,'all')
-    %size(ixf)
     %fprintf('%i dropped \n',numel(ix)-sum(ix)) %diagnostic to check if any points eliminated
 end
-%figure(); histogram(ixf)
 p = p(ixf>0,:); 
 mag=mag(ixf>0);
 tmpvol = accumarray(p,mag,emsz);
-acount = accumarray(p,1,emsz);
+acount = accumarray(p,avol*2.5,emsz);
 tmpsolv = (solv-acount);
 end
 
