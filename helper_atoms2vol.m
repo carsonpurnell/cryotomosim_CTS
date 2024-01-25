@@ -75,7 +75,7 @@ for j=1:s
     
     [tmpvol,tmpsolv] = test_accumarray(p,mag,emsz,solv);
     [sptmp{j},solv] = internal_accum(p,mag,avol,emsz,solv);
-    all(tmpvol==sptmp{j},'all')
+    %all(tmpvol==sptmp{j},'all')
     
     %{
     for i=1:3
@@ -119,13 +119,19 @@ end
 end
 
 
-
 function [tmpvol,tmpsolv] = test_accumarray(p,mag,emsz,solv)
+ixf = ones(size(mag));
 for i=1:3
     ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %index points inside the box
-    p = p(ix,:); mag=mag(ix); %drop points outside the box
+    %p = p(ix,:); mag=mag(ix); %drop points outside the box
+    ixf = ixf.*ix;
+    %sum(ixf,'all')
+    %size(ixf)
     %fprintf('%i dropped \n',numel(ix)-sum(ix)) %diagnostic to check if any points eliminated
 end
+%figure(); histogram(ixf)
+p = p(ixf>0,:); 
+mag=mag(ixf>0);
 tmpvol = accumarray(p,mag,emsz);
 acount = accumarray(p,1,emsz);
 tmpsolv = (solv-acount);
@@ -134,12 +140,14 @@ end
 function [vl,solv] = internal_accum(p,mag,avol,emsz,solv)
 vl = zeros(emsz);
 %[u,ua,ub] = unique(p,'rows'); %slower than the rest due to needing to sort
-
+%ixf = ones(size(mag));
 for i=1:3
     ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %index points inside the box
     p = p(ix,:); mag=mag(ix); %drop points outside the box
+    %ixf = ixf.*ix;
     %fprintf('%i dropped \n',numel(ix)-sum(ix)) %diagnostic to check if any points eliminated
 end
+%p = p(ixf,:); mag=mag(ixf);
 for i=1:size(p,1)
     x=p(i,1); y=p(i,2); z=p(i,3); m = mag(i); %fetch data per atom
     %split(x,y,z,j) = split(x,y,z,j)+mag; %slow, 4d indexing very inefficient
