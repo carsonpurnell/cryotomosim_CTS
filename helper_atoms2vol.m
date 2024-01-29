@@ -44,7 +44,7 @@ elseif nargin<4 %box limit only, output corner starting at 0
 end
 %if size(pts,2)<4, pts(:,end+1)=1; end %intensity==1 if not given by 4th column
 % rough constants - need improved values, per-atom vol especially
-avol = 4/3*pi*(1.7^3); %eyeballed volume of the average organic atom (radii approx 1.8A)- get per-atom measure?
+avol = 4/3*pi*(1.9^3); %eyeballed volume of the average organic atom (radii approx 1.8A)- get per-atom measure?
 h20 = 3.041/2; %computed scatter factor for H2O - /2 for similarity to vol and simulate defaults
 wd = 6.022e23/18/(1e8)^3; %molecules of water per a^3 - ~1/30 for liquid water
 wvol = 32; %eyeballed volume of amorphous ice molecules in angstroms
@@ -53,6 +53,7 @@ emsz = floor(sz/pix);
 solv = (rand(emsz)-0.6)*1.5*pix^2+(pix^3); %set initial solvent density
 %sliceViewer(solv)
 solv = imgaussfilt3(solv,0.5); % smoother solvation test
+acount = zeros(emsz);
 %figure(); sliceViewer(solv);
 % need more random initial density - higher peaks, also smooth the data a bit for smoother density waves?
 
@@ -73,7 +74,7 @@ for j=1:s
     mag = p(:,4); p = p(:,1:3); p = round( (p-offset)/pix+0.5 );
     %p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5); %very slow intermediate array assignments
     
-    [sptmp{j},solv] = test_accumarray(p,mag,emsz,solv,avol);
+    [sptmp{j},solv,acount] = test_accumarray(p,mag,emsz,solv,avol,acount);
     %[sptmp{j},solv2] = internal_accum(p,mag,avol,emsz,solv);
     %all(tmpvol==sptmp{j},'all')
     
@@ -93,8 +94,15 @@ for j=1:s
     %[a,b] = bounds(vl{1}-split,'all')
 end
 %need to compute spread via smoothing
-solv = imgaussfilt3(solv,2.5);
-solv = max(solv,0)/wvol*h20; %compute waters in pixels from remaining volume
+ex = pix/3;
+%solv = (rand(emsz)-0.6)*1.5*pix^2+(pix^3)*1; %set initial solvent density
+solv = (rand(emsz)*0.5+ones(emsz)*0.75)*pix^3;
+%sliceViewer(solv)
+solv = imgaussfilt3(solv,0.5);
+
+%solv = imgaussfilt3(solv,ex);
+acount = imgaussfilt3(acount,ex);
+solv = max(solv-acount,0)/wvol*h20; %compute waters in pixels from remaining volume
 %{
 size(sptmp{1})
 size(sptmp)
@@ -121,7 +129,8 @@ end
 end
 
 
-function [tmpvol,tmpsolv] = test_accumarray(p,mag,emsz,solv,avol)
+function [tmpvol,tmpsolv,acount] = test_accumarray(p,mag,emsz,solv,avol,acount)
+if nargin<6, acount = zeros(emsz); end
 ixf = ones(size(mag));
 for i=1:3
     ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %index points inside the box
@@ -132,7 +141,7 @@ end
 p = p(ixf>0,:); 
 mag=mag(ixf>0);
 tmpvol = accumarray(p,mag,emsz);
-acount = accumarray(p,avol*2.5,emsz);
+acount = acount+accumarray(p,avol*1,emsz);
 tmpsolv = (solv-acount);
 end
 
