@@ -4,7 +4,7 @@
 %[file, path] = uigetfile({'*.mrc'},'Select MRC');
 fullpath = fullfile(path,file);
 [img, head] = ReadMRC(fullpath);
-inv = rescale(img*-1,00,255);
+inv = rescale(img*1,00,1);
 
 %{
 %% imrotate3 - output size wierdness
@@ -17,20 +17,20 @@ proj = sum(rot,3);
 
 %% functionalized tilt projection
 angles = -60:2:60;
-ax = [1,0.05,-0.0];
+ax = [1,0.0,0.0];
 % how to generate spiral/circular processiong, or cumulative random walk near 0?
 
 % what numerical scale for tilt images? not inverting to replicate current workflow
 % current is inverted and scaled to original min/max before xyzproj, unscaling inversion
-[tilts,rot,thick] = tiltproj(inv,angles,ax);
+[tilts,rot,thick] = tiltproj(inv*1,angles,ax);
 % interpolation artifacts minor but visible - rotating atom set won't
 %sliceViewer(rot)
 sliceViewer(tilts);
 
 %% 
 %rs = rescale(tilts,min(img,[],'all'),max(img,[],'all'));
-[convolved, ctf, param] = helper_ctf(tilts*1e1,param_simulate('pix',10));
-sliceViewer(convolved);
+[convolved, ctf, param] = helper_ctf(tilts*1e1,param_simulate('pix',head.pixA));
+sliceViewer(convolved*-1);
 
 %{
 %% imwarp-based 3d rotation
