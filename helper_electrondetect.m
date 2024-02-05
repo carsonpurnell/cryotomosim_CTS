@@ -45,7 +45,7 @@ if strcmp(param.tiltax,'X'), box=box([2,1,3]); end
 axis = 1;
 axspec = zeros(1,3); axspec(1+rem(axis,2)) = 1;
 %axis = 1;
-sc = [4.0,1.2]; % [perlin magnitude, surface centering
+sc = [3.0,1.2]; % [perlin magnitude, surface centering
 %rng(7)
 surfaces = helper_surf(box,param.pix,tiltangs,axis,sc);
 [newpath,gridt] = helper_thickfromsurf(surfaces,box,param.pix,tiltangs,axspec); 
