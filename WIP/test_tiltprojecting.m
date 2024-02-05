@@ -27,7 +27,6 @@ ax = [1,0.05,-0.0];
 %sliceViewer(rot)
 sliceViewer(tilts);
 
-
 %% 
 %rs = rescale(tilts,min(img,[],'all'),max(img,[],'all'));
 [convolved, ctf, param] = helper_ctf(tilts*1e1,param_simulate('pix',10));
