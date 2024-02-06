@@ -29,12 +29,15 @@ ax = [1,0.0,0.0];
 sliceViewer(tilts);
 
 %%  dose/ctf
-[detect,rad] = helper_electrondetect(tilts*1,param);
-%sliceViewer(detect)
+[detect,rad] = helper_electrondetect(tilts*1e5+10,param);
+detect(isnan(detect))=0;
+sliceViewer(detect);
 %%
-%rs = rescale(tilts,min(img,[],'all'),max(img,[],'all'));
-[convolved, ctf, param] = helper_ctf(detect,param);
-sliceViewer(convolved*-1);
+rs = rescale(detect,min(detect,[],'all'),max(detect,[],'all'));
+param.ctfoverlap = 2;
+[convolved, ctf] = helper_ctf(rs,param);
+sliceViewer(convolved*1);
+%histogram(convolved)
 
 %{
 %% imwarp-based 3d rotation
@@ -68,11 +71,17 @@ sliceViewer(rot);
 %% internal functions
 function [tilts,rot,thick] = tiltproj(vol,angles,ax)
 tilts = zeros(size(vol,1),size(vol,2),numel(angles));
-offeucentric = 50;%[0,0,20];
+euvar = 0;
+offeucentric = max(0,euvar);%[0,0,20];
 %%vol = padarray(vol,[0,0,50],'pre');
 
 for i=1:numel(angles)
-    volstep = padarray(vol,[0,0,offeucentric+randi(21)-11],'pre');
+    
+    if euvar<1
+        volstep = vol; 
+    else
+        volstep = padarray(vol,[0,0,offeucentric+randi(euvar*2-1)-euvar],'pre');
+    end
     theta = deg2rad(angles(i));
     R = rotmataff(ax,theta);
     tform = affine3d; 
