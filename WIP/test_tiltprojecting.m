@@ -5,6 +5,7 @@
 fullpath = fullfile(path,file);
 [img, head] = ReadMRC(fullpath);
 inv = rescale(img*1,00,1);
+param = param_simulate('pix',head.pixA); param.size = [head.mx,head.my,head.mz];
 
 %{
 %% imrotate3 - output size wierdness
@@ -27,9 +28,12 @@ ax = [1,0.0,0.0];
 %sliceViewer(rot)
 sliceViewer(tilts);
 
-%% 
+%%  dose/ctf
+[detect,rad] = helper_electrondetect(tilts*1,param);
+%sliceViewer(detect)
+%%
 %rs = rescale(tilts,min(img,[],'all'),max(img,[],'all'));
-[convolved, ctf, param] = helper_ctf(tilts*1e1,param_simulate('pix',head.pixA));
+[convolved, ctf, param] = helper_ctf(detect,param);
 sliceViewer(convolved*-1);
 
 %{
