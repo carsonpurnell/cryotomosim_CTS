@@ -4,14 +4,15 @@ function surfaces = helper_surf(box,pix,angles,axis,sc)
 %angles = -60:5:60;
 mang = max(abs(angles));
 axspec = 1+rem(axis,2);
-mtilt = tand(mang)*1.2; % angle for initial grid padding to cover tilt area - don't know why 0.6 is enough
+mtilt = tand(mang)*1.5; % angle for initial grid padding to cover tilt area - don't know why 0.6 is enough
 % make surfaces - displaced in Z
 % trying with identical surf pairs first
 res = pix/2; %oversample to prevent holes in data
 %need to stretch coverage a lot, fill values are static and not NN or average of near edge
-pad = [pix*2,pix*2]; %axis = 1; % huge padding only against tilt axis, otherwise small
+padmult = 2; pval = pix*padmult;
+pad = [pval,pval]; %axis = 1; % huge padding only against tilt axis, otherwise small
 pad(axis) = round((box(axspec)+box(3))*mtilt)+pix*2; % huge padding to cover for tilting
-[x,y] = meshgrid(pix/2-pad(1):res:box(1)+pad(1),pix/2-pad(2):res:box(2)+pad(2));
+[x,y] = meshgrid(pix/padmult-pad(1):res:box(1)+pad(1),pix/padmult-pad(2):res:box(2)+pad(2));
 
 %sc = [2.5,1.2];
 surfaces{1} = gensurf(x,y,box,pix,sc);
