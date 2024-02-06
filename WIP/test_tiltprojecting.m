@@ -1,10 +1,10 @@
 % matlab-only replacement for imod tiltproject
 
 %% pick image
-%[file, path] = uigetfile({'*.mrc'},'Select MRC');
+[file, path] = uigetfile({'*.mrc'},'Select MRC');
 fullpath = fullfile(path,file);
 [img, head] = ReadMRC(fullpath);
-inv = rescale(img*1,00,1);
+inv = img*1;%rescale(img*1,00,1);
 param = param_simulate('pix',head.pixA); param.size = [head.mx,head.my,head.mz];
 
 %{
@@ -29,15 +29,20 @@ ax = [1,0.0,0.0];
 sliceViewer(tilts);
 
 %%  dose/ctf
-[detect,rad] = helper_electrondetect(tilts*1e5+10,param);
+[convolved, ctf] = helper_ctf(tilts,param); %creating weird edge effect, not present in tilts
+%convolved(isnan(convolved))=0;
+%sliceViewer(convolved*1);
+[detect,rad] = helper_electrondetect(convolved,param);
 detect(isnan(detect))=0;
-sliceViewer(detect);
+sliceViewer((detect)*-1);
 %%
-rs = rescale(detect,min(detect,[],'all'),max(detect,[],'all'));
+%{
+%rs = rescale(detect,min(detect,[],'all'),max(detect,[],'all'));
 param.ctfoverlap = 2;
-[convolved, ctf] = helper_ctf(rs,param);
+[convolved, ctf] = helper_ctf(detect,param);
 sliceViewer(convolved*1);
 %histogram(convolved)
+%}
 
 %{
 %% imwarp-based 3d rotation
