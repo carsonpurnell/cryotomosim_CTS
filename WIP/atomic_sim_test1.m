@@ -8,13 +8,13 @@ for i=1:numel(fn)
 end
 
 % rotate the model to an angle (eucentric adjustment? rotate about 0?)
-angle = 45;
+angle = 25;
 ax = [1,0,0];
 atoms(:,1:3) = (atoms(:,1:3)-cen)*rotmat(ax,deg2rad(angle))+cen;
 
 % project a set of slices - higher resolution in Z? start with isotropy
 pix = 8;
-slabthick = 10;
+slabthick = 4;
 atoms(:,3) = (atoms(:,3)-min(atoms(:,3),[],'all'))/slabthick;
 sz = boxsize; sz(3) = max(atoms(:,3),[],'all');
 vol = helper_atoms2vol(pix,atoms,sz);
@@ -22,8 +22,9 @@ vol = helper_atoms2vol(pix,atoms,sz);
 % get the transmission wave
 
 % propogate transmission
-
-
+param = param_simulate('tilt',zeros(1,size(vol,3)));
+[convolved, ctf, param] = helper_ctf(vol,param);
+% all NaN for some reason
 
 
 
