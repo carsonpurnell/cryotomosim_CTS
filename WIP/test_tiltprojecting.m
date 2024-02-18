@@ -1,7 +1,7 @@
 % matlab-only replacement for imod tiltproject
 
 %% pick image
-[file, path] = uigetfile({'*.mrc'},'Select MRC');
+%[file, path] = uigetfile({'*.mrc'},'Select MRC');
 fullpath = fullfile(path,file);
 [img, head] = ReadMRC(fullpath);
 inv = img*1;%rescale(img*1,00,1);
@@ -18,7 +18,7 @@ proj = sum(rot,3);
 
 %% functionalized tilt projection
 angles = -60:2:60;
-ax = [1,0.0,0.0];
+ax = [1,0.1,0.0];
 % how to generate spiral/circular processiong, or cumulative random walk near 0?
 
 % what numerical scale for tilt images? not inverting to replicate current workflow
