@@ -30,7 +30,7 @@ L = relativistic_electrons(V); %compute wavelength from voltage, correcting for 
 
 Ny = 1/(2*pix); %nyquist frequency calculation - functionalize?
 B = param.sigma*Ny; %envelope factor from nyquist frequency - also incorporates the MTF signal dropoff (approx)
-q = 0.07*1; %amplitude contrast value - 7% is standard
+q = 0.07; %amplitude contrast value - 7% is generalization
 %envelope/amplitude still needs validation and corroboration to our real data
 
 % crunchy strip math thing - replace with subfunction, extend from 2d to 3d?
