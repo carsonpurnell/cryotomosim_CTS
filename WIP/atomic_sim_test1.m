@@ -7,6 +7,7 @@ for i=1:numel(fn)
     atoms = [atoms;split.(fn{i})];
 end
 
+
 % rotate the model to an angle (eucentric adjustment? rotate about 0?)
 angle = 25;
 ax = [1,0,0];
@@ -19,12 +20,21 @@ atoms(:,3) = (atoms(:,3)-min(atoms(:,3),[],'all'))/slabthick;
 sz = boxsize; sz(3) = max(atoms(:,3),[],'all');
 vol = helper_atoms2vol(pix,atoms,sz);
 
+%sim params
+param = param_simulate('pix',pix,'tilt',zeros(1,size(vol,3)));
+param.tilt = -40:numel(param.tilt)-41;
+
 % get the transmission wave
+d = param.dose*pix^2;
+dvol = poissrnd(rescale(vol*-1)*d,size(vol));
 
 % propogate transmission
-param = param_simulate('tilt',zeros(1,size(vol,3)));
-[convolved, ctf, param] = helper_ctf(vol,param);
-% all NaN for some reason
+mid = round(size(dvol,3)/2);
+for i=1:size(dvol,3)
+    param.defocus = param.defocus+(pix*slabthick*(mid-i))/1000;
+    param.tilt = 0;
+    [convolved(:,:,i), ctf, param] = helper_ctf(dvol(:,:,i),param);
+end
 
 
 
