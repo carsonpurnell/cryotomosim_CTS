@@ -31,12 +31,12 @@ dvol = poissrnd(rescale(vol*-1)*d,size(vol));
 % propogate transmission
 mid = round(size(dvol,3)/2);
 for i=1:size(dvol,3)
-    adj = (pix*slabthick*(i-mid))/1000*5;
+    adj = (pix*slabthick*(i-mid))/1000;
     param.defocus = -5+adj;
     param.tilt = 0;
     [convolved(:,:,i), ctf, param] = helper_ctf(dvol(:,:,i),param);
 end
-
+proj = rescale(sum(convolved,3));
 
 
 function t = rotmat(ax,rad)
