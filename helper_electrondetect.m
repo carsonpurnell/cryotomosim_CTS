@@ -11,6 +11,7 @@ arguments
     tilt
     param struct
 end
+rad = 0;
 if param.dose<=0, detect=tilt; return; end %if dose 0, skip detection and return perfect detection/original
 tiltangs = param.tilt; %unfortunately similar name to tilt 
 
