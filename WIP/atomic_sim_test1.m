@@ -38,7 +38,6 @@ for i=1:size(dvol,3)
 end
 proj = rescale(sum(convolved,3));
 
-
 function t = rotmat(ax,rad)
 ax = ax/norm(ax);
 x = ax(1); y = ax(2); z = ax(3);
