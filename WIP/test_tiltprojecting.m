@@ -36,6 +36,7 @@ sliceViewer(tilts);
 detect(isnan(detect))=0;
 sliceViewer((detect)*-1);
 %%
+
 %{
 %rs = rescale(detect,min(detect,[],'all'),max(detect,[],'all'));
 param.ctfoverlap = 2;
