@@ -42,17 +42,16 @@ function param = param_model(pix,param)
 % see also helper_constraints, helper_input, helper_pdb2vol
 % gen_carbongrid, gen_ice, and gen_beads
 arguments
-    %maybe GUI input dlg
     %easy way to navigate to stored params? modifiable defaults?
     %which params need more thorough validation?
     pix = 'gui' %(1,1) %required input
-    param.pix = 0;
+    param.pix = 'REQUIRED'
     
     param.layers = 1 %number of different particle layers to load and place
     
     %model run and limitations params
     param.density = 0.4 %if moving to target loop, this needs to be able to be a vector
-    param.iters = 0 %auto calculate if not given, would also need to be vectorable
+    param.iters = 1000 %auto calculate if not given, would also need to be vectorable
     param.constraint char = '  &' %use & +- to add borders to different axes
     
     %objects and contents params
@@ -66,6 +65,7 @@ if strcmp(pix,'gui')
     prompt = {'Pixel Size, in A',...
         'Particle layers',...
         'Maximum density (up to # layers)',...
+        'Placement iterations (up to # layers)',...
         'Border Constraints (3-char string for xyz axes)',...
         'Carbon grid (thickness radius, blank for no carbon)',...
         'Number of vesicles',...
@@ -79,15 +79,17 @@ if strcmp(pix,'gui')
         default{i} = num2str(default{i});
     end
     
-    p = inputdlg(prompt,ptitle,[1 40],default) %dialogue input happens
+    p = inputdlg(prompt,ptitle,[1 40],default); %dialogue input happens
     
     fn = fieldnames(param);
     for i=1:numel(fn) %extract the input values back into the param struct
         param.(fn{i}) = str2double(p{i});
     end
+else
+    param.pix = pix;
 end
 
-param.mem = round(param.mem); param.pix = pix;
+param.mem = round(param.mem); 
 
 layers = cell(1,param.layers);
 iters = zeros(1,numel(param.layers));
