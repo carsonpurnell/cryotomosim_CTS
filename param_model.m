@@ -45,7 +45,8 @@ arguments
     %maybe GUI input dlg
     %easy way to navigate to stored params? modifiable defaults?
     %which params need more thorough validation?
-    pix (1,1) %required input
+    pix = 'gui' %(1,1) %required input
+    param.pix = 0;
     
     param.layers = 1 %number of different particle layers to load and place
     
@@ -60,6 +61,30 @@ arguments
     param.filaments = 0
     param.beads = 0
     param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
+end
+if strcmp(pix,'gui')
+    prompt = {'Pixel Size, in A',...
+        'Particle layers',...
+        'Maximum density (up to # layers)',...
+        'Border Constraints (3-char string for xyz axes)',...
+        'Carbon grid (thickness radius, blank for no carbon)',...
+        'Number of vesicles',...
+        'Filaments (any ~=0 to use, barely-functional WIP)',...
+        'Number of beads',...
+        'Ice opacity'};
+    ptitle = 'Model Generation Parameters';
+    
+    default = struct2cell(param); %get all the default values back out into a list
+    for i=1:numel(default)
+        default{i} = num2str(default{i});
+    end
+    
+    p = inputdlg(prompt,ptitle,[1 40],default) %dialogue input happens
+    
+    fn = fieldnames(param);
+    for i=1:numel(fn) %extract the input values back into the param struct
+        param.(fn{i}) = str2double(p{i});
+    end
 end
 
 param.mem = round(param.mem); param.pix = pix;
