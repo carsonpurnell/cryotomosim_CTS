@@ -1,6 +1,6 @@
 function param = param_model(pix,param)
 %param = param_model(pix,param)
-%param manager for cts_model
+%param manager for cts_model. param_model('gui') for GUI prompt inputs
 %
 %pix            required
 %pixel size of the generated model and output .mrc, in angstroms
