@@ -83,12 +83,14 @@ if strcmp(pix,'gui')
     
     fn = fieldnames(param);
     for i=1:numel(fn) %extract the input values back into the param struct
-        param.(fn{i}) = str2double(p{i});
+        tmp = str2double(p{i});
+        if isnan(tmp), tmp = str2num(p{i}); end
+        if i==5, tmp = p{i}; end
+        param.(fn{i}) = tmp;
     end
 else
     param.pix = pix;
 end
-
 param.mem = round(param.mem); 
 
 layers = cell(1,param.layers);
