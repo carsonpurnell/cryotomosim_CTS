@@ -1,11 +1,8 @@
 % use help COMMAND to see a more extensive description of individual commands and more options
 
 
-%% get some pdb/cif files
-%
-%download stuff
-%command for downloading pdbs?
-% help FUNCTIONNAME provides more details, especially for more input details and options
+%% get some pdb/cif structure files
+% I suggest starting with large proteins with distinct shapes
 
 %% load model parameters
 % sets model generation parameters in the 'modparam' variable. uses an input dialog for all parameters
