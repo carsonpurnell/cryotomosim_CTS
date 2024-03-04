@@ -29,7 +29,7 @@ simparam = param_simulate('gui');
 %% run tilt simulation and reconstruction
 % generates s simulation in a subfolder under the model. 'gui' uses a file browser gui to select the model
 % the model can be either the .mrc or .mat created earlier but only .mat will be able to generate an atlas.
-[detected,conv] = cts_simulate('gui',simparam,'suffix','demosim');
+[detected, conv, tiltseries, atlas, ctf] = cts_simulate('gui',simparam,'suffix','demosim');
 % example of skipping param_simulate, and providing parameters directly - inside the curly braces
 %[detected,conv] = cts_simulate('gui',{'defocus',-5,'dose',0,'raddamage',1},'suffix','dosezero');
 
@@ -38,4 +38,12 @@ simparam = param_simulate('gui');
 % the model folder is named according to datetime, the input particles, and pixel size
 % simulation folders are generated within the model folder, named with the dose and 
 % if using imod, you can navigate to the folder and easily view all outputs with 3dmod *.mrc.
+%
+% models: the cts variable the demo creates contains most of the model information, as a matlab struct
+% running just 'cts' in the matlab window will display its contents. it has stepwise models and per-component
+% models, and could be used to remove individual components from a model by advanced users.
+%
+% simulations: simulation data is mostly output as .mrc files. the atlas is a number-label image indicating
+% the identity of each pixel in the image, in the order the different classes are listed in the atlas filename
+
 
