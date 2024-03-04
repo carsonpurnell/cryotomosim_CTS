@@ -4,7 +4,7 @@
 
 
 %% get some pdb/cif structure files
-% I suggest starting with large proteins with distinct shapes for clarity
+% I suggest starting with large proteins with distinct shapes for initial clarity. 
 % start with a pixel size of 6-12A for fast runtimes while testing. Small pixel sizes get much slower
 
 %% load model parameters
