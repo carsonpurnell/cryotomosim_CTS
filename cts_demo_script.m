@@ -1,8 +1,11 @@
+
 % use help COMMAND to see a more extensive description of individual commands and more options
+% the model/sim functions and parameters have MANY options to cover different imaging and samples
 
 
 %% get some pdb/cif structure files
-% I suggest starting with large proteins with distinct shapes
+% I suggest starting with large proteins with distinct shapes for clarity
+% start with a pixel size of 6-12A for fast runtimes while testing. Small pixel sizes get much slower
 
 %% load model parameters
 % sets model generation parameters in the 'modparam' variable. uses an input dialog for all parameters
