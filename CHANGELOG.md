@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [v0.5.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.5.2) - 2024-03-04 21:16:01
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix atlas pixel mismatch ([d97d635](https://github.com/carsonpurnell/cryotomosim_CTS/commit/d97d635c400c4014c867e03277152f6904644eca))
+
 ## [v0.5.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.5.1) - 2024-02-29 15:53:00
 
 *No description*
