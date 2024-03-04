@@ -9,7 +9,7 @@ end
 
 
 % rotate the model to an angle (eucentric adjustment? rotate about 0?)
-angle = 25;
+angle = 60;
 ax = [1,0,0];
 atoms(:,1:3) = (atoms(:,1:3)-cen)*rotmat(ax,deg2rad(angle))+cen;
 
@@ -37,6 +37,7 @@ for i=1:size(dvol,3)
     [convolved(:,:,i), ctf, param] = helper_ctf(dvol(:,:,i),param);
 end
 proj = rescale(sum(convolved,3));
+
 
 function t = rotmat(ax,rad)
 ax = ax/norm(ax);
