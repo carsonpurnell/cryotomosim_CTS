@@ -1,3 +1,6 @@
+% use help COMMAND to see a more extensive description of individual commands and more options
+
+
 %% get some pdb/cif files
 %
 %download stuff
@@ -6,7 +9,7 @@
 
 %% load model parameters
 % sets model generation parameters in the 'modparam' variable. uses an input dialog for all parameters
-modparam = param_model('gui')
+modparam = param_model('gui');
 % example of directly declaring parameters, not using the GUI dialog
 %modparam = param_model(12,'layers',2,'density',[0.3,0.5]);
 % pixel size of 12(required in place of 'gui'), then layers/density are name-value arguments
@@ -29,3 +32,10 @@ simparam = param_simulate('gui');
 [detected,conv] = cts_simulate('gui',simparam,'suffix','demosim');
 % example of skipping param_simulate, and providing parameters directly - inside the curly braces
 %[detected,conv] = cts_simulate('gui',{'defocus',-5,'dose',0,'raddamage',1},'suffix','dosezero');
+
+%% review data
+% all generated data is saved in the /tomosim directory, which should be in the home folder.
+% the model folder is named according to datetime, the input particles, and pixel size
+% simulation folders are generated within the model folder, named with the dose and 
+% if using imod, you can navigate to the folder and easily view all outputs with 3dmod *.mrc.
+
