@@ -6,7 +6,7 @@
 
 %% load model parameters
 % sets model generation parameters in the 'modparam' variable. uses an input dialog for all parameters
-modparam = param_model('gui');
+modparam = param_model('gui')
 % example of directly declaring parameters, not using the GUI dialog
 %modparam = param_model(12,'layers',2,'density',[0.3,0.5]);
 % pixel size of 12(required in place of 'gui'), then layers/density are name-value arguments
@@ -15,7 +15,7 @@ modparam = param_model('gui');
 % generates a model with the specified parameters. param_model can replace the modparam variable, when
 % it is convinient - but the variable is usually easier (no need to load inputs multiple times)
 modsize = zeros(400,300,50); % determines output model size, in pixels
-[cts] = cts_model(modsize,modparam,'suffix','ctsdemo'); %output file names will be ctsdemo.ext
+[cts] = cts_model(modsize,modparam,'suffix','_ctsdemo'); %output file names will end with _ctsdemo.ext
 
 %% load simulation parameters
 % sets tomogram simulation parameters, similarly to the model parameter function.
