@@ -34,7 +34,7 @@ simparam = param_simulate('gui');
 %% run tilt simulation and reconstruction
 % generates s simulation in a subfolder under the model. 'gui' uses a file browser gui to select the model
 % the model can be either the .mrc or .mat created earlier but only .mat will be able to generate an atlas.
-[detected, conv, tiltseries, atlas, ctf] = cts_simulate('gui',simparam,'suffix','demosim');
+[detected, conv, tiltseries, atlas, ctf] = cts_simulate('gui',simparam,'suffix','demosim2');
 % example of skipping param_simulate, and providing parameters directly - inside the curly braces
 % the curly braces are a special case, and can also be replaced with the full param_simulate function
 %[detected,conv] = cts_simulate('gui',{'defocus',-5,'dose',0,'raddamage',1},'suffix','dosezero');
