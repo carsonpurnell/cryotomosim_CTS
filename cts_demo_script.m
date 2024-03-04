@@ -5,6 +5,7 @@
 
 %% get some pdb/cif structure files
 % I suggest starting with large proteins with distinct shapes for initial clarity. 
+% complexes like proteosomes, anything in the >300kDa range is good to start with
 % start with a pixel size of 6-12A for fast runtimes while testing. Small pixel sizes get much slower
 
 %% load model parameters
@@ -17,7 +18,7 @@ modparam = param_model('gui');
 %% generate model
 % generates a model with the specified parameters. param_model can replace the modparam variable, when
 % it is convinient - but the variable is usually easier (no need to load inputs multiple times)
-modsize = zeros(400,300,50); % determines output model size, in pixels
+modsize = zeros(400,300,50); % determines output model size in pixels
 [cts] = cts_model(modsize,modparam,'suffix','_ctsdemo'); %output file names will end with _ctsdemo.ext
 
 %% load simulation parameters
@@ -31,6 +32,7 @@ simparam = param_simulate('gui');
 % the model can be either the .mrc or .mat created earlier but only .mat will be able to generate an atlas.
 [detected, conv, tiltseries, atlas, ctf] = cts_simulate('gui',simparam,'suffix','demosim');
 % example of skipping param_simulate, and providing parameters directly - inside the curly braces
+% the curly braces are a special case, and can also be replaced with the full param_simulate function
 %[detected,conv] = cts_simulate('gui',{'defocus',-5,'dose',0,'raddamage',1},'suffix','dosezero');
 
 %% review data
