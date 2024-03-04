@@ -1,3 +1,7 @@
+% how to use this demo
+% the run button will run this entire demo, as if executing it from the matlab command window
+% the run section button will instead run only the section highlighted in orange, where the selection is
+% use section-based run to examine the outputs of each step before continuing on to the next
 
 % use help COMMAND to see a more extensive description of individual commands and more options
 % the model/sim functions and parameters have MANY options to cover different imaging and samples
