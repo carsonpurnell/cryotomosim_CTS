@@ -16,7 +16,7 @@ atoms(:,1:3) = (atoms(:,1:3)-cen)*rotmat(ax,deg2rad(angle))+cen;
 
 % project a set of slices - higher resolution in Z? start with isotropy
 pix = 8;
-slabthick = 45;
+slabthick = 2;
 atoms(:,3) = (atoms(:,3)-min(atoms(:,3),[],'all'))/slabthick;
 sz = boxsize; sz(3) = max(atoms(:,3),[],'all');
 vol = helper_atoms2vol(pix,atoms,sz);
@@ -33,7 +33,7 @@ dvol = poissrnd(rescale(vol*-1)*d,size(vol));
 mid = round(size(dvol,3)/2);
 convolved = zeros(size(dvol));
 for i=1:size(dvol,3)
-    adj = (pix*slabthick*(i-mid))/1e6*1e3;
+    adj = (pix*slabthick*(i-mid))/1e4*3e1;
     param.defocus = -5+adj;
     param.tilt = 0;
     [convolved(:,:,i), ctf, param] = helper_ctf(dvol(:,:,i),param);
