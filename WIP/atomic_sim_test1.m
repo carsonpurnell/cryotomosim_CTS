@@ -8,6 +8,11 @@ for i=1:numel(fn)
 end
 
 %%
+angles = -60:10:60;
+tilt = atomictiltproj(atoms,param,angles,boxsize);
+sliceViewer(tilt);
+
+%% 
 
 % rotate the model to an angle (eucentric adjustment? rotate about 0?)
 angle = 60;
@@ -39,7 +44,48 @@ for i=1:size(dvol,3)
     [convolved(:,:,i), ctf, param] = helper_ctf(dvol(:,:,i),param);
 end
 proj = rescale(sum(convolved,3));
+
 imshow(proj);
+
+%% internal functs
+function tilt = atomictiltproj(atoms,param,angles,boxsize)
+ax = [1,0,0];
+cen = boxsize/2;
+
+tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
+for t=1:numel(param.tilt)
+    angle = param.tilt(t);
+    atomtmp = atoms;
+    atomtmp(:,1:3) = (atomtmp(:,1:3)-cen)*rotmat(ax,deg2rad(angle))+cen;
+    
+    % project a set of slices - higher resolution in Z? start with isotropy
+    %pix = 8;
+    slabthick = 2;
+    atomtmp(:,3) = (atomtmp(:,3)-min(atomtmp(:,3),[],'all'))/slabthick;
+    sz = boxsize; sz(3) = max(atomtmp(:,3),[],'all');
+    vol = helper_atoms2vol(param.pix,atomtmp,sz);
+    
+    %sim params
+    %param = param_simulate('pix',param.pix,'tilt',zeros(1,size(vol,3)));
+    %param.tilt = -40:numel(param.tilt)-41;
+    
+    % get the transmission wave
+    d = param.dose*param.pix^2;
+    dvol = poissrnd(rescale(vol*-1)*d,size(vol));
+    
+    % propogate transmission
+    mid = round(size(dvol,3)/2);
+    convolved = zeros(size(dvol));
+    for i=1:size(dvol,3)
+        adj = (param.pix*slabthick*(i-mid))/1e4*3e1;
+        param.defocus = -5+adj;
+        param.tilt = 0;
+        [convolved(:,:,i), ctf, param] = helper_ctf(dvol(:,:,i),param);
+    end
+    
+    tilt(:,:,t) = sum(convolved,3);
+end
+end
 
 function t = rotmat(ax,rad)
 ax = ax/norm(ax);
