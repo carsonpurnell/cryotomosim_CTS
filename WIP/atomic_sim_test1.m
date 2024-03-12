@@ -10,7 +10,7 @@ end
 %%
 angles = -60:20:60;
 [tilt,dtilt] = atomictiltproj(atoms,param,angles,boxsize,20);
-sliceViewer(tilt);
+sliceViewer(dtilt);
 
 %% 
 %{
@@ -52,9 +52,10 @@ function [tilt,dtilt] = atomictiltproj(atoms,param,angles,boxsize,slabthick)
 ax = [1,0,0];
 cen = boxsize/2;
 %angles = param.tilt;
+% get the transmission wave
+d = param.dose/numel(param.tilt)*param.pix^2;
 
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
-%size(tilt)
 for t=1:numel(angles)
     angle = angles(t);
     atomtmp = atoms;
@@ -65,14 +66,14 @@ for t=1:numel(angles)
     %slabthick = 10;
     atomtmp(:,3) = (atomtmp(:,3)-min(atomtmp(:,3),[],'all'))/slabthick;
     sz = boxsize; sz(3) = max(atomtmp(:,3),[],'all');
-    vol = helper_atoms2vol(param.pix,atomtmp,sz);
-    
+    [vol,solv] = helper_atoms2vol(param.pix,atomtmp,sz);
+    vol = vol+solv;
     %sim params
     %param = param_simulate('pix',param.pix,'tilt',zeros(1,size(vol,3)));
     %param.tilt = -40:numel(param.tilt)-41;
     
     % get the transmission wave
-    d = param.dose*param.pix^2;
+    %d = param.dose*param.pix^2;
     %dvol = poissrnd((vol*1)*d,size(vol)); %extremely slow with many sections - do at the end?
     
     % propogate transmission
@@ -87,7 +88,7 @@ for t=1:numel(angles)
     
     tilt(:,:,t) = sum(convolved,3);
 end
-dtilt = poissrnd(d*rescale(tilt*-1)/10,size(tilt));
+dtilt = poissrnd((d*rescale(tilt*1))*01,size(tilt));
 end
 
 function t = rotmat(ax,rad)
