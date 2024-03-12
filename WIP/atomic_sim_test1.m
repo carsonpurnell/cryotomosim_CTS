@@ -8,12 +8,12 @@ for i=1:numel(fn)
 end
 
 %%
-angles = -60:10:60;
+angles = -60:20:60;
 tilt = atomictiltproj(atoms,param,angles,boxsize);
 sliceViewer(tilt);
 
 %% 
-
+%{
 % rotate the model to an angle (eucentric adjustment? rotate about 0?)
 angle = 60;
 ax = [1,0,0];
@@ -46,15 +46,16 @@ end
 proj = rescale(sum(convolved,3));
 
 imshow(proj);
-
+%}
 %% internal functs
 function tilt = atomictiltproj(atoms,param,angles,boxsize)
 ax = [1,0,0];
 cen = boxsize/2;
 
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
-for t=1:numel(param.tilt)
-    angle = param.tilt(t);
+%size(tilt)
+for t=1:numel(angles)
+    angle = angles(t);
     atomtmp = atoms;
     atomtmp(:,1:3) = (atomtmp(:,1:3)-cen)*rotmat(ax,deg2rad(angle))+cen;
     
