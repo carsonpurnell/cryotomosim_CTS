@@ -138,8 +138,9 @@ for i=1:3
     ixf = ixf.*ix;
     %fprintf('%i dropped \n',numel(ix)-sum(ix)) %diagnostic to check if any points eliminated
 end
-p = p(ixf>0,:); 
-mag=mag(ixf>0);
+ixf = ixf>0;
+p = p(ixf,:); 
+mag=mag(ixf);
 tmpvol = accumarray(p,mag,emsz);
 acount = acount+accumarray(p,avol*1,emsz);
 tmpsolv = (solv-acount);
