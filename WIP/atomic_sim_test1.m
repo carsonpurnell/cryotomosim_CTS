@@ -9,7 +9,7 @@ end
 
 %%
 angles = -60:20:60;
-tilt = atomictiltproj(atoms,param,angles,boxsize);
+[tilt,dtilt] = atomictiltproj(atoms,param,angles,boxsize,20);
 sliceViewer(tilt);
 
 %% 
@@ -48,9 +48,10 @@ proj = rescale(sum(convolved,3));
 imshow(proj);
 %}
 %% internal functs
-function tilt = atomictiltproj(atoms,param,angles,boxsize)
+function [tilt,dtilt] = atomictiltproj(atoms,param,angles,boxsize,slabthick)
 ax = [1,0,0];
 cen = boxsize/2;
+%angles = param.tilt;
 
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
 %size(tilt)
@@ -61,7 +62,7 @@ for t=1:numel(angles)
     
     % project a set of slices - higher resolution in Z? start with isotropy
     %pix = 8;
-    slabthick = 2;
+    %slabthick = 10;
     atomtmp(:,3) = (atomtmp(:,3)-min(atomtmp(:,3),[],'all'))/slabthick;
     sz = boxsize; sz(3) = max(atomtmp(:,3),[],'all');
     vol = helper_atoms2vol(param.pix,atomtmp,sz);
@@ -72,20 +73,21 @@ for t=1:numel(angles)
     
     % get the transmission wave
     d = param.dose*param.pix^2;
-    dvol = poissrnd(rescale(vol*-1)*d,size(vol));
+    %dvol = poissrnd((vol*1)*d,size(vol)); %extremely slow with many sections - do at the end?
     
     % propogate transmission
-    mid = round(size(dvol,3)/2);
-    convolved = zeros(size(dvol));
-    for i=1:size(dvol,3)
+    mid = round(size(vol,3)/2);
+    convolved = zeros(size(vol));
+    for i=1:size(vol,3)
         adj = (param.pix*slabthick*(i-mid))/1e4*3e1;
         param.defocus = -5+adj;
         param.tilt = 0;
-        [convolved(:,:,i), ctf, param] = helper_ctf(dvol(:,:,i),param);
+        [convolved(:,:,i), ctf, param] = helper_ctf(vol(:,:,i),param);
     end
     
     tilt(:,:,t) = sum(convolved,3);
 end
+dtilt = poissrnd(d*rescale(tilt*-1)/10,size(tilt));
 end
 
 function t = rotmat(ax,rad)
