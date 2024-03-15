@@ -8,7 +8,8 @@ for i=1:numel(fn)
 end
 
 %%
-angles = -60:20:60;
+angles = -60:10:60;
+param = param_simulate('pix',pix,'tilt',angles);
 [tilt,dtilt] = atomictiltproj(atoms,param,angles,boxsize,20);
 sliceViewer(dtilt);
 
@@ -88,7 +89,7 @@ for t=1:numel(angles)
     
     tilt(:,:,t) = sum(convolved,3);
 end
-dtilt = poissrnd((d*rescale(tilt*1))*01,size(tilt));
+dtilt = poissrnd((d*rescale(tilt*1,0,1))*01,size(tilt));
 end
 
 function t = rotmat(ax,rad)
