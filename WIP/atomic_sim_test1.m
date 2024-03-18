@@ -9,8 +9,8 @@ end
 
 %%
 angles = -60:10:60;
-param = param_simulate('pix',pix,'tilt',angles);
-[tilt,dtilt] = atomictiltproj(atoms,param,angles,boxsize,20);
+param = param_simulate('pix',12,'tilt',angles,'dose',200);
+[tilt,dtilt] = atomictiltproj(atoms,param,angles,boxsize,2);
 sliceViewer(dtilt);
 
 %% 
@@ -55,6 +55,7 @@ cen = boxsize/2;
 %angles = param.tilt;
 % get the transmission wave
 d = param.dose/numel(param.tilt)*param.pix^2;
+boxsize = param.pix*round(boxsize/param.pix);
 
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
 for t=1:numel(angles)
@@ -66,6 +67,7 @@ for t=1:numel(angles)
     %pix = 8;
     %slabthick = 10;
     atomtmp(:,3) = (atomtmp(:,3)-min(atomtmp(:,3),[],'all'))/slabthick;
+    % fixing boxsize seems to crop out excess slices
     sz = boxsize; sz(3) = max(atomtmp(:,3),[],'all');
     [vol,solv] = helper_atoms2vol(param.pix,atomtmp,sz);
     vol = vol+solv;
@@ -81,7 +83,7 @@ for t=1:numel(angles)
     mid = round(size(vol,3)/2);
     convolved = zeros(size(vol));
     for i=1:size(vol,3)
-        adj = (param.pix*slabthick*(i-mid))/1e4*3e1;
+        adj = (param.pix*slabthick*(i-mid))/1e4*1e0;
         param.defocus = -5+adj;
         param.tilt = 0;
         [convolved(:,:,i), ctf, param] = helper_ctf(vol(:,:,i),param);
