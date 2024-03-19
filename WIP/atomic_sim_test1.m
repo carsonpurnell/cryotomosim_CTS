@@ -11,7 +11,7 @@ end
 angles = -60:10:60;
 param = param_simulate('pix',10,'tilt',angles,'dose',200);
 [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,20);
-%sliceViewer(dtilt);
+sliceViewer(cv);
 
 %% 
 %{
@@ -114,7 +114,7 @@ cv = zeros(size(padded)); %pre-initialize output array
 
 mid = round(size(input,3)/2);
 for i=1:size(input,3) %loop through tilts
-    adj = (param.pix*slab*(i-mid))/(1e10)*1e4;
+    adj = (param.pix*slab*(i-mid))/(1e10)*1e2;
     %param.defocus = -5+adj;
     %shift = tand(param.tilt(i)); %proportion of length by tilt to compute vertical displacement
     %for j=1:numel(bincenter)
@@ -203,6 +203,7 @@ for t=1:numel(angles)
     tilt(:,:,t) = sum(convolved,3);
 end
 dtilt = poissrnd((d*rescale(tilt*1,0,1))*01,size(tilt));
+cv2 = poissrnd((d*rescale(cv2*1,0,1))*01,size(cv2));
 end
 
 function t = rotmat(ax,rad)
