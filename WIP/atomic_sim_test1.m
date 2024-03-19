@@ -9,9 +9,9 @@ end
 
 %%
 angles = -60:10:60;
-param = param_simulate('pix',12,'tilt',angles,'dose',200);
-[tilt,dtilt] = atomictiltproj(atoms,param,angles,boxsize,2);
-sliceViewer(dtilt);
+param = param_simulate('pix',10,'tilt',angles,'dose',200);
+[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,20);
+%sliceViewer(dtilt);
 
 %% 
 %{
@@ -50,10 +50,11 @@ imshow(proj);
 %}
 %% internal functs
 
-function [convolved,ctf] = flatctf(input,param,pad)
+function [convolved,ctf] = flatctf(input,slab,param,pad)
 
 arguments
     input
+    slab
     param = {} %direct inputs from cts_param
     pad = 10; %padding added to volume before any computations
 end
@@ -92,7 +93,7 @@ yl = size(padded,1);%binlength*2;
 %zl = size(padded,3);%+pad*2; %not using due to 2d implementation
 [x,y] = meshgrid(-Ny:2*Ny/xl:Ny-Ny/xl,-Ny:2*Ny/yl:Ny-Ny/yl);%,-Ny:2*Ny/zl:Ny-Ny/zl);
 k = sqrt(x.^2+y.^2);%+z.^2); %evaluate inverse distance, identical for all strips
-
+%imshow(rescale(k))
 %{
 whole-tilt envelope setup stuff - deprecated
 xf = size(padded,2); yf = size(padded,1);
@@ -111,9 +112,9 @@ cv = zeros(size(padded)); %pre-initialize output array
 %[weight] = abs(abs(meshgrid(-1+0.5/binlength:1/(binlength):1-0.5/binlength,1:size(padded,2)))-1);
 %weight = permute(weight,[2 1])/overlap; %former method, a bit more convoluted to get the right values
 
+mid = round(size(input,3)/2);
 for i=1:size(input,3) %loop through tilts
-    mid = round(size(input,3)/2);
-    adj = (param.pix*slabthick*(i-mid))*1e0;
+    adj = (param.pix*slab*(i-mid))/(1e10)*1e4;
     %param.defocus = -5+adj;
     %shift = tand(param.tilt(i)); %proportion of length by tilt to compute vertical displacement
     %for j=1:numel(bincenter)
@@ -121,11 +122,11 @@ for i=1:size(input,3) %loop through tilts
         %sdist = pix*(bincenter(j)-size(padded,1)/2)*1; %calculate horizontal distance (dev multiplier)
         %Dzs = Dz + shift*sdist; %average defocus in the strip given tilt angle and horizontal distance
         %in = padded(six(1):six(2),1:end,i); %input slice for convolution
-        Dzs = param.defocus+adj;
+        Dzs = Dz+adj;
         [lg, ctf] = internal_ctf(padded(:,:,i),cs,L,k,Dzs,B,q); %get ctf-convolved subvolume
         %lg = lg.*weight; %scale by weight for gradient overlap of strips
         %cv(six(1):six(2),1:end,i) = cv(six(1):six(2),1:end,i)+lg;
-        cv(:,:,i) = lg;
+        cv(:,:,i) = lg; %imshow(rescale(padded(:,:,i)));
         %verbose real defoc listing
         %fprintf('tiltangle %g ix %g to %g strip distance %g at defoc %g\n',...
             %param.tilt(i),six(1),six(2),sdist,Dzs)
@@ -133,7 +134,10 @@ for i=1:size(input,3) %loop through tilts
     %whole tilt lowpass filter test
     %cv(:,:,i) = real(ifft2(ifftshift(fftshift( fft2(cv(:,:,i)) ).*circfilt )));
 end
-convolved = cv(1+edge:end-edge,1+pad:end-pad,:); %extract image area from padded dimensions
+%sliceViewer(cv);
+%imshow(rescale(lg));
+convolved = cv(1+pad:end-pad,1+pad:end-pad,:); %extract image area from padded dimensions
+ctf = ctf(1+pad:end-pad,1+pad:end-pad);
 fprintf('  - modulation done \n')
 end
 
@@ -152,7 +156,7 @@ h = 6.62607015e-34; %planck constant m^2 Kg/s
 L = h*c/sqrt(e*V*(2*m*c^2+e*V)); %calculation of wavelength L from accelerating voltage and constants
 end
 
-function [tilt,dtilt] = atomictiltproj(atoms,param,angles,boxsize,slabthick)
+function [tilt,dtilt,c2,cv2,ctf2] = atomictiltproj(atoms,param,angles,boxsize,slabthick)
 ax = [1,0,0];
 cen = boxsize/2;
 %angles = param.tilt;
@@ -185,12 +189,16 @@ for t=1:numel(angles)
     % propogate transmission
     mid = round(size(vol,3)/2);
     convolved = zeros(size(vol));
+    tparam = param;
     for i=1:size(vol,3)
-        adj = (param.pix*slabthick*(i-mid))/1e4*1e0;
-        param.defocus = -5+adj;
-        param.tilt = 0;
-        [convolved(:,:,i), ctf, param] = helper_ctf(vol(:,:,i),param);
+        adj = (tparam.pix*slabthick*(i-mid))/1e4*1e0;
+        tparam.defocus = param.defocus+adj;
+        tparam.tilt = 0;
+        [convolved(:,:,i), ctf, tparam] = helper_ctf(vol(:,:,i),tparam);
     end
+    
+    [cv2,ctf2] = flatctf(vol,slabthick,param);
+    c2(:,:,t) = sum(cv2,3);
     
     tilt(:,:,t) = sum(convolved,3);
 end
