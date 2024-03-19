@@ -50,7 +50,7 @@ imshow(proj);
 %}
 %% internal functs
 
-function [modulated,ctf] = flatctf(slice,param)
+function [convolved,ctf] = flatctf(input,param,pad)
 
 arguments
     input
@@ -76,19 +76,19 @@ q = 0.07; %amplitude contrast value - 7% is generalization
 %envelope/amplitude still needs validation and corroboration to our real data
 
 % crunchy strip math thing - replace with subfunction, extend from 2d to 3d?
-k = 1:size(input,1); divs = k(rem(size(input,1),k)==0); %find divisible factors from volume size
+%k = 1:size(input,1); %divs = k(rem(size(input,1),k)==0); %find divisible factors from volume size
 
-binspacing = divs(round(end/2)); %use the middle divisor as the spacing
-bins = size(input,1)/binspacing+1; %determine bins from the spacing and vol size
+%binspacing = divs(round(end/2)); %use the middle divisor as the spacing
+%bins = size(input,1)/binspacing+1; %determine bins from the spacing and vol size
 
-binlength = binspacing*param.ctfoverlap; %this is one-sided, not full length
-edge = binlength+binspacing*(param.ctfoverlap-1);
-padded = padarray(input,[edge pad],mean(input,'all'));
-bincenter = (linspace(binlength,size(padded,1)-binlength,bins+(param.ctfoverlap-1)*2)); %compute strip centres
+%binlength = binspacing*param.ctfoverlap; %this is one-sided, not full length
+%edge = binlength+binspacing*(param.ctfoverlap-1);
+padded = padarray(input,[pad pad],mean(input,'all'));
+%bincenter = (linspace(binlength,size(padded,1)-binlength,bins+(param.ctfoverlap-1)*2)); %compute strip centres
 % crunchy strip math thing
 
 xl = size(padded,2); %uses dim2 to avoid needing to permute the CTF to the image space
-yl = binlength*2;
+yl = size(padded,1);%binlength*2;
 %zl = size(padded,3);%+pad*2; %not using due to 2d implementation
 [x,y] = meshgrid(-Ny:2*Ny/xl:Ny-Ny/xl,-Ny:2*Ny/yl:Ny-Ny/yl);%,-Ny:2*Ny/zl:Ny-Ny/zl);
 k = sqrt(x.^2+y.^2);%+z.^2); %evaluate inverse distance, identical for all strips
@@ -105,26 +105,31 @@ circfilt = sqrt((r-xf/2-0.5).^2+(c-yf/2-0.5).^2)<50;
 cv = zeros(size(padded)); %pre-initialize output array
 
 %generate weights for overlapping portions of bins
-inc = 0.5/binlength; %make edges not fall to 0/centre not 1
-weight = 1-abs(linspace(-1+inc,1-inc,yl))'; %more simple weight function for strips
-weight = repmat(weight/param.ctfoverlap,[1 xl]); %replicate across the strip length
+%inc = 0.5/binlength; %make edges not fall to 0/centre not 1
+%weight = 1-abs(linspace(-1+inc,1-inc,yl))'; %more simple weight function for strips
+%weight = repmat(weight/param.ctfoverlap,[1 xl]); %replicate across the strip length
 %[weight] = abs(abs(meshgrid(-1+0.5/binlength:1/(binlength):1-0.5/binlength,1:size(padded,2)))-1);
 %weight = permute(weight,[2 1])/overlap; %former method, a bit more convoluted to get the right values
 
-for i=1:numel(param.tilt) %loop through tilts
-    shift = tand(param.tilt(i)); %proportion of length by tilt to compute vertical displacement
-    for j=1:numel(bincenter)
-        six = round([1+bincenter(j)-binlength, bincenter(j)+binlength]);
-        sdist = pix*(bincenter(j)-size(padded,1)/2)*1; %calculate horizontal distance (dev multiplier)
-        Dzs = Dz + shift*sdist; %average defocus in the strip given tilt angle and horizontal distance
-        in = padded(six(1):six(2),1:end,i); %input slice for convolution
-        [lg, ctf] = internal_ctf(in,cs,L,k,Dzs,B,q); %get ctf-convolved subvolume
-        lg = lg.*weight; %scale by weight for gradient overlap of strips
-        cv(six(1):six(2),1:end,i) = cv(six(1):six(2),1:end,i)+lg;
+for i=1:size(input,3) %loop through tilts
+    mid = round(size(input,3)/2);
+    adj = (param.pix*slabthick*(i-mid))*1e0;
+    %param.defocus = -5+adj;
+    %shift = tand(param.tilt(i)); %proportion of length by tilt to compute vertical displacement
+    %for j=1:numel(bincenter)
+        %six = round([1+bincenter(j)-binlength, bincenter(j)+binlength]);
+        %sdist = pix*(bincenter(j)-size(padded,1)/2)*1; %calculate horizontal distance (dev multiplier)
+        %Dzs = Dz + shift*sdist; %average defocus in the strip given tilt angle and horizontal distance
+        %in = padded(six(1):six(2),1:end,i); %input slice for convolution
+        Dzs = param.defocus+adj;
+        [lg, ctf] = internal_ctf(padded(:,:,i),cs,L,k,Dzs,B,q); %get ctf-convolved subvolume
+        %lg = lg.*weight; %scale by weight for gradient overlap of strips
+        %cv(six(1):six(2),1:end,i) = cv(six(1):six(2),1:end,i)+lg;
+        cv(:,:,i) = lg;
         %verbose real defoc listing
         %fprintf('tiltangle %g ix %g to %g strip distance %g at defoc %g\n',...
             %param.tilt(i),six(1),six(2),sdist,Dzs)
-    end
+    %end
     %whole tilt lowpass filter test
     %cv(:,:,i) = real(ifft2(ifftshift(fftshift( fft2(cv(:,:,i)) ).*circfilt )));
 end
