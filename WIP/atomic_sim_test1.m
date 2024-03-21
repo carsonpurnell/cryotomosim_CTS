@@ -8,9 +8,9 @@ for i=1:numel(fn)
 end
 
 %%
-angles = -60:2:60;
-param = param_simulate('pix',8,'tilt',angles,'dose',50);
-[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,10);
+angles = -60:10:60;
+param = param_simulate('pix',16,'tilt',angles,'dose',50);
+[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,20);
 sliceViewer(cv);
 
 %% 
@@ -166,6 +166,7 @@ boxsize = param.pix*round(boxsize/param.pix);
 
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
 for t=1:numel(angles)
+    disp(angles(t))
     angle = angles(t);
     atomtmp = atoms;
     atomtmp(:,1:3) = (atomtmp(:,1:3)-cen)*rotmat(ax,deg2rad(angle))+cen;
@@ -175,8 +176,10 @@ for t=1:numel(angles)
     %slabthick = 10;
     atomtmp(:,3) = (atomtmp(:,3)-min(atomtmp(:,3),[],'all'))/slabthick;
     % fixing boxsize seems to crop out excess slices
-    sz = boxsize; sz(3) = max(atomtmp(:,3),[],'all');
-    [vol,solv] = helper_atoms2vol(param.pix,atomtmp,sz);
+    sz = boxsize; sz(3) = max(atomtmp(:,3),[],'all')-min(atomtmp(:,3),[],'all');
+    of = min(atomtmp,1);
+    size(of)
+    [vol,solv] = helper_atoms2vol(param.pix,atomtmp,sz,of);
     vol = vol+solv;
     %sim params
     %param = param_simulate('pix',param.pix,'tilt',zeros(1,size(vol,3)));
