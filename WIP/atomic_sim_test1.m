@@ -8,9 +8,9 @@ for i=1:numel(fn)
 end
 
 %%
-angles = -60:10:60;
-param = param_simulate('pix',6,'tilt',angles,'dose',20);
-[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,5);
+angles = -60:2:60;
+param = param_simulate('pix',8,'tilt',angles,'dose',50);
+[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,10);
 sliceViewer(cv);
 
 %% 
@@ -191,7 +191,7 @@ for t=1:numel(angles)
     convolved = zeros(size(vol));
     tparam = param;
     for i=1:size(vol,3)
-        adj = (tparam.pix*slabthick*(i-mid))/1e4*1e0;
+        adj = (tparam.pix*slabthick*(i-mid))/1e4*1e2;
         tparam.defocus = param.defocus+adj;
         tparam.tilt = 0;
         %[convolved(:,:,i), ctf, tparam] = helper_ctf(vol(:,:,i),tparam);
@@ -204,7 +204,7 @@ for t=1:numel(angles)
 end
 ctf = 0;
 dtilt = poissrnd((d*rescale(tilt*1,0,1))*01,size(tilt));
-cv2 = poissrnd((d*rescale(cv2*1,0,1))*01,size(cv2));
+c2 = poissrnd((d*rescale(c2*1,0,1))*01,size(c2));
 end
 
 function t = rotmat(ax,rad)
