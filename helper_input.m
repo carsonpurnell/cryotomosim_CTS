@@ -82,7 +82,9 @@ for i=1:numel(list)
     % old janky class parser and loader thing
     %
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
+    % change distractors to same type so they all occupy the same atlas label
     if contains(filename,'distract','IgnoreCase',true); tmp.type = 'distract'; end
+    %if any(ismember(tmp.flags,{'distract'})); tmp.type = 'distract'; end
     %{
     if ismember(tmp.type,types)==0, tmp.type='single'; end %default to single with no type ID in name
     trim=1;
