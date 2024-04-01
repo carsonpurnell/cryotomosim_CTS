@@ -9,7 +9,7 @@ end
 
 %%
 angles = -60:10:60;
-param = param_simulate('pix',8,'tilt',angles,'dose',100);
+param = param_simulate('pix',8,'tilt',angles,'dose',50);
 [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,20);
 sliceViewer(cv);
 
@@ -161,7 +161,8 @@ ax = [1,0,0];
 cen = boxsize/2;
 %angles = param.tilt;
 % get the transmission wave
-d = param.dose/numel(param.tilt)*param.pix^2;
+DQE = 0.84;
+d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix);
 
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
