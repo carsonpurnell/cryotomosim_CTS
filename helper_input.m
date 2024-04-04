@@ -82,8 +82,7 @@ for i=1:numel(list)
     % old janky class parser and loader thing
     %
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
-    % change distractors to same type so they all occupy the same atlas label
-    if contains(filename,'distract','IgnoreCase',true); tmp.type = 'distract'; end
+    
     %if any(ismember(tmp.flags,{'distract'})); tmp.type = 'distract'; end
     %{
     if ismember(tmp.type,types)==0, tmp.type='single'; end %default to single with no type ID in name
@@ -125,6 +124,7 @@ for i=1:numel(list)
     
     %disp(names); disp(id);
     
+    
     %new name parser, import from pdb2vol and replace when needed
     %need to intelligently get group/single
     %disp(names)
@@ -144,7 +144,15 @@ for i=1:numel(list)
         names{j} = strrep(names{j},'-','_');
     end
     names = reshape(names,1,[]); %reshape to single row to unbreak concatenation in randomfill
+    
+    % change distractors to same type so they all occupy the same atlas label
+    if contains(filename,'distract','IgnoreCase',true) 
+        for j=1:numel(names)
+            names{j} = 'distract';
+        end
+    end
     tmp.id = names;
+    
     %disp(names); disp(id);
     %disp(names)
     
