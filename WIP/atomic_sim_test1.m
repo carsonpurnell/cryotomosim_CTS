@@ -8,9 +8,9 @@ for i=1:numel(fn)
 end
 
 %%
-angles = -60:10:60;
-param = param_simulate('pix',8,'tilt',angles,'dose',50);
-[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,20);
+angles = -60:20:60;
+param = param_simulate('pix',10,'tilt',angles,'dose',40);
+[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,6);
 sliceViewer(cv);
 
 %% 
@@ -113,7 +113,8 @@ cv = zeros(size(padded)); %pre-initialize output array
 %weight = permute(weight,[2 1])/overlap; %former method, a bit more convoluted to get the right values
 
 mid = round(size(input,3)/2);
-for i=1:size(input,3) %loop through tilts
+if numel(size(input))>2, iters = size(input,3); else iters=1; end
+for i=1:iters %loop through tilts
     adj = (param.pix*slab*(i-mid))/(1e10)*1e0;
     %param.defocus = -5+adj;
     %shift = tand(param.tilt(i)); %proportion of length by tilt to compute vertical displacement
@@ -196,10 +197,11 @@ for t=1:numel(angles)
     convolved = zeros(size(vol));
     tparam = param;
     for i=1:size(vol,3)
-        adj = (tparam.pix*slabthick*(i-mid))/1e4*1e2;
+        adj = (tparam.pix*slabthick*(i-mid))/1e4*4e1;
         tparam.defocus = param.defocus+adj;
         tparam.tilt = 0;
         %[convolved(:,:,i), ctf, tparam] = helper_ctf(vol(:,:,i),tparam);
+        [convolved(:,:,i), ctf] = flatctf(vol(:,:,i),slabthick,tparam);
     end
     
     [cv2,ctf2] = flatctf(vol,slabthick,param);
