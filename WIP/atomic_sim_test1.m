@@ -11,7 +11,7 @@ end
 angles = -60:20:60;
 param = param_simulate('pix',10,'tilt',angles,'dose',40);
 [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,6);
-sliceViewer(cv);
+sliceViewer(dtilt);
 
 %% 
 %{
@@ -198,7 +198,7 @@ for t=1:numel(angles)
     cv = convolved;
     tparam = param;
     for i=1:size(vol,3)
-        adj = (tparam.pix*slabthick*(i-mid))/1e4*4e1;
+        adj = (tparam.pix*slabthick*(i-mid))/1e4*1e0;
         tparam.defocus = param.defocus+adj;
         tparam.tilt = 0;
         %[convolved(:,:,i), ctf, tparam] = helper_ctf(vol(:,:,i),tparam);
