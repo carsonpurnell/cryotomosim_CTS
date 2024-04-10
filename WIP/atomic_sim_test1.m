@@ -157,7 +157,7 @@ h = 6.62607015e-34; %planck constant m^2 Kg/s
 L = h*c/sqrt(e*V*(2*m*c^2+e*V)); %calculation of wavelength L from accelerating voltage and constants
 end
 
-function [tilt,dtilt,c2,cv2,ctf2] = atomictiltproj(atoms,param,angles,boxsize,slabthick)
+function [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,slabthick)
 ax = [1,0,0];
 cen = boxsize/2;
 %angles = param.tilt;
@@ -195,6 +195,7 @@ for t=1:numel(angles)
     % propogate transmission
     mid = round(size(vol,3)/2);
     convolved = zeros(size(vol));
+    cv = convolved;
     tparam = param;
     for i=1:size(vol,3)
         adj = (tparam.pix*slabthick*(i-mid))/1e4*4e1;
@@ -204,14 +205,14 @@ for t=1:numel(angles)
         [convolved(:,:,i), ctf] = flatctf(vol(:,:,i),slabthick,tparam);
     end
     
-    [cv2,ctf2] = flatctf(vol,slabthick,param);
-    c2(:,:,t) = sum(cv2,3);
+    %[cv,ctf2] = flatctf(vol,slabthick,param);
+    cv2(:,:,t) = sum(cv,3);
     
     tilt(:,:,t) = sum(convolved,3);
 end
 ctf = 0;
 dtilt = poissrnd((d*rescale(tilt*1,0,1))*01,size(tilt));
-c2 = poissrnd((d*rescale(c2*1,0,1))*01,size(c2));
+cv2 = poissrnd((d*rescale(cv2*1,0,1))*01,size(cv2));
 end
 
 function t = rotmat(ax,rad)
