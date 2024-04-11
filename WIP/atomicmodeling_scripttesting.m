@@ -1,7 +1,7 @@
 %% load input structures as atomic data
 %rng(2);
 pix = 10; clear particles;
-input = {'ribosome__4ug0.pdb'};%'actin__6t1y_13x2.pdb','MT__6o2tx3.pdb'};%,...
+input = {'ribosome__4ug0.pdb','actin__6t1y_13x2.pdb','MT__6o2tx3.pdb'};%,...
     %'tric__tric__6nra-open_7lum-closed.group.pdb',...
     %'ribo__ribo__4ug0_4v6x.group.pdb'};%,...
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
@@ -50,7 +50,7 @@ tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize
 con = helper_atomcon(boxsize,pix); % pseudonatural ice border (wavy flat, no curvature)
 dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 
-n = 400;
+n = 800;
 %profile on
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 tic; [split,dyn,mu] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
