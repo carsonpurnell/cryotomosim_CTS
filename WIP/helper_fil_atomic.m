@@ -16,7 +16,7 @@ end
 for ol=1:numel(particles)
     mono = particles(ol); ct = 0;
     %iters = round(0.2*mono.filprop(4)^1.7); %10 33
-    iters = round(prod(box)*(mono.filprop(4)^1.6)*1e-10);
+    iters = round(prod(box)*(mono.filprop(4)^1.6)*1e-10)*1;
 for i=1:iters
     
     [fp,comlist,muix,fil,kill] = int_filpoly(mono,box,mu);
