@@ -57,16 +57,6 @@ WriteMRC(atlas,cts.param.pix,append('atlas_',ident,'.mrc'))
 end
 
 function generatetable(split,filename)
-%old watershed code reformulated to watershed function
-% cl = imclose(split,strel('sphere',2)); %close small holes to avoid chopping most particles up
-% 
-% d = -bwdist(~cl); %calculate distances for watershed
-% mask = imextendedmin(d,2); %generate extended minima mask from distance map (not sure why 2)
-% d2 = imimposemin(d,mask); %merge local minima to make segmentations less chopped
-% w = watershed(d2); w(~cl) = 0; %watershed the local minima and mask out non-particles
-% if 1==2 %diagnostic output of the watershed region map
-%     WriteMRC(w,2,append(filename,'_wshed_','.mrc'))
-% end
 labelmask = helper_watershed(split);
 regions = regionprops3(labelmask,"Centroid"); %identify particle centroids from watershed mask
 
