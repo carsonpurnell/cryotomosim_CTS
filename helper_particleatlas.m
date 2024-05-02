@@ -24,7 +24,7 @@ nsplits = cat(4,nsplits{:}); %stack in 4th dim
 if isfield(cts.model,'beads'), cts.splitmodel.beads = cts.model.beads; end
 if isfield(cts.model,'mem'), cts.splitmodel.AAmem = cts.model.mem; end %makes membrane first placement
 if isfield(cts.model,'grid'), cts.splitmodel.grid = cts.model.grid; end
-cts.splitmodel = orderfields(cts.splitmodel);
+%cts.splitmodel = orderfields(cts.splitmodel);
 
 roinames = fieldnames(cts.splitmodel); %retrieve component names
 indvol = cell(1,numel(roinames));
@@ -62,7 +62,7 @@ regions = regionprops3(labelmask,"Centroid"); %identify particle centroids from 
 
 dtable = zeros(size(regions.Centroid,1),35); %pregenerate the full table with zeros
 dtable(:,1) = 1:size(regions.Centroid,1); %particle number
-dtable(:,24) = regions.Centroid(:,2); %x coords xyflip because matlab backwards points coordinates
+dtable(:,24) = regions.Centroid(:,2); %x coords xyflip for matlab's backwards grid indexes
 dtable(:,25) = regions.Centroid(:,1); %y coords
 dtable(:,26) = regions.Centroid(:,3); %z coords
 
