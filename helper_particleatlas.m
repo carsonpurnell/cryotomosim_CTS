@@ -1,4 +1,4 @@
-function [atlas,roinames,indvol] = helper_particleatlas(cts,individual,dynamotable)
+function [atlas,roinames,indvol,atlas2] = helper_particleatlas(cts,individual,dynamotable)
 %generates an atlas of the target (and mem/grid/beads) particles 
 %
 %cts is a cts struct from cts_model
@@ -17,14 +17,17 @@ end
 %new less jank way
 natlas = zeros(size(cts.vol)); %initial empty atlas for background==0
 
-nsplits = struct2cell(cts.splitmodel); %convert to cell array
-nsplits = cat(4,nsplits{:}); %stack in 4th dim
+
 
 %move other important particles to splitmodel if they exist, at the end for ease
 if isfield(cts.model,'beads'), cts.splitmodel.beads = cts.model.beads; end
 if isfield(cts.model,'mem'), cts.splitmodel.AAmem = cts.model.mem; end %makes membrane first placement
 if isfield(cts.model,'grid'), cts.splitmodel.grid = cts.model.grid; end
 %cts.splitmodel = orderfields(cts.splitmodel);
+
+nsplits = struct2cell(cts.splitmodel); %convert to cell array
+nsplits = cat(4,natlas,nsplits{:}); %stack in 4th dim
+atlas2 = max(nsplits,[],4);
 
 roinames = fieldnames(cts.splitmodel); %retrieve component names
 indvol = cell(1,numel(roinames));
