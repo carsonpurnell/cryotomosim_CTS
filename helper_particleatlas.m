@@ -21,13 +21,13 @@ natlas = zeros(size(cts.vol)); %initial empty atlas for background==0
 
 %move other important particles to splitmodel if they exist, at the end for ease
 if isfield(cts.model,'beads'), cts.splitmodel.beads = cts.model.beads; end
-if isfield(cts.model,'mem'), cts.splitmodel.AAmem = cts.model.mem; end %makes membrane first placement
+if isfield(cts.model,'mem'), cts.splitmodel.membrane = cts.model.mem; end %makes membrane first placement
 if isfield(cts.model,'grid'), cts.splitmodel.grid = cts.model.grid; end
 %cts.splitmodel = orderfields(cts.splitmodel);
 
 nsplits = struct2cell(cts.splitmodel); %convert to cell array
-nsplits = cat(4,natlas,nsplits{:}); %stack in 4th dim
-atlas2 = max(nsplits,[],4);
+nsplits = cat(4,cts.model.ice/2,nsplits{:}); %stack in 4th dim
+[v2,atlas2] = max(nsplits,[],4);
 
 roinames = fieldnames(cts.splitmodel); %retrieve component names
 indvol = cell(1,numel(roinames));
@@ -55,8 +55,11 @@ for i=1:numel(roinames)
 end
 
 ident = char(strjoin(roinames,'_'));
-if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
-WriteMRC(atlas,cts.param.pix,append('atlas_',ident,'.mrc'))
+%if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
+
+roinames = string(roinames); file = fopen('Atlas.txt','w'); % write class IDs to ROI list file
+fprintf(file,'background\n'); fprintf(file,'%s\n',roinames); fclose(file);
+WriteMRC(atlas,cts.param.pix,append('atlas','.mrc'))
 end
 
 function generatetable(split,filename)
