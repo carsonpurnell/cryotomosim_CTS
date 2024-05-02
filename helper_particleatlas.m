@@ -1,4 +1,4 @@
-function [atlas,roinames,indvol,atlas2] = helper_particleatlas(cts,individual,dynamotable)
+function [atlas,roinames,indvol,atlas2] = helper_particleatlas(cts,individual,dynamotable,opt)
 %generates an atlas of the target (and mem/grid/beads) particles 
 %
 %cts is a cts struct from cts_model
@@ -12,6 +12,7 @@ arguments
     cts struct %might make this work other than needing the cts struct
     individual = 0 %by default don't save individual splits, only global atlas image
     dynamotable = 0 %switch to generate dynamo table
+    opt.suffix = ''
 end
 
 %new less jank way
@@ -55,9 +56,10 @@ end
 ident = char(strjoin(roinames,'_'));
 %if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
 
-roinames = string(roinames); file = fopen('Atlas.txt','w'); % write class IDs to ROI list file
+% write class IDs to ROI list file
+roinames = string(roinames); file = fopen(append('Atlas',opt.suffix,'.txt'),'w'); 
 fprintf(file,'background\n'); fprintf(file,'%s\n',roinames); fclose(file);
-WriteMRC(atlas2,cts.param.pix,append('atlas','.mrc'))
+WriteMRC(atlas2,cts.param.pix,append('Atlas',opt.suffix,'.mrc'))
 end
 
 function generatetable(split,filename)
