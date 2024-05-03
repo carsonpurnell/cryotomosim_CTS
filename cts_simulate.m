@@ -70,8 +70,10 @@ switch ext
 end
 
 cd(path); %cd to the input file location to prepare session folder
-filename = append(filename,'_',opt.suffix); %generate initial filename
-runfolder = append('sim_dose_',string(sum(param.dose)),'_',opt.suffix);
+%filename = append(filename,'_',opt.suffix); %generate initial filename
+if ~strncmp('_',opt.suffix,1), append('_',opt.suffix); end
+filename = opt.suffix;
+runfolder = append('sim_dose_',string(sum(param.dose)),opt.suffix);
 mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',runfolder);
 
 if param.pix==0, param.pix=pixelsize; end %override pixel size unless 0
@@ -86,7 +88,7 @@ end
 [detected, conv, tiltseries, ctf] = internal_sim(vol,filename,param,'real',opt.ctford);
 
 if isstruct(cts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
-    atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable);
+    atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable,'suffix',opt.suffix);
 end
 
 cd(userpath) %return to the user directory
@@ -101,7 +103,7 @@ base = append(filename,'.mrc');
 % % arbitrary rescale, need to render obsolete
 in = rescale(in*-1,min(in,[],'all'),max(in,[],'all')); %rescale to same range to avoid 0 and clamping
 % % arbitrary rescale, need to render obsolete
-prev = append('0_model_',base);
+prev = append('0_model',base);
 WriteMRC(in,pix,prev) %write as initial model and for tiltprojection
 
 donoise = 0; convolved = 0; %noised = 0;
@@ -112,12 +114,12 @@ file = fopen('tiltanglesR.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(fil
 
 if donoise==1
 samplenoised = helper_noisegen(in,pixelsize); %add multifactor noise
-prev = append('1_noised_',base); WriteMRC(samplenoised,pix,prev);
+prev = append('1_noised',base); WriteMRC(samplenoised,pix,prev);
 end
 end
 
 %project the tiltseries
-tbase = append('1_tilt_',base);
+tbase = append('1_tilt',base);
 if strcmp(param.tiltax,'Y'), tmpax = 1; else tmpax = 2; end
 w = string(round(param.size(tmpax)*1)); %need to make width useful for avoiding empty ends of tilt
 %better to use width or x/y min max extents?
@@ -133,26 +135,26 @@ tilt = ReadMRC(prev); %load the projected tiltseries as a volume
 if order==1 %dose first, seems to get better levels of roughness and ice features
     param.raddamage = param.raddamage*1; param.dose = param.dose*1; %adjust base values to work
     [detected,rad] = helper_electrondetect(tilt,param);
-    WriteMRC(detected,pix,append('2_dosetilt_',base));
+    WriteMRC(detected,pix,append('2_dosetilt',base));
     [convolved,ctf] = helper_ctf(detected,param); %per-tilt ctf convolution
-    prev = append('3_ctf_',base);
+    prev = append('3_ctf',base);
     WriteMRC(convolved,pix,prev); %save the convolved image for review
 end
 if order==2 %dose second, reduces pixel size effect so more generalized but values are arbitrary?
     [convolved,ctf] = helper_ctf(tilt,param); %per-tilt ctf convolution
-    prev = append('3_ctf_',base);
+    prev = append('3_ctf',base);
     WriteMRC(convolved,pix,prev); %save the convolved image for review
     convolved = rescale(convolved,min(tilt,[],'all'),max(tilt,[],'all')); %janky infeasible fix negative CTF
     [detected,rad] = helper_electrondetect(convolved,param);
-    prev = append('4_dose_',base);
+    prev = append('4_dose',base);
     WriteMRC(detected,pix,prev);
 end
-WriteMRC(rad,pix,append('2_rad_',base));
+WriteMRC(rad,pix,append('2_rad',base));
 
 if donoise==1 %hard coded multifactorial noise toggle
 noised = helper_noisegen(convolved,pix); %add multifactor noise
-WriteMRC(noised,pix,append('4_noised_',base)); %save the noised volume for reconstruction
-prev = append('4_noised_',base);
+WriteMRC(noised,pix,append('4_noised',base)); %save the noised volume for reconstruction
+prev = append('4_noised',base);
 end
 end
 
@@ -166,7 +168,7 @@ thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
 cmd = append('tilt -tiltfile tiltanglesR.txt -RADIAL 0.35,0.035 -width ',w,...
     ' -thickness ',thick,' ',prev,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
-cmd = append('trimvol -rx temp.mrc ',append('5_recon_',base)); %#ok<NASGU>
+cmd = append('trimvol -rx temp.mrc ',append('5_recon',base)); %#ok<NASGU>
 [~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 
 delete temp.mrc %remove temporary files after they are used for rotation
