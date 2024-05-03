@@ -71,7 +71,7 @@ end
 
 cd(path); %cd to the input file location to prepare session folder
 %filename = append(filename,'_',opt.suffix); %generate initial filename
-if ~strncmp('_',opt.suffix,1), append('_',opt.suffix); end
+if ~strncmp('_',opt.suffix,1), opt.suffix = append('_',opt.suffix); end
 filename = opt.suffix;
 runfolder = append('sim_dose_',string(sum(param.dose)),opt.suffix);
 mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',runfolder);
