@@ -72,7 +72,7 @@ end
 cd(path); %cd to the input file location to prepare session folder
 %filename = append(filename,'_',opt.suffix); %generate initial filename
 if ~strncmp('_',opt.suffix,1), opt.suffix = append('_',opt.suffix); end
-filename = opt.suffix;
+%filename = opt.suffix;
 runfolder = append('sim_dose_',string(sum(param.dose)),opt.suffix);
 mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',runfolder);
 
@@ -85,7 +85,7 @@ else
 end
 
 %run the simulation itself within the subfunction. might extend 'real' to also 'ideal' later
-[detected, conv, tiltseries, ctf] = internal_sim(vol,filename,param,'real',opt.ctford);
+[detected, conv, tiltseries, ctf] = internal_sim(vol,opt.suffix,param,'real',opt.ctford);
 
 if isstruct(cts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
     atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable,'suffix',opt.suffix);
