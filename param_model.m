@@ -18,7 +18,7 @@ function param = param_model(pix,param)
 %mem            default 0, otherwise an integer
 %    1 to generate a super janktastic not at all realistic fascimile of a cell membrane
 %filaments      default 0, otherwise 1
-%    1 to generate flexible polymers from separate input structures - example cytoskeletal filaments
+%    1 to generate filament polymers from input structures/monomers (actin, microtubules etc)
 %graph          default 0
 %    1 to have a plot continuously update with particle placement success/failure numbers
 %
