@@ -1,3 +1,4 @@
+
 %% load input structures as atomic data
 %rng(2);
 pix = 10; clear particles;
