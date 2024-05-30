@@ -12,8 +12,8 @@ tic
 %extend it to work for pdb2vol as well, and the other older cts_model components.
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
     particles(i) = helper_pdb2dat(input{i},pix,2,1,0);
-    particles(i).perim = {vertcat(particles(i).perim{:})};
-    particles(i).adat = {vertcat(particles(i).adat{:})};
+    %particles(i).perim = {vertcat(particles(i).perim{:})};
+    %particles(i).adat = {vertcat(particles(i).adat{:})};
 end
 layers{1} = particles; fprintf('loaded %i structure files  ',numel(input));
 toc
