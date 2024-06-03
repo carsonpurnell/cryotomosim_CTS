@@ -3,7 +3,8 @@
 %rng(2);
 pix = 10; clear particles;
 input = {'ribosome__4ug0.pdb','actin__6t1y_13x2.pdb','MT__6o2tx3.pdb'};%,...
-input = {'ribo__ribo__4ug0_4v6x.group.pdb','actin__6t1y_13x2.pdb','MT__6o2tx3.pdb','tric__tric__6nra-open_7lum-closed.group.pdb'};
+input = {'ribo__ribo__4ug0_4v6x.group.pdb','actin__6t1y_13x2.pdb',...
+    'MT__6o2tx3.pdb','tric__tric__6nra-open_7lum-closed.group.pdb'};
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
     %input = {'CaMK2a__5u6y.pdb','CaMK2a__5u6y.pdb','CaMK2a__5u6y.pdb','CaMK2a_3soa.pdb'};
     %input = {'actin__6t1y_13x2.pdb','MT__6o2tx3.pdb','ribosome__4ug0.pdb'};
@@ -44,7 +45,7 @@ end
 rng(1); con = 1;
 boxsize = pix*[400,500,50]*1;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 0;
+memnum = 6;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
 if con==1
@@ -430,22 +431,27 @@ function [splitin,memhull,dyn] = fn_modgenmembrane(memnum,vesarg,layers)
 %layers = the input particle layers to add to generated membranes
 
 end
-
+%
 function [err,loc,tform,ovcheck,ix] = anyloc(boxsize,tperim,dyn,retry,tol,mu)
 for r=1:retry
     loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
     ovcheck = transformPointsForward(tform,tperim)+loc; %transform test points
     %err2 = proxtest(dyn{1}(1:dyn{2}-1,:),ovcheck,tol); %prune and test atom collision
+    size(mu)
+    size(ovcheck)
+    size(tol)
     [err,ix] = mu_search(mu,ovcheck,tol,'short',0); %slightly faster!
     err = any(err>0);
     %if err2~=err, fprintf('%i,%i,\n',err,err2); end
     if err==0, break; end
 end
 end
+%}
 
 function [pts,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize)
 dyn = {dyn,size(dyn,1)}; %convert to dyncell
 kdcell = []; shapecell = [];
+mu = mu_build(dyn{1},'leafmax',1e3,'maxdepth',2);
 
 tol = 2; %tolerance for overlap testing
 retry = 5; %retry attempts per iteration
@@ -454,7 +460,7 @@ lipid{1} = zeros(0,4); lipid{2} = 1;
 for i=1:memnum % simplified loop to add vesicles
     [tpts,tperim] = gen_mem(250+randi(200),[],rand*0.2+0.8, 24+randi(8));
     
-    [err,loc,tform,ovcheck] = anyloc(boxsize,tperim,dyn,retry,tol);
+    [err,loc,tform,ovcheck] = anyloc(boxsize,tperim,dyn,retry,tol,mu);
     %{
     for r=1:retry    
         loc = rand(1,3).*boxsize; tform = randomAffine3d('rotation',[0 360]); %random placement
@@ -469,7 +475,7 @@ for i=1:memnum % simplified loop to add vesicles
         
         [dyn] = dyncell(ovcheck,dyn);
         [lipid] = dyncell(tpts,lipid);
-        
+        mu = mu_build(dyn{1},'leafmax',1e3,'maxdepth',2);
         %[dyn{1},dyn{2}] = dyncat(dyn{1},dyn{2},ovcheck);
         
         %[pts,dx] = dynsplit(tpts,pts,dx,splitname);
