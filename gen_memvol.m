@@ -35,7 +35,7 @@ end
 count.s = 0; count.f = 0;
 memvol = vol*0;
 %vescen = []; 
-ves = cell(1,num);
+ves = cell(num,2);
 vesvol = memvol; skel = vesvol;
 nvecs = zeros(size(memvol,1),size(memvol,2),size(memvol,3),3);
 label = 1;
@@ -49,7 +49,7 @@ for i=1:num
     switch 3%randi(2)
         case 1
             tmp = vesgen_sphere(pix); %generate spherical vesicles
-            ves{i} = tmp; %store trimmed vesicle into output cell array
+            ves{i,1} = tmp; %store trimmed vesicle into output cell array
             tmpskel = vesskeletonize(tmp);
         case 2
             %lower pixel size can create empty blobs regularly
@@ -59,7 +59,7 @@ for i=1:num
                 l = round(300/pix+20);
                 sz = [l+randi(l*memsize),l+randi(l*memsize),l+randi(l*memsize)];
                 [tmp,tmpskel] = vesgen_blob(sz,memthick,pix,6);
-                ves{i} = tmp; %store trimmed vesicle into output cell array
+                ves{i,1} = tmp; %store trimmed vesicle into output cell array
                 %figure(); sliceViewer(tmp);
                 %rs = rs+1;
             end
@@ -71,7 +71,7 @@ for i=1:num
                 %sliceViewer(tmp);
                 tmp = tmp*3.4; %scalar to fix inconsistent density between scatter and Z
                 tmpskel = vesskeletonize(tmp);
-                ves{i} = tmp;
+                ves{i,1} = tmp;
                 try
                     norm4d = helper_volsurfnorm(tmpskel,vecpts); %inconsistent fail out-of-bounds
                 catch
@@ -88,7 +88,9 @@ for i=1:num
         count.f = count.f + err;
         if err==0
             memvol = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
-            skel = helper_arrayinsert(skel,tmpskel,loc); %write skeletons to the volume
+            if randi(2)==1 %randomly skip half of membranes from use with membrane placement
+                skel = helper_arrayinsert(skel,tmpskel,loc); %write skeletons to the volume
+            end
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc); %label image of binary membranes
             
             %close all; sliceViewer(tmp); figure(); sliceViewer(tmpskel);
@@ -125,8 +127,6 @@ pts = [x,y,z];
 %size(pts)
 %v = vertexNormal(pts);
 %surfnorm(x,y,z);
-%disp(vescen)
-%disp(count.s)
 end
 
 
