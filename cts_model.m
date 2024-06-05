@@ -57,10 +57,9 @@ cts.param = param; %store parameters in the struct
 %need a better storage organization
 
 if param.grid(1)~=0 % new carbon grid and hole generator
-    fprintf('Generating carbon film ')
-    %[cts.model.grid] = gen_carbongrid(vol,pix,param.grid);
-    cts.model.grid = gen_carbon(size(vol),pix,'thick',param.grid(1),'radius',param.grid(2))*3.7;
-    %4.8 scalar is temporary to convert from scattering factor to Z number density value
+    fprintf('Generating carbon film ') %[cts.model.grid] = gen_carbongrid(vol,pix,param.grid);
+    cts.model.grid = gen_carbon(size(vol),pix,'thick',param.grid(1),'radius',param.grid(2))*3.9;
+    %3.9 scalar is temporary to convert from scattering factor to Z number density value
     cts.vol = cts.model.grid+cts.vol; fprintf('   complete \n')
 end
 if ~iscell(param.mem); param.mem = {param.mem(:)}; end
