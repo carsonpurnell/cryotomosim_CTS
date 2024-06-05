@@ -60,6 +60,7 @@ arguments
     param.filaments = 0
     param.beads = 0
     param.ice = 1 %need more control. also could do with surface ice contamination, and more roughness
+    param.bare = 0 %proportion of bare membranes (no possible protein association)
 end
 if strcmp(pix,'gui')
     prompt = {'Pixel Size, in A',...
