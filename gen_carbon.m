@@ -39,7 +39,7 @@ sh = alphaShape(ps+vec,40);
 density = 2.0/12*(1e8^-3)*6.022e23; %carbons per A^3, approx 0.1
 atomfrac = 1; %pseudoatomic factor for speed
 carbon = randtess(density/atomfrac*0.3,edge,'v'); %
-cperim = randtess(.08,edge,'s');
+cperim = randtess(.32,edge,'s');
 
 perim = edge.Points; %perimeter pts of shape
 n = size(carbon,1);
