@@ -12,7 +12,7 @@ tic
 %need to streamline atomic symbol to Z converter, and link into a Z to scatterval dictionary.
 %extend it to work for pdb2vol as well, and the other older cts_model components.
 for i=numel(input):-1:1 %backwards loop for very slightly better performance
-    particles(i) = helper_pdb2dat(input{i},pix,2,1,1);
+    particles(i) = helper_pdb2dat(input{i},pix,2,1,0);
     %particles(i).perim = {vertcat(particles(i).perim{:})};
     %particles(i).adat = {vertcat(particles(i).adat{:})};
 end
@@ -42,10 +42,11 @@ end
 %}
 
 %% functionalized model gen part
-rng(1); con = 1;
+%rng(7); 
+con = 1;
 boxsize = pix*[400,500,50]*1;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 12;
+memnum = 48;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
 if con==1
@@ -53,7 +54,7 @@ if con==1
     dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 end
 
-n = 100;
+n = 500;
 %profile on
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 tic; [split,dyn,mu] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
@@ -447,6 +448,8 @@ end
 
 function [pts,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize)
 dyn = {dyn,size(dyn,1)}; %convert to dyncell
+pad = [0,0,0;boxsize];
+dyn{1} = [dyn{1};pad];
 kdcell = []; shapecell = [];
 mu = mu_build(dyn{1},'leafmax',1e3,'maxdepth',2);
 
@@ -455,7 +458,7 @@ retry = 5; %retry attempts per iteration
 count.s = 0; count.f = 0;
 lipid{1} = zeros(0,4); lipid{2} = 1;
 for i=1:memnum % simplified loop to add vesicles
-    [tpts,tperim] = gen_mem(200+randi(400),[],rand*0.3+0.7, 24+randi(8));
+    [tpts,tperim] = gen_mem(200+randi(600),[],rand*0.3+0.7, 24+randi(8));
     
     [err,loc,tform,ovcheck,muix] = anyloc(boxsize,tperim,dyn,retry,tol,mu);
     %{
