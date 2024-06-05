@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## [v0.5.6](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.5.6) - 2024-06-05 18:22:23
+
+*No description*
+
+## [v0.5.5](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.5.5) - 2024-04-04 13:46:33
+
+*No description*
+
 ## [v0.5.4](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.5.4) - 2024-03-25 18:25:19
 
 **Full Changelog**: https://github.com/carsonpurnell/cryotomosim_CTS/compare/v0.5.3...v0.5.4
