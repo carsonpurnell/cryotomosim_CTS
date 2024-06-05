@@ -1,4 +1,4 @@
-function [memvol,skel,nvecs,vesvol,count,ves] = gen_memvol(vol,pix,num,tries,vecpts,memthick,memsize,memtype)
+function [memvol,skel,nvecs,vesvol,count,ves] = gen_memvol(vol,pix,num,tries,vecpts,memthick,memsize,memtype,opt)
 %[memvol,skel,nvecs,vesvol,count,ves] = gen_memvol(vol,pix,num,tries,vecpts,memthick,memsize,memtype)
 %randomly generates and places spherical vesicles into a volume without overlapping contents
 %
@@ -23,6 +23,7 @@ arguments
     memthick = [60 24]
     memsize = 3
     memtype = 2
+    opt.bare = 0
 end
 %clipping out of the Z also conviniently how tomos actually look, but is maybe too random
 
@@ -88,7 +89,7 @@ for i=1:num
         count.f = count.f + err;
         if err==0
             memvol = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
-            if randi(2)==1 %randomly skip half of membranes from use with membrane placement
+            if rand<opt.bare %randomly skip half of membranes from use with membrane placement
                 skel = helper_arrayinsert(skel,tmpskel,loc); %write skeletons to the volume
             end
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc); %label image of binary membranes
