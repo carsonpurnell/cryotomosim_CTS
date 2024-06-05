@@ -21,17 +21,17 @@ if iscell(mu) %&& isfield(mu,'opt')
     %cubel = mu{1,2};
     %mutate=1; 
     if ~isempty(points) && ~isempty(init)
-    init=init';
-    ix = unique(init,'rows');
-    for i=1:size(ix,1)
-        d=ix(i,1); bl=ix(i,2); %depth and layer of the relevant leaf
-        ix2 = all(init==ix(i,:),2); %logical index for which pts to place in the leaf
-        tmp = points(ix2,:); % collect points for the leaf
-        mu{d,1}{1,bl} = [mu{d,1}{1,bl};tmp]; % add new pts to leaf list
-        [l,h] = bounds(mu{d,1}{1,bl},1);
-        mu{d,1}{3,bl} = [l;h]; %update leaf bounds
-        mu = leafcheck(mu,opt,bm,d,bl);
-    end
+        init=init';
+        ix = unique(init,'rows');
+        for i=1:size(ix,1)
+            d=ix(i,1); bl=ix(i,2); %depth and layer of the relevant leaf
+            ix2 = all(init==ix(i,:),2); %logical index for which pts to place in the leaf
+            tmp = points(ix2,:); % collect points for the leaf
+            mu{d,1}{1,bl} = [mu{d,1}{1,bl};tmp]; % add new pts to leaf list
+            [l,h] = bounds(mu{d,1}{1,bl},1);
+            mu{d,1}{3,bl} = [l;h]; %update leaf bounds
+            mu = leafcheck(mu,opt,bm,d,bl);
+        end
     end
 else
     [rootcoords,cubel] = cubify(points,init);
