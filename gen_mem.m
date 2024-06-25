@@ -29,7 +29,7 @@ end
 %assign atomic IDs to atoms for proper density
 atoms = pts;%[head;tail];
 perim = [shell.Points;sh.Points]; %perimeter from shell and centre shape points
-ix = randi(size(pts,1),1,round(size(pts,1)/10)); % 1% of pts
+ix = randi(size(pts,1),1,round(size(pts,1)/10)); % 10% of pts
 perim = [pts(ix,1:3);perim]; perim = unique(perim,'rows');
 
 %atoms(:,4) = 6.4*4; %terrible very bad interim density
