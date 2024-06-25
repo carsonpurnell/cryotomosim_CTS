@@ -454,7 +454,7 @@ kdcell = []; shapecell = [];
 mu = mu_build(dyn{1},'leafmax',1e3,'maxdepth',2);
 
 %memparam = {zeros(3,2)};
-memparam = {[300,500;.4,.6;24,6]};
+memparam = {[300,500;.4,.6;24,6],1};
 
 tol = 2; %tolerance for overlap testing
 retry = 5; %retry attempts per iteration
@@ -462,7 +462,7 @@ count.s = 0; count.f = 0;
 lipid{1} = zeros(0,4); lipid{2} = 1;
 for i=1:memnum % simplified loop to add vesicles
     %[tpts,tperim] = gen_mem(300+randi(500),[],rand*0.6+0.4, 24+randi(6));%.3/.7 and 24/8
-    [tpts,tperim] = gen_mem(memparam{1});
+    [tpts,tperim] = gen_mem(memparam{1,1});
     
     [err,loc,tform,ovcheck,muix] = anyloc(boxsize,tperim,dyn,retry,tol,mu);
     %{
