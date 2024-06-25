@@ -7,6 +7,11 @@ arguments
     thick = 26+randi(6)
 end
 vol = 0;
+if iscell(sz)
+    sp = sz{1}(3)+rand*sz{1}(4);
+    thick = sz{1}(5)+rand*sz{1}(6);
+    sz = sz{1}(1)+rand*sz{1}(2);
+end
 
 switch 1%randi(2)
     case 1 %needs a bit more smoothing and less flat faces
