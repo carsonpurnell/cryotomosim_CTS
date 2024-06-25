@@ -7,10 +7,10 @@ arguments
     thick = 26+randi(6)
 end
 vol = 0;
-if iscell(sz)
-    sp = sz{1}(3)+rand*sz{1}(4);
-    thick = sz{1}(5)+rand*sz{1}(6);
-    sz = sz{1}(1)+rand*sz{1}(2);
+if size(sz,1)>1
+    thick = sz(3,1)+rand*sz(3,2);
+    sp = sz(2,1)+rand*sz(2,2);
+    sz = sz(1,1)+rand*sz(1,2);
 end
 
 switch 1%randi(2)
