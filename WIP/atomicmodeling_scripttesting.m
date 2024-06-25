@@ -46,7 +46,7 @@ end
 con = 1;
 boxsize = pix*[400,500,50]*1;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 12;
+memnum = 20;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
 if con==1
@@ -54,7 +54,7 @@ if con==1
     dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 end
 
-n = 800;
+n = 500;
 %profile on
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 tic; [split,dyn,mu] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
@@ -458,7 +458,7 @@ retry = 5; %retry attempts per iteration
 count.s = 0; count.f = 0;
 lipid{1} = zeros(0,4); lipid{2} = 1;
 for i=1:memnum % simplified loop to add vesicles
-    [tpts,tperim] = gen_mem(200+randi(600),[],rand*0.3+0.7, 24+randi(8));
+    [tpts,tperim] = gen_mem(300+randi(500),[],rand*0.6+0.4, 24+randi(8));%.3/.7 and 24/8
     
     [err,loc,tform,ovcheck,muix] = anyloc(boxsize,tperim,dyn,retry,tol,mu);
     %{
