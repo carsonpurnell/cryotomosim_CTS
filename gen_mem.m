@@ -110,9 +110,11 @@ tail = randtess(0.03/atomfrac,shell,'v'); % need better reference ratios
 head = randtess(20.0/atomfrac,shell,'s'); % need better shape? triangular distance distribution?
 
 vec = randn(size(head));
-spd = rand(size(vec,1),1)*surfvar+0;
+%spd = rand(size(vec,1),1)*surfvar+0;
+spd = (rand(size(vec,1),1)-rand(size(vec,1),1))*surfvar;
 %spd = max(spd,0); spd = min(spd,surfvar*2); %control distant fuzzyness
 vec = vec./vecnorm(vec,2,2).*spd;
+%histogram(spd)
 head=head+vec;
 pts = [head;tail];
 pts(:,4) = 6.0/2 *atomfrac;
