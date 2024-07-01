@@ -106,8 +106,8 @@ function [pts,head,tail] = shell2pts(shell,atomfrac)
 surfvar = 8;
 %atomfrac = 2; %make operable? 4 super rough at higher pixel sizes, but 1 very slow for atomic gen
 
-tail = randtess(0.028/atomfrac,shell,'v'); % need larger hydrophobic dict
-head = randtess(28.0/atomfrac,shell,'s'); %was 20,testing for less bilayer
+tail = randtess(0.03/atomfrac,shell,'v'); % need better reference ratios
+head = randtess(20.0/atomfrac,shell,'s'); % need better shape? triangular distance distribution?
 
 vec = randn(size(head));
 spd = rand(size(vec,1),1)*surfvar+0;
