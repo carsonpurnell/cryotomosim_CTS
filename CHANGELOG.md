@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.5.8](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.5.8) - 2024-07-01 01:59:20
+
+improved membrane density: more reasonable increased density of lipid head domains
+
 ## [v0.5.7](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.5.7) - 2024-06-05 20:31:35
 
 *No description*
