@@ -20,7 +20,7 @@ switch 1%randi(2)
         [sh] = bubble(sz,sp); %expand spheres from core pts
 end
 if ~isempty(pix)
-    atomfrac = pix/4;
+    atomfrac = pix/6;
 else
     atomfrac = 2;
 end
@@ -103,7 +103,7 @@ shell = alphaShape(shellpts,24);
 end
 
 function [pts,head,tail] = shell2pts(shell,atomfrac)
-surfvar = 8;
+surfvar = 10;
 %atomfrac = 2; %make operable? 4 super rough at higher pixel sizes, but 1 very slow for atomic gen
 
 tail = randtess(0.03/atomfrac,shell,'v'); % need better reference ratios
