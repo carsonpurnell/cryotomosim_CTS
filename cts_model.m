@@ -148,7 +148,7 @@ end
 if ~param.ice==0 % vitreous ice generator, randomized molecular h2o throughout the volume
     fprintf('Generating vitreous ice')
     [iced, ice] = gen_ice(cts.vol,pix);
-    cts.model.ice = ice; cts.vol = iced; fprintf('   done \n')
+    cts.model.ice = ice*param.ice; cts.vol = iced*param.ice; fprintf('   done \n')
 end
 
 %folder and file generation stuff
