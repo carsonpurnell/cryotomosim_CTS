@@ -159,19 +159,12 @@ end
 
 
 function [data] = internal_pdbparse(pdb)
-fid = fileread(pdb); 
-%text = textscan(fid,'%s','delimiter','\n'); %slightly faster to not parse remarks at all
-text = textscan(fid,'%s','delimiter','\n');%,'CommentStyle',{'REMARK'}); %import lines, ignoring comments slow
-text = text{1}; %fix being inside a 1x1 cell array
+%fid = fileread(pdb); 
+text = textscan(fileread(pdb),'%s','delimiter','\n'); %read in file text data (faster to include comment lines)
+text = text{1}; %extract text from being in a 1x1 cell array
 
-%{
-ix = strncmp(text,'REMARK',6); text(ix) = []; %clear remark lines
-ix = strncmp(text,'ANISOU',6); text(ix) = []; %delete temp records
-ix = strncmp(text,'CONECT',6); text(ix) = []; %delete bond information for now
-%}
 ix = strncmp(text,'TER',3); text(ix) = []; %clear terminator lines
-ix = contains(text,{'REMARK','ANISOU','CONECT'}); text(ix) = []; 
-%remove remark, temperature, and connectivity records
+ix = contains(text,{'REMARK','ANISOU','CONECT'}); text(ix) = [];  %remove remark, temperature, connect records
 %ix = strncmp(text,'HETATM',6); text(ix) = []; %delete heteroatoms for sanity
 
 modstart = find(strncmp(text,'MODEL ',6)); %find start of each model entry
@@ -206,8 +199,8 @@ for i=1:models
     data{i,1} = atomvec; %store atoms
     
     coords = [str2num(chararray(:,1:8)),str2num(chararray(:,9:16)),str2num(chararray(:,17:24))]; %#ok<ST2NM>
-    
     %using str2num because str2double won't operate on 2d arrays, and can't add spaces while vectorized
+    
     data{i,2} = single(coords); %store coordinates
     data{i,3} = 'NA';
 end
@@ -215,23 +208,19 @@ end
 end
 
 function [data] = internal_cifparse(pdb)
-%fid = fileread(pdb); 
 text = textscan(fileread(pdb),'%s','delimiter','\n'); %read in each line of the text file as strings
-text = text{1}; %fix being inside a 1x1 cell array
+text = text{1}; %extract text from being in a 1x1 cell array
 
 modnames = text(strncmp(text,'data_',5)); %retrieve lines storing model names
 modnames = strrep(modnames,'data_',''); %remove the leading line identifier from names
-%need to remove trailing numbers
-modnames = regexprep(modnames,'\_\d$',''); %remove trailing numbers so submodels don't get split
+modnames = regexprep(modnames,'\_\d$',''); %remove trailing numbers so same-name submodels don't get split
 modnames = erase(modnames,'.'); %remove periods that would break use as fieldnames
-%disp(modnames)
-%other special characters that would break fieldnames?
 
 headstart = find(strncmp(text,'_atom_site.group_PDB',20)); %header id start
 headend = find(strncmp(text,'_atom_site.pdbx_PDB_model_num',29)); %header id end
 loopend = find(strncmp(text,'#',1)); %all loop ends
 
-data = cell(numel(headstart),2);
+data = cell(numel(headstart),2); % pre-initialize storage cell array
 for i=1:numel(headstart)
     loopend(loopend<headstart(i)) = []; %remove loop ends before current block
     header = text( headstart(i):headend(i) )'; %pull header lines
