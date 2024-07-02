@@ -81,6 +81,9 @@ fprintf('Layer %i, attempting %i placements up to density %g:  \n',ww,iters(ww),
 for i=1:iters(ww)
     which = randi(numel(set)); 
     particle = set(which).vol; 
+    
+    %particle %% diag
+    
     %precall more things so structs aren't called into so many times
     vols = set(which).vol; 
     flags = set(which).flags; 
@@ -201,8 +204,10 @@ for i=1:iters(ww)
         end
         
         case 'membrane'
+            disp('pretest')
             %need a more efficient tester subfunct
             [rot,loc,op,err] = testmem(inarray,locmap,set(which),vesvec,vesvol,memvol,4);
+            disp('posttest')
             counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
             %sliceViewer(locmap*100+memvol);
@@ -328,8 +333,10 @@ end
 function [rot,com,op,err] = testmem(inarray,locmap,particle,vescen,vesvol,memvol,retry)
 init = [0,0,1]'; %not imported from top-level function
 %vesvec currently being used to bring in 4d membrane nvecs
-for retry=1:retry
+for r=1:retry
+    r
     loc = ctsutil('findloc',locmap);
+    disp('postloc')
     %[k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
     %targ = loc-vescen(k,:); targ = targ/norm(targ); %get target location as if from origin and unitize
     
