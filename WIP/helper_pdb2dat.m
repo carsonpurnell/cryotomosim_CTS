@@ -12,7 +12,7 @@ function particles = helper_pdb2dat(file,pix,trim,centering,savemat)
 arguments
     file
     pix %unused, deprec
-    trim = 1 %0 none, 1 by sum, 2 each individually
+    trim = 1 %0 none, 1 by sum, 2 each individually (but not yet implemented for anything)
     centering = 0; %1 is already centered
     savemat = 1 %by default, save a .mat file if possible as a much faster alternative
 end
