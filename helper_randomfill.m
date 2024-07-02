@@ -36,7 +36,7 @@ end
 ismem = 0;
 if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     ismem = 1;
-    
+    disp('hit membrane check')
     %{
     %memvol = sum( cat(4,vesvol{:}) ,4); %this is terrible, they need to be one volume
     bw = bwdist(~memvol); %calculate distances inside the shape
@@ -56,13 +56,14 @@ if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     CC = bwconncomp(nonmem);
     numpixels = cellfun(@numel,CC.PixelIdxList); %count pixels in each component
     [~,idx] = max(numpixels); %get the largest volume component from image
-    mout = zeros(size(nonmem));
+    memout = zeros(size(nonmem));
     
-    mout(CC.PixelIdxList{idx}) = 1; %locmap for outside of vesicles
-    min = nonmem-mout; %locmap for inside vesicles    
+    memout(CC.PixelIdxList{idx}) = 1; %locmap for outside of vesicles
+    memin = nonmem-memout; %locmap for inside vesicles    
     %numel(find(skel))/numel(skel) %check occupancy
-%else
-%    ismem = 0;
+    %else
+    %    ismem = 0;
+    disp('finished mem prep')
 end % membrane setup block end
 %sliceViewer(mout); figure(); sliceViewer(min); figure(); sliceViewer(memlocmap);
 %sliceViewer(mout+min+memlocmap);
@@ -157,9 +158,9 @@ for i=1:iters(ww)
             case 'membrane' %placement into membrane
                 locmap = memlocmap==1;
             case 'vesicle' %inside vesicle volume
-                locmap = min==1;
+                locmap = memin==1;
             case 'cytosol' %only outside vesicles
-                locmap = mout==1;
+                locmap = memout==1;
         end
     else %either when no mem or when special loc flag not taken ('any' used to allow mem+any placement)
         locmap = inarray==0; %faster than logical somehow
@@ -219,8 +220,8 @@ for i=1:iters(ww)
                 [inarray] = helper_arrayinsert(inarray,rot,loc); %write sum to working array
                 [memlocmap] = helper_arrayinsert(memlocmap,-imbinarize(rot),loc); %reduce mem loc map
                 if ismem==1 %&& strcmp(set(which).type,'inmem') %reduce inmem/outmem maps if present
-                    [min] = helper_arrayinsert(min,-rot,loc);
-                    [mout] = helper_arrayinsert(mout,-rot,loc);
+                    [memin] = helper_arrayinsert(memin,-rot,loc);
+                    [memout] = helper_arrayinsert(memout,-rot,loc);
                     %elseif ismem==1 %&& strcmp(set(which).type,'outmem')
                 end
                 %counts.s = counts.s-1; %increment success, bad old way need to deprecate
@@ -264,9 +265,9 @@ for i=1:iters(ww)
                     [split] = fnsplitplace(split,set(which).vol,set(which).id,flags,loc,{tform});
                 end
                 if ismem==1 && strcmp(set(which).type,'vesicle')
-                    [min] = helper_arrayinsert(min,-rot,loc);
+                    [memin] = helper_arrayinsert(memin,-rot,loc);
                 elseif ismem==1 && strcmp(set(which).type,'cytosol')
-                    [mout] = helper_arrayinsert(mout,-rot,loc);
+                    [memout] = helper_arrayinsert(memout,-rot,loc);
                 end
             end
             
