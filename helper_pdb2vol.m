@@ -37,7 +37,7 @@ switch ext %parse structure files depending on filetype
         data = internal_pdbparse(pdb);
 end
 %}
-data
+%data
 [vol,sumvol,names] = internal_volbuild(data,pix,trim,centering);
 
 if savemat==1 %.mat saving and check if file already exists
