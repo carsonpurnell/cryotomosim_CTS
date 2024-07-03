@@ -24,7 +24,9 @@ end
 %sum over a spectrum of S values somehow for total signal? values far lower than even z
 %data not centered, only happens in the pts2vol subfunct
 
+data = helper_pdbparse(pdb);
 [path,file,ext] = fileparts(pdb);
+%
 switch ext %parse structure files depending on filetype
     case '.mat'
         try q = load(pdb); data = q.data;
@@ -34,6 +36,8 @@ switch ext %parse structure files depending on filetype
     case {'.pdb','.pdb1'}
         data = internal_pdbparse(pdb);
 end
+%}
+data
 [vol,sumvol,names] = internal_volbuild(data,pix,trim,centering);
 
 if savemat==1 %.mat saving and check if file already exists
