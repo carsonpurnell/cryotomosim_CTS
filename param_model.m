@@ -94,12 +94,21 @@ else
 end
 param.mem = round(param.mem); 
 
-layers = cell(1,param.layers);
+if ~iscell(param.layers)
+    layers = cell(1,param.layers);
+else
+    layers = param.layers;
+end
 iters = zeros(1,numel(param.layers));
-for i=1:param.layers %loop through layers to load particles and assign iterations/density vectors
+for i=1:numel(layers) %loop through layers to load particles and assign iterations/density vectors
     fprintf('Loading layer %i structures \n',i)
     %need a check or something for when a layer is already parsed files? or just let input return by itself?
-    layers{i} = helper_input('gui',param.pix); %load layer - how to deal with saved list of layers?
+    %param.layers{i}
+    if ~iscell(param.layers)
+        layers{i} = helper_input('gui',param.pix); %load layer - how to deal with saved list of layers?
+    else
+        layers{i} = helper_input(param.layers{i},pix);
+    end
     param.density(i) = param.density(min(i,end));
     iters(i) = param.iters( min(i,numel(param.iters)) );
     if isempty(iters(i)) || iters(i)==0
