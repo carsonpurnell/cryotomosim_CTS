@@ -36,7 +36,7 @@ end
 ismem = 0;
 if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     ismem = 1;
-    disp('hit membrane check')
+    %disp('hit membrane check')
     %{
     %memvol = sum( cat(4,vesvol{:}) ,4); %this is terrible, they need to be one volume
     bw = bwdist(~memvol); %calculate distances inside the shape
@@ -63,8 +63,10 @@ if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     %numel(find(skel))/numel(skel) %check occupancy
     %else
     %    ismem = 0;
-    disp('finished mem prep')
+    %disp('finished mem prep')
 end % membrane setup block end
+%size(memskel)
+%sliceViewer(memskel)
 %sliceViewer(mout); figure(); sliceViewer(min); figure(); sliceViewer(memlocmap);
 %sliceViewer(mout+min+memlocmap);
 %sliceViewer(min+vesvec(:,:,:,1));
@@ -205,10 +207,10 @@ for i=1:iters(ww)
         end
         
         case 'membrane'
-            disp('pretest')
+            %disp('pretest')
             %need a more efficient tester subfunct
             [rot,loc,op,err] = testmem(inarray,locmap,set(which),vesvec,vesvol,memvol,4);
-            disp('posttest')
+            %disp('posttest')
             counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
             %sliceViewer(locmap*100+memvol);
@@ -335,9 +337,9 @@ function [rot,com,op,err] = testmem(inarray,locmap,particle,vescen,vesvol,memvol
 init = [0,0,1]'; %not imported from top-level function
 %vesvec currently being used to bring in 4d membrane nvecs
 for r=1:retry
-    r
+    %r
     loc = ctsutil('findloc',locmap);
-    disp('postloc')
+    %disp('postloc')
     %[k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
     %targ = loc-vescen(k,:); targ = targ/norm(targ); %get target location as if from origin and unitize
     

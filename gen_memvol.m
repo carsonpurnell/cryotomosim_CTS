@@ -89,7 +89,7 @@ for i=1:num
         count.f = count.f + err;
         if err==0
             memvol = helper_arrayinsert(memvol,tmp,loc); %to avoid weirdness with carbon grid doubling
-            if rand<opt.bare %randomly skip half of membranes from use with membrane placement
+            if rand>opt.bare %randomly skip half of membranes from use with membrane placement
                 skel = helper_arrayinsert(skel,tmpskel,loc); %write skeletons to the volume
             end
             vesvol = helper_arrayinsert(vesvol,imbinarize(tmp)*label,loc); %label image of binary membranes

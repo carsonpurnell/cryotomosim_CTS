@@ -120,10 +120,10 @@ end
 %[cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,param.layers,param.iters,...
 %    memvol,vescen,vesvol,param.density,'graph',opt.graph); 
 %new 4d vector blob mem version
-size(nvecs)
-size(memskel)
-histogram(memskel)
-figure; sliceViewer(vesvol)
+%size(nvecs)
+%size(memskel)
+%histogram(memskel)
+%figure; sliceViewer(vesvol)
 [cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,param.layers,param.iters,...
     memvol,nvecs,memskel,vesvol,param.density,'graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
