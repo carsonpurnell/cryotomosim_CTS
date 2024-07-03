@@ -34,7 +34,7 @@ arguments
     %scan/session parameters
     param.defocus = -5 %microns
     param.tilt = [-60 2 60]
-    param.dose = 60 %0 dose skips dose sim
+    param.dose = 100 %0 dose skips dose sim
     param.tiltscheme = 0 %flip angle for bidirectional, otherwise 'symmetric'
     param.pix = 0 %0 to not override input
     param.tiltax = 'Y' %using X now works but generates super thick tomograms
