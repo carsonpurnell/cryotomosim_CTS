@@ -61,8 +61,8 @@ end
 if iscell(param), param = cts_param(param{:}); end %is this needed anymore?
 if param.ctfoverlap==0, convolved=input; ctf=0; return; end %if overlap==0, skip doing CTF
 
-fprintf('CTF parameters: pixels %g angstroms, %i KeV, aberration %g nm, sigma %g, defocus %d um',...
-    param.pix, param.voltage, param.aberration, param.sigma, param.defocus)
+%fprintf('CTF parameters: pixels %g angstroms, %i KeV, aberration %g nm, sigma %g, defocus %d um',...
+%    param.pix, param.voltage, param.aberration, param.sigma, param.defocus)
 
 V = param.voltage*1000; %convert from KeV to eV
 cs = param.aberration/1000; %convert from mm to m
@@ -115,7 +115,7 @@ cv = zeros(size(padded)); %pre-initialize output array
 mid = round(size(input,3)/2);
 if numel(size(input))>2, iters = size(input,3); else iters=1; end
 for i=1:iters %loop through tilts
-    adj = (param.pix*slab*(i-mid))/(1e10)*1e0;
+    adj = (param.pix*slab*(i-mid))/(1e10)*1e0; %adjustment to listed defocus by depth
     %param.defocus = -5+adj;
     %shift = tand(param.tilt(i)); %proportion of length by tilt to compute vertical displacement
     %for j=1:numel(bincenter)
@@ -124,6 +124,7 @@ for i=1:iters %loop through tilts
         %Dzs = Dz + shift*sdist; %average defocus in the strip given tilt angle and horizontal distance
         %in = padded(six(1):six(2),1:end,i); %input slice for convolution
         Dzs = Dz+adj;
+        %fprintf('%s,',Dzs)
         [lg, ctf] = internal_ctf(padded(:,:,i),cs,L,k,Dzs,B,q); %get ctf-convolved subvolume
         %lg = lg.*weight; %scale by weight for gradient overlap of strips
         %cv(six(1):six(2),1:end,i) = cv(six(1):six(2),1:end,i)+lg;
@@ -139,7 +140,7 @@ end
 %imshow(rescale(lg));
 convolved = cv(1+pad:end-pad,1+pad:end-pad,:); %extract image area from padded dimensions
 ctf = ctf(1+pad:end-pad,1+pad:end-pad);
-fprintf('  - modulation done \n')
+%fprintf('  - modulation done \n')
 end
 
 function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,q)
@@ -167,7 +168,7 @@ d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix);
 
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
-for t=1:numel(angles)
+for t=1:numel(param.tilt)
     disp(angles(t))
     angle = angles(t);
     atomtmp = atoms;
@@ -198,8 +199,9 @@ for t=1:numel(angles)
     cv = convolved;
     tparam = param;
     for i=1:size(vol,3)
-        adj = (tparam.pix*slabthick*(i-mid))/1e4*1e0;
+        adj = (tparam.pix*slabthick*(i-mid))/1e4*1e1;
         tparam.defocus = param.defocus+adj;
+        %tparam.defocus
         tparam.tilt = 0;
         %[convolved(:,:,i), ctf, tparam] = helper_ctf(vol(:,:,i),tparam);
         [convolved(:,:,i), ctf] = flatctf(vol(:,:,i),slabthick,tparam);
@@ -210,7 +212,7 @@ for t=1:numel(angles)
     
     tilt(:,:,t) = sum(convolved,3);
 end
-ctf = 0;
+%ctf = 0;
 dtilt = poissrnd((d*rescale(tilt*1,0,1))*01,size(tilt));
 cv2 = poissrnd((d*rescale(cv2*1,0,1))*01,size(cv2));
 end
