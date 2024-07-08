@@ -8,9 +8,9 @@ for i=1:numel(fn)
 end
 
 %%
-angles = -70:10:70;
+angles = -70:20:70;
 param = param_simulate('pix',10,'tilt',angles,'dose',40);
-[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,10);
+[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,20);
 sliceViewer(dtilt);
 
 %% 
@@ -199,7 +199,7 @@ for t=1:numel(param.tilt)
     cv = convolved;
     tparam = param;
     for i=1:size(vol,3)
-        adj = (tparam.pix*slabthick*(i-mid))/1e4*1e1;
+        adj = (tparam.pix*slabthick*(i-mid))/1e4*1e0; %convert from ang to um
         tparam.defocus = param.defocus+adj;
         %tparam.defocus
         tparam.tilt = 0;
