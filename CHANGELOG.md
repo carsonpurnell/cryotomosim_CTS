@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [v0.5.9](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.5.9) - 2024-07-09 19:52:41
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix skewed ice tilting thickness ([ea45425](https://github.com/carsonpurnell/cryotomosim_CTS/commit/ea45425c38ca48c935622e2d47d19e8671cffb5f))
+  - membrane placement softlock ([a9351fc](https://github.com/carsonpurnell/cryotomosim_CTS/commit/a9351fc7341c0e22c8c3c70d7aa8560c72420078))
+
 ## [v0.5.8](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.5.8) - 2024-07-01 01:59:20
 
 improved membrane density: more reasonable increased density of lipid head domains
