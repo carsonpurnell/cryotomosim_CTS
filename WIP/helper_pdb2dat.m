@@ -29,7 +29,9 @@ end
 %should directly load .mat as well, and just check the fields (also reproject the vols/sumvol
 %use knnsearch to find potential bonds? nearest 5 neighbors and check 2-5 to avoid self distance
 
+data = helper_pdbparse(file);
 [path,filename,ext] = fileparts(file);
+%{
 switch ext %parse structure files depending on filetype
     case '.mat'
         try q = load(file); data = q.data;
@@ -39,6 +41,7 @@ switch ext %parse structure files depending on filetype
     case {'.pdb','.pdb1'}
         data = internal_pdbparse(file);
 end
+%}
 %[vol,sumvol,names] = internal_volbuild(data,pix,trim,centering);
 names = '';
 sumvol = 0;
