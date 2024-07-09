@@ -1,7 +1,13 @@
+%% model_param input version
+pix = 12; 
+input = {'ribosome__4ug0.pdb','actin__6t1y_13x2.pdb','MT__6o2tx3.pdb'};
+input = {'ribo__ribo__4ug0_4v6x.group.mat','actin__6t1y_13x2.mat',...
+    'MT__6o2tx3.mat','tric__tric__6nra-open_7lum-closed.group.mat'};
+%pmod = param_model(pix,'layers',{input});
 
 %% load input structures as atomic data
 %rng(2);
-pix = 8; clear particles;
+pix = 12; clear particles;
 input = {'ribosome__4ug0.pdb','actin__6t1y_13x2.pdb','MT__6o2tx3.pdb'};%,...
 input = {'ribo__ribo__4ug0_4v6x.group.mat','actin__6t1y_13x2.mat',...
     'MT__6o2tx3.mat','tric__tric__6nra-open_7lum-closed.group.mat'};
@@ -44,9 +50,9 @@ end
 %% functionalized model gen part
 %rng(7); 
 con = 1;
-boxsize = pix*[400,600,50]*1;
+boxsize = pix*[400,600,80]*1;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 10;
+memnum = 4;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
 if con==1
