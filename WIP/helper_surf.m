@@ -17,11 +17,13 @@ pad(axis) = round((box(axspec)+box(3))*mtilt)+pix*2; % huge padding to cover for
 %sc = [2.5,1.2];
 surfaces{1} = gensurf(x,y,box,pix,sc);
 surfaces{2} = gensurf(x,y,box,pix,-sc);
+%histogram(surfaces{1}(:,3)); hold on
+%histogram(surfaces{2}(:,3));
 
 end
 
 function gridsurf = gensurf(x,y,box,pix,sc)
-[field,layers] = helper_perlin(x,pix,sc(1),6,10);
+[field,layers] = helper_perlin(x,pix,abs(sc(1)),6,10);
 mv = mean(field,'all')*0.5; 
 if mv<0&&sc(2)>0; mv=mv*2-0*sqrt(abs(mv)); end
 if mv>0&&sc(2)<0; mv=mv*2-0*sqrt(abs(mv)); end

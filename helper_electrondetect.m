@@ -49,6 +49,8 @@ axspec = zeros(1,3); axspec(1+rem(axis,2)) = 1;
 sc = [2.0,1.2]; % [perlin magnitude, surface centering
 %rng(7)
 surfaces = helper_surf(box,param.pix,tiltangs,axis,sc);
+%histogram(surfaces{1}(:,3)); hold on
+%histogram(surfaces{2}(:,3));
 [newpath,gridt] = helper_thickfromsurf(surfaces,box,param.pix,tiltangs,axspec); 
 %[a,b] = bounds(newpath,'all')
 %histogram(newpath)

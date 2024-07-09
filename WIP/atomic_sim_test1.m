@@ -8,9 +8,11 @@ for i=1:numel(fn)
 end
 
 %%
-angles = -70:20:70;
-param = param_simulate('pix',10,'tilt',angles,'dose',40);
-[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,20);
+angles = -60:30:60;
+param = param_simulate('pix',10,'tilt',angles,'dose',80);
+tic
+[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,5);
+toc
 sliceViewer(dtilt);
 
 %% 
@@ -163,16 +165,21 @@ ax = [1,0,0];
 cen = boxsize/2;
 %angles = param.tilt;
 % get the transmission wave
-DQE = 0.84;
+DQE = 0.84*0.5;
 d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix);
 
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
+%jatoms = atoms(:,1:3);
 for t=1:numel(param.tilt)
     disp(angles(t))
     angle = angles(t);
     atomtmp = atoms;
-    atomtmp(:,1:3) = (atomtmp(:,1:3)-cen)*rotmat(ax,deg2rad(angle))+cen;
+    tmp2 = atoms(:,1:3);
+    tmp2 = tmp2-cen;
+    tmp2 = tmp2*rotmat(ax,deg2rad(angle));
+    tmp2 = tmp2+cen;
+    atomtmp(:,1:3) = tmp2;%(atomtmp(:,1:3)-cen)*rotmat(ax,deg2rad(angle))+cen;
     
     % project a set of slices - higher resolution in Z? start with isotropy
     %pix = 8;

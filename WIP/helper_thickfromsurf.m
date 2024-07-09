@@ -1,10 +1,10 @@
-function [tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,axis)
+function [tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,ax)
 %[tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,axis)
 
 tilts = zeros(box(1)/pix,box(2)/pix,numel(angles));
 gridt(1:2) = {zeros(box(1)/pix,box(2)/pix,numel(angles))};
 for i=1:numel(angles)
-    sampsurfrot = rotsurf(surfaces,box,deg2rad(angles(i)),axis);
+    sampsurfrot = rotsurf(surfaces,box,deg2rad(angles(i)),ax);
     gridt{1}(:,:,i) = regrid(sampsurfrot{1},box,pix);
     %if ~all(isfinite(gridt{1}(:,:,i)),'all'), fprintf('top infinite at angle %i \n',angles(i)); end
     gridt{2}(:,:,i) = regrid(sampsurfrot{2},box,pix);
@@ -12,14 +12,22 @@ for i=1:numel(angles)
     %thick = gridt{1}(:,:,i)-gridt{2}(:,:,i); 
     tilts(:,:,i) = gridt{1}(:,:,i)-gridt{2}(:,:,i);
 end
+%[a,b] = bounds(surfaces{1})
+%[a,b] = bounds(surfaces{2})
+%plot3p([surfaces{1};surfaces{2}],'.'); axis equal
+%plot3p([sampsurfrot{1};sampsurfrot{2}],'.'); axis equal
+%histogram(surfaces{1}(:,1)); hold on
+%histogram(surfaces{2}(:,1));
+%histogram(sampsurfrot{1}(:,3)); hold on
+%histogram(sampsurfrot{2}(:,3));
 end
 
 function surfcell = rotsurf(surfcell,box,theta,ax)
-spec = find(ax); %spec = 1+rem(spec,2)
-cen = zeros(1,3); cen(spec) = box(spec)/2;
+spec = find(ax); spec = 1+rem(spec,2);
+cen = zeros(1,3); cen(spec) = box(spec)/2*1; %cen(3) = 0*box(3)/2;
 %cen = [box(1)/2,0,0] %not appropriate for X tilt
+R = rotmat(ax,theta); %R2 = makehgtform('xrotate',theta); R3 = makehgtform('yrotate',theta);
 for i=1:2
-    R = rotmat(ax,theta); %R2 = makehgtform('xrotate',theta); R3 = makehgtform('yrotate',theta);
     surfcell{i} = (surfcell{i}-cen)*R+cen;
     %if ~all(isfinite(surfcell{i}),'all'),fprintf('infinite at angle %i',rad2deg(theta)); end
 end

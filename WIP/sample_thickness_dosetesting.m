@@ -4,7 +4,7 @@ box = [400,200,50]*pix;
 angles = -60:5:60;
 axis = 1; % axis still not working the same
 axspec = zeros(1,3); axspec(1+rem(axis,2)) = 1;
-sc = [2.5,1.2]; % [perlin magnitude, surface centering
+sc = [2,1.2]; % [perlin magnitude, surface centering
 %rng(7)
 surfaces = helper_surf(box,pix,angles,axis,sc);
 [tilts,gridt] = helper_thickfromsurf(surfaces,box,pix,angles,axspec); 
