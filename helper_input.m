@@ -16,8 +16,10 @@ if isstruct(list) && isfield(list,'type') %if the input is a formatted particle 
     particleset = list; return
 end
 %list = internal_load(list); %internal call to either uipickfiles or uigetfiles
-filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
-list = util_loadfiles(filter);
+if ~iscell(list)
+    filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
+    list = util_loadfiles(filter);
+end
 
 %types = {'single','bundle','complex','cluster','group','assembly','memplex','membrane','inmem','outmem'};
 %complex one flag to make it place everything separately, rather than needing a complex for each type
@@ -123,7 +125,6 @@ for i=1:numel(list)
     fprintf('generating at %g A ',pixelsize)
     
     %disp(names); disp(id);
-    
     
     %new name parser, import from pdb2vol and replace when needed
     %need to intelligently get group/single
