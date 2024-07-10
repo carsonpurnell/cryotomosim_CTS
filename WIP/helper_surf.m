@@ -1,25 +1,16 @@
 function surfaces = helper_surf(box,pix,angles,axis,sc)
-%pix = 10;
-%box = [400,300,40]*pix;
-%angles = -60:5:60;
-mang = max(abs(angles));
+%mang = max(abs(angles)); 
 axspec = 1+rem(axis,2);
-mtilt = tand(mang)*1.5; % angle for initial grid padding to cover tilt area - don't know why 0.6 is enough
-% make surfaces - displaced in Z
-% trying with identical surf pairs first
-res = pix/2; %oversample to prevent holes in data
-%need to stretch coverage a lot, fill values are static and not NN or average of near edge
-padmult = 2; pval = pix*padmult;
-pad = [pval,pval]; %axis = 1; % huge padding only against tilt axis, otherwise small
-pad(axis) = round((box(axspec)+box(3))*mtilt)+pix*2; % huge padding to cover for tilting
-[x,y] = meshgrid(pix/padmult-pad(1):res:box(1)+pad(1),pix/padmult-pad(2):res:box(2)+pad(2));
+mtilt = tand(max(abs(angles)))*1.0; % compute grid padding to cover whole area of high tilt
 
-%sc = [2.5,1.2];
-surfaces{1} = gensurf(x,y,box,pix,sc);
+res = pix/2; % oversample resolution to prevent missing values in meshgrids
+padmult = 2; pval = pix*padmult; %pad extent, need to increase for non-ordinal tilt axis
+padding = [pval,pval]; %basic minor padding to cover edge rounding
+padding(axis) = round((box(axspec)+box(3))*mtilt)+pix*2; % huge padding to cover for tilting
+[x,y] = meshgrid(pix/padmult-padding(1):res:box(1)+padding(1),pix/padmult-padding(2):res:box(2)+padding(2));
+
+surfaces{1} = gensurf(x,y,box,pix,[0,1.2]); %generate each field of 3d points from xy coord grid
 surfaces{2} = gensurf(x,y,box,pix,-sc);
-%histogram(surfaces{1}(:,3)); hold on
-%histogram(surfaces{2}(:,3));
-
 end
 
 function gridsurf = gensurf(x,y,box,pix,sc)
@@ -40,6 +31,7 @@ arguments
     octaves = 10
     startoct = 8
 end
+if mag == 0; field = zeros(size(gridxy)); layers = field; return; end
 %sz = size(grid); %w = size(grid);
 adj = round(log2(pix)); %adjustment to keep noise octaves on the same magnitude across diff pixel sizes
 i = startoct-adj; %adjust frequency based on pixel size
@@ -57,6 +49,7 @@ for i=1:numel(octaves)
     d = randn(round(sz/(2^prep)+4));
     for k=1:prep
         d = interp2(d, 'spline');
+        %d = interp2(randn(ceil((n-1)/(2^(i-1))+1),ceil((m-1)/(2^(i-1))+1)), i-1, 'spline');
     end
     d = d(1:sz(1), 1:sz(2));
     for k=prep+1:oc %do iterative refinements and shrinking rather than 2^k expansion in one step
