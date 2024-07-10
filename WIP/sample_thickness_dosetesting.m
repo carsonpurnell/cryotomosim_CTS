@@ -1,7 +1,7 @@
 % testing thickness computation from surface points
 pix = 10;
-box = [400,200,50]*pix;
-angles = -60:5:60;
+box = [300,200,100]*pix;
+angles = -60:3:60;
 axis = 1; % axis still not working the same
 axspec = zeros(1,3); axspec(1+rem(axis,2)) = 1;
 sc = [2,1.2]; % [perlin magnitude, surface centering
