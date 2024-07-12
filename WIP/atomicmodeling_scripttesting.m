@@ -7,7 +7,7 @@ input = {'ribo__ribo__4ug0_4v6x.group.mat','actin__6t1y_13x2.mat',...
 
 %% load input structures as atomic data
 %rng(2);
-pix = 12; clear particles;
+pix = 10; clear particles;
 input = {'ribosome__4ug0.pdb','actin__6t1y_13x2.pdb','MT__6o2tx3.pdb'};%,...
 input = {'ribo__ribo__4ug0_4v6x.group.mat','actin__6t1y_13x2.mat',...
     'MT__6o2tx3.mat','tric__tric__6nra-open_7lum-closed.group.mat'};
@@ -50,7 +50,7 @@ end
 %% functionalized model gen part
 %rng(7); 
 con = 1;
-boxsize = pix*[400,600,80]*1;
+boxsize = pix*[500,300,80]*1;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 memnum = 4;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
@@ -60,7 +60,7 @@ if con==1
     dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 end
 
-n = 500;
+n = 800;
 %profile on
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 tic; [split,dyn,mu] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
@@ -73,7 +73,7 @@ outpix = pix;
 %profile viewer
 sliceViewer(vol*1+solv);
 %{
-WriteMRC(vol+solv,outpix,'newsolv2.mrc');
+WriteMRC(vol+solv,outpix,'atomic_model.mrc');
 WriteMRC(atlas,outpix,strjoin(['newsolv2_',string(pix),'a_atlas.mrc'],''));
 %}
 
