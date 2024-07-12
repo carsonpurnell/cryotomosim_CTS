@@ -64,7 +64,7 @@ switch ext
         cts = q.cts; vol = cts.vol; pixelsize = cts.param.pix;
     case '.mrc'
         [vol, head] = ReadMRC(fullfile(path,sampleMRC)); 
-        pixelsize = head.pixA; cts = 0;
+        pixelsize = head.pixA; cts = 0; atlas = 0;
     otherwise
         error('selected file is not a .mat or a .mrc, aborting')
 end
