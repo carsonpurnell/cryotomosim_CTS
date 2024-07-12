@@ -9,13 +9,15 @@
 % initial pad by 100% all directions to reduce obvious repetition? might go back to being super slow
 % after tilting, pad top/bottom layers differently to prevent obvious wrapping repeat?
 
-box = [500,400,50]*15;
+pix = 10;
+sz = [500,400,50];
+box = sz*10;
 
-surfaces = helper_surf(box,pix,angles,axis,sc);
+%surfaces = helper_surf(box,pix,angles,axis,sc);
 rng(4)
-z = rands(box(1:2),100)+rands(box(1:2),50)*.8+1*rands(box(1:2),20)/4;
+z = rands(box(1:2),100)+rands(box(1:2),60)*.8+1*rands(box(1:2),30)/4;
 %[z,k] = rands(box(1:2),40);
-%imshow(rescale(z))
+imshow(rescale(z))
 
 
 function [X,K] = rands(sz,sig)
