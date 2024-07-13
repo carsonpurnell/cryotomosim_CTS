@@ -118,7 +118,7 @@ cv = zeros(size(padded)); %pre-initialize output array
 mid = round(size(input,3)/2);
 if numel(size(input))>2, iters = size(input,3); else iters=1; end
 for i=1:iters %loop through tilts
-    adj = (param.pix*slab*(i-mid))/(1e10)*1e0; %adjustment to listed defocus by depth
+    adj = (param.pix*slab*(i-mid))/(1e10)*1e0; %adjustment to listed defocus by depth, convert A to m
     %param.defocus = -5+adj;
     %shift = tand(param.tilt(i)); %proportion of length by tilt to compute vertical displacement
     %for j=1:numel(bincenter)
