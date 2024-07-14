@@ -9,11 +9,11 @@ end
 
 %%
 angles = -60:20:60;
-param = param_simulate('pix',10,'tilt',angles,'dose',80);
+param = param_simulate('pix',10,'tilt',angles,'dose',80,'tiltax','y');
 tic
-[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,20);
+[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,boxsize,30);
 toc
-%sliceViewer(dtilt);
+sliceViewer(dtilt);
 %WriteMRC(dtilt,pix,'ctf_compare_atomicsim.mrc')
 
 %% 
@@ -161,8 +161,12 @@ h = 6.62607015e-34; %planck constant m^2 Kg/s
 L = h*c/sqrt(e*V*(2*m*c^2+e*V)); %calculation of wavelength L from accelerating voltage and constants
 end
 
-function [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,angles,boxsize,slabthick)
-ax = [1,0,0];
+function [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,boxsize,slabthick)
+if param.tiltax=='Y'
+    ax = [0,1,0];
+else
+    ax = [1,0,0];
+end
 cen = boxsize/2;
 %angles = param.tilt;
 % get the transmission wave
@@ -173,8 +177,8 @@ boxsize = param.pix*round(boxsize/param.pix);
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
 %jatoms = atoms(:,1:3);
 for t=1:numel(param.tilt)
-    disp(angles(t))
-    angle = angles(t);
+    disp(param.tilt(t))
+    angle = param.tilt(t);
     atomtmp = atoms;
     tmp2 = atoms(:,1:3);
     tmp2 = tmp2-cen;
