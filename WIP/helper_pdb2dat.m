@@ -71,6 +71,7 @@ for i=1:size(data,1)
     %tmpz = dict_atoms(data{i,1});
     %tmpatomint = dict_intensity(tmpz,'sc');
     %if tmpatomint~=tmpint, disp('nonidentity'); end
+    tmpco = tmpco';
     particles.adat{i} = [tmpco,tmpint];
     
     

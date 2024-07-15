@@ -1,16 +1,16 @@
 %% model_param input version
 pix = 12; 
-input = {'ribosome__4ug0.pdb','actin__6t1y_13x2.pdb','MT__6o2tx3.pdb'};
+input = {'ribo__ribo__4ug0_4v6x.group.pdb','actin__6t1y_13x1.pdb','MT__6o2tx3.pdb'};
 %input = {'ribo__ribo__4ug0_4v6x.group.mat','actin__6t1y_13x2.mat',...
  %   'MT__6o2tx3.mat','tric__tric__6nra-open_7lum-closed.group.mat'};
-pmod = param_model(pix,'layers',{input});
+%pmod = param_model(pix,'layers',{input});
 
 %% load input structures as atomic data
 %rng(2);
 pix = 10; clear particles;
 input = {'ribosome__4ug0.pdb','actin__6t1y_13x2.pdb','MT__6o2tx3.pdb'};%,...
-input = {'ribo__ribo__4ug0_4v6x.group.mat','actin__6t1y_13x2.mat',...
-    'MT__6o2tx3.mat','tric__tric__6nra-open_7lum-closed.group.mat'};
+input = {'ribo__ribo__4ug0_4v6x.group.pdb','actin__6t1y_13x2.pdb',...
+    'MT__6o2tx3.pdb','tric__tric__6nra-open_7lum-closed.group.pdb'};
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
     %input = {'CaMK2a__5u6y.pdb','CaMK2a__5u6y.pdb','CaMK2a__5u6y.pdb','CaMK2a_3soa.pdb'};
     %input = {'actin__6t1y_13x2.pdb','MT__6o2tx3.pdb','ribosome__4ug0.pdb'};
@@ -50,7 +50,7 @@ end
 %% functionalized model gen part
 %rng(7); 
 con = 1;
-boxsize = pix*[700,600,100]*1;
+boxsize = pix*[400,300,50]*1;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 memnum = 12;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;

@@ -15,7 +15,6 @@ end
 if isstruct(list) && isfield(list,'type') %if the input is a formatted particle list, record and end
     particleset = list; return
 end
-%list = internal_load(list); %internal call to either uipickfiles or uigetfiles
 if ~iscell(list)
     filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
     list = util_loadfiles(filter);
@@ -42,27 +41,17 @@ for i=1:numel(list)
     [~,filename,ext] = fileparts(list{i}); %get file name and extension
     
     id = strsplit(filename,{'__','.'}); %extract class IDs from filename, delimited by . or __
-    %{
-    %do flag checks first
-    %flagcheck = find(contains(id,'membrane'));
-    %flagcheck = find(contains(id,'vesicle'));
-    %flagcheck = find(contains(id,'cytosol'));
-    %else any
-    %would be a big sprawling mess of fallthroughs, need something better
-    %}
-    %or do a group-level find-contains for location flags etc?
     
+    %or do a group-level find-contains for location flags etc?
     %do a single find-contains against all valid flags, collect them, remove from ids
     %remove duplicates and keep them all as a string array in a flag field?
     
-    flagix = matches(id,flaglist); %not using find due to being slower
-    %flags = []; %will be empty if no flags detected, usually 1x0 empty
+    flagix = matches(id,flaglist); % if no flags found, flagix will be 0x1 empty (cell?)
     tmp.flags = id(flagix); %id(flagix) = []; %remove flags from list when detected
     tmp.flags = unique(tmp.flags); %remove duplicate flag entries for cleanliness
     %kind of a mess in randomfill, checking partial flags. split them up or make a sorter funct?
     
     %figure out the relevant trimming/centering for vol loading
-    %
     trim = 2; centering = 0;
     if any(ismember(tmp.flags,{'complex','assembly'}))
         trim = 1;
@@ -106,33 +95,26 @@ for i=1:numel(list)
     end
     %}
     
+    fprintf('read: %s ',filename)
     if iscellstr(list(i)) && ismember(ext,modelext)
-        fprintf('read: %s ',filename)
         [tmp.vol,tmp.sumvol,names] = helper_pdb2vol(list{i},pixelsize,trim,centering,sv); 
         %read pdb and construct as volume at pixel size
         %pdb names read in as 'NA', cif are in column cell array of strings
         %fprintf('generating at %g A ',pixelsize)
     elseif iscellstr(list(i)) && strcmp(ext,'.mrc')
-        fprintf('loading %s  ',filename)
         [tmpmrcvol, head] = ReadMRC(list{i});
-        %fprintf('resizing from %g to %g pixel size',head.pixA,pixelsize)
+        fprintf('resizing from %g to %g pixel size',head.pixA,pixelsize)
         tmpmrcvol = imresize3(tmpmrcvol,head.pixA/pixelsize);
-        tmp.vol{1} = tmpmrcvol;
+        tmp.vol{1} = tmpmrcvol; tmp.sumvol = 0;
         names = {'NA'};
     elseif iscellstr(list(i)) %#ok<*ISCLSTR>
         error('Error: item %i (%s) in the input list is a string, but not a valid file type',i,list{i})
     end
     fprintf('generating at %g A ',pixelsize)
     
-    %disp(names); disp(id);
-    
     %new name parser, import from pdb2vol and replace when needed
     %need to intelligently get group/single
-    %disp(names)
     %names = mat2cell(names,numel(names));
-    %disp(names)
-    %size(names)
-    %class(names)
     %names = string(names); %does not appear to be necessary
     for j=1:numel(names)
         %disp(names{j}); disp(id{j});
@@ -153,9 +135,6 @@ for i=1:numel(list)
         end
     end
     tmp.id = names;
-    
-    %disp(names); disp(id);
-    %disp(names)
     
     %{
     %old id/name parser
@@ -181,33 +160,10 @@ for i=1:numel(list)
     end
     %}
     
-    %tmp.sumvol = sumvol;
-    
     %tmp.vol = helper_preproc(tmp.vol,proc);
     %need to filter mrc to make density maps clean, pdb are already good to go
     particleset(i) = tmp; %#ok<AGROW> %store in multidim struct for ease of use
     fprintf('  done\n')
 end
 
-end
-
-function list = internal_load(list)
-prompt = 'Select input structure files';
-filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
-multi = [];
-if strcmp(list,'gui') && exist('uipickfiles','file')==2 &&6==8%preferred method of using GUI to find target files
-    filter = replace(filter,'*','\'); filter = replace(filter,';','$|'); %replace separators
-    filter = append(filter,'$'); %append maybe important last symbol
-    %list = uipickfiles('REFilter','\.mrc$|\.pdb$|\.mat$|\.pdb1$|\.cif$|\.mmcif$','Prompt',prompt); 
-    list = uipickfiles('REFilter',filter,'Prompt',prompt,'NumFiles',multi); 
-    if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
-elseif strcmp(list,'gui')
-    if isempty(multi), multi='on'; else multi='off'; end %parse multiselect flag
-    [list, path] = uigetfile({filter},prompt,'MultiSelect',multi);
-    if numel(string(list))==1, list={list}; end
-    if ~iscell(list) || numel(list)==0, error('No files selected, aborting.'); end
-    for i=1:numel(list) %make the list full file paths rather than just names so it works off-path
-        list{i} = fullfile(path,list{i}); 
-    end
-end
 end

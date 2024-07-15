@@ -24,9 +24,9 @@ end
 %sum over a spectrum of S values somehow for total signal? values far lower than even z
 %data not centered, only happens in the pts2vol subfunct
 
-data = helper_pdbparse(pdb);
+data = helper_pdbparse(pdb); %atomic coords xy inverted, can't figure out where
 [path,file,ext] = fileparts(pdb);
-%
+%{
 switch ext %parse structure files depending on filetype
     case '.mat'
         try q = load(pdb); data = q.data;
@@ -35,9 +35,14 @@ switch ext %parse structure files depending on filetype
         data = internal_cifparse(pdb);
     case {'.pdb','.pdb1'}
         data = internal_pdbparse(pdb);
+        data1 = helper_pdbparse(pdb);
+        %size(data)
+        %size(data1)
+        %data
+        %data1
+        %all(data{1,2}==data1{1,2},'all')
 end
 %}
-%data
 [vol,sumvol,names] = internal_volbuild(data,pix,trim,centering);
 
 if savemat==1 %.mat saving and check if file already exists
@@ -99,7 +104,8 @@ for i=1:models
     
     coords = [str2num(chararray(:,1:8)),str2num(chararray(:,9:16)),str2num(chararray(:,17:24))]'; %#ok<ST2NM>
     %using str2num because str2double won't operate on 2d arrays, and can't add spaces while vectorized
-    data{i,2} = coords; %store coordinates
+    
+    data{i,2} = single(coords); %store coordinates
     data{i,3} = 'NA';
 end
 
@@ -206,6 +212,8 @@ else
     if ~isempty(ix)
         data(ix,:) = []; names(ix) = []; %remove dummy submodels and names
     end
+    %size(data{:,2})
+    %data
     [a,b] = bounds(horzcat(data{:,2}),2); %bounds of all x/y/z in row order
     origin = (a+b)/2; %get the geometric center of the points
     span = max(origin-a,b-origin); %get spans measured from the origin
