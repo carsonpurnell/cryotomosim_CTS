@@ -9,9 +9,9 @@ end
 
 %%
 angles = -60:20:60;
-param = param_simulate('pix',10,'tilt',angles,'dose',80,'tiltax','y');
+param = param_simulate('pix',10,'tilt',angles,'dose',80,'tiltax','Y');
 tic
-[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,boxsize,30);
+[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,boxsize,40);
 toc
 sliceViewer(dtilt);
 %WriteMRC(dtilt,pix,'ctf_compare_atomicsim.mrc')
