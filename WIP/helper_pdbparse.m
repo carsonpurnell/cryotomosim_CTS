@@ -91,7 +91,7 @@ for i=1:numel(headstart)
     x = char(t.Cartn_x); y = char(t.Cartn_y); z = char(t.Cartn_z);
     coord = [str2num(x),str2num(y),str2num(z)]';  %#ok<ST2NM> %merge coordinates into a single array
     
-    data{i,1} = atoms; data{i,2} = single(coord)'; data{i,3} = modnames{i};
+    data{i,1} = atoms; data{i,2} = single(coord); data{i,3} = modnames{i};
 end
 
 end
