@@ -65,6 +65,7 @@ if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     %    ismem = 0;
     %disp('finished mem prep')
 end % membrane setup block end
+%ismem
 %size(memskel)
 %sliceViewer(memskel)
 %sliceViewer(mout); figure(); sliceViewer(min); figure(); sliceViewer(memlocmap);
@@ -207,26 +208,21 @@ for i=1:iters(ww)
         end
         
         case 'membrane'
-            %disp('pretest')
             %need a more efficient tester subfunct
             [rot,loc,op,err] = testmem(inarray,locmap,set(which),vesvec,vesvol,memvol,4);
-            %disp('posttest')
             counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
-            %sliceViewer(locmap*100+memvol);
             %sliceViewer(rot);
-            %sliceViewer(vesvol);
             %fprintf('1')
             if err==0
                 %fprintf('2')
                 [inarray] = helper_arrayinsert(inarray,rot,loc); %write sum to working array
-                [memlocmap] = helper_arrayinsert(memlocmap,-imbinarize(rot),loc); %reduce mem loc map
                 if ismem==1 %&& strcmp(set(which).type,'inmem') %reduce inmem/outmem maps if present
+                    [memlocmap] = helper_arrayinsert(memlocmap,-imbinarize(rot),loc); %reduce mem loc map
                     [memin] = helper_arrayinsert(memin,-rot,loc);
                     [memout] = helper_arrayinsert(memout,-rot,loc);
                     %elseif ismem==1 %&& strcmp(set(which).type,'outmem')
                 end
-                %counts.s = counts.s-1; %increment success, bad old way need to deprecate
                 %actually write to the split arrays
                 if any(strcmp(fnflag(flags,{'complex','assembly'}),{'complex','assembly'}))
                     members = 1:numel(set(which).vol);
