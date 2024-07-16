@@ -7,7 +7,7 @@ input = {'ribo__ribo__4ug0_4v6x.group.pdb','actin__6t1y_13x1.pdb','MT__6o2tx3.pd
 
 %% load input structures as atomic data
 %rng(2);
-pix = 10; clear particles;
+pix = 8; clear particles;
 input = {'ribosome__4ug0.pdb','actin__6t1y_13x2.pdb','MT__6o2tx3.pdb'};%,...
 input = {'ribo__ribo__4ug0_4v6x.group.pdb','actin__6t1y_13x2.pdb',...
     'MT__6o2tx3.pdb','tric__tric__6nra-open_7lum-closed.group.pdb'};
@@ -50,9 +50,9 @@ end
 %% functionalized model gen part
 %rng(7); 
 con = 1;
-boxsize = pix*[400,300,50]*1;
+boxsize = pix*[600,500,50]*1;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 12;
+memnum = 6;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
 if con==1
@@ -60,7 +60,7 @@ if con==1
     dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 end
 
-n = 2000;
+n = 500;
 %profile on
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 tic; [split,dyn,mu] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
