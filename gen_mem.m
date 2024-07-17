@@ -4,7 +4,7 @@ arguments
     sz
     pix = []
     sp = 0.6+rand*0.4
-    thick = 24+randi(6)
+    thick = 22+randi(6)
 end
 vol = 0;
 if size(sz,1)>1

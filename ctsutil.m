@@ -47,10 +47,11 @@ switch op
         
     case 'findloc'
         out = randi(numel(in)); %random start
-        fallback=0;
-        while in(out)~=1 && fallback<100
+        if opt==0, out2=-100000; end
+        %out2=0;
+        while in(out)~=1 && out2<opt
             out = randi(numel(in));
-            fallback = fallback+1;
+            out2 = out2+1;
         end
         %if fallback==100; disp('fallbacked triggered'); end
         [r,c,l] = ind2sub(size(in),out);

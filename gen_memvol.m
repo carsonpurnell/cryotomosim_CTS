@@ -20,7 +20,7 @@ arguments
     num
     tries = 2
     vecpts = 9
-    memthick = [60 24]
+    memthick = [60 22]
     memsize = 3
     memtype = 2
     opt.bare = 0

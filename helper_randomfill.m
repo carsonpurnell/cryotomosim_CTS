@@ -47,6 +47,8 @@ if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     %can skel be used to find normal vectors without needing centroid stored array?
     %}
     memlocmap = memskel; %store map of valid locations inside the membrane
+    memlocmap = memlocmap.*vesvec(:,:,:,1).*vesvec(:,:,:,2).*vesvec(:,:,:,3);
+    memlocmap = memlocmap~=0;
     init = [0,0,1]; %initial required orientation for memprots
     
     %inside/outside membrane localization maps
@@ -65,7 +67,9 @@ if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     %    ismem = 0;
     %disp('finished mem prep')
 end % membrane setup block end
+%histogram(vesvec(vesvec~=0)) % nvecs looks good here but is broken in mem placement?
 %ismem
+sliceViewer(memlocmap+memskel);
 %size(memskel)
 %sliceViewer(memskel)
 %sliceViewer(mout); figure(); sliceViewer(min); figure(); sliceViewer(memlocmap);
@@ -165,6 +169,7 @@ for i=1:iters(ww)
             case 'cytosol' %only outside vesicles
                 locmap = memout==1;
         end
+        %sliceViewer(locmap);
     else %either when no mem or when special loc flag not taken ('any' used to allow mem+any placement)
         locmap = inarray==0; %faster than logical somehow
     end
@@ -209,9 +214,32 @@ for i=1:iters(ww)
         
         case 'membrane'
             %need a more efficient tester subfunct
-            [rot,loc,op,err] = testmem(inarray,locmap,set(which),vesvec,vesvol,memvol,4);
+            [rot,loc,op,err,tloc] = testmem(inarray,locmap,set(which),vesvec,vesvol,memvol,6);
+            if vesvec(tloc(1),tloc(2),tloc(3),3)==0
+                err=1; fprintf('q');
+            end
             counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
-            
+            %tloc
+            %locmap(tloc(1),tloc(2),tloc(3))
+            %vesvec(tloc(1),tloc(2),tloc(3),:)
+            %{
+            if locmap(tloc(1),tloc(2),tloc(3))~=1 
+                tloc
+                disp(locmap(tloc(1),tloc(2),tloc(3)))
+            end
+            %
+            if vesvec(tloc(1),tloc(2),tloc(3),3)==0 && err==0
+                vesvec(tloc(1),tloc(2),tloc(3),:)
+                locmap(tloc(1),tloc(2),tloc(3))
+                memskel(tloc(1),tloc(2),tloc(3))
+                memlocmap(tloc(1),tloc(2),tloc(3))
+                bbloc = [tloc(1),tloc(2),tloc(3)]
+                bbins = ones(5,5,5)*1;
+                emap = helper_arrayinsert(memlocmap,bbins,bbloc-2);
+                sliceViewer(emap);
+                %ggg/0 %to break it
+            end
+            %}
             %sliceViewer(rot);
             %fprintf('1')
             if err==0
@@ -329,12 +357,13 @@ end
 end
 
 %placement testing for membrane proteins - TBD
-function [rot,com,op,err] = testmem(inarray,locmap,particle,vescen,vesvol,memvol,retry)
+function [rot,com,op,err,loc] = testmem(inarray,locmap,particle,vescen,vesvol,memvol,retry)
 init = [0,0,1]'; %not imported from top-level function
 %vesvec currently being used to bring in 4d membrane nvecs
 for r=1:retry
     %r
-    loc = ctsutil('findloc',locmap);
+    [loc,fb] = ctsutil('findloc',locmap);
+    if fb>=100000 && r<retry, err=1; continue; end
     %disp('postloc')
     %[k] = dsearchn(vescen,loc); %nearest vesicle center and distance to it
     %targ = loc-vescen(k,:); targ = targ/norm(targ); %get target location as if from origin and unitize
@@ -343,11 +372,18 @@ for r=1:retry
     %targ = [vescen(loc(1),loc(2),loc(3),1),vescen(loc(1),loc(2),loc(3),2),vescen(loc(1),loc(2),loc(3),3)]';
     %shrink by a 1:3 in 4th dim, and do a linear->vector replace?
     targ = vescen(loc(1),loc(2),loc(3),1:3); targ = targ(:); %get normal vector to the membrane
+    %{
+    if all(targ==0)
+        loc
+        continue
+    end
+    %}
+    % current issue, targ is always 000 - membrane vecs broken where in the chain?
     
     rotax=cross(init,targ); %compute the normal axis from the rotation angle
     theta = acosd( dot(init,targ) ); %compute angle between initial pos and final pos
     
-    spinang = randi(180);
+    spinang = rand*180;
     spin = imrotate3(particle.sumvol,spinang,init'); %rotate axially before transform to target location
     rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]); %rotate to the final position
     
