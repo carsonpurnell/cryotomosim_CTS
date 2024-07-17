@@ -69,7 +69,7 @@ if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
 end % membrane setup block end
 %histogram(vesvec(vesvec~=0)) % nvecs looks good here but is broken in mem placement?
 %ismem
-sliceViewer(memlocmap+memskel);
+%sliceViewer(memlocmap+memskel);
 %size(memskel)
 %sliceViewer(memskel)
 %sliceViewer(mout); figure(); sliceViewer(min); figure(); sliceViewer(memlocmap);
