@@ -26,6 +26,9 @@ arguments
     opt.bare = 0
 end
 %clipping out of the Z also conviniently how tomos actually look, but is maybe too random
+% bug: resolutions starting at ~8A have disintegrating vectors/skel - not thinned to single pixel shell
+% maybe generate skel from centreline points rather than post-hoc? should be perfectly thinned
+% below 6A, skel is total garbage. seems always fine 10+ though, that's why I didn't notice
 
 %pixel size <3 seems to infinite loop due to creating only empty blob vols - too much smoothing/dilating?
 % future feature: nested membranes with shrinking/smoothing
