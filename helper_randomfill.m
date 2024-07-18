@@ -34,7 +34,7 @@ end
 end
 
 ismem = 0;
-if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
+if numel(size(nvecs))==4 %setup membrane skeletons/vesicle side maps
     ismem = 1;
     %disp('hit membrane check')
     %{
@@ -46,8 +46,9 @@ if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     skel = bwareaopen(skel,20); %clean any remaining outlier points
     %can skel be used to find normal vectors without needing centroid stored array?
     %}
-    memlocmap = memskel; %store map of valid locations inside the membrane
-    memlocmap = memlocmap.*vesvec(:,:,:,1).*vesvec(:,:,:,2).*vesvec(:,:,:,3);
+    %memlocmap = memskel; %store map of valid locations inside the membrane
+    %hackjob
+    memlocmap = memskel.*vesvec(:,:,:,1).*vesvec(:,:,:,2).*vesvec(:,:,:,3);
     memlocmap = memlocmap~=0;
     init = [0,0,1]; %initial required orientation for memprots
     
@@ -63,19 +64,10 @@ if any(vesvec~=0,'all') %setup membrane skeletons/vesicle side maps
     memout(CC.PixelIdxList{idx}) = 1; %locmap for outside of vesicles
     memin = nonmem-memout; %locmap for inside vesicles    
     %numel(find(skel))/numel(skel) %check occupancy
-    %else
-    %    ismem = 0;
-    %disp('finished mem prep')
 end % membrane setup block end
-%histogram(vesvec(vesvec~=0)) % nvecs looks good here but is broken in mem placement?
-%ismem
-%sliceViewer(memlocmap+memskel);
-%size(memskel)
-%sliceViewer(memskel)
+%histogram(vesvec(vesvec~=0)) % check vectors histogram for approximate rectangularity
 %sliceViewer(mout); figure(); sliceViewer(min); figure(); sliceViewer(memlocmap);
-%sliceViewer(mout+min+memlocmap);
-%sliceViewer(min+vesvec(:,:,:,1));
-%sliceViewer(inarray); figure(); sliceViewer(inarray-memvol);
+%sliceViewer(min+vesvec(:,:,:,1)); %check coverage of vectors over the skel
 
 diagout = zeros(size(inarray,1),size(inarray,2),0);
 
