@@ -1,4 +1,4 @@
-function [atoms,perim,vol] = gen_mem(sz,pix,sp,thick)
+function [atoms,perim,vol,mesh,split] = gen_mem(sz,pix,sp,thick)
 
 arguments
     sz
@@ -26,7 +26,7 @@ else
 end
 %alternative shape generators? cylinders, planes, sphere, stacks, double layers?
 %alt gen 3: curved spline of core points with varying radii for expansion - how to derive radii?
-[shell] = shape2shell(sh,thick);
+[shell,mesh] = shape2shell(sh,thick);
 [pts,head,tail] = shell2pts(shell,atomfrac); %need to use surface/interior for atomic density purposes
 %better control over thickness and surface layer density - impacts layered CTF artifact a lot.
 %spread of surface density also impacts the apparent thickness of final membrane, need to account
@@ -39,9 +39,13 @@ perim = [pts(ix,1:3);perim]; perim = unique(perim,'rows');
 
 %atoms(:,4) = 6.4*4; %terrible very bad interim density
 
+size(atoms)
+size(mesh)
 if ~isempty(pix)
-    vol = helper_atoms2vol(pix,atoms);
+    [vol] = helper_atoms2vol(pix,atoms);
+    [~,~,~,split] = helper_atoms2vol(pix,{atoms(:,1:3),mesh});
 end
+
 
 end
 
@@ -95,11 +99,12 @@ for j=1:iter
 end
 end
 
-function [shell] = shape2shell(shape,thick)
-shellpts = randtess(thick/10.0,shape,'s'); %might be too rough at 10, smaller divisor is smoother and slower
-vec = randn(size(shellpts)); vec = thick*vec./vecnorm(vec,2,2);
-shellpts = shellpts+vec;
-shell = alphaShape(shellpts,24);
+function [shell,meshpts] = shape2shell(shape,thick)
+meshpts = randtess(thick/6,shape,'s'); %might be too rough at 10, smaller divisor is smoother and slower
+% more points fills in mesh better, but also thickens and takes geometrically longer. 6 has few holes.
+vec = randn(size(meshpts)); vec = thick*vec./vecnorm(vec,2,2);
+%shellpts = shellpts+vec;
+shell = alphaShape(meshpts+vec,24);
 end
 
 function [pts,head,tail] = shell2pts(shell,atomfrac)
