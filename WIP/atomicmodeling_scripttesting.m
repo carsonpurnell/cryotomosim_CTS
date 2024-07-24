@@ -10,7 +10,7 @@ input = {'ribo__ribo__4ug0_4v6x.group.pdb','actin__6t1y_13x1.pdb','MT__6o2tx3.pd
 pix = 8; clear particles;
 input = {'ribosome__4ug0.pdb','actin__6t1y_13x2.pdb','MT__6o2tx3.pdb'};%,...
 input = {'ribo__ribo__4ug0_4v6x.group.pdb','actin__6t1y_13x2.pdb',...
-    'MT__6o2tx3.pdb','tric__tric__6nra-open_7lum-closed.group.pdb'};
+    'MT__6o2tx3.pdb','tric__tric__6nra-open_7lum-closed.group.pdb','PSD50__PSD99__PSD150__PSD95.group.pdb'};
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
     %input = {'CaMK2a__5u6y.pdb','CaMK2a__5u6y.pdb','CaMK2a__5u6y.pdb','CaMK2a_3soa.pdb'};
     %input = {'actin__6t1y_13x2.pdb','MT__6o2tx3.pdb','ribosome__4ug0.pdb'};
@@ -52,7 +52,7 @@ end
 con = 1;
 boxsize = pix*[500,600,50]*1;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 6;
+memnum = 8;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
 if con==1
@@ -60,7 +60,7 @@ if con==1
     dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 end
 
-n = 500;
+n = 400;
 %profile on
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 tic; [split,dyn,mu] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
