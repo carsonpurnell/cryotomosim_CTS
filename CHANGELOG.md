@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [v0.6.0](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.0) - 2024-07-24 17:48:23
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix membrane placement orientation ([4c5ac84](https://github.com/carsonpurnell/cryotomosim_CTS/commit/4c5ac84bf949ebd4b7670bf9a1ef31e17845b696))
+  - fix error using only .mrc model ([8a88005](https://github.com/carsonpurnell/cryotomosim_CTS/commit/8a880059d59a9b4ce3391630e4aa49fd6b18d022))
+
 ## [v0.5.9](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.5.9) - 2024-07-09 19:52:41
 
 *No description*
