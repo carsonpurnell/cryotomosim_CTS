@@ -139,7 +139,7 @@ n = size(pts,1);
 ix = randperm(n); ix = repmat(ix,[2,1]);
 iters = 3;
 l = round(n/iters);
-alpha = 12;
+alpha = 15;
 
 b = cell(1,iters);
 for i=1:iters
@@ -155,12 +155,11 @@ sh = alphaShape(pcat,alpha/2);
 [~,piter] = boundaryFacets(sh);
 
 n = size(pts,1);
-ix = randperm(n); ix = ix(1:round(n/500));
+ix = randperm(n); ix = ix(1:round(n/400));
 pi = pts(ix,1:3);
 piter = single([piter;pi]); %need to add back 1-3% or so of points to prevent inside placements
 piter = unique(piter,'rows');
 end
-
 
 function [data] = internal_pdbparse(pdb)
 %fid = fileread(pdb); 
