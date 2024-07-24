@@ -26,7 +26,7 @@ end
 %grouping/class flag (complex, assembly, random pick from group, sum of group) control split placement
 %class? flag for complex, centering complex, randomizing group, or set to sum
 modelext = {'.pdb','.pdb1','.cif','.mmcif','.mat'};
-flaglist = ["membrane" "vesicle" "cytosol" "complex" "assembly" "cluster" "bundle"];
+flaglist = ["membrane" "vesicle" "cytosol" "complex" "assembly" "cluster" "bundle" "group"];
 %loc flags: membrane embedded, vesicle inside, cytosol outside - otherwise anywhere
 %subpart flags: complex to place each subpart separately, assembly the same but not all subparts
 %grouping flags? randomly pick from group, either use that submodel ID or always use the group ID?
@@ -54,24 +54,16 @@ for i=1:numel(list)
     %figure out the relevant trimming/centering for vol loading
     trim = 2; centering = 0;
     if any(ismember(tmp.flags,{'complex','assembly'}))
-        trim = 1;
+        trim = 1; %make sure complexes have the same bounding box
     end
     if any(ismember(tmp.flags,{'membrane'}))
-        trim = 0; centering = 1;
+        trim = 0; centering = 1; %memprots need an unchanged bbox with a referenced center
     end
-    %'sum' flag to use the sumvol to make it easy to use a complex as a single class?
-    %if plex trim=1? ismember{x,{'complex','assembly'})
-    %if mem trim =0 and center = 1?
-    %}
     
-    %convert to vols and get names
-    
-    %assign names from file/filename
+    %convert to vols and get names, assign names from file/filename
     %if lumper, use first id string for all names
     %if splitting, run through and replace NA names with same ID name
     
-    % old janky class parser and loader thing
-    %
     tmp.type = id{end}; %type is the last item in the parsed name, if at all
     
     %if any(ismember(tmp.flags,{'distract'})); tmp.type = 'distract'; end
@@ -110,6 +102,7 @@ for i=1:numel(list)
     elseif iscellstr(list(i)) %#ok<*ISCLSTR>
         error('Error: item %i (%s) in the input list is a string, but not a valid file type',i,list{i})
     end
+    %tmp.atom = helper_pdb2dat(list{i},pixelsize,trim,centering,sv);
     fprintf('generating at %g A ',pixelsize)
     
     %new name parser, import from pdb2vol and replace when needed
