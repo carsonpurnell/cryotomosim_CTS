@@ -9,11 +9,18 @@ end
 
 %%
 angles = -60:20:60;
-param = param_simulate('pix',10,'tilt',angles,'dose',80,'tiltax','Y');
+angles = [-5,0,5];
+angles = (rand-rand)*10;
+param = param_simulate('pix',3,'tilt',angles,'dose',80/4,'tiltax','Y','defocus',-2);
 tic
-[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,boxsize,40);
+[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,boxsize,1);
 toc
-sliceViewer(dtilt);
+
+try
+    sliceViewer(dtilt);
+catch
+    imshow(rescale(dtilt))
+end
 %WriteMRC(dtilt,pix,'ctf_compare_atomicsim.mrc')
 
 %% 
