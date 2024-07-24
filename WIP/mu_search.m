@@ -127,7 +127,7 @@ d2 = zeros(size(ix,2),1)+tol^2;
 for i=1:size(branchdet,1)
     bpts = mu{branchdet(i,1),1}{1,branchdet(i,2)};
     if ~isempty(bpts)%, err=0; end;%break; end
-        d2(bix==i,:) = pdist2(bpts,pts(bix==i,:),'euclidean','Smallest',1);
+        d2(bix==i,:) = pdist2(bpts,pts(bix==i,:),'euclidean','Smallest',1); %primary bottleneck
         if any(d2<(tol)); err=1; break; end %early exit if collision
     end
 end
@@ -148,7 +148,7 @@ if numel(mu{d,1}{3,br})==8 % only split when the bin has branches
     [~,c2] = pdist2(bcp,pts(ix2,:),'squaredeuclidean','Smallest',1); %which branch for the bin pts
     t2 = zeros(2,numel(c2))+d+1;
     t2(2,:) = leaves(c2); ix(:,ix2) = t2;%[d+1,c2]';
-    [err] = bincheck(mu,pts(ix2,:),ix(:,ix2));
+    [err] = bincheck(mu,pts(ix2,:),ix(:,ix2)); %primary bottleneck
 end
 %if err==1; disp('e'); end
 
