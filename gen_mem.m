@@ -15,7 +15,7 @@ end
 
 switch 1%randi(2)
     case 1 %needs a bit more smoothing and less flat faces
-        [sh,~,~,~] = blob(sz,sp); %connect and smooth scattered points
+        [sh] = blob(sz,sp); %connect and smooth scattered points
     case 2
         [sh] = bubble(sz,sp); %expand spheres from core pts
 end
@@ -26,7 +26,10 @@ else
 end
 %alternative shape generators? cylinders, planes, sphere, stacks, double layers?
 %alt gen 3: curved spline of core points with varying radii for expansion - how to derive radii?
-[shell,mesh] = shape2shell(sh,thick);
+
+[shell,mesh] = shape2shell(sh,thick); %shape central shell and dense mesh of that shell
+% need to use mesh to generate dense mesh of vepts - all points works fo atomic, but may be slow
+
 [pts,head,tail] = shell2pts(shell,atomfrac); %need to use surface/interior for atomic density purposes
 %better control over thickness and surface layer density - impacts layered CTF artifact a lot.
 %spread of surface density also impacts the apparent thickness of final membrane, need to account
@@ -37,19 +40,15 @@ perim = [shell.Points;sh.Points]; %perimeter from shell and centre shape points
 ix = randi(size(pts,1),1,round(size(pts,1)/10)); % 10% of pts
 perim = [pts(ix,1:3);perim]; perim = unique(perim,'rows');
 
-%atoms(:,4) = 6.4*4; %terrible very bad interim density
-
-size(atoms)
-size(mesh)
 if ~isempty(pix)
     [vol] = helper_atoms2vol(pix,atoms);
-    [~,~,~,split] = helper_atoms2vol(pix,{atoms(:,1:3),mesh});
+    [~,~,~,split] = helper_atoms2vol(pix,{atoms(:,1:3),mesh}); % nonscaled version of vol {1} and shell {2}
 end
 
 
 end
 
-function [sh,pts,pts1,pts2] = blob(sz,sp)
+function [sh,pts,pts1] = blob(sz,sp)
 n = round(8+sz^(0.2+sp));
 rad = sz*(0+sp); var = sz*(1-sp)*2; %probably change to 1/sp-1
 iters = round(1+(1+1/sp)^0.5);
@@ -79,7 +78,7 @@ sh = alphaShape(tp); sh.Alpha = criticalAlpha(sh,'one-region')+sz/2;
 [~,pts] = boundaryFacets(sh);
 
 pts1 = smiter(pts,1,9); %smiter not great, can average between faces. need dist cutoff at least.
-pts2 = smiter(pts,1,30);
+%pts2 = smiter(pts,1,30);
 %pts = (pts+pts1)/2;
 pts1 = unique(pts1,'rows'); %prune duplicates
 
@@ -116,7 +115,7 @@ head = randtess(20.0/atomfrac,shell,'s'); % need better shape? triangular distan
 
 vec = randn(size(head));
 %spd = rand(size(vec,1),1)*surfvar+0;
-spd = (rand(size(vec,1),1)-rand(size(vec,1),1))*surfvar;
+spd = (rand(size(vec,1),1)-rand(size(vec,1),1))*surfvar; %DICE ROLL TRIANGULARITY BABY
 %spd = max(spd,0); spd = min(spd,surfvar*2); %control distant fuzzyness
 vec = vec./vecnorm(vec,2,2).*spd;
 %histogram(spd)

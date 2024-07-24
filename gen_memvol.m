@@ -70,7 +70,7 @@ for i=1:num
             %disp(rs)
         case 3
             while numel(find(tmpskel>0))<50 || ~exist('norm4d','var')
-                sz = memsize*80+randi(200);
+                sz = memsize*80+randi(200); %need controls for this and better use cases
                 [~,~,tmp] = gen_mem(sz,pix);
                 %sliceViewer(tmp);
                 tmp = tmp*3.4; %scalar to fix inconsistent density between scatter and Z
@@ -81,7 +81,6 @@ for i=1:num
                 catch
                     %fprintf('f')
                 end
-                %sliceViewer(tmp+tmpskel*200);
             end
     end
     
