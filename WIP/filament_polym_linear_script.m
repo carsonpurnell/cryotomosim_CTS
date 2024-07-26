@@ -6,8 +6,8 @@
 profile on
 pix = 10;
 %input = {'MT.fil','actin.fil','cofilactin.fil','actin.fil'};
-%input = {'actin.fil','actin.fil','cofilactin.fil'};
-input = {'MT.fil','cofil_actin_split.fil','actin.fil','cofilactin.fil'};
+input = {'actin.fil','actin.fil','cofilactin.fil'};
+%input = {'MT.fil','cofil_actin_split.fil','actin.fil','cofilactin.fil'};
 %input = {'cofil_actin_split.fil','actin.fil','cofilactin.fil'};
 particles = helper_filinput(pix,input);
 box = [500,400,60]*pix; % box size in A
@@ -18,6 +18,7 @@ con = helper_atomcon(box,pix); %con = internal_atomcon(box,pix);
 profile viewer
 [vol,solv,atlas,split] = helper_atoms2vol(pix,pts,box);
 sliceViewer(vol+solv);
+sliceViewer(atlas);
 %%WriteMRC(vol+solv,pix,'filtest.mrc')
 
 %requires atomistic grid and membrane though, and then projecting as a vol
