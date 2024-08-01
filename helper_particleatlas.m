@@ -26,6 +26,7 @@ if isfield(cts.model,'grid'), cts.splitmodel.grid = cts.model.grid; end
 
 nsplits = struct2cell(cts.splitmodel); %convert to cell array
 nsplits = cat(4,cts.vol-cts.model.particles,nsplits{:}); %stack in 4th dim
+% add multiplier to ice to shift labels into/out of background for dilated/eroded label coverage
 [v2,atlas2] = max(nsplits,[],4);
 
 roinames = fieldnames(cts.splitmodel); %retrieve component names
