@@ -43,7 +43,7 @@ cperim = randtess(.32,edge,'s');
 
 perim = edge.Points; %perimeter pts of shape
 n = size(carbon,1);
-ix = randperm(n); ix = ix(1:round(n/50));
+ix = randperm(n); ix = ix(1:round(n/10));
 pi = carbon(ix,1:3);
 perim = single([perim;pi;cperim]); perim = unique(perim,'rows');
 
