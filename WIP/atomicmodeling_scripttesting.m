@@ -7,24 +7,15 @@ input = {'ribo__ribo__4ug0_4v6x.group.pdb','actin__6t1y_13x1.pdb','MT__6o2tx3.pd
 
 %% load input structures as atomic data
 %rng(2);
-pix = 3; clear particles;
+pix = 8; clear particles;
 input = {'ribosome__4ug0.pdb','actin__6t1y_13x2.pdb','MT__6o2tx3.pdb'};%,...
 input = {'ribo__ribo__4ug0_4v6x.group.pdb','actin__6t1y_13x2.pdb',...
     'MT__6o2tx3.pdb','tric__tric__6nra-open_7lum-closed.group.pdb'};
-input = {'PSD50__PSD99__PSD150__PSD95.group.pdb'};
+%input = {'PSD50__PSD99__PSD150__PSD95.group.pdb'};
     %'ATPS.membrane.complex.cif'};%,'a5fil.cif','a7tjz.cif'};
     %input = {'CaMK2a__5u6y.pdb','CaMK2a__5u6y.pdb','CaMK2a__5u6y.pdb','CaMK2a_3soa.pdb'};
     %input = {'actin__6t1y_13x2.pdb','MT__6o2tx3.pdb','ribosome__4ug0.pdb'};
-tic
-%need to streamline atomic symbol to Z converter, and link into a Z to scatterval dictionary.
-%extend it to work for pdb2vol as well, and the other older cts_model components.
-for i=numel(input):-1:1 %backwards loop for very slightly better performance
-    particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
-    %particles(i).perim = {vertcat(particles(i).perim{:})};
-    %particles(i).adat = {vertcat(particles(i).adat{:})};
-end
-layers{1} = particles; fprintf('loaded %i structure files  ',numel(input));
-toc
+
 %{
 for i=1:numel(particles)
     for j=1:numel(particles(i).atomid)
@@ -48,12 +39,30 @@ end
 %need atomdict function that accepts vector of atomic symbols and returns vector of Z/e- values
 %}
 
+%% particle selection and prep
+input = 'gui';
+tic
+%need to streamline atomic symbol to Z converter, and link into a Z to scatterval dictionary.
+%extend it to work for pdb2vol as well, and the other older cts_model components.
+%if ~iscell(list)
+if strcmp(input,'gui')
+    filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
+    input = util_loadfiles(filter);
+end
+for i=1:numel(input)
+    particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
+    %particles(i).perim = {vertcat(particles(i).perim{:})};
+    %particles(i).adat = {vertcat(particles(i).adat{:})};
+end
+layers{1} = particles; fprintf('loaded %i structure files  ',numel(input));
+toc
+
 %% functionalized model gen part
 %rng(7); 
 con = 1;
-boxsize = pix*[400,500,40]*1;
+boxsize = pix*[400,500,50]*1;
 [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 0;
+memnum = 5;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
 
 if con==1
