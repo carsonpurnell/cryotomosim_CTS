@@ -97,9 +97,10 @@ param.mem = round(param.mem);
 if ~iscell(param.layers)
     layers = cell(1,param.layers);
 else
-    layers = param.layers;
+    layers = size(param.layers,1);
 end
 iters = zeros(1,numel(param.layers));
+
 for i=1:numel(layers) %loop through layers to load particles and assign iterations/density vectors
     fprintf('Loading layer %i structures \n',i)
     %need a check or something for when a layer is already parsed files? or just let input return by itself?
