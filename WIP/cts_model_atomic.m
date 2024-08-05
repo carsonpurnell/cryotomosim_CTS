@@ -3,18 +3,21 @@ function [vol,solv,atlas,splitvol,acount,split] = cts_model_atomic(box,input,par
 arguments
     box
     input = 'gui'
-    param = param_model(10)
+    %pix = 10
+    param = {10}
 end
 
-if iscell(param), param = param_model(param{:}); end
-pix = param.pix;
 if strcmp(input,'gui')
     filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
     input = util_loadfiles(filter);
 end
+if iscell(param), param = param_model(param{:},'layers',input); end
+pix = param.pix;
 for i=1:numel(input)
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
+
+
 layers{1} = particles; fprintf('loaded %i structure files  ',numel(input));
 
 %% functionalized model gen part
