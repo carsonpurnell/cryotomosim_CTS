@@ -11,6 +11,7 @@ if strcmp(input,'gui')
     filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
     input = util_loadfiles(filter);
 end
+
 if iscell(param), param = param_model(param{:},'layers',input); end
 pix = param.pix;
 for i=1:numel(input)

@@ -155,7 +155,7 @@ sh = alphaShape(pcat,alpha/2);
 [~,piter] = boundaryFacets(sh);
 
 n = size(pts,1);
-ix = randperm(n); ix = ix(1:round(n/400));
+ix = randperm(n); ix = ix(1:round(n/100));
 pi = pts(ix,1:3);
 piter = single([piter;pi]); %need to add back 1-3% or so of points to prevent inside placements
 piter = unique(piter,'rows');

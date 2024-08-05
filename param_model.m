@@ -97,7 +97,8 @@ param.mem = round(param.mem);
 if ~iscell(param.layers)
     layers = cell(1,param.layers);
 else
-    layers = size(param.layers,1);
+    %layers = size(param.layers,1);
+    layers = cell(1,size(param.layers,1));
 end
 iters = zeros(1,numel(param.layers));
 
@@ -108,7 +109,7 @@ for i=1:numel(layers) %loop through layers to load particles and assign iteratio
     if ~iscell(param.layers)
         layers{i} = helper_input('gui',param.pix); %load layer - how to deal with saved list of layers?
     else
-        layers{i} = helper_input(param.layers{i},pix);
+        layers{i} = helper_input(param.layers(i,:),pix);
     end
     param.density(i) = param.density(min(i,end));
     iters(i) = param.iters( min(i,numel(param.iters)) );
