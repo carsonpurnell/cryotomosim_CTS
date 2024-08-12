@@ -1,10 +1,11 @@
-function [vol,solv,atlas,splitvol,acount,split] = cts_model_atomic(box,input,param)
+function [vol,solv,atlas,splitvol,acount,split,dat] = cts_model_atomic(box,input,param,opt)
 
 arguments
     box
     input = 'gui'
     %pix = 10
     param = {10}
+    opt.suffix = ''
 end
 
 if strcmp(input,'gui')
@@ -25,10 +26,19 @@ layers{1} = particles; fprintf('loaded %i structure files  ',numel(input));
 %rng(7); 
 con = 1;
 boxsize = pix*box*1;
-[splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
-memnum = 5;
+% need a working toggle to setup split/dyn without carbon or mem
+% do constraint first to prep dyn? would need to rejigger modelmem placement testing
+if param.grid~=0
+    [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
+else
+    dyn = zeros(1,3);
+end
+%memnum = 5;
 memnum = param.mem;
 tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
+%size(dyn)
+%dyn
+%dx
 
 if con==1
     con = helper_atomcon(boxsize,pix,0,0); % pseudonatural ice border (wavy flat, no curvature)
@@ -43,11 +53,34 @@ tic; [split,dyn,mu] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
 %profile viewer
 
 %% function for vol, atlas, and split generation + water solvation
-outpix = pix;
-%profile on
-[vol,solv,atlas,splitvol,acount] = helper_atoms2vol(outpix,split,boxsize);
-%profile viewer
+% preprune split to eliminate empty bins (membrane/carbon)
+f = fieldnames(split);
+for i=1:numel(f)
+    if size(split.(f{i}),1)==0
+        split = rmfield(split,f{i});
+    end
+end
+[vol,solv,atlas,splitvol,acount] = helper_atoms2vol(pix,split,boxsize);
 %sliceViewer(vol*1+solv);
+
+%% folder and file generation stuff
+time = string(datetime('now','Format','yyyy-MM-dd''t''HH.mm')); %timestamp
+ident = char(strjoin(fieldnames(split),'_')); %combine target names to one string
+if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
+foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix)); %combine info for folder name
+
+%move to output directory in user/tomosim
+cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
+mkdir(foldername); cd(foldername);
+WriteMRC(vol,pix,append(ident,opt.suffix,'.mrc'))
+dat.box = boxsize;
+dat.data = split;
+save(append(ident,opt.suffix,'.atom'),'dat','-v7.3')
+cts.vol = vol+solv; cts.splitmodel = splitvol; cts.param.pix = pix;
+cts.model.particles = vol; cts.model.ice = solv;
+save(append(ident,opt.suffix,'.mat'),'cts','-v7.3')
+%output text file of input informations?
+cd(userpath)
 
 end
 
