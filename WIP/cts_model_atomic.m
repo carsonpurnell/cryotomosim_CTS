@@ -67,7 +67,8 @@ end
 time = string(datetime('now','Format','yyyy-MM-dd''t''HH.mm')); %timestamp
 ident = char(strjoin(fieldnames(split),'_')); %combine target names to one string
 if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
-foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix)); %combine info for folder name
+if ~strncmp('_',opt.suffix,1), opt.suffix = append('_',opt.suffix); end
+foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix),opt.suffix); %combine info for folder name
 
 %move to output directory in user/tomosim
 cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
@@ -75,7 +76,7 @@ mkdir(foldername); cd(foldername);
 WriteMRC(vol,pix,append(ident,opt.suffix,'.mrc'))
 dat.box = boxsize;
 dat.data = split;
-save(append(ident,opt.suffix,'.atom'),'dat','-v7.3')
+save(append(ident,opt.suffix,'.atom.mat'),'dat','-v7.3')
 cts.vol = vol+solv; cts.splitmodel = splitvol; cts.param.pix = pix;
 cts.model.particles = vol; cts.model.ice = solv;
 save(append(ident,opt.suffix,'.mat'),'cts','-v7.3')

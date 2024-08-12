@@ -60,8 +60,23 @@ end
 switch ext
     case '.mat'
         q = load(fullfile(path,sampleMRC));
-        if ~isfield(q,'cts'), error('Selected mat file is not a tomosim structure'); end
-        cts = q.cts; vol = cts.vol; pixelsize = cts.param.pix;
+        if isfield(q,'cts')
+            cts = q.cts; vol = cts.vol; pixelsize = cts.param.pix;
+            %atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable,'suffix',opt.suffix);
+        elseif isfield(q,'dat')
+            %pix = param.pix;
+            dat = q.dat;
+            if param.pix<.5, error('cannot simulate pixel size, check value'); end
+            [vol,solv,atlas,splitvol] = helper_atoms2vol(param.pix,dat.data,dat.box);
+            cts.vol = vol+solv; cts.splitmodel = splitvol; 
+            cts.param.pix = param.pix;
+            cts.model.particles = vol; cts.model.ice = solv;
+            %error('found the atomic data')
+        else
+            error('Selected mat file is not a tomosim structure');
+        end
+        %if ~isfield(q,'cts'), error('Selected mat file is not a tomosim structure'); end
+        %cts = q.cts; vol = cts.vol; pixelsize = cts.param.pix;
     case '.mrc'
         [vol, head] = ReadMRC(fullfile(path,sampleMRC)); 
         pixelsize = head.pixA; cts = 0; atlas = 0;
@@ -87,9 +102,11 @@ end
 %run the simulation itself within the subfunction. might extend 'real' to also 'ideal' later
 [detected, conv, tiltseries, ctf] = internal_sim(vol,opt.suffix,param,'real',opt.ctford);
 
+%
 if isstruct(cts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
     atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable,'suffix',opt.suffix);
 end
+%}
 
 cd(userpath) %return to the user directory
 end
