@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.6.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.1) - 2024-08-12 19:23:50
+
+Commandline (non-script) atomic model generation, and simulation from atomic model outputs. .mat output is as volumetric modeling, .atom.mat file will project the atoms to a volume at the target pixel size for simulation.
+
 ## [v0.6.0](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.0) - 2024-07-24 17:48:23
 
 *No description*
