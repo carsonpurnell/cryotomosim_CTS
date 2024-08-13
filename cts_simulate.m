@@ -64,14 +64,12 @@ switch ext
             cts = q.cts; vol = cts.vol; pixelsize = cts.param.pix;
             %atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable,'suffix',opt.suffix);
         elseif isfield(q,'dat')
-            %pix = param.pix;
-            dat = q.dat;
             if param.pix<.5, error('cannot simulate pixel size, check value'); end
+            dat = q.dat;
             [vol,solv,atlas,splitvol] = helper_atoms2vol(param.pix,dat.data,dat.box);
             cts.vol = vol+solv; cts.splitmodel = splitvol; 
             cts.param.pix = param.pix;
             cts.model.particles = vol; cts.model.ice = solv;
-            %error('found the atomic data')
         else
             error('Selected mat file is not a tomosim structure');
         end
@@ -87,7 +85,6 @@ end
 cd(path); %cd to the input file location to prepare session folder
 %filename = append(filename,'_',opt.suffix); %generate initial filename
 if ~strncmp('_',opt.suffix,1), opt.suffix = append('_',opt.suffix); end
-%filename = opt.suffix;
 runfolder = append('sim_dose_',string(sum(param.dose)),opt.suffix);
 mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',runfolder);
 
