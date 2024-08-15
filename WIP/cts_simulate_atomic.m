@@ -47,6 +47,10 @@ file = fopen('tiltanglesR.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(fil
 [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,mod.box,opt.slice);
 %sliceViewer(dtilt*-1);
 
+[vol,solv,atlas,splitvol,acount] = helper_atoms2vol(param.pix,split,boxsize);
+size(vol)
+size(atlas)
+
 prev = '4_tilt.mrc';
 WriteMRC(rescale(dtilt*-1),param.pix,prev);
 
@@ -63,10 +67,15 @@ w = string(round(param.size(tmpax)*1));
 cmd = append('tilt -tiltfile tiltanglesR.txt -RADIAL 0.35,0.035 -width ',w,...
     ' -thickness ',thick,' ',prev,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
-base = 'tst.mrc';
+base = append(opt.suffix,'.mrc');
 cmd = append('trimvol -rx temp.mrc ',append('5_recon',base)); %#ok<NASGU>
 [~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
-
+cmd = append('trimvol -yz temp.mrc ',append('5_recon_yz',base)); %#ok<NASGU>
+[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
+cmd = append('clip flipz ',append('5_recon',base),' ',append('5_recon_flipz',base)); %#ok<NASGU>
+[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
+% yz is almost matched to vol, might be ob1 in z direction.
+% flipz is identical to yz
 delete temp.mrc
 cd(userpath)
 end
@@ -201,7 +210,8 @@ if numel(param.tilterr)~=numel(param.tilt) && param.tilterr==0
     param.tilterr = zeros(size(param.tilt));
 end
 for t=1:numel(param.tilt)
-    disp([param.tilt(t),param.tilt(t)+param.tilterr(t)])
+    %disp([param.tilt(t),param.tilt(t)+param.tilterr(t)])
+    fprintf('%d,',param.tilt(t))
     angle = param.tilt(t)+param.tilterr(t);
     atomtmp = atoms;
     tmp2 = atoms(:,1:3);
@@ -213,7 +223,7 @@ for t=1:numel(param.tilt)
     % project a set of slices - higher resolution in Z? start with isotropy
     %pix = 8;
     %slabthick = 10;
-    atomtmp(:,3) = (atomtmp(:,3)-min(atomtmp(:,3),[],'all'))/slabthick;
+    atomtmp(:,3) = (atomtmp(:,3)-cen(3)*0-min(atomtmp(:,3)*1,[],'all'))/slabthick*-1;
     % fixing boxsize seems to crop out excess slices
     sz = boxsize; sz(3) = max(atomtmp(:,3),[],'all')-min(atomtmp(:,3),[],'all');
     %of = min(atomtmp(:,1:3),[],1);
@@ -248,6 +258,7 @@ for t=1:numel(param.tilt)
     
     tilt(:,:,t) = sum(convolved,3);
 end
+fprintf('\n%i tilts simulated\n',t)
 %ctf = 0;
 dtilt = poissrnd((d*rescale(tilt*1,0,1))*01,size(tilt));
 cv2 = poissrnd((d*rescale(cv2*1,0,1))*01,size(cv2));
