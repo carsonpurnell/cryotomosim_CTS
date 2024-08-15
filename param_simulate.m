@@ -91,6 +91,8 @@ if numel(param.tilt)==3 %if 3 numbers are input try to resolve them as a vector
     tilt = param.tilt(1):param.tilt(2):param.tilt(3);
     err = param.tilt(2)/2; %calculate the base error size
     if ~isempty(tilt), param.tilt=tilt; end
+    
+    %tilterr needs separation from vector expansion
     if param.tilterr~=0 %randomly generate angle errors and add to tiltangles
         err = (-err*1+rand(1,numel(tilt))*err*2);
         param.tilterr = err*param.tilterr;
