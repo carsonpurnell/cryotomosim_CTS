@@ -4,6 +4,7 @@ arguments
     input = 'gui'
     param = {}
     opt.slice = 0
+    opt.suffix = ''
 end
 if iscell(param), param = param_simulate(param{:}); end
 if param.pix<0.5, error('inappropriate pixel size - check paramters'); end
@@ -33,10 +34,41 @@ for i=1:numel(fn)
     atoms = [atoms;split.(fn{i})];
 end
 
+cd(path); %cd to the input file location to prepare session folder
+%filename = append(filename,'_',opt.suffix); %generate initial filename
+if ~strncmp('_',opt.suffix,1), opt.suffix = append('_',opt.suffix); end
+runfolder = append('pix_',string(param.pix),'_dose_',string(sum(param.dose)),opt.suffix);
+mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',runfolder);
+
+file = fopen('tiltanglesT.txt','w'); fprintf(file,'%i\n',param.tilt+param.tilterr); fclose(file);
+file = fopen('tiltanglesR.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(file);
+
 %param = param_simulate('pix',3,'tilt',angles,'dose',80/4,'tiltax','Y','defocus',-2);
 [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,mod.box,opt.slice);
+%sliceViewer(dtilt*-1);
 
-sliceViewer(dtilt);
+prev = '4_tilt.mrc';
+WriteMRC(rescale(dtilt*-1),param.pix,prev);
+
+param.size = round(mod.box/param.pix);
+thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
+%reconstruct and rotate back into the proper space
+%radial command for fourier filtering the output, no idea what normal runs use so random numbers
+%first number radial cutoff, real tomos ~.35? cutoff slightly smoothes and increases contrast
+%lower second number sharper cutoff? or fill value past cutoff?
+%-hamminglikefilter should work similarly but only needs one input
+%-radial default 0.35 0.035
+if strcmp(param.tiltax,'Y'), tmpax = 1; else tmpax = 2; end
+w = string(round(param.size(tmpax)*1));
+cmd = append('tilt -tiltfile tiltanglesR.txt -RADIAL 0.35,0.035 -width ',w,...
+    ' -thickness ',thick,' ',prev,' temp.mrc'); 
+disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
+base = 'tst.mrc';
+cmd = append('trimvol -rx temp.mrc ',append('5_recon',base)); %#ok<NASGU>
+[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
+
+delete temp.mrc
+cd(userpath)
 end
 
 
@@ -165,9 +197,12 @@ boxsize = param.pix*round(boxsize/param.pix);
 
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
 %jatoms = atoms(:,1:3);
+if numel(param.tilterr)~=numel(param.tilt) && param.tilterr==0
+    param.tilterr = zeros(size(param.tilt));
+end
 for t=1:numel(param.tilt)
-    disp(param.tilt(t))
-    angle = param.tilt(t);
+    disp([param.tilt(t),param.tilt(t)+param.tilterr(t)])
+    angle = param.tilt(t)+param.tilterr(t);
     atomtmp = atoms;
     tmp2 = atoms(:,1:3);
     tmp2 = tmp2-cen;
