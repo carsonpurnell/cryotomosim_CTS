@@ -1,4 +1,9 @@
 function dtilt = cts_simulate_atomic(input,param,opt)
+% dtilt = cts_simulate_atomic(input,param,opt)
+% simulate a tilteries imaged from an atomic model. slower than vol-based version.
+% ex
+% dtilt = cts_simulate_atomic('gui',{'pix',9,'tilt',60:3:60},'slice',9)
+%
 
 arguments
     input = 'gui'
@@ -213,8 +218,15 @@ tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
 if numel(param.tilterr)~=numel(param.tilt) && param.tilterr==0
     param.tilterr = zeros(size(param.tilt));
 end
+prog = 0; progdel = '';
 for t=1:numel(param.tilt)
-    fprintf('%d,',param.tilt(t))
+    %fprintf('%d,',param.tilt(t)) % progress ticker, need replacing with overwriting incremental one
+    
+    prog = prog + t/nume(param.tilt);
+    progstr = sprintf('progress %3.1f  current angle: %i', prog,param.tilt(t));
+    fprintf([progdel, progstr]);
+    progdel = repmat(sprintf('\b'), 1, length(progstr));
+            
     angle = param.tilt(t)+param.tilterr(t);
     atomtmp = atoms;
     tmp2 = atoms(:,1:3);
