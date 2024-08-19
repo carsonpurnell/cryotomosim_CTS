@@ -43,15 +43,16 @@ mkdir(runfolder); cd(runfolder); delete *.mrc; fprintf('Session folder: %s\n',ru
 file = fopen('tiltanglesT.txt','w'); fprintf(file,'%i\n',param.tilt+param.tilterr); fclose(file);
 file = fopen('tiltanglesR.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(file);
 
+[vol,solv,atlas,splitvol,acount] = helper_atoms2vol(param.pix,split,mod.box);
+mod.box = size(atlas)*param.pix;
+
 %param = param_simulate('pix',3,'tilt',angles,'dose',80/4,'tiltax','Y','defocus',-2);
 [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,mod.box,opt.slice);
 %sliceViewer(dtilt*-1);
 
-[vol,solv,atlas,splitvol,acount] = helper_atoms2vol(param.pix,split,boxsize);
-size(vol)
-size(atlas)
+WriteMRC(atlas,param.pix,append('atlas',opt.suffix,'.mrc'));
 
-prev = '4_tilt.mrc';
+prev = '3_tilt.mrc';
 WriteMRC(rescale(dtilt*-1),param.pix,prev);
 
 param.size = round(mod.box/param.pix);
@@ -69,11 +70,11 @@ cmd = append('tilt -tiltfile tiltanglesR.txt -RADIAL 0.35,0.035 -width ',w,...
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
 base = append(opt.suffix,'.mrc');
 cmd = append('trimvol -rx temp.mrc ',append('5_recon',base)); %#ok<NASGU>
-[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
+%[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 cmd = append('trimvol -yz temp.mrc ',append('5_recon_yz',base)); %#ok<NASGU>
 [~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
-cmd = append('clip flipz ',append('5_recon',base),' ',append('5_recon_flipz',base)); %#ok<NASGU>
-[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
+%cmd = append('clip flipz ',append('5_recon',base),' ',append('5_recon_flipz',base)); %#ok<NASGU>
+%[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 % yz is almost matched to vol, might be ob1 in z direction.
 % flipz is identical to yz
 delete temp.mrc
@@ -215,9 +216,9 @@ for t=1:numel(param.tilt)
     angle = param.tilt(t)+param.tilterr(t);
     atomtmp = atoms;
     tmp2 = atoms(:,1:3);
-    tmp2 = tmp2-cen;
+    tmp2 = tmp2-cen+[0,0,cen(3)/2];
     tmp2 = tmp2*rotmat(ax,deg2rad(angle));
-    tmp2 = tmp2+cen;
+    tmp2 = tmp2+cen-[0,0,cen(3)/2];
     atomtmp(:,1:3) = tmp2;%(atomtmp(:,1:3)-cen)*rotmat(ax,deg2rad(angle))+cen;
     
     % project a set of slices - higher resolution in Z? start with isotropy
