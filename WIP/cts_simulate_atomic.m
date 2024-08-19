@@ -50,9 +50,9 @@ mod.box = size(atlas)*param.pix;
 [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,mod.box,opt.slice);
 %sliceViewer(dtilt*-1);
 
-WriteMRC(atlas,param.pix,append('atlas',opt.suffix,'.mrc'));
+WriteMRC(atlas,param.pix,append('Atlas',opt.suffix,'.mrc'));
 
-prev = '3_tilt.mrc';
+prev = append('3_tilt',opt.suffix,'.mrc');
 WriteMRC(rescale(dtilt*-1),param.pix,prev);
 
 param.size = round(mod.box/param.pix);
@@ -198,7 +198,10 @@ if param.tiltax=='Y'
 else
     ax = [1,0,0];
 end
-cen = boxsize/2;
+%cen = boxsize/2;
+%boxsize
+%25/boxsize(3)
+eucentric = boxsize/2-[0,0,0]*0; %~25 at 12pix registers to vol but desyncs from atlas
 %angles = param.tilt;
 % get the transmission wave
 DQE = 0.84*0.5;
@@ -211,20 +214,20 @@ if numel(param.tilterr)~=numel(param.tilt) && param.tilterr==0
     param.tilterr = zeros(size(param.tilt));
 end
 for t=1:numel(param.tilt)
-    %disp([param.tilt(t),param.tilt(t)+param.tilterr(t)])
     fprintf('%d,',param.tilt(t))
     angle = param.tilt(t)+param.tilterr(t);
     atomtmp = atoms;
     tmp2 = atoms(:,1:3);
-    tmp2 = tmp2-cen+[0,0,cen(3)/2];
+    tmp2 = tmp2-eucentric;%cen+[0,0,25]; 
+    % needs slightly more than 25 for current test case, variable by pixel size?
     tmp2 = tmp2*rotmat(ax,deg2rad(angle));
-    tmp2 = tmp2+cen-[0,0,cen(3)/2];
+    tmp2 = tmp2+eucentric;%cen-[0,0,25];
     atomtmp(:,1:3) = tmp2;%(atomtmp(:,1:3)-cen)*rotmat(ax,deg2rad(angle))+cen;
     
     % project a set of slices - higher resolution in Z? start with isotropy
     %pix = 8;
     %slabthick = 10;
-    atomtmp(:,3) = (atomtmp(:,3)-cen(3)*0-min(atomtmp(:,3)*1,[],'all'))/slabthick*-1;
+    atomtmp(:,3) = (atomtmp(:,3)-min(atomtmp(:,3)*1,[],'all'))/slabthick*-1;
     % fixing boxsize seems to crop out excess slices
     sz = boxsize; sz(3) = max(atomtmp(:,3),[],'all')-min(atomtmp(:,3),[],'all');
     %of = min(atomtmp(:,1:3),[],1);
