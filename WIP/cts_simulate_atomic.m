@@ -75,7 +75,7 @@ cmd = append('tilt -tiltfile tiltanglesR.txt -RADIAL 0.35,0.035 -width ',w,...
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
 base = append(opt.suffix,'.mrc');
 cmd = append('trimvol -rx temp.mrc ',append('5_recon',base)); %#ok<NASGU>
-%[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
+[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 cmd = append('trimvol -yz temp.mrc ',append('5_recon_yz',base)); %#ok<NASGU>
 [~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 %cmd = append('clip flipz ',append('5_recon',base),' ',append('5_recon_flipz',base)); %#ok<NASGU>
@@ -218,23 +218,21 @@ tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
 if numel(param.tilterr)~=numel(param.tilt) && param.tilterr==0
     param.tilterr = zeros(size(param.tilt));
 end
-prog = 0; progdel = '';
+prog = 0; progdel = ''; % initialize starting vals for progress bar
 for t=1:numel(param.tilt)
     %fprintf('%d,',param.tilt(t)) % progress ticker, need replacing with overwriting incremental one
     
-    prog = prog + t/nume(param.tilt);
+    prog = prog + 100/numel(param.tilt);
     progstr = sprintf('progress %3.1f  current angle: %i', prog,param.tilt(t));
     fprintf([progdel, progstr]);
     progdel = repmat(sprintf('\b'), 1, length(progstr));
-            
+    
     angle = param.tilt(t)+param.tilterr(t);
     atomtmp = atoms;
-    tmp2 = atoms(:,1:3);
-    tmp2 = tmp2-eucentric;%cen+[0,0,25]; 
-    % needs slightly more than 25 for current test case, variable by pixel size?
-    tmp2 = tmp2*rotmat(ax,deg2rad(angle));
-    tmp2 = tmp2+eucentric;%cen-[0,0,25];
-    atomtmp(:,1:3) = tmp2;%(atomtmp(:,1:3)-cen)*rotmat(ax,deg2rad(angle))+cen;
+    %tmp2 = atomtmp(:,1:3); tmp2 = tmp2-eucentric; tmp2 = tmp2*rotmat(ax,deg2rad(angle)); 
+    %tmp2 = tmp2+eucentric; atomtmp(:,1:3) = tmp2;
+    %tmp3 = atomtmp(:,1:3); tmp3 = (tmp3-eucentric)*rotmat(ax,deg2rad(angle))+eucentric; atomtmp(:,1:3) = tmp3;
+    atomtmp(:,1:3) = (atomtmp(:,1:3)-eucentric)*rotmat(ax,deg2rad(angle))+eucentric;
     
     % project a set of slices - higher resolution in Z? start with isotropy
     %pix = 8;
