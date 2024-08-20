@@ -60,10 +60,9 @@ acount = zeros(emsz);
 % need more random initial density - higher peaks, also smooth the data a bit for smoother density waves?
 
 sptmp = cell(1,s);
-%split = sptmp;
 for j=1:s
     
-    p = pts{j};
+    p = single(pts{j});
     %{
     if t==1
         p = pts{j}; %split{j} = zeros(emsz);
@@ -132,19 +131,21 @@ end
 
 
 function [tmpvol,tmpsolv,acount] = test_accumarray(p,mag,emsz,solv,avol,acount)
-if nargin<6, acount = zeros(emsz); end
-ixf = ones(size(mag));
+if nargin<6, acount = zeros(emsz,'single'); end
+ixf = ones(size(mag),'single');
 for i=1:3
     ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %index points inside the box
     %p = p(ix,:); mag=mag(ix); %drop points outside the box
-    ixf = ixf.*ix;
+    %ixf = ixf.*ix;
+    ixf = ixf & ix;
     %fprintf('%i dropped \n',numel(ix)-sum(ix)) %diagnostic to check if any points eliminated
 end
 ixf = ixf>0;
 p = p(ixf,:); 
-mag=mag(ixf);
+mag = single(mag);
+mag=mag(ixf); %out of memory error - problematic reuse of same array? is mag too high precision?
 tmpvol = accumarray(p,mag,emsz);
-acount = acount+accumarray(p,avol*1,emsz);
+acount = acount+accumarray(p,1,emsz)*avol;
 tmpsolv = (solv-acount);
 end
 
