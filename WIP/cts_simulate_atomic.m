@@ -14,11 +14,7 @@ end
 if iscell(param), param = param_simulate(param{:}); end
 if param.pix<0.5, error('inappropriate pixel size - check paramters'); end
 if opt.slice==0, opt.slice = param.pix*2; end
-%{
-if strcmp(input,'gui')
-    list = util_loadfiles('.atom.mat','Select input .atom.mat file',1);
-end
-%}
+
 if strcmp(input,'gui') %load model via GUI or specific filename
     [input, path] = uigetfile({'*atom.mat'},'Select input MRC or generated ts.mat',getenv('HOME')); 
     if input==0, error('At least one file must be selected or input'), end
@@ -27,13 +23,9 @@ else
 end
 q = load(fullfile(path,input));
 if ~isfield(q,'dat'), error('not a valid atomic model file'); end
-mod = q.dat;
-%mod
-split = mod.data;
-%mod.data
+mod = q.dat; split = mod.data;
 
 fn = fieldnames(split);
-%cen = mod.box/2;
 atoms = zeros(0,4);
 for i=1:numel(fn)
     atoms = [atoms;split.(fn{i})];
@@ -55,6 +47,7 @@ mod.box = size(atlas)*param.pix;
 [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,mod.box,opt.slice);
 %sliceViewer(dtilt*-1);
 
+WriteMRC(rescale((vol+solv)*-1),param.pix,append('0_model',opt.suffix,'.mrc'));
 WriteMRC(atlas,param.pix,append('Atlas',opt.suffix,'.mrc'));
 
 prev = append('3_tilt',opt.suffix,'.mrc');
@@ -74,12 +67,13 @@ cmd = append('tilt -tiltfile tiltanglesR.txt -RADIAL 0.35,0.035 -width ',w,...
     ' -thickness ',thick,' ',prev,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
 base = append(opt.suffix,'.mrc');
-cmd = append('trimvol -rx temp.mrc ',append('5_recon',base)); %#ok<NASGU>
-[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
-cmd = append('trimvol -yz temp.mrc ',append('5_recon_yz',base)); %#ok<NASGU>
+%cmd = append('trimvol -rx temp.mrc ',append('5_recon_rx',base)); %#ok<NASGU>
+%[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
+cmd = append('trimvol -yz temp.mrc ',append('5_recon',base)); %#ok<NASGU>
 [~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 %cmd = append('clip flipz ',append('5_recon',base),' ',append('5_recon_flipz',base)); %#ok<NASGU>
 %[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
+% rx is supposed to match yz direction, but is inverted
 % yz is almost matched to vol, might be ob1 in z direction.
 % flipz is identical to yz
 delete temp.mrc
@@ -203,32 +197,26 @@ if param.tiltax=='Y'
 else
     ax = [1,0,0];
 end
-%cen = boxsize/2;
-%boxsize
-%25/boxsize(3)
+
 eucentric = boxsize/2-[0,0,0]*0; %~25 at 12pix registers to vol but desyncs from atlas
-%angles = param.tilt;
-% get the transmission wave
+% get the transmission wave dose
 DQE = 0.84*0.5;
 d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix);
 
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
-%jatoms = atoms(:,1:3);
 if numel(param.tilterr)~=numel(param.tilt) && param.tilterr==0
     param.tilterr = zeros(size(param.tilt));
 end
 prog = 0; progdel = ''; % initialize starting vals for progress bar
 for t=1:numel(param.tilt)
-    %fprintf('%d,',param.tilt(t)) % progress ticker, need replacing with overwriting incremental one
-    
-    prog = prog + 100/numel(param.tilt);
+    prog = prog + 100/numel(param.tilt); %progress update block
     progstr = sprintf('progress %3.1f  current angle: %i', prog,param.tilt(t));
     fprintf([progdel, progstr]);
     progdel = repmat(sprintf('\b'), 1, length(progstr));
     
     angle = param.tilt(t)+param.tilterr(t);
-    atomtmp = atoms;
+    atomtmp = atoms; %move to keeping only one set and rotating continuously? fewer reassigns
     %tmp2 = atomtmp(:,1:3); tmp2 = tmp2-eucentric; tmp2 = tmp2*rotmat(ax,deg2rad(angle)); 
     %tmp2 = tmp2+eucentric; atomtmp(:,1:3) = tmp2;
     %tmp3 = atomtmp(:,1:3); tmp3 = (tmp3-eucentric)*rotmat(ax,deg2rad(angle))+eucentric; atomtmp(:,1:3) = tmp3;
