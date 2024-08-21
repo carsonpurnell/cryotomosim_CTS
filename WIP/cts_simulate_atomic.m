@@ -1,10 +1,9 @@
-function dtilt = cts_simulate_atomic(input,param,opt)
+function [dtilt,atlas] = cts_simulate_atomic(input,param,opt)
 % dtilt = cts_simulate_atomic(input,param,opt)
 % simulate a tilteries imaged from an atomic model. slower than vol-based version.
 % ex
 % dtilt = cts_simulate_atomic('gui',{'pix',9,'tilt',60:3:60},'slice',9)
 %
-
 arguments
     input = 'gui'
     param = {}
@@ -49,6 +48,11 @@ mod.box = size(atlas)*param.pix;
 
 WriteMRC(rescale((vol+solv)*-1),param.pix,append('0_model',opt.suffix,'.mrc'));
 WriteMRC(atlas,param.pix,append('Atlas',opt.suffix,'.mrc'));
+
+roinames = fieldnames(split); roinames = string(roinames); 
+file = fopen(append('Atlas',opt.suffix,'.txt'),'w'); 
+fprintf(file,'background\n'); fprintf(file,'%s\n',roinames); fclose(file);
+%WriteMRC(atlas2-1,cts.param.pix,append('Atlas',opt.suffix,'.mrc'),1)
 
 prev = append('3_tilt',opt.suffix,'.mrc');
 WriteMRC(rescale(dtilt*-1),param.pix,prev);
@@ -199,10 +203,11 @@ else
 end
 
 eucentric = boxsize/2-[0,0,0]*0; %~25 at 12pix registers to vol but desyncs from atlas
-% get the transmission wave dose
+
+% get the transmission wave dose 
 DQE = 0.84*0.5;
 d = DQE*param.dose/numel(param.tilt)*param.pix^2;
-boxsize = param.pix*round(boxsize/param.pix);
+boxsize = param.pix*round(boxsize/param.pix); % adjust for weird pixel sizes
 
 tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
 if numel(param.tilterr)~=numel(param.tilt) && param.tilterr==0
@@ -223,20 +228,14 @@ for t=1:numel(param.tilt)
     atomtmp(:,1:3) = (atomtmp(:,1:3)-eucentric)*rotmat(ax,deg2rad(angle))+eucentric;
     
     % project a set of slices - higher resolution in Z? start with isotropy
-    %pix = 8;
-    %slabthick = 10;
     atomtmp(:,3) = (atomtmp(:,3)-min(atomtmp(:,3)*1,[],'all'))/slabthick*-1;
     % fixing boxsize seems to crop out excess slices
+    % reformulate to add min to z instead of using an offset value?
     sz = boxsize; sz(3) = max(atomtmp(:,3),[],'all')-min(atomtmp(:,3),[],'all');
     %of = min(atomtmp(:,1:3),[],1);
     of = [0,0,min(atomtmp(:,3),[],'all')];
-    %size(of)
     [vol,solv] = helper_atoms2vol(param.pix,atomtmp,sz,of);
     vol = vol+solv;
-    %sim params
-    %param = param_simulate('pix',param.pix,'tilt',zeros(1,size(vol,3)));
-    %param.tilt = -40:numel(param.tilt)-41;
-    
     % get the transmission wave
     %d = param.dose*param.pix^2;
     %dvol = poissrnd((vol*1)*d,size(vol)); %extremely slow with many sections - do at the end?
