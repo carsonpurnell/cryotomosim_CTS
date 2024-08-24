@@ -158,7 +158,8 @@ end
 time = string(datetime('now','Format','yyyy-MM-dd''t''HH.mm')); %timestamp
 ident = char(strjoin(fieldnames(cts.splitmodel),'_')); %combine target names to one string
 if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
-foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix)); %combine info for folder name
+foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix),'_',opt.suffix); 
+%combine info for folder name
 
 %move to output directory in user/tomosim
 cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
