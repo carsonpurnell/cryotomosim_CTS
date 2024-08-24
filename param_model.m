@@ -11,8 +11,8 @@ function param = param_model(pix,param)
 %constraint     default '  &' - 1x3 char defining edge borders. uses helper_constraints
 %beads          default [0 50], format [number radius1 radius2... radiusn]
 %    number of beads to place, from a set of beads generated based on the input radii (default 50A)
-%grid           default [0 0], author uses [15 2000]
-%    [thickness radius] of carbon film and grid hole, in nm.
+%grid           default [150 1e4] for 2-2 grids
+%    [thickness radius] of carbon film and grid hole, in A.
 %ice            default 1
 %     change to 0 to not generate vitreous ice in the model
 %mem            default 0, otherwise an integer
