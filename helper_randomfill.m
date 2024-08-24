@@ -34,7 +34,7 @@ end
 end
 
 ismem = 0;
-if numel(size(nvecs))==4 %setup membrane skeletons/vesicle side maps
+if numel(size(vesvec))==4 %setup membrane skeletons/vesicle side maps
     ismem = 1;
     %disp('hit membrane check')
     %{
