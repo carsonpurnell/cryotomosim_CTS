@@ -1,4 +1,4 @@
-function [cts] = cts_model(vol,param,opt)
+function [cts,outfile] = cts_model(vol,param,opt)
 %[cts] = cts_model(vol,param,opt)
 %models a tomographic field of view at protein-level resolutions
 %iteratively places input particles into the model field without overlapping
@@ -60,6 +60,8 @@ if param.grid(1)~=0 % new carbon grid and hole generator
     fprintf('Generating carbon film ') %[cts.model.grid] = gen_carbongrid(vol,pix,param.grid);
     cts.model.grid = gen_carbon(size(vol),pix,'thick',param.grid(1),'radius',param.grid(2))*3.9;
     %3.9 scalar is temporary to convert from scattering factor to Z number density value
+    %size(cts.model.grid), size(cts.vol)
+    %carbon grid sometimes fails to generate, off by 1 volume size
     cts.vol = cts.model.grid+cts.vol; fprintf('   complete \n')
 end
 if ~iscell(param.mem); param.mem = {param.mem(:)}; end
@@ -165,7 +167,9 @@ foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix),'_',opt.su
 cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
 mkdir(foldername); cd(foldername);
 WriteMRC(cts.vol,pix,append(ident,opt.suffix,'.mrc'))
-save(append(ident,opt.suffix,'.mat'),'cts','-v7.3')
+outname = append(ident,opt.suffix,'.mat');
+save(outname,'cts','-v7.3')
+outfile = fullfile(getenv('HOME'),'tomosim',foldername,outname);
 
 %output text file of input informations?
 cd(userpath)
