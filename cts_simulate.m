@@ -40,7 +40,7 @@ function [detected, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param
 %each unique target ID counts as a class, as well as beads (if any)
 
 arguments
-    sampleMRC (1,1) string %full path to input mrc/ts, or 'gui' for browser
+    sampleMRC %full path to input mrc/ts, or 'gui' for browser
     param = {} %input a param_simulate call, or within {} to send to it
     opt.suffix string = ''
     opt.atlasindividual = 0
@@ -50,10 +50,37 @@ end
 if iscell(param), param = param_simulate(param{:}); end %parse params if given as argument input
 
 if strcmp(sampleMRC,'gui') %load model via GUI or specific filename
-    [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat',getenv('HOME')); 
+    [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat',getenv('HOME'))
     if sampleMRC==0, error('At least one file must be selected or input'), end
-else
-    [path,sampleMRC,ext] = fileparts(sampleMRC); sampleMRC = append(sampleMRC,ext);
+    [path,sampleMRC,ext] = fileparts(sampleMRC)
+    sampleMRC = fullfile(path,sampleMRC,ext) %patch to get off path
+end
+
+if isstring(samplemrc)
+    switch ext
+        case '.mat'
+            q = load(fullfile(path,sampleMRC));
+            if isfield(q,'cts')
+                cts = q.cts; vol = cts.vol; pixelsize = cts.param.pix;
+                %atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable,'suffix',opt.suffix);
+            elseif isfield(q,'dat')
+                if param.pix<.5, error('cannot simulate pixel size, check value'); end
+                dat = q.dat;
+                [vol,solv,atlas,splitvol] = helper_atoms2vol(param.pix,dat.data,dat.box);
+                cts.vol = vol+solv; cts.splitmodel = splitvol;
+                cts.param.pix = param.pix;
+                cts.model.particles = vol; cts.model.ice = solv;
+            else
+                error('Selected mat file is not a tomosim structure');
+            end
+            %if ~isfield(q,'cts'), error('Selected mat file is not a tomosim structure'); end
+            %cts = q.cts; vol = cts.vol; pixelsize = cts.param.pix;
+        case '.mrc'
+            [vol, head] = ReadMRC(fullfile(path,sampleMRC));
+            pixelsize = head.pixA; cts = 0; atlas = 0;
+        otherwise
+            error('selected file is not a .mat or a .mrc, aborting')
+    end
 end
 
 [path, filename, ext] = fileparts(fullfile(path,sampleMRC));
