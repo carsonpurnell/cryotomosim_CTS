@@ -36,6 +36,7 @@ arguments
     %opt to save incremental models for each layer and component of model building?
     %save the splitmodels in another file to reduce bloat in cts?
 end
+if ~strncmp('_',opt.suffix,1), opt.suffix = append('_',opt.suffix); end
 if iscell(param), param = param_model(param{:}); end
 pix = param.pix;
 %{
