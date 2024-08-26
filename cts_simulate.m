@@ -50,16 +50,16 @@ end
 if iscell(param), param = param_simulate(param{:}); end %parse params if given as argument input
 
 if strcmp(sampleMRC,'gui') %load model via GUI or specific filename
-    [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat',getenv('HOME'))
+    [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat',getenv('HOME'));
     if sampleMRC==0, error('At least one file must be selected or input'), end
-    [path,sampleMRC,ext] = fileparts(sampleMRC)
-    sampleMRC = fullfile(path,sampleMRC,ext) %patch to get off path
 end
 
-if isstring(samplemrc)
+if isstring(sampleMRC)
+    [path,sampleMRC,ext] = fileparts(sampleMRC);
+    sampleMRC = fullfile(path,append(sampleMRC,ext)); %patch to get off path
     switch ext
         case '.mat'
-            q = load(fullfile(path,sampleMRC));
+            q = load(sampleMRC);
             if isfield(q,'cts')
                 cts = q.cts; vol = cts.vol; pixelsize = cts.param.pix;
                 %atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable,'suffix',opt.suffix);
@@ -76,13 +76,14 @@ if isstring(samplemrc)
             %if ~isfield(q,'cts'), error('Selected mat file is not a tomosim structure'); end
             %cts = q.cts; vol = cts.vol; pixelsize = cts.param.pix;
         case '.mrc'
-            [vol, head] = ReadMRC(fullfile(path,sampleMRC));
+            [vol, head] = ReadMRC(sampleMRC);
             pixelsize = head.pixA; cts = 0; atlas = 0;
         otherwise
             error('selected file is not a .mat or a .mrc, aborting')
     end
 end
 
+%{
 [path, filename, ext] = fileparts(fullfile(path,sampleMRC));
 switch ext
     case '.mat'
@@ -108,6 +109,7 @@ switch ext
     otherwise
         error('selected file is not a .mat or a .mrc, aborting')
 end
+%}
 
 cd(path); %cd to the input file location to prepare session folder
 %filename = append(filename,'_',opt.suffix); %generate initial filename
