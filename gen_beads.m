@@ -10,7 +10,7 @@ end
 if isempty(radius), radius = 45; end %backstop for empty but extant radius
 
 density = (19*6e23/197)*(pix/1e8)^3; %d = (d*mol/mass)*(pixel/m-a conv)^3 average atom/pix for gold 19g/cm3
-Au = 79/3; %atomic number of gold, until atom opacities figured out
+Au = 79/2.5; %atomic number of gold, until atom opacities figured out
 %probably don't need to do density/point tradeoff with mass/points being static across pixel sizes
 %are real beads uniform density? hollow core might be from edge effect of uniform opacity
 %lower border density might help close the hole
