@@ -54,7 +54,8 @@ if pix>0
     vol = vol/pix;
     for i=1:3
         while size(carbon,i)<vol(i)
-            carbon = padarray(carbon,1,'post');
+            pv = zeros(1,3); pv(i)=1;
+            carbon = padarray(carbon,pv,'post');
         end
     end
 end
