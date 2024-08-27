@@ -51,7 +51,7 @@ carbon(:,4) = 2.5088*1.5*atomfrac;
 
 if pix>0
     carbon = helper_atoms2vol(pix,carbon,vol,[0,0,0]);
-    vol = vol/pix;
+    vol = round(vol/pix);
     for i=1:3
         while size(carbon,i)<vol(i)
             pv = zeros(1,3); pv(i)=1;
