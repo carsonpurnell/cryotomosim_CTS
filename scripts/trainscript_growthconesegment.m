@@ -7,6 +7,7 @@ targets = {'ribo__ribo__4ug0_4v6x.group.mat',... % two ribo variations
     'MT__6o2tx3.mat',... % long MT stretch
     'tric__tric__6nra-open_7lum-closed.group.pdb'}; % two tric variations
 %anything else?
+% need all members, randomly add 1-2 replicates to shift occupancies?
 
 %distractors = {}
 % pool of distractors to pull random sample from to use as second/third? layer in modeling
@@ -18,9 +19,10 @@ ptable = table; % initialize table of parameters, one row per run
 % modeling params
 ptable.pix(1:n) = 12+round(rand(n,1)*20)/10; %12-14 angstrom size/scale variation
 ptable.thick(1:n) = 45+round(10*rand(n,1)); % 45-55 pixel thickness for SNR/orientation variation
-ptable.iters(1:n) = 200+10*round(40*rand(n,1)); % 200-600 (increment 10) iterations
+ptable.iters(1:n) = 200+10*round(60*rand(n,1)); % 200-800 (increment 10) iterations
 %500+5*(round(50*(rand(n,1)-rand(n,1)))); %500+-250 (50 increments) iterations
-ptable.mem(1:n) = randi(10,n,1); %1-6 membranes
+ptable.mem(1:n) = randi(15,n,1); %1-15 membranes
+%randomized beads?
 
 % simulation params
 ptable.dose(1:n) = 80+round(80*rand(n,1)); %80-120 dose, uniform distribution
@@ -38,7 +40,8 @@ for i=1:n
     vol = zeros([400,400,ptable.thick(i)]);
     linput = targets;
     %tl = helper_input(linput,ptable.pix(i));
-    modelparam = param_model(ptable.pix(i),'layers',linput,'iters',ptable.iters(i),'mem',ptable.mem(i));
+    modelparam = param_model(ptable.pix(i),'layers',linput,'iters',ptable.iters(i),...
+        'mem',ptable.mem(i),'beads',10);
     
     suf = append('batch_',num2str(i,fspec));
     [cts,outfile] = cts_model(vol,modelparam,'suffix',suf);
