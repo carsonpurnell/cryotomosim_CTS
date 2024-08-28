@@ -1,18 +1,23 @@
 %rng(0) % static random number generator for replication
 
-% hardcode input files
-% preproc into layers, rearrange as needed rather than reload
+% hard set target list for first layer
 targets = {'ribo__ribo__4ug0_4v6x.group.mat',... % two ribo variations
     'cofilactin__cofilactin__actin__actin__x3-x4_long.bundle.pdb'... % two lengths each
     'MT__6o2tx3.mat',... % long MT stretch
     'tric__tric__6nra-open_7lum-closed.group.mat'}; % two tric variations
-%anything else?
 
-% need all members, randomly add 1-2 replicates to shift occupancies?
-
-distractors = {'act1-A2.distract.mat','1tub_Distractor.mat'};
-% pool of distractors to pull random sample from to use as second/third? layer in modeling
-%act/tub monomers, tiny mem decorations, 
+% distractor pool
+distractors = {'act1-A2.distract.mat',...
+    '1tub_tubulin_dimer.distract.mat',...
+    '2cg9_HSP90.distract.mat',...
+    '2vz6_CaMK2A.distract.pdb',...
+    '6lfm_gprotein.distract.membrane.mat',...
+    '7b5s_E3ligase.distract.mat',...
+    '7sgm_clathrin.distract.mat',...
+    'actin_monomer_2q0u.distract.mat',...
+    'actinin_1sjj.distract.mat',...
+    'GABAar.distract.membrane.mat'};
+% how to randomize? % chance of each individually, or randomly select 1-4 total?
 
 n = 3; % number of different simulations
 ptable = table; % initialize table of parameters, one row per run
@@ -29,21 +34,27 @@ ptable.dose(1:n) = 70+round(80*rand(n,1)); %70-150 dose, uniform distribution
 ptable.defocus(1:n) = -4-round(10*rand(n,1))/5; % -4 to -6 defocus
 % radiation, tilting?
 
+%dx
+%ptable.distractors = dx;
+
 % z thickness from thin plane to thick low SNR (don't have variable layer thickness yet though)
-% small range of xy sizes, mostly to have differently oriented rectangles? or extraneous? complex reporting
 % same density cap for all layers for simplicity
-% 2 target layers of fixed components + distractor layer of randomized grit
 
 digits = numel(num2str(n));
 fspec = append('%0',num2str(digits),'i'); %formatspec for suffixes
 for i=1:n
     vol = zeros([400,400,ptable.thick(i)]);
-    distix = logical(randi(2,1,numel(distractors))-1);
-    if all(distix==false), distix(randi(numel(distix)))=1; end %ensure at least one distractor
-    ptable.distractors(i,1:numel(distix)) = single(distix);
-    linput = {targets,distractors(distix)};
+    
+    %distix = logical(randi(2,1,numel(distractors))-1);
+    %if all(distix==false), distix(randi(numel(distix)))=1; end %ensure at least one distractor
+    %ptable.distractors(i,1:numel(distix)) = single(distix);
+    %linput = {targets,distractors(distix)};
     %tl = helper_input(linput,ptable.pix(i));
-    dparam = param_model(ptable.pix(i),'layers',distractors(distix));
+    
+    dx = unique(randi(numel(distractors),1,1+randi(3)));
+    ptable.distractors(i) = join(string(dx));
+    dis = distractors(dx);
+    dparam = param_model(ptable.pix(i),'layers',dis);
     modelparam = param_model(ptable.pix(i),'layers',targets,'iters',ptable.iters(i),...
         'mem',ptable.mem(i),'beads',10);
     modelparam.layers{2} = dparam.layers{1}; %add distractors into layer
