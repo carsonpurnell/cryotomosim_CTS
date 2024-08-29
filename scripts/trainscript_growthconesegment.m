@@ -14,7 +14,7 @@ distractors = {'actin_monomer_2q0u.distract.mat','1tub_tubulin_dimer.distract.ma
     'actinin_1sjj.distract.mat','7b5s_E3ligase.distract.mat',...
     '6lfm_gprotein.distract.membrane.mat','GABAar.distract.membrane.mat'};
 
-n = 3; % number of different simulations
+n = 10; % number of different simulations
 ptable = table; % initialize table of parameters, one row per run
 
 % modeling params
@@ -46,7 +46,7 @@ for i=1:n
     %linput = {targets,distractors(distix)};
     %tl = helper_input(linput,ptable.pix(i));
     
-    dx = unique(randi(numel(distractors),1,1+randi(3)));
+    dx = unique(randi(numel(distractors),1,1+randi(4)));
     ptable.distractors(i) = join(string(dx));
     dis = distractors(dx);
     dparam = param_model(ptable.pix(i),'layers',dis);
