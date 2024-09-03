@@ -1,4 +1,5 @@
-%rng(0) % static random number generator for replication
+randset = 0; % starting seed for random number generation
+rng(randset) % static random number generator for replication
 
 % hard set target list for first layer
 targets = {'ribo__ribo__4ug0_4v6x.group.mat',... % two ribo variations
@@ -7,14 +8,17 @@ targets = {'ribo__ribo__4ug0_4v6x.group.mat',... % two ribo variations
     'tric__tric__6nra-open_7lum-closed.group.mat'}; % two tric variations
 
 % distractor pool
-distractors = {'actin_monomer_2q0u.distract.mat','1tub_tubulin_dimer.distract.mat',...
+distractors = {'actin_monomer_2q0u.distract.mat',... % 1
+    '1tub_tubulin_dimer.distract.mat',...
     '2cg9_HSP90.distract.mat',...
     '2vz6_CaMK2A.distract.pdb',...
-    '7sgm_clathrin.distract.mat',...
-    'actinin_1sjj.distract.mat','7b5s_E3ligase.distract.mat',...
-    '6lfm_gprotein.distract.membrane.mat','GABAar.distract.membrane.mat'};
+    '7sgm_clathrin.distract.mat',...                 % 5
+    'actinin_1sjj.distract.mat',...
+    '7b5s_E3ligase.distract.mat',...
+    '6lfm_gprotein.distract.membrane.mat',...
+    'GABAar.distract.membrane.mat'};
 
-n = 10; % number of different simulations
+n = 5; % number of different simulations
 ptable = table; % initialize table of parameters, one row per run
 
 % modeling params
@@ -38,6 +42,7 @@ ptable.defocus(1:n) = -4-round(10*rand(n,1))/5; % -4 to -6 defocus
 digits = numel(num2str(n));
 fspec = append('%0',num2str(digits),'i'); %formatspec for suffixes
 for i=1:n
+    rng(randset+i);
     vol = zeros([400,400,ptable.thick(i)]);
     
     %distix = logical(randi(2,1,numel(distractors))-1);
@@ -57,10 +62,12 @@ for i=1:n
     % distractor iters too?
     
     suf = append('batch_',num2str(i,fspec));
+    rng(randset+i);
     [cts,outfile] = cts_model(vol,modelparam,'suffix',suf);
     
     %atomic or volumetric model? atomic membrane proteins still not ready
     simparam = param_simulate('dose',ptable.dose(i),'defocus',ptable.defocus(i));
+    rng(randset+i);
     [~,~,~,atlas] = cts_simulate(outfile,simparam,'suffix','bulksim');
     ptable.classes(i) = numel(unique(atlas)); % class count to ensure full coverage
 end
