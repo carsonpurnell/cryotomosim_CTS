@@ -209,7 +209,7 @@ DQE = 0.84*0.5;
 d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix); % adjust for weird pixel sizes
 
-tilt = zeros(boxsize(1)/param.pix,boxsize(2)/param.pix,numel(param.tilt));
+tilt = zeros(round(boxsize(1)/param.pix),round(boxsize(2)/param.pix),numel(param.tilt));
 if numel(param.tilterr)~=numel(param.tilt) && param.tilterr==0
     param.tilterr = zeros(size(param.tilt));
 end
