@@ -18,7 +18,7 @@ end
 if iscell(param), param = cts_param(param{:}); end %is this needed anymore?
 if param.ctfoverlap==0, convolved=input; ctf=0; return; end %if overlap==0, skip doing CTF
 
-fprintf('CTF parameters: pixels %g angstroms, %i KeV, aberration %g nm, sigma %g, defocus %d um',...
+fprintf('CTF parameters: pixels %g angstroms, %i KeV, aberration %g nm, sigma %g, defocus %g um',...
     param.pix, param.voltage, param.aberration, param.sigma, param.defocus)
 
 V = param.voltage*1000; %convert from KeV to eV
