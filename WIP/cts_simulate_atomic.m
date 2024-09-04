@@ -110,6 +110,7 @@ L = relativistic_electrons(V); %compute wavelength from voltage, correcting for 
 
 Ny = 1/(2*pix); %nyquist frequency calculation - functionalize?
 B = param.sigma*Ny; %envelope factor from nyquist frequency - also incorporates the MTF signal dropoff (approx)
+% make sigma param description more clear as the envelope factor
 q = 0.07; %amplitude contrast value - 7% is generalization
 %envelope/amplitude still needs validation and corroboration to our real data
 
@@ -181,7 +182,8 @@ ctf = ctf(1+pad:end-pad,1+pad:end-pad);
 end
 
 function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,q)
-eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2); %main equation for each part of CTF signal wave
+A = 0; %inherent amplitude contribution - don't know how to compute
+eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2)-A; %main equation for each part of CTF signal wave
 env = exp(-(k./(B)).^2); %envelope function of the overall CTF, radial signal falloff
 ctf = ( (1-q)*sin(eq) + (1)*q*cos(eq) ) .*env; %evaluate phase and amp components, amplitude reduces halo
 out = real(ifft2(ifftshift(fftshift(fft2(in)).*ctf))); %fft stack to translate from ctf fourier to realspace
