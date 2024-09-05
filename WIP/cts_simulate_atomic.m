@@ -182,7 +182,7 @@ ctf = ctf(1+pad:end-pad,1+pad:end-pad);
 end
 
 function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,q)
-A = 0; %inherent amplitude contribution - don't know how to compute
+A = 0; % phase term - approx pi/2 phase imaging, low unknown value in defoc contrast imaging
 eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2)-A; %main equation for each part of CTF signal wave
 env = exp(-(k./(B)).^2); %envelope function of the overall CTF, radial signal falloff
 ctf = ( (1-q)*sin(eq) + (1)*q*cos(eq) ) .*env; %evaluate phase and amp components, amplitude reduces halo
