@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.6.3](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.3) - 2024-09-09 19:18:21
+
+Phase contrast imaging preliminary support
+
 ## [v0.6.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.2) - 2024-08-29 13:54:01
 
 *No description*
