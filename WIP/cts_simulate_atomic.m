@@ -112,6 +112,7 @@ Ny = 1/(2*pix); %nyquist frequency calculation - functionalize?
 B = param.sigma*Ny; %envelope factor from nyquist frequency - also incorporates the MTF signal dropoff (approx)
 % make sigma param description more clear as the envelope factor
 q = 0.07; %amplitude contrast value - 7% is generalization
+%phi = param.phase;
 %envelope/amplitude still needs validation and corroboration to our real data
 
 % crunchy strip math thing - replace with subfunction, extend from 2d to 3d?
@@ -156,7 +157,7 @@ for i=1:iters %loop through tilts
         %in = padded(six(1):six(2),1:end,i); %input slice for convolution
         Dzs = Dz+adj;
         %fprintf('%s,',Dzs)
-        [lg, ctf] = internal_ctf(padded(:,:,i),cs,L,k,Dzs,B,q); %get ctf-convolved subvolume
+        [lg, ctf] = math_ctf(padded(:,:,i),cs,L,k,Dzs,B,q,param.phase); %get ctf-convolved subvolume
         %lg = lg.*weight; %scale by weight for gradient overlap of strips
         %cv(six(1):six(2),1:end,i) = cv(six(1):six(2),1:end,i)+lg;
         cv(:,:,i) = lg; %imshow(rescale(padded(:,:,i)));
@@ -175,13 +176,10 @@ ctf = ctf(1+pad:end-pad,1+pad:end-pad);
 end
 
 function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,A)
-%A = -0.07; % scatter amplitude, approx .07 (replace q val?)
-phi = pi/2; % phase shift, pi/2 for 90* VPP imaging? (unstated ~20% dose loss with PP) - or envelope?
-%phase term - approx pi/2 phase imaging, low unknown value in defoc contrast imaging
-eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2); %main equation for each part of CTF signal wave
-env = exp(-(k./(B)).^2); %envelope function of the overall CTF, radial signal falloff
-%ctf = ( (1-q)*sin(eq) + (1)*q*cos(eq) ) .*env; %evaluate phase and amp components, amplitude reduces halo
-ctf = sin(phi+eq-A).*env;
+phi = 1*pi/3; % phase shift, ideal pi/2 phase imaging, assuming 0 otherwise
+eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2); % main equation for each part of CTF signal wave
+env = exp(-(k./(B)).^2); % envelope function of the overall CTF, radial signal falloff
+ctf = sin(phi+eq-A).*env; % evaluate CTF terms (phase, defoc/abb, amplitude) and apply envelope falloff
 out = real(ifft2(ifftshift(fftshift(fft2(in)).*ctf))); %fft stack to translate from ctf fourier to realspace
 end
 
@@ -203,7 +201,8 @@ end
 eucentric = boxsize/2-[0,0,0]*0; %~25 at 12pix registers to vol but desyncs from atlas
 
 % get the transmission wave dose 
-DQE = 0.84*0.5;
+%if param.phase>0, phi=0.8; else, phi=1; end
+DQE = 0.84*0.5*1;
 d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix); % adjust for weird pixel sizes
 
