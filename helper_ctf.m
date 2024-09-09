@@ -76,7 +76,7 @@ for i=1:numel(param.tilt) %loop through tilts
         sdist = pix*(bincenter(j)-size(padded,1)/2)*1; %calculate horizontal distance (dev multiplier)
         Dzs = Dz + shift*sdist; %average defocus in the strip given tilt angle and horizontal distance
         in = padded(six(1):six(2),1:end,i); %input slice for convolution
-        [lg, ctf] = internal_ctf(in,cs,L,k,Dzs,B,q); %get ctf-convolved subvolume
+        [lg, ctf] = internal_ctf(in,cs,L,k,Dzs,B,q,param.phi); %get ctf-convolved subvolume
         lg = lg.*weight; %scale by weight for gradient overlap of strips
         cv(six(1):six(2),1:end,i) = cv(six(1):six(2),1:end,i)+lg;
         %verbose real defoc listing
@@ -90,10 +90,18 @@ convolved = cv(1+edge:end-edge,1+pad:end-pad,:); %extract image area from padded
 fprintf('  - modulation done \n')
 end
 
+%{
 function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,q)
 eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2); %main equation for each part of CTF signal wave
 env = exp(-(k./(B)).^2); %envelope function of the overall CTF, radial signal falloff
 ctf = ( (1-q)*sin(eq) + (1)*q*cos(eq) ) .*env; %evaluate phase and amp components, amplitude reduces halo
+out = real(ifft2(ifftshift(fftshift(fft2(in)).*ctf))); %fft stack to translate from ctf fourier to realspace
+end
+%}
+function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,A,phi)
+eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2); % main equation for each part of CTF signal wave
+env = exp(-(k./(B)).^2); % envelope function of the overall CTF, radial signal falloff
+ctf = sin(phi+eq-A).*env; % evaluate CTF terms (phase, defoc/abb, amplitude) and apply envelope falloff
 out = real(ifft2(ifftshift(fftshift(fft2(in)).*ctf))); %fft stack to translate from ctf fourier to realspace
 end
 
