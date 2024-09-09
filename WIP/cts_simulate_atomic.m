@@ -174,13 +174,13 @@ ctf = ctf(1+pad:end-pad,1+pad:end-pad);
 %fprintf('  - modulation done \n')
 end
 
-function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,q)
-A = -0.08; % scatter amplitude, approx .07 (replace q val?)
+function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,A)
+%A = -0.07; % scatter amplitude, approx .07 (replace q val?)
 phi = pi/2; % phase shift, pi/2 for 90* VPP imaging? (unstated ~20% dose loss with PP) - or envelope?
 %phase term - approx pi/2 phase imaging, low unknown value in defoc contrast imaging
 eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2); %main equation for each part of CTF signal wave
 env = exp(-(k./(B)).^2); %envelope function of the overall CTF, radial signal falloff
-ctf = ( (1-q)*sin(eq) + (1)*q*cos(eq) ) .*env; %evaluate phase and amp components, amplitude reduces halo
+%ctf = ( (1-q)*sin(eq) + (1)*q*cos(eq) ) .*env; %evaluate phase and amp components, amplitude reduces halo
 ctf = sin(phi+eq-A).*env;
 out = real(ifft2(ifftshift(fftshift(fft2(in)).*ctf))); %fft stack to translate from ctf fourier to realspace
 end
