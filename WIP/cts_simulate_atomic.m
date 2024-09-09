@@ -143,14 +143,7 @@ circfilt = sqrt((r-xf/2-0.5).^2+(c-yf/2-0.5).^2)<50;
 
 cv = zeros(size(padded)); %pre-initialize output array
 
-%generate weights for overlapping portions of bins
-%inc = 0.5/binlength; %make edges not fall to 0/centre not 1
-%weight = 1-abs(linspace(-1+inc,1-inc,yl))'; %more simple weight function for strips
-%weight = repmat(weight/param.ctfoverlap,[1 xl]); %replicate across the strip length
-%[weight] = abs(abs(meshgrid(-1+0.5/binlength:1/(binlength):1-0.5/binlength,1:size(padded,2)))-1);
-%weight = permute(weight,[2 1])/overlap; %former method, a bit more convoluted to get the right values
-
-mid = round(size(input,3)/2);
+mid = round(size(input,3)/2); %middle slice for given defocus to diverge from
 if numel(size(input))>2, iters = size(input,3); else iters=1; end
 for i=1:iters %loop through tilts
     adj = (param.pix*slab*(i-mid))/(1e10)*1e0; %adjustment to listed defocus by depth, convert A to m
@@ -182,10 +175,13 @@ ctf = ctf(1+pad:end-pad,1+pad:end-pad);
 end
 
 function [out,ctf] = internal_ctf(in,cs,L,k,Dz,B,q)
-A = 0; % phase term - approx pi/2 phase imaging, low unknown value in defoc contrast imaging
-eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2)-A; %main equation for each part of CTF signal wave
+A = -0.08; % scatter amplitude, approx .07 (replace q val?)
+phi = pi/2; % phase shift, pi/2 for 90* VPP imaging? (unstated ~20% dose loss with PP) - or envelope?
+%phase term - approx pi/2 phase imaging, low unknown value in defoc contrast imaging
+eq = pi/2*(cs*L^3*k.^4 - 2*Dz*L*k.^2); %main equation for each part of CTF signal wave
 env = exp(-(k./(B)).^2); %envelope function of the overall CTF, radial signal falloff
 ctf = ( (1-q)*sin(eq) + (1)*q*cos(eq) ) .*env; %evaluate phase and amp components, amplitude reduces halo
+ctf = sin(phi+eq-A).*env;
 out = real(ifft2(ifftshift(fftshift(fft2(in)).*ctf))); %fft stack to translate from ctf fourier to realspace
 end
 
