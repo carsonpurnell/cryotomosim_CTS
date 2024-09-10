@@ -76,7 +76,7 @@ for i=1:numel(param.tilt) %loop through tilts
         sdist = pix*(bincenter(j)-size(padded,1)/2)*1; %calculate horizontal distance (dev multiplier)
         Dzs = Dz + shift*sdist; %average defocus in the strip given tilt angle and horizontal distance
         in = padded(six(1):six(2),1:end,i); %input slice for convolution
-        [lg, ctf] = internal_ctf(in,cs,L,k,Dzs,B,q,param.phi); %get ctf-convolved subvolume
+        [lg, ctf] = internal_ctf(in,cs,L,k,Dzs,B,q,param.phase); %get ctf-convolved subvolume
         lg = lg.*weight; %scale by weight for gradient overlap of strips
         cv(six(1):six(2),1:end,i) = cv(six(1):six(2),1:end,i)+lg;
         %verbose real defoc listing
