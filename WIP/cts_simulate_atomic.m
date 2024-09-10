@@ -1,6 +1,6 @@
 function [dtilt,atlas] = cts_simulate_atomic(input,param,opt)
 % dtilt = cts_simulate_atomic(input,param,opt)
-% simulate a tilteries imaged from an atomic model. slower than vol-based version.
+% simulate a tilteries and reconstruct from an atomic model. more accurate and slower than vol-based method.
 % ex
 % dtilt = cts_simulate_atomic('gui',{'pix',9,'tilt',60:3:60},'slice',9)
 %
