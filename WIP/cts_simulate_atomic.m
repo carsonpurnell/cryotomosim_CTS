@@ -108,10 +108,10 @@ Dz = param.defocus/1e6; %convert from microns to m
 
 L = relativistic_electrons(V); %compute wavelength from voltage, correcting for relativistic speed
 
-Ny = 1/(2*pix); %nyquist frequency calculation - functionalize?
+Ny = 1/(2*pix); %nyquist frequency for later use
 B = param.sigma*Ny; %envelope factor from nyquist frequency - also incorporates the MTF signal dropoff (approx)
 % make sigma param description more clear as the envelope factor
-q = 0.07; %amplitude contrast value - 7% is generalization
+q = 0.07; %amplitude contrast 7% is approx https://www.sciencedirect.com/science/article/pii/0304399188900034
 %phi = param.phase;
 %envelope/amplitude still needs validation and corroboration to our real data
 
@@ -132,7 +132,9 @@ yl = size(padded,1);%binlength*2;
 %zl = size(padded,3);%+pad*2; %not using due to 2d implementation
 [x,y] = meshgrid(-Ny:2*Ny/xl:Ny-Ny/xl,-Ny:2*Ny/yl:Ny-Ny/yl);%,-Ny:2*Ny/zl:Ny-Ny/zl);
 k = sqrt(x.^2+y.^2);%+z.^2); %evaluate inverse distance, identical for all strips
+% functionalize k-space generation for cleaner code?
 %imshow(rescale(k))
+
 %{
 whole-tilt envelope setup stuff - deprecated
 xf = size(padded,2); yf = size(padded,1);
@@ -148,23 +150,9 @@ mid = round(size(input,3)/2); %middle slice for given defocus to diverge from
 if numel(size(input))>2, iters = size(input,3); else iters=1; end
 for i=1:iters %loop through tilts
     adj = (param.pix*slab*(i-mid))/(1e10)*1e0; %adjustment to listed defocus by depth, convert A to m
-    %param.defocus = -5+adj;
-    %shift = tand(param.tilt(i)); %proportion of length by tilt to compute vertical displacement
-    %for j=1:numel(bincenter)
-        %six = round([1+bincenter(j)-binlength, bincenter(j)+binlength]);
-        %sdist = pix*(bincenter(j)-size(padded,1)/2)*1; %calculate horizontal distance (dev multiplier)
-        %Dzs = Dz + shift*sdist; %average defocus in the strip given tilt angle and horizontal distance
-        %in = padded(six(1):six(2),1:end,i); %input slice for convolution
-        Dzs = Dz+adj;
-        %fprintf('%s,',Dzs)
-        [lg, ctf] = math_ctf(padded(:,:,i),cs,L,k,Dzs,B,q,param.phase); %get ctf-convolved subvolume
-        %lg = lg.*weight; %scale by weight for gradient overlap of strips
-        %cv(six(1):six(2),1:end,i) = cv(six(1):six(2),1:end,i)+lg;
-        cv(:,:,i) = lg; %imshow(rescale(padded(:,:,i)));
-        %verbose real defoc listing
-        %fprintf('tiltangle %g ix %g to %g strip distance %g at defoc %g\n',...
-            %param.tilt(i),six(1),six(2),sdist,Dzs)
-    %end
+    Dzs = Dz+adj;
+    [cv(:,:,i), ctf] = math_ctf(padded(:,:,i),cs,L,k,Dzs,B,q,param.phase); %get ctf-convolved subvolume
+    %cv(:,:,i) = lg; %imshow(rescale(padded(:,:,i)));
     %whole tilt lowpass filter test
     %cv(:,:,i) = real(ifft2(ifftshift(fftshift( fft2(cv(:,:,i)) ).*circfilt )));
 end
@@ -201,8 +189,8 @@ end
 eucentric = boxsize/2-[0,0,0]*0; %~25 at 12pix registers to vol but desyncs from atlas
 
 % get the transmission wave dose 
-%if param.phase>0, phi=0.8; else, phi=1; end
-DQE = 0.84*0.3*1;
+if param.phase~=0, phi=0.8; else, phi=1; end % cut 20% of the DQE due to weird PP scattering
+DQE = 0.84*0.3*phi;
 d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix); % adjust for weird pixel sizes
 
