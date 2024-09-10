@@ -202,7 +202,7 @@ eucentric = boxsize/2-[0,0,0]*0; %~25 at 12pix registers to vol but desyncs from
 
 % get the transmission wave dose 
 %if param.phase>0, phi=0.8; else, phi=1; end
-DQE = 0.84*0.5*1;
+DQE = 0.84*0.3*1;
 d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix); % adjust for weird pixel sizes
 

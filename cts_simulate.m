@@ -52,11 +52,13 @@ if iscell(param), param = param_simulate(param{:}); end %parse params if given a
 if strcmp(sampleMRC,'gui') %load model via GUI or specific filename
     [sampleMRC, path] = uigetfile({'*.mrc;*.mat'},'Select input MRC or generated ts.mat',getenv('HOME'));
     if sampleMRC==0, error('At least one file must be selected or input'), end
+    sampleMRC = fullfile(path,sampleMRC); %[~,~,ext] = fileparts(sampleMRC);
 end
 
-if isstring(sampleMRC)
+if isstring(sampleMRC) || ischar(sampleMRC)
     [path,sampleMRC,ext] = fileparts(sampleMRC);
     sampleMRC = fullfile(path,append(sampleMRC,ext)); %patch to get off path
+    
     switch ext
         case '.mat'
             q = load(sampleMRC);
