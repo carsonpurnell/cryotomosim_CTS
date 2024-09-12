@@ -18,7 +18,7 @@ distractors = {'actin_monomer_2q0u.distract.mat',... % 1
     '6lfm_gprotein.distract.membrane.mat',...
     'GABAar.distract.membrane.mat'};
 
-n = 5; % number of different simulations
+n = 10; % number of different simulations
 ptable = table; % initialize table of parameters, one row per run
 
 % modeling params
