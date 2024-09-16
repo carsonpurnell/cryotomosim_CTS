@@ -1,4 +1,4 @@
-randset = 0; % starting seed for random number generation
+randset = rand; % starting seed for random number generation
 rng(randset) % static random number generator for replication
 
 % hard set target list for first layer
