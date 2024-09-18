@@ -61,7 +61,7 @@ for i=1:n
     modelparam.iters(2) = modelparam.iters(1)*2; modelparam.density(2) = modelparam.density(1);
     % distractor iters too?
     
-    suf = append('batch_',num2str(i,fspec));
+    suf = append('denoise_batch_',num2str(i,fspec));
     rng(randset+i);
     [cts,outfile] = cts_model(vol,modelparam,'suffix',suf);
     
@@ -70,7 +70,8 @@ for i=1:n
     rng(randset+i);
     [~,~,~,atlas] = cts_simulate(outfile,simparam_noisy,'suffix','sim_trainIN');
     
-    simparam_quality = param_simulate('dose',ptable.dose(i)*5,'defocus',ptable.defocus(i),'raddamage',0,'tilt',-80:2:80);
+    simparam_quality = param_simulate('dose',ptable.dose(i)*10,'defocus',ptable.defocus(i),...
+        'raddamage',0,'tilt',-80:2:80,'ctfoverlap',0);
     rng(randset+i);
     [det,~,~,~] = cts_simulate(outfile,simparam_quality,'suffix','sim_trainOUT');
 end
