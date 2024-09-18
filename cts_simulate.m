@@ -213,7 +213,7 @@ thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
 cmd = append('tilt -tiltfile tiltanglesR.txt -RADIAL 0.35,0.035 -width ',w,...
     ' -thickness ',thick,' ',prev,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
-cmd = append('trimvol -rx temp.mrc ',append('5_recon',base)); %#ok<NASGU>
+cmd = append('trimvol -mode 1 -rx temp.mrc ',append('5_recon',base)); %#ok<NASGU>
 [~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 
 delete temp.mrc %remove temporary files after they are used for rotation
