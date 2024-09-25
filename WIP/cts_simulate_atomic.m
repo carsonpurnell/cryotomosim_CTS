@@ -9,6 +9,7 @@ arguments
     param = {}
     opt.slice = 0
     opt.suffix = ''
+    opt.norm = 1
 end
 if iscell(param), param = param_simulate(param{:}); end
 if param.pix<0.5, error('inappropriate pixel size - check paramters'); end
@@ -80,6 +81,13 @@ cmd = append('trimvol -mode 1 -yz temp.mrc ',append('5_recon',base)); %#ok<NASGU
 % rx is supposed to match yz direction, but is inverted
 % yz is almost matched to vol, might be ob1 in z direction.
 % flipz is identical to yz
+if opt.norm ==1
+    [vol,head] = ReadMRC(append('5_recon',base));
+    delete(append('5_recon',base));
+    vol = single(vol);
+    normed = (vol-mean(vol,'all'))/std(vol,1,'all');
+    WriteMRC(vol,head.pixA,append('5_recon',base),1);
+end
 delete temp.mrc
 cd(userpath)
 end
