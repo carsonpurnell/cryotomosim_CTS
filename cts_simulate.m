@@ -43,6 +43,7 @@ arguments
     sampleMRC %full path to input mrc/ts, or 'gui' for browser
     param = {} %input a param_simulate call, or within {} to send to it
     opt.suffix string = ''
+    opt.norm = 1
     opt.atlasindividual = 0
     opt.dynamotable = 0
     opt.ctford = 1
@@ -128,7 +129,7 @@ else
 end
 
 %run the simulation itself within the subfunction. might extend 'real' to also 'ideal' later
-[detected, conv, tiltseries, ctf] = internal_sim(vol,opt.suffix,param,'real',opt.ctford);
+[detected, conv, tiltseries, ctf] = internal_sim(vol,opt.suffix,param,'real',opt.ctford,opt);
 
 %
 if isstruct(cts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
@@ -140,7 +141,7 @@ cd(userpath) %return to the user directory
 end
 
 
-function [detected, convolved, tilt, ctf] = internal_sim(in,filename,param,type,order)
+function [detected, convolved, tilt, ctf] = internal_sim(in,filename,param,type,order,opt)
 pix = param.pix;
 
 base = append(filename,'.mrc'); 
@@ -216,5 +217,12 @@ disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the comma
 cmd = append('trimvol -mode 1 -rx temp.mrc ',append('5_recon',base)); %#ok<NASGU>
 [~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 
+if opt.norm==1
+    [vol,head] = ReadMRC(append('5_recon',base));
+    delete(append('5_recon',base));
+    vol = single(vol);
+    normed = (vol-mean(vol,'all'))/std(vol,1,'all');
+    WriteMRC(vol,head.pixA,append('5_recon',base),1);
+end
 delete temp.mrc %remove temporary files after they are used for rotation
 end
