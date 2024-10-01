@@ -1,4 +1,4 @@
-randset = 0; % starting seed for random number generation
+randset = rand; % starting seed for random number generation
 rng(randset) % static random number generator for replication
 
 % hard set target list for first layer
@@ -29,12 +29,8 @@ ptable.mem(1:n) = randi(12,n,1); %1-12 membranes
 %randomized beads?
 
 % simulation params
-ptable.dose(1:n) = 70+round(80*rand(n,1)); %70-150 dose, uniform distribution
+ptable.dose(1:n) = 80+round(80*rand(n,1)); %80-160 dose, uniform distribution
 ptable.defocus(1:n) = -4-round(10*rand(n,1))/5; % -4 to -6 defocus
-% radiation, tilting?
-
-%dx
-%ptable.distractors = dx;
 
 % z thickness from thin plane to thick low SNR (don't have variable layer thickness yet though)
 % same density cap for all layers for simplicity
