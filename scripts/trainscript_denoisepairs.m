@@ -22,14 +22,14 @@ n = 3; % number of different simulations
 ptable = table; % initialize table of parameters, one row per run
 
 % modeling params
-ptable.pix(1:n) = 5+randi(9); %6-14 angstrom size/scale variation
+ptable.pix(1:n) = 5+randi(9,n,1); %6-14 angstrom size/scale variation
 ptable.thick(1:n) = 40+round(40*rand(n,1)); % 40-80 pixel thickness for SNR/orientation variation
 ptable.iters(1:n) = 100+10*round(70*rand(n,1)); % 100-800 (increment 10) iterations
 ptable.mem(1:n) = (randi(4,n,1)-1)*4; %0-12 membranes
 %randomized beads?
 
 % simulation params
-ptable.dose(1:n) = 120+1*round(80*rand(n,1)); %80-160 dose, uniform distribution
+ptable.dose(1:n) = 80+1*round(80*rand(n,1)); %80-160 dose, uniform distribution
 ptable.defocus(1:n) = -2-round(10*rand(n,1))/5-ptable.pix/5; % -2 to -4, minus pix/5
 % radiation, tilting?
 
