@@ -26,15 +26,13 @@ ptable.pix(1:n) = 5+randi(9,n,1); %6-14 angstrom size/scale variation
 ptable.thick(1:n) = 40+round(40*rand(n,1)); % 40-80 pixel thickness for SNR/orientation variation
 ptable.iters(1:n) = 100+10*round(70*rand(n,1)); % 100-800 (increment 10) iterations
 ptable.mem(1:n) = (randi(4,n,1)-1)*4; %0-12 membranes
+ptable.beads(1:n) = (randi(4,n,1)-1)*4; %0-12 beads
 %randomized beads?
 
 % simulation params
 ptable.dose(1:n) = 80+1*round(80*rand(n,1)); %80-160 dose, uniform distribution
 ptable.defocus(1:n) = -2-round(10*rand(n,1))/5-ptable.pix/5; % -2 to -4, minus pix/5
 % radiation, tilting?
-
-%dx
-%ptable.distractors = dx;
 
 % z thickness from thin plane to thick low SNR (don't have variable layer thickness yet though)
 % same density cap for all layers for simplicity
@@ -56,7 +54,7 @@ for i=1:n
     dis = distractors(dx);
     dparam = param_model(ptable.pix(i),'layers',dis);
     modelparam = param_model(ptable.pix(i),'layers',targets,'iters',ptable.iters(i),...
-        'mem',ptable.mem(i),'beads',10);
+        'mem',ptable.mem(i),'beads',ptable.beads(i));
     modelparam.layers{2} = dparam.layers{1}; %add distractors into layer
     modelparam.iters(2) = modelparam.iters(1)*2; modelparam.density(2) = modelparam.density(1);
     % distractor iters too?
@@ -66,12 +64,13 @@ for i=1:n
     [cts,outfile] = cts_model(vol,modelparam,'suffix',suf);
     
     %atomic or volumetric model? atomic membrane proteins still not ready
-    simparam_noisy = param_simulate('dose',ptable.dose(i),'defocus',ptable.defocus(i),'tilterr',1);
+    simparam_noisy = param_simulate('dose',ptable.dose(i),'defocus',ptable.defocus(i),...
+        'tilterr',0.5,'raddamage',0.5);
     rng(randset+i);
     [~,~,~,atlas] = cts_simulate(outfile,simparam_noisy,'suffix','sim_trainIN');
     
     simparam_quality = param_simulate('dose',ptable.dose(i)*10,'defocus',ptable.defocus(i)/2,...
-        'raddamage',0,'tilt',-80:1:80,'ctfoverlap',0,'scatter',0);
+        'raddamage',0,'tilt',-80:1:80,'ctfoverlap',2,'scatter',0);
     rng(randset+i);
     [det,~,~,~] = cts_simulate(outfile,simparam_quality,'suffix','sim_trainOUT');
 end
