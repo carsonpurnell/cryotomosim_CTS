@@ -1,4 +1,4 @@
-randset = rand; % starting seed for random number generation
+randset = rand*1e5; % starting seed for random number generation
 rng(randset) % static random number generator for replication
 
 % hard set target list for first layer
@@ -23,13 +23,13 @@ ptable = table; % initialize table of parameters, one row per run
 
 % modeling params
 ptable.pix(1:n) = 12+round(rand(n,1)*20)/10; %12-14 angstrom size/scale variation
-ptable.thick(1:n) = 40+round(20*rand(n,1)); % 45-55 pixel thickness for SNR/orientation variation
+ptable.thick(1:n) = 40+round(20*rand(n,1)); % 40-60 pixel thickness for SNR/orientation variation
 ptable.iters(1:n) = 100+10*round(50*rand(n,1)); % 100-600 (increment 10) iterations
 ptable.mem(1:n) = randi(12,n,1); %1-12 membranes
 %randomized beads?
 
 % simulation params
-ptable.dose(1:n) = 80+round(80*rand(n,1)); %80-160 dose, uniform distribution
+ptable.dose(1:n) = 80+round(100*rand(n,1)); %80-180 dose, uniform distribution
 ptable.defocus(1:n) = -4-round(10*rand(n,1))/5; % -4 to -6 defocus
 
 % z thickness from thin plane to thick low SNR (don't have variable layer thickness yet though)
