@@ -1,4 +1,4 @@
-randset = rand; % starting seed for random number generation
+randset = rand*1e5; % starting seed for random number generation
 rng(randset) % static random number generator for replication
 
 % hard set target list for first layer
@@ -18,7 +18,7 @@ distractors = {'actin_monomer_2q0u.distract.mat',... % 1
     '6lfm_gprotein.distract.membrane.mat',...
     'GABAar.distract.membrane.mat'};
 
-n = 5; % number of different simulations
+n = 3; % number of different simulations
 ptable = table; % initialize table of parameters, one row per run
 
 % modeling params
@@ -70,8 +70,8 @@ for i=1:n
     rng(randset+i);
     [~,~,~,atlas] = cts_simulate(outfile,simparam_noisy,'suffix','sim_trainIN');
     
-    simparam_quality = param_simulate('dose',ptable.dose(i)*5,'defocus',ptable.defocus(i),...
-        'raddamage',0,'tilt',-80:1:80,'ctfoverlap',2,'scatter',0);
+    simparam_quality = param_simulate('dose',ptable.dose(i)*10,'defocus',ptable.defocus(i)/2,...
+        'raddamage',0,'tilt',-80:1:80,'ctfoverlap',0,'scatter',0);
     rng(randset+i);
     [det,~,~,~] = cts_simulate(outfile,simparam_quality,'suffix','sim_trainOUT');
 end
