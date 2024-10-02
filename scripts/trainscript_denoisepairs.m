@@ -22,7 +22,7 @@ n = 3; % number of different simulations
 ptable = table; % initialize table of parameters, one row per run
 
 % modeling params
-ptable.pix(1:n) = 5+randi(9,n,1); %6-14 angstrom size/scale variation
+ptable.pix(1:n) = 5+randi(9,n,1)*0+[6,10,14]; %6-14 angstrom size/scale variation
 ptable.thick(1:n) = 40+round(40*rand(n,1)); % 40-80 pixel thickness for SNR/orientation variation
 ptable.iters(1:n) = 100+10*round(70*rand(n,1)); % 100-800 (increment 10) iterations
 ptable.mem(1:n) = (randi(4,n,1)-1)*4; %0-12 membranes
@@ -49,7 +49,7 @@ for i=1:n
     %linput = {targets,distractors(distix)};
     %tl = helper_input(linput,ptable.pix(i));
     
-    dx = unique(randi(numel(distractors),1,1+randi(4)));
+    dx = unique(randi(numel(distractors),1,1+randi(5)));
     ptable.distractors(i) = join(string(dx));
     dis = distractors(dx);
     dparam = param_model(ptable.pix(i),'layers',dis);
@@ -65,7 +65,7 @@ for i=1:n
     
     %atomic or volumetric model? atomic membrane proteins still not ready
     simparam_noisy = param_simulate('dose',ptable.dose(i),'defocus',ptable.defocus(i),...
-        'tilterr',0.2,'raddamage',0.2,'scatter',0.4);
+        'tilterr',0.5,'raddamage',0.5,'scatter',0.5);
     rng(randset+i);
     [~,~,~,atlas] = cts_simulate(outfile,simparam_noisy,'suffix','sim_trainIN');
     
