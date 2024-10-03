@@ -47,7 +47,7 @@ for i=1:n
     %linput = {targets,distractors(distix)};
     %tl = helper_input(linput,ptable.pix(i));
     
-    dx = unique(randi(numel(distractors),1,1+randi(4)));
+    dx = unique(randi(numel(distractors),1,1+randi(5)));
     ptable.distractors(i) = join(string(dx));
     dis = distractors(dx);
     dparam = param_model(ptable.pix(i),'layers',dis);
