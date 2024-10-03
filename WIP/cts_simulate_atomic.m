@@ -1,4 +1,4 @@
-function [dtilt,atlas] = cts_simulate_atomic(input,param,opt)
+function [dtilt,atlas,tilt] = cts_simulate_atomic(input,param,opt)
 % dtilt = cts_simulate_atomic(input,param,opt)
 % simulate a tilteries and reconstruct from an atomic model. more accurate and slower than vol-based method.
 % ex
