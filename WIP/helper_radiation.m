@@ -1,20 +1,38 @@
-function [out,rad,rad2] = helper_radiation(vol,solv,dose,rad)
+function [out,sigloss,noise] = helper_radiation(vol,dose,rad,opt)
 
-radscale = .01; %arbitrary scalar for parameter values to map correctly to map intensity
+arguments
+    vol
+    dose
+    rad
+    opt.byslice = 1
+end
+
+rads = .01*dose*rad; %arbitrary scalar for parameter values to map correctly to map intensity
 
 % gaussian component
-radg = (rand(size(vol))-rand(size(vol)))*rad;
+%noise = rads*10*randn(size(vol));%(rand(size(vol))-rand(size(vol)))*rads*10;
 % smoothing component - run on vol separately? no, would generate weirdness
-rads = imgaussfilt3(vol,rad);
+f = 5; %default 2*ceil(sigma*2)+1;
+sigloss = zeros(size(vol)); noise = sigloss;
+if opt.byslice
+    for i=1:size(vol,3)
+        r = rads*i/size(vol,3);
+        noise(:,:,i) = r*50*randn(size(vol,[1,2]));
+        sigloss(:,:,i) = imgaussfilt3(vol(:,:,i),r,'FilterSize',f);
+    end
+else
+    noise = rads*50*randn(size(vol));
+    sigloss = imgaussfilt3(vol,rads,'FilterSize',f);
+end
 % separate filling/warping component? or suitably part of others?
 % solv needed as a separate component at all?
 
-rad = 0; rad2=0;
-out = vol+solv;
+out = sigloss+noise;
 
+%{
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
 blurmean = imgaussfilt(tilt,0.5);
-for i=1
+for i=1:size(vol,3)
     accum = accum+dw*thickscatter(i); %add to accumulated dose delivered, including first tilt
     %this radiation count is inappropriate. needs to increase at higher tilt, and ignore DQE/etc.
     %use raw dose number and adjust for angle? or precompute rad scalars outside loop?
@@ -38,5 +56,6 @@ for i=1
     irad = proj*1+tilt(:,:,i)*0+accum*radscale*(radgauss+radclose);
     rad(:,:,i) = proj*1+tilt(:,:,i)*0+accum*radscale*(radgauss+radclose); %store radiation maps for review
 end
+%}
 
 end
