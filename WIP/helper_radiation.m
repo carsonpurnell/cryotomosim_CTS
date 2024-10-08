@@ -1,33 +1,42 @@
-function [out,sigloss,noise] = helper_radiation(vol,dose,rad,opt)
+function [out,loss,noise] = helper_radiation(vol,pix,dose,rad,opt)
 
 arguments
     vol
+    pix
     dose
     rad
     opt.byslice = 1
 end
 
-rads = .01*dose*rad; %arbitrary scalar for parameter values to map correctly to map intensity
+rads = .0005*rad*dose*pix^1; %arbitrary scalar for parameter values to map correctly to map intensity
+
+% quantification from https://journals.iucr.org/s/issues/2011/03/00/xh5022/xh5022.pdf
+H = 8e2; % conversion constant, don't know true value from KeV to Gy
+% signal = ideal * exp(-log(2)*dose*A/H);
 
 % gaussian component
 %noise = rads*10*randn(size(vol));%(rand(size(vol))-rand(size(vol)))*rads*10;
 % smoothing component - run on vol separately? no, would generate weirdness
-f = 5; %default 2*ceil(sigma*2)+1;
-sigloss = zeros(size(vol)); noise = sigloss;
+%f = 15/pix*rads; f = ceil(f)*2+1; %default 2*ceil(sigma*2)+1;
+loss = zeros(size(vol)); noise = loss; %nweighted = loss;
 if opt.byslice
     for i=1:size(vol,3)
-        r = rads*i/size(vol,3);
-        noise(:,:,i) = r*50*randn(size(vol,[1,2]));
-        sigloss(:,:,i) = imgaussfilt3(vol(:,:,i),r,'FilterSize',f);
+        sc = (i+0)/size(vol,3);
+        r = rads*sc; % 0 placeholder for pre-exposures?
+        f = ceil(10/pix+r*1)*2+1;
+        noise(:,:,i) = r*50*randn(size(vol,[1,2]))*sqrt(pix);
+        decay = 1-(1-exp(-dose*sc*pix/H))/2;
+        loss(:,:,i) = imgaussfilt3(vol(:,:,i),r,'FilterSize',f)*decay;
     end
 else
+    f = ceil(10/pix+rads*1)*2+1;
     noise = rads*50*randn(size(vol));
-    sigloss = imgaussfilt3(vol,rads,'FilterSize',f);
+    loss = imgaussfilt3(vol,rads,'FilterSize',f)*exp(-dose*pix/H);
 end
-% separate filling/warping component? or suitably part of others?
-% solv needed as a separate component at all?
+% loss: smoothing component of radiation damage
+% noise: gaussian component
 
-out = sigloss+noise;
+out = loss+noise;
 
 %{
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
