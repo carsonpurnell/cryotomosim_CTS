@@ -15,7 +15,7 @@ rad = 0;
 if param.dose<=0, detect=tilt; return; end %if dose 0, skip detection and return perfect detection/original
 tiltangs = param.tilt; %unfortunately similar name to tilt 
 
-DQE = .84*.9; % gatan camera lists 84% maximum detection, so that'll work for now
+DQE = .84*1.0; % gatan camera lists 84% maximum detection, so that'll work for now
 %4 is arbitrary scalar to make contrast look 'normal' with the CTF modulation
 %DQE should not be angle dependent, but maybe easier to  implement if merged with CTF?
 
@@ -76,11 +76,10 @@ radscale = .01*param.raddamage;%/param.pix^2; %damage scaling calculation to rev
 dw = dose*DQE; %correct distributed dose based on maximum DQE and inelastic scattering loss
 accum = 0; %initialize accumulated dose of irradiation to 0
 detect = tilt.*0; rad = tilt*0; %pre-initialize output arrays
+%{
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
 blurmean = imgaussfilt(tilt,0.5);
-%separate subfunction for doing radiation for modularity
-
-%{
+%
 for i=1:size(tilt,3)
     if param.raddamage>0 %block for raadiation-induced noise and blurring
         accum = accum+dw*thickscatter(i); %add to accumulated dose delivered, including first tilt
@@ -116,7 +115,7 @@ end
 %}
 
 if param.raddamage>0
-    [irad,loss,noise] = helper_radiation(tilt,param.pix,dose,param.raddamage); rad = loss+noise;
+    [irad,loss,noise] = helper_radiation(tilt,param.pix,dose,param.raddamage,'byslice',1); rad = loss+noise;
 else
     irad = tilt; %rad = 0;
 end
