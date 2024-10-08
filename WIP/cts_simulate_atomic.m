@@ -1,4 +1,4 @@
-function [dtilt,atlas,tilt] = cts_simulate_atomic(input,param,opt)
+function [dtilt,atlas,tilt,ideal] = cts_simulate_atomic(input,param,opt)
 % dtilt = cts_simulate_atomic(input,param,opt)
 % simulate a tilteries and reconstruct from an atomic model. more accurate and slower than vol-based method.
 % ex
@@ -44,7 +44,7 @@ file = fopen('tiltanglesR.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(fil
 mod.box = size(atlas)*param.pix;
 
 %param = param_simulate('pix',3,'tilt',angles,'dose',80/4,'tiltax','Y','defocus',-2);
-[tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,mod.box,opt.slice);
+[tilt,dtilt,cv,cv2,ctf,ideal] = atomictiltproj(atoms,param,mod.box,opt.slice);
 %sliceViewer(dtilt*-1);
 
 WriteMRC(rescale((vol+solv)*-1),param.pix,append('0_model',opt.suffix,'.mrc'));
@@ -187,7 +187,7 @@ h = 6.62607015e-34; %planck constant m^2 Kg/s
 L = h*c/sqrt(e*V*(2*m*c^2+e*V)); %calculation of wavelength L from accelerating voltage and constants
 end
 
-function [tilt,dtilt,cv,cv2,ctf] = atomictiltproj(atoms,param,boxsize,slabthick)
+function [tilt,dtilt,cv,cv2,ctf,ideal] = atomictiltproj(atoms,param,boxsize,slabthick)
 if param.tiltax=='Y'
     ax = [0,1,0];
 else
@@ -203,6 +203,8 @@ d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix); % adjust for weird pixel sizes
 
 tilt = zeros(round(boxsize(1)/param.pix),round(boxsize(2)/param.pix),numel(param.tilt));
+ideal = tilt;
+cv2 = tilt;
 if numel(param.tilterr)~=numel(param.tilt) && param.tilterr==0
     param.tilterr = zeros(size(param.tilt));
 end
@@ -249,7 +251,7 @@ for t=1:numel(param.tilt)
     
     %[cv,ctf2] = flatctf(vol,slabthick,param);
     cv2(:,:,t) = sum(cv,3);
-    
+    ideal(:,:,t) = sum(vol,3);
     tilt(:,:,t) = sum(convolved,3);
 end
 fprintf('\n%i tilts simulated\n',t)
