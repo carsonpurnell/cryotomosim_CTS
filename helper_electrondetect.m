@@ -80,8 +80,8 @@ blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside lo
 blurmean = imgaussfilt(tilt,0.5);
 %separate subfunction for doing radiation for modularity
 
+%{
 for i=1:size(tilt,3)
-    
     if param.raddamage>0 %block for raadiation-induced noise and blurring
         accum = accum+dw*thickscatter(i); %add to accumulated dose delivered, including first tilt
         %this radiation count is inappropriate. needs to increase at higher tilt, and ignore DQE/etc.
@@ -113,6 +113,15 @@ for i=1:size(tilt,3)
     detect(:,:,i) = poissrnd(irad.*newscatter(:,:,i)*dw,size(irad)); 
     %sample electrons from scaled poisson distribution
 end
+%}
+
+if param.raddamage>0
+    [irad,loss,noise] = helper_radiation(tilt,param.pix,dose,param.raddamage); rad = loss+noise;
+else
+    irad = tilt; %rad = 0;
+end
+detect = poissrnd(irad.*newscatter*dw,size(irad));
+
 rad = rad(:,:,ixr);
 detect = detect(:,:,ixr); %reverse the sort so the output tiltseries is a continuous rotation
 end
