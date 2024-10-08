@@ -43,17 +43,13 @@ file = fopen('tiltanglesR.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(fil
 [vol,solv,atlas,splitvol,acount] = helper_atoms2vol(param.pix,split,mod.box);
 mod.box = size(atlas)*param.pix;
 
-%param = param_simulate('pix',3,'tilt',angles,'dose',80/4,'tiltax','Y','defocus',-2);
-[tilt,dtilt,cv,cv2,ctf,ideal] = atomictiltproj(atoms,param,mod.box,opt.slice);
-%sliceViewer(dtilt*-1);
-
 WriteMRC(rescale((vol+solv)*-1),param.pix,append('0_model',opt.suffix,'.mrc'));
 WriteMRC(atlas,param.pix,append('Atlas',opt.suffix,'.mrc'));
-
 roinames = fieldnames(split); roinames = string(roinames); 
 file = fopen(append('Atlas',opt.suffix,'.txt'),'w'); 
 fprintf(file,'background\n'); fprintf(file,'%s\n',roinames); fclose(file);
-%WriteMRC(atlas2-1,cts.param.pix,append('Atlas',opt.suffix,'.mrc'),1)
+
+[tilt,dtilt,cv,cv2,ctf,ideal] = atomictiltproj(atoms,param,mod.box,opt.slice);
 
 prev = append('3_tilt',opt.suffix,'.mrc');
 WriteMRC(rescale(dtilt*-1),param.pix,prev);
@@ -198,7 +194,7 @@ eucentric = boxsize/2-[0,0,0]*0; %~25 at 12pix registers to vol but desyncs from
 
 % get the transmission wave dose 
 if param.phase~=0, phi=0.8; else, phi=1; end % cut 20% of the DQE due to weird PP scattering
-DQE = 0.84*0.3*phi;
+DQE = 0.84*0.5*phi;
 d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix); % adjust for weird pixel sizes
 
