@@ -18,11 +18,11 @@ distractors = {'actin_monomer_2q0u.distract.mat',... % 1
     '6lfm_gprotein.distract.membrane.mat',...
     'GABAar.distract.membrane.mat'};
 
-n = 3; % number of different simulations
+n = 5; % number of different simulations
 ptable = table; % initialize table of parameters, one row per run
 
 % modeling params
-ptable.pix(1:n) = 7+randi(9,n,1)*0+[1;3;7]; %8-14 angstrom size/scale variation
+ptable.pix(1:n) = 5+randi(9,n,1); %6-14 angstrom size/scale variation
 ptable.thick(1:n) = 40+round(40*rand(n,1)); % 40-80 pixel thickness for SNR/orientation variation
 ptable.iters(1:n) = 100+10*round(70*rand(n,1)); % 100-800 (increment 10) iterations
 ptable.mem(1:n) = (randi(4,n,1)-1)*4; %0-12 membranes
