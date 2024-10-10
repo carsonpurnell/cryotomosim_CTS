@@ -65,11 +65,11 @@ for i=1:n
     
     %atomic or volumetric model? atomic membrane proteins still not ready
     simparam_noisy = param_simulate('dose',ptable.dose(i),'defocus',ptable.defocus(i),...
-        'tilterr',0.5,'raddamage',0.5,'scatter',0.5);
+        'tilterr',0,'raddamage',1,'scatter',0);
     rng(randset+i);
     [~,~,~,atlas] = cts_simulate(outfile,simparam_noisy,'suffix','sim_trainIN');
     
-    simparam_quality = param_simulate('dose',ptable.dose(i)*10,'defocus',ptable.defocus(i)/1,...
+    simparam_quality = param_simulate('dose',ptable.dose(i)*1,'defocus',ptable.defocus(i)/1,...
         'raddamage',0,'tilt',-85:1:85,'ctfoverlap',0,'scatter',0);
     rng(randset+i);
     %[det,~,~,~] = cts_simulate(outfile,simparam_quality,'suffix','sim_trainOUT');

@@ -193,8 +193,8 @@ end
 eucentric = boxsize/2-[0,0,0]*0; %~25 at 12pix registers to vol but desyncs from atlas
 
 % get the transmission wave dose 
-if param.phase~=0, phi=0.8; else, phi=1; end % cut 20% of the DQE due to weird PP scattering
-DQE = 0.84*0.5*phi;
+if param.phase>pi/4, phi=0.8; else, phi=1; end % cut 20% of the DQE due to weird PP scattering
+DQE = 0.84*0.7*phi;
 d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix); % adjust for weird pixel sizes
 

@@ -38,13 +38,12 @@ arguments
     param.tiltscheme = 0 %flip angle for bidirectional, otherwise 'symmetric'
     param.pix = 0 %0 to not override input
     param.tiltax = 'Y' %using X now works but generates super thick tomograms
-    param.phase = 0 % for phase shift imaging (maybe eat Q value too?
+    param.phase = .07 % for phase shift imaging (unsure of best default)
     
     %simulation/computational parameters
     param.raddamage = 1; %split into different components?
     param.scatter = 1;
     param.ctfoverlap {mustBeNonnegative,mustBeInteger} = 2 %if 0 skip ctf
-    % Q factor for CTF convolution?
     %randomization to tilt angles?
     param.tilterr = 0; %0 no randomization, 1 range==tilt increment
     %separate or same use X/Y stage error during tilting?

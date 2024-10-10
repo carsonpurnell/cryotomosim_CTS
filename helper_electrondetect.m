@@ -15,7 +15,8 @@ rad = 0;
 if param.dose<=0, detect=tilt; return; end %if dose 0, skip detection and return perfect detection/original
 tiltangs = param.tilt; %unfortunately similar name to tilt 
 
-DQE = .84*1.0; % gatan camera lists 84% maximum detection, so that'll work for now
+if param.phase>pi/4; phi = 0.8; else phi = 1; end %#ok<SEPEX>
+DQE = .84*phi; % gatan camera lists 84% maximum detection, so that'll work for now
 %4 is arbitrary scalar to make contrast look 'normal' with the CTF modulation
 %DQE should not be angle dependent, but maybe easier to  implement if merged with CTF?
 
