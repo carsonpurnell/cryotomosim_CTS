@@ -18,7 +18,7 @@ distractors = {'actin_monomer_2q0u.distract.mat',... % 1
     '6lfm_gprotein.distract.membrane.mat',...
     'GABAar.distract.membrane.mat'};
 
-n = 5; % number of different simulations
+n = 10; % number of different simulations
 ptable = table; % initialize table of parameters, one row per run
 
 % modeling params
@@ -27,7 +27,6 @@ ptable.thick(1:n) = 40+round(40*rand(n,1)); % 40-80 pixel thickness for SNR/orie
 ptable.iters(1:n) = 100+10*round(70*rand(n,1)); % 100-800 (increment 10) iterations
 ptable.mem(1:n) = (randi(4,n,1)-1)*4; %0-12 membranes
 ptable.beads(1:n) = (randi(4,n,1)-1)*4; %0-12 beads
-%randomized beads?
 
 % simulation params
 ptable.dose(1:n) = 80+1*round(80*rand(n,1)); %80-160 dose, uniform distribution
@@ -49,7 +48,7 @@ for i=1:n
     %linput = {targets,distractors(distix)};
     %tl = helper_input(linput,ptable.pix(i));
     
-    dx = unique(randi(numel(distractors),1,1+randi(5)));
+    dx = unique(randi(numel(distractors),1,2+randi(5)));
     ptable.distractors(i) = join(string(dx));
     dis = distractors(dx);
     dparam = param_model(ptable.pix(i),'layers',dis);
@@ -69,9 +68,9 @@ for i=1:n
     rng(randset+i);
     [~,~,~,atlas] = cts_simulate(outfile,simparam_noisy,'suffix','sim_trainIN');
     
-    simparam_quality = param_simulate('dose',ptable.dose(i)*1,'defocus',ptable.defocus(i)/1,...
-        'raddamage',0,'tilt',-85:1:85,'ctfoverlap',0,'scatter',0);
+    simparam_quality = param_simulate('dose',ptable.dose(i)*2,'defocus',ptable.defocus(i)/1,...
+        'raddamage',0,'tilt',-85:2:85,'ctfoverlap',0,'scatter',0);
     rng(randset+i);
-    %[det,~,~,~] = cts_simulate(outfile,simparam_quality,'suffix','sim_trainOUT');
+    [det,~,~,~] = cts_simulate(outfile,simparam_quality,'suffix','sim_trainOUT');
 end
 disp(ptable) % display table of parameters used
