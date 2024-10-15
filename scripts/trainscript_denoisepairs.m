@@ -18,7 +18,7 @@ distractors = {'actin_monomer_2q0u.distract.mat',... % 1
     '6lfm_gprotein.distract.membrane.mat',...
     'GABAar.distract.membrane.mat'};
 
-n = 10; % number of different simulations
+n = 5; % number of different simulations
 ptable = table; % initialize table of parameters, one row per run
 
 % modeling params
@@ -64,12 +64,12 @@ for i=1:n
     
     %atomic or volumetric model? atomic membrane proteins still not ready
     simparam_noisy = param_simulate('dose',ptable.dose(i),'defocus',ptable.defocus(i),...
-        'tilterr',0,'raddamage',1,'scatter',0);
+        'tilterr',1,'raddamage',1,'scatter',1);
     rng(randset+i);
     [~,~,~,atlas] = cts_simulate(outfile,simparam_noisy,'suffix','sim_trainIN');
     
-    simparam_quality = param_simulate('dose',ptable.dose(i)*2,'defocus',ptable.defocus(i)/1,...
-        'raddamage',0,'tilt',-85:2:85,'ctfoverlap',0,'scatter',0);
+    simparam_quality = param_simulate('dose',ptable.dose(i)*5,'defocus',ptable.defocus(i)/1,...
+        'raddamage',0,'tilt',-85:1:85,'ctfoverlap',2,'scatter',0);
     rng(randset+i);
     [det,~,~,~] = cts_simulate(outfile,simparam_quality,'suffix','sim_trainOUT');
 end

@@ -25,7 +25,7 @@ end
 %data not centered, only happens in the pts2vol subfunct
 
 data = helper_pdbparse(pdb); %atomic coords xy inverted, can't figure out where
-[path,file,ext] = fileparts(pdb);
+[path,file,ext] = fileparts(which(pdb));
 %{
 switch ext %parse structure files depending on filetype
     case '.mat'

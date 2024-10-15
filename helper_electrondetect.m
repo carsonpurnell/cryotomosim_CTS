@@ -116,7 +116,8 @@ end
 %}
 
 if param.raddamage>0
-    [irad,loss,noise] = helper_radiation(tilt,param.pix,dose,param.raddamage,'byslice',1); rad = loss+noise;
+    [irad,loss,noise] = helper_radiation(tilt,param.pix,dose,param.raddamage,'byslice',1); 
+    rad = loss+noise;
 else
     irad = tilt; %rad = 0;
 end
