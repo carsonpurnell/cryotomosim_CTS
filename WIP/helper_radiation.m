@@ -8,14 +8,13 @@ arguments
     opt.byslice = 1
 end
 
-rads = .0100*rad*dose*pix^1; %arbitrary scalar for parameter values to map correctly to map intensity
+rads = .010*rad*dose*pix^0; %arbitrary scalar for parameter values to map correctly to intensity
 
 % quantification from https://journals.iucr.org/s/issues/2011/03/00/xh5022/xh5022.pdf
-H = 8e2; % conversion constant, don't know true value from KeV to Gy
+H = 8e2; % conversion constant, Kev to Gy (exact calculation?)
 % signal = ideal * exp(-log(2)*dose*A/H);
 
 % gaussian component
-%noise = rads*10*randn(size(vol));%(rand(size(vol))-rand(size(vol)))*rads*10;
 % smoothing component - run on vol separately? no, would generate weirdness
 %f = 15/pix*rads; f = ceil(f)*2+1; %default 2*ceil(sigma*2)+1;
 loss = zeros(size(vol)); noise = loss; %nweighted = loss;
@@ -24,14 +23,15 @@ if opt.byslice
         sc = (i+0)/size(vol,3);
         r = rads*sc; % 0 placeholder for pre-exposures?
         f = ceil(10/pix+r*1)*2+1;
-        noise(:,:,i) = r*50*randn(size(vol,[1,2]))*sqrt(pix);
+        noise(:,:,i) = r*pix*50*randn(size(vol,[1,2])); % gaussian component
         decay = 1-(1-exp(-dose*sc*pix/H))/2;
         loss(:,:,i) = imgaussfilt3(vol(:,:,i),r,'FilterSize',f)*decay;
     end
 else
     f = ceil(10/pix+rads*1)*2+1;
-    noise = rads*50*randn(size(vol));
-    loss = imgaussfilt3(vol,rads,'FilterSize',f)*exp(-dose*pix/H);
+    noise = rads*pix*50*randn(size(vol)); % gaussian component
+    decay = 1-(1-exp(-dose*rads*pix/H))/2;
+    loss = imgaussfilt3(vol,rads,'FilterSize',f)*decay;
 end
 % loss: smoothing component of radiation damage
 % noise: gaussian component
