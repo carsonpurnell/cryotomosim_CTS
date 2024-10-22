@@ -68,7 +68,7 @@ for i=1:n
     rng(randset+i);
     [~,~,~,atlas] = cts_simulate(outfile,simparam_noisy,'suffix','sim_trainIN');
     
-    simparam_quality = param_simulate('dose',ptable.dose(i)*5,'defocus',ptable.defocus(i)/1,...
+    simparam_quality = param_simulate('dose',ptable.dose(i)*10,'defocus',ptable.defocus(i)/1,...
         'raddamage',0,'tilt',-85:1:85,'ctfoverlap',2,'scatter',0);
     rng(randset+i);
     [det,~,~,~] = cts_simulate(outfile,simparam_quality,'suffix','sim_trainOUT');
