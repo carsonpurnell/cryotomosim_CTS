@@ -8,7 +8,7 @@ arguments
     opt.byslice = 1
 end
 
-rads = .010*rad*dose*pix^0; %arbitrary scalar for parameter values to map correctly to intensity
+rads = .005*rad*dose*pix^0; %arbitrary scalar for parameter values to map correctly to intensity
 
 % quantification from https://journals.iucr.org/s/issues/2011/03/00/xh5022/xh5022.pdf
 H = 8e2; % conversion constant, Kev to Gy (exact calculation?)
