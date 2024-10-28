@@ -54,6 +54,14 @@ fprintf(file,'background\n'); fprintf(file,'%s\n',roinames); fclose(file);
 prev = append('3_tilt',opt.suffix,'.mrc');
 WriteMRC(rescale(dtilt*-1),param.pix,prev);
 
+
+% recon block, should move out into a separate function, and rely on running bash scripts (easier
+% customization) rather than running bash commands from the matlab terminal
+% how to run a named bash script without knowing the path to it or adding to bashrc? can't know a priori where
+% user might install the toolbox. can matlab find the file? or rely on user pathing to it?
+% find currently running file path, then navigate up to find host folder?
+% use matlab execution as default, allow input of file path to .sh to run that instead- and make example bash
+% script for IMOD use case?
 param.size = round(mod.box/param.pix);
 thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
 %reconstruct and rotate back into the proper space
@@ -236,13 +244,14 @@ for t=1:numel(param.tilt)
     convolved = zeros(size(vol));
     cv = convolved;
     tparam = param;
+    rad = helper_radiation(vol,param.pix,param.dose,param.raddamage,'byslice',0);
     for i=1:size(vol,3)
         adj = (tparam.pix*slabthick*(i-mid))/1e4*1e0; %convert from ang to um
         tparam.defocus = param.defocus+adj;
         %tparam.defocus
         tparam.tilt = 0;
         %[convolved(:,:,i), ctf, tparam] = helper_ctf(vol(:,:,i),tparam);
-        [convolved(:,:,i), ctf] = flatctf(vol(:,:,i),slabthick,tparam);
+        [convolved(:,:,i), ctf] = flatctf(rad(:,:,i),slabthick,tparam);
     end
     
     %[cv,ctf2] = flatctf(vol,slabthick,param);
