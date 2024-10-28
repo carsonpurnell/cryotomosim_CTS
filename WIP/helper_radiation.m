@@ -11,13 +11,10 @@ end
 rads = .005*rad*dose*pix^0; %arbitrary scalar for parameter values to map correctly to intensity
 
 % quantification from https://journals.iucr.org/s/issues/2011/03/00/xh5022/xh5022.pdf
-H = 8e2; % conversion constant, Kev to Gy (exact calculation?)
+H = 8e2; % conversion constant, Kev to Gy (find exact calculation?)
 % signal = ideal * exp(-log(2)*dose*A/H);
 
-% gaussian component
-% smoothing component - run on vol separately? no, would generate weirdness
-%f = 15/pix*rads; f = ceil(f)*2+1; %default 2*ceil(sigma*2)+1;
-loss = zeros(size(vol)); noise = loss; %nweighted = loss;
+loss = zeros(size(vol)); noise = loss;
 if opt.byslice
     for i=1:size(vol,3)
         sc = (i+0)/size(vol,3);
@@ -33,10 +30,8 @@ else
     decay = 1-(1-exp(-dose*rads*pix/H))/2;
     loss = imgaussfilt3(vol,rads,'FilterSize',f)*decay;
 end
-% loss: smoothing component of radiation damage
-% noise: gaussian component
 
-out = loss+noise;
+out = loss+noise; % loss = smoothing component, noise = gaussian component
 
 %{
 blurmap = imgaussfilt( max(tilt,[],'all')-tilt ); %2d blur each angle outside loop for speed
