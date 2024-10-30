@@ -19,7 +19,6 @@ arguments
     ang = []
 end
 
-%rax = randvec(row,col); %random vectors - finished or to cross with the center axis
 rax = randn(col,row); rax = (rax./vecnorm(rax))'; %random initial vectors
 if (isempty(ax) && isempty(ang)) || col~=3
     vec=rax; % if ax and ang are empty, return the random unconstrained vectors
@@ -42,10 +41,6 @@ else
         vec(i,:) = axrep(i,1:3)*R; %vector of rotated point away form cone center
     end
 end
-end
-
-function [vec] = randvec(row,col)
-vec = randn(col,row); vec = (vec./vecnorm(vec))'; % random uniform vectors on unit sphere
 end
 
 function t = rotmat(ax,rad)
