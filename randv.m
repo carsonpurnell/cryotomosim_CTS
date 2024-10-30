@@ -21,7 +21,7 @@ end
 
 %rax = randvec(row,col); %random vectors - finished or to cross with the center axis
 rax = randn(col,row); rax = (rax./vecnorm(rax))'; %random initial vectors
-if (isempty(ax) && isempty(ang)) %|| col~=3
+if (isempty(ax) && isempty(ang)) || col~=3
     vec=rax; % if ax and ang are empty, return the random unconstrained vectors
 else
     if isempty(ax), ax = randn(col,1); ax = (ax./vecnorm(ax))'; end %if no axis given, randomize one
