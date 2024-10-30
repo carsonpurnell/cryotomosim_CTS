@@ -1,4 +1,6 @@
 function [out,loss,noise] = helper_radiation(vol,pix,dose,rad,opt)
+% [out,loss,noise] = helper_radiation(vol,pix,dose,rad,opt)
+% simulates local radiation damage from low-dose electron beam exposure (no burning/bubbling/warping)
 
 arguments
     vol
@@ -8,17 +10,16 @@ arguments
     opt.byslice = 1
 end
 
-rads = .002*rad*dose*pix^0; %arbitrary scalar for parameter values to map correctly to intensity
+rads = .002*rad*dose*pix^0; % arbitrary scalar for parameter values to map correctly to intensity
 
 % quantification from https://journals.iucr.org/s/issues/2011/03/00/xh5022/xh5022.pdf
-H = 8e2; % conversion constant, Kev to Gy (find exact calculation?)
-% signal = ideal * exp(-log(2)*dose*A/H);
+H = 8e2; % conversion constant for electrons -  signalout = ideal * exp(-log(2)*dose*A/H);
 
 loss = zeros(size(vol)); noise = loss;
 if opt.byslice
     for i=1:size(vol,3)
-        sc = (i+0)/size(vol,3);
-        r = rads*sc; % 0 placeholder for pre-exposures?
+        sc = (i+1)/size(vol,3); % 1 placeholder for pre-exposures?
+        r = rads*sc; 
         f = ceil(10/pix+r*1)*2+1;
         noise(:,:,i) = r*pix*50*randn(size(vol,[1,2])); % gaussian component
         decay = 1-(1-exp(-dose*sc*pix/H))/2;
