@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [v0.6.4](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.4) - 2024-11-04 14:18:35
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix bad pdb2vol pathing ([31220f7](https://github.com/carsonpurnell/cryotomosim_CTS/commit/31220f7aea99cba3a907af2c3d3a983d1ca1d4c2))
+  - fix atomic-vol sim loading ([7256c8c](https://github.com/carsonpurnell/cryotomosim_CTS/commit/7256c8c5cab2e3fe0d3089584d99cf3d1f7ae127))
+
 ## [v0.6.3](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.3) - 2024-09-09 19:18:21
 
 Phase contrast imaging preliminary support
