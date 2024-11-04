@@ -9,8 +9,8 @@ arguments
     rad
     opt.byslice = 1
 end
-
-rads = .002*rad*dose*pix^0; % arbitrary scalar for parameter values to map correctly to intensity
+if rad==0; out=vol; loss=0; noise=0; return; end
+rads = .02*rad*dose*pix^0; % arbitrary scalar for parameter values to map correctly to intensity
 
 % quantification from https://journals.iucr.org/s/issues/2011/03/00/xh5022/xh5022.pdf
 H = 8e2; % conversion constant for electrons -  signalout = ideal * exp(-log(2)*dose*A/H);
@@ -20,16 +20,16 @@ if opt.byslice
     for i=1:size(vol,3)
         sc = (i+1)/size(vol,3); % 1 placeholder for pre-exposures?
         r = rads*sc; 
-        f = ceil(10/pix+r*1)*2+1;
-        noise(:,:,i) = r*pix*50*randn(size(vol,[1,2])); % gaussian component
+        f = ceil(10/pix+r/10)*2+1;
+        noise(:,:,i) = r*pix*5*randn(size(vol,[1,2])); % gaussian component
         decay = 1-(1-exp(-dose*sc*pix/H))/2;
-        loss(:,:,i) = imgaussfilt3(vol(:,:,i),r,'FilterSize',f)*decay;
+        loss(:,:,i) = imgaussfilt3(vol(:,:,i),r/10,'FilterSize',f)*decay;
     end
 else
-    f = ceil(10/pix+rads*1)*2+1;
-    noise = rads*pix*50*randn(size(vol)); % gaussian component
-    decay = 1-(1-exp(-dose*rads*pix/H))/2;
-    loss = imgaussfilt3(vol,rads,'FilterSize',f)*decay;
+    f = ceil(10/pix+rads/10)*2+1;
+    noise = rads*pix*5*randn(size(vol)); % gaussian component
+    decay = 1-(1-exp(-dose*rads/10*pix/H))/2;
+    loss = imgaussfilt3(vol,rads/10,'FilterSize',f)*decay;
 end
 
 out = loss+noise; % loss = smoothing component, noise = gaussian component
