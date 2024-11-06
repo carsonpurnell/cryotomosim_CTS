@@ -16,7 +16,7 @@ arguments
     pad = 10; %padding added to volume before any computations
 end
 if iscell(param), param = cts_param(param{:}); end %is this needed anymore?
-if param.ctfoverlap==0, convolved=input; ctf=0; return; end %if overlap==0, skip doing CTF
+if param.ctfoverlap==0||isempty(param.defocus), convolved=input; ctf=0; return; end % skip doing CTF
 
 fprintf('CTF parameters: pixels %g angstroms, %i KeV, aberration %g nm, sigma %g, defocus %g um',...
     param.pix, param.voltage, param.aberration, param.sigma, param.defocus)
