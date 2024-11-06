@@ -30,8 +30,10 @@ for ii=1:numel(layers)
 namelist = [layers{ii}(:).id]; %vector collection of all ids instead of the former double loop
 for i=1:numel(namelist)
     split.(namelist{i}) = zeros(size(inarray)); %initialize split models of target ids
+    list.(namelist{i}) = zeros(0,3); % initialize object list (for coordinates/orientations)
 end
 end
+
 
 ismem = 0;
 if numel(size(vesvec))==4 %setup membrane skeletons/vesicle side maps
@@ -247,6 +249,7 @@ for i=1:iters(ww)
                 if any(strcmp(fnflag(flags,{'complex','assembly'}),{'complex','assembly'}))
                     members = 1:numel(set(which).vol);
                     for t=members %rotate and place each component of complex
+                        list.(set(which).id{t})(end+1,:) = loc;
                         spinang = op{1}; theta = op{2}; rotax = op{3};
                         spin = imrotate3(set(which).vol{t},spinang,init);
                         rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
@@ -279,6 +282,7 @@ for i=1:iters(ww)
                 
                 if sub~=0
                     split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
+                    list.(set(which).id{sub})(end+1,:) = loc;
                 else
                     [split] = fnsplitplace(split,set(which).vol,set(which).id,flags,loc,{tform});
                 end
@@ -321,7 +325,7 @@ fprintf('\nPlaced %i particles, failed %i attempted placements, final density %g
 end
 %sliceViewer(diagout>0);
 %WriteMRC(diagout,10,'diagaccumarray.mrc');
-
+list
 outarray = zeros(size(inarray)); splitnames = fieldnames(split);
 for i=1:numel(splitnames)
     outarray = outarray+split.(splitnames{i});
