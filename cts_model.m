@@ -126,7 +126,7 @@ end
 %size(memskel)
 %histogram(memskel)
 %figure; sliceViewer(vesvol)
-[cts.model.targets, cts.splitmodel] = helper_randomfill(cts.vol+constraint,param.layers,param.iters,...
+[cts.model.targets, cts.splitmodel,cts.list] = helper_randomfill(cts.vol+constraint,param.layers,param.iters,...
     memvol,nvecs,memskel,vesvol,param.density,'graph',opt.graph); 
 cts.vol = max(cts.vol,cts.model.targets); %to avoid overlap intensity between transmem and vesicle
 cts.model.particles = cts.vol;
@@ -171,6 +171,15 @@ WriteMRC(cts.vol,pix,append(ident,opt.suffix,'.mrc'))
 outname = append(ident,opt.suffix,'.mat');
 save(outname,'cts','-v7.3')
 outfile = fullfile(getenv('HOME'),'tomosim',foldername,outname);
+f = fieldnames(cts.list);
+for i=1:numel(f)
+    coordmatrix = cts.list.(f{i});
+    if ~isempty(coordmatrix)
+        %head = ["row",'col','slice'];
+        %writematrix(head,append('zcoords_',f{i},'.csv')); % append doesn't work in 2019
+        writematrix(coordmatrix,append('zcoords_',f{i},'.csv'));
+    end
+end
 
 %output text file of input informations?
 cd(userpath)

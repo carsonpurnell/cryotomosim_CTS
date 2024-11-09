@@ -23,10 +23,9 @@ for i=1:numel(input)
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
 
-
 layers{1} = particles; fprintf('loaded %i structure files  ',numel(input));
 
-%% functionalized model gen part
+% functionalized model gen part
 %rng(7); 
 con = 1;
 boxsize = pix*box*1;
@@ -53,7 +52,7 @@ n = 100;
 n = param.iters(1);
 %profile on
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
-tic; [split,dyn,mu] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
+tic; [split,dyn,mu,list] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
 %profile viewer
 
 %% function for vol, atlas, and split generation + water solvation
@@ -83,7 +82,16 @@ dat.data = split;
 save(append(ident,opt.suffix,'.atom.mat'),'dat','-v7.3')
 cts.vol = vol+solv; cts.splitmodel = splitvol; cts.param.pix = pix;
 cts.model.particles = vol; cts.model.ice = solv;
+cts.list = list;
 save(append(ident,opt.suffix,'.mat'),'cts','-v7.3')
+
+f = fieldnames(cts.list);
+for i=1:numel(f)
+    coordmatrix = cts.list.(f{i});
+    if ~isempty(coordmatrix)
+        writematrix(coordmatrix,append('zcoords_',f{i},'.csv'));
+    end
+end
 %output text file of input informations?
 cd(userpath)
 

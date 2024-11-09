@@ -1,4 +1,4 @@
-function [outarray, split] = helper_randomfill(inarray,layers,iters,memvol,vesvec,memskel,vesvol,density,opt)
+function [outarray, split, list] = helper_randomfill(inarray,layers,iters,memvol,vesvec,memskel,vesvol,density,opt)
 %[outarray, split] = helper_randomfill(inarray,layers,iters,memvol,vesvec,memskel,vesvol,density,opt)
 %shared function for adding particles randomly, used for generating models and adding distractors
 arguments
@@ -179,12 +179,13 @@ for i=1:iters(ww)
         
         case 'cluster'
         sub = randi(numel(particle)); %get random selection from the group
-        [rot,~,loc,err] = testplace2(inarray,locmap,set(which).vol{sub},3);
+        [rot,~,loc,err,com] = testplace2(inarray,locmap,set(which).vol{sub},3);
         counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
         if err==0 %on success, place in splits and working array
             %counts.s=counts.s+1;
             [inarray] = helper_arrayinsert(inarray,rot,loc);
             split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
+            list.(set(which).id{sub}) = com;
             %generate list of random points near loc
             num = 12;
             r = randn(1,num).*mean(size(set(which).vol{sub}))/2+mean(size(set(which).vol{sub}));
@@ -249,7 +250,7 @@ for i=1:iters(ww)
                 if any(strcmp(fnflag(flags,{'complex','assembly'}),{'complex','assembly'}))
                     members = 1:numel(set(which).vol);
                     for t=members %rotate and place each component of complex
-                        list.(set(which).id{t})(end+1,:) = loc;
+                        list.(set(which).id{t})(end+1,:) = tloc;
                         spinang = op{1}; theta = op{2}; rotax = op{3};
                         spin = imrotate3(set(which).vol{t},spinang,init);
                         rot = imrotate3(spin,theta,[rotax(2),rotax(1),rotax(3)]);
@@ -274,7 +275,7 @@ for i=1:iters(ww)
                 sumvol = set(which).vol{sub};
             end
             
-            [rot,tform,loc,err] = testcyto(inarray,locmap,sumvol,4);
+            [rot,tform,loc,err,com] = testcyto(inarray,locmap,sumvol,4);
             counts.f = counts.f + err; counts.s = counts.s + abs(err-1);
             
             if err==0 %on success, place in splits and working array
@@ -282,9 +283,10 @@ for i=1:iters(ww)
                 
                 if sub~=0
                     split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
-                    list.(set(which).id{sub})(end+1,:) = loc;
+                    list.(set(which).id{sub})(end+1,:) = com;
                 else
                     [split] = fnsplitplace(split,set(which).vol,set(which).id,flags,loc,{tform});
+                    list.(set(which).id)(end+1,:) = com;
                 end
                 if ismem==1 && strcmp(set(which).type,'vesicle')
                     [memin] = helper_arrayinsert(memin,-rot,loc);
@@ -325,7 +327,7 @@ fprintf('\nPlaced %i particles, failed %i attempted placements, final density %g
 end
 %sliceViewer(diagout>0);
 %WriteMRC(diagout,10,'diagaccumarray.mrc');
-list
+%list % distract is empty for some reason? lucky all membrane run - add bundle/cluster/mem to list
 outarray = zeros(size(inarray)); splitnames = fieldnames(split);
 for i=1:numel(splitnames)
     outarray = outarray+split.(splitnames{i});
@@ -341,12 +343,12 @@ end
 %need to make this either fetch the flag, or test if the flag is present and return a logical
 
 %placement testing for cytosol proteins
-function [rot,tform,loc,err] = testcyto(inarray,locmap,particle,retry)
+function [rot,tform,loc,err,com] = testcyto(inarray,locmap,particle,retry)
 for retry=1:retry
     tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
     rot = imwarp(particle,tform); %generated rotated particle
-    loc = ctsutil('findloc',locmap);
-    loc = round(loc-size(rot)/2);
+    com = ctsutil('findloc',locmap);
+    loc = round(com-size(rot)/2);
     [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
     if err==0, break; end
 end
@@ -432,13 +434,13 @@ end
 
 %updated testplace subfunct, need renaming. old one still needed for radial/cluster old stuff
 %replace again to get flag system working efficiently and neatly
-function [rot,tform,loc,err] = testplace2(inarray,locmap,particle,retry)
+function [rot,tform,loc,err,com] = testplace2(inarray,locmap,particle,retry)
 for retry=1:retry
     tform = randomAffine3d('Rotation',[0 360]); %generate random rotation matrix
     rot = imwarp(particle,tform); %generated rotated particle
     %loc = round( rand(1,3).*size(inarray)-size(rot)/2 ); %randomly generate test position
-    loc = ctsutil('findloc',locmap);
-    loc = round(loc-size(rot)/2);
+    com = ctsutil('findloc',locmap);
+    loc = round(com-size(rot)/2);
     [inarray,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
     if err==0, break; end
 end

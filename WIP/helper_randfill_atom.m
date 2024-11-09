@@ -1,4 +1,4 @@
-function [split,dyn,mu] = helper_randfill_atom(layers,boxsize,niter,split,dx,dyn)
+function [split,dyn,mu,list] = helper_randfill_atom(layers,boxsize,niter,split,dx,dyn)
 if nargin<6
     dyn{1} = single(zeros(0,3)); dyn{2} = 0;
 end
@@ -24,6 +24,7 @@ namelist = [layers{i}.modelname]; %slower than cell, but more consistent
 for j=1:numel(namelist)
     if ~isfield(split,namelist{j})
         split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
+        list.(namelist{j}) = zeros(0,3);
     end
     if ~isfield(dx,namelist{j})
         dx.(namelist{j}) = size(split.(namelist{j}),1)+1;
@@ -46,9 +47,10 @@ for i=1:n
         tpts = sel.adat{sub};
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
-        [dyn] = dyncell(ovcheck,dyn); %.15
+        [dyn] = dyncell(ovcheck,dyn);
         mu = mu_build(ovcheck,muix,mu,'leafmax',leaf,'maxdepth',2);
-        [split,dx] = dynsplit(tpts,split,dx,sel.modelname{sub}); %3.6
+        [split,dx] = dynsplit(tpts,split,dx,sel.modelname{sub});
+        list.(sel.modelname{sub})(end+1,:) = loc;
         %{
         %[dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
         %[dyn{1},dyn{2}] = dyncat(dyn{1},dyn{2},ovcheck); %6s
