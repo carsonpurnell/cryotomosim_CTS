@@ -1,5 +1,5 @@
-function [vol,solv,atlas,splitvol,acount,split,dat] = cts_model_atomic(box,input,param,opt)
-% [vol,solv,atlas,splitvol,acount,split,dat] = cts_model_atomic(box,input,param,opt)
+function [vol,solv,atlas,splitvol,acount,split,dat,list] = cts_model_atomic(box,input,param,opt)
+% [vol,solv,atlas,splitvol,acount,split,dat,list] = cts_model_atomic(box,input,param,opt)
 % ex
 % [vol,solv,atlas] = cts_model_atomic([300,400,50],'gui',{8,'mem',1,'iters',400});
 %
