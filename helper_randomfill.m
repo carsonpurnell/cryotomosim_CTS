@@ -185,13 +185,13 @@ for i=1:iters(ww)
             %counts.s=counts.s+1;
             [inarray] = helper_arrayinsert(inarray,rot,loc);
             split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,loc);
-            list.(set(which).id{sub}) = com;
+            list.(set(which).id{sub})(end+1,:) = com;
             %generate list of random points near loc
             num = 12;
             r = randn(1,num).*mean(size(set(which).vol{sub}))/2+mean(size(set(which).vol{sub}));
             az = rand(1,num)*360; el = rand(1,num)*360;
             [x,y,z] = sph2cart(az,el,abs(r));
-            clusterpts = round([x;y;z])+loc';
+            clusterpts = round([x;y;z]')+loc;
             
             %loop through points and try to place them
             for j=1:size(clusterpts,2)
@@ -202,7 +202,9 @@ for i=1:iters(ww)
                 [inarray,errc] = helper_arrayinsert(inarray,rot,clusterpts(:,j),'nonoverlap'); %test place
                 if errc==0 %if nonoverlap record and add to split
                     counts.s=counts.s+1;
-                    split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,clusterpts(:,j));
+                    split.(set(which).id{sub}) = helper_arrayinsert(split.(set(which).id{sub}),rot,clusterpts(j,:));
+                    com = clusterpts(j,:)+round(size(set(which).vol{sub}));
+                    list.(set(which).id{sub})(end+1,:) = com;
                 end
             end
         end
@@ -351,7 +353,6 @@ f = (set.id);
 for i=1:numel(f)
     list.(set.id{i})(end+1,:) = com;
 end
-
 end
 
 %placement testing for cytosol proteins
