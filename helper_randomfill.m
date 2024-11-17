@@ -286,7 +286,8 @@ for i=1:iters(ww)
                     list.(set(which).id{sub})(end+1,:) = com;
                 else
                     [split] = fnsplitplace(split,set(which).vol,set(which).id,flags,loc,{tform});
-                    list.(set(which).id)(end+1,:) = com;
+                    list = fnlist(list,set(which),com);
+                    %list.(set(which).id)(end+1,:) = com;
                 end
                 if ismem==1 && strcmp(set(which).type,'vesicle')
                     [memin] = helper_arrayinsert(memin,-rot,loc);
@@ -335,12 +336,23 @@ end
 
 end
 
+
+% internal functions
+%
 function [flags] = fnflag(flags,set)
 hits = flags(matches(flags,set));
 hits{end+1} = 'NA'; %fill with string to avoid empty vector errors and make clear no flag found
 flags = hits{1};
 end
 %need to make this either fetch the flag, or test if the flag is present and return a logical
+
+function list = fnlist(list,set,com)
+f = (set.id);
+for i=1:numel(f)
+    list.(set.id{i})(end+1,:) = com;
+end
+
+end
 
 %placement testing for cytosol proteins
 function [rot,tform,loc,err,com] = testcyto(inarray,locmap,particle,retry)
