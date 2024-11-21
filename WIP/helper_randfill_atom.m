@@ -3,7 +3,7 @@ if nargin<6
     dyn{1} = single(zeros(0,3)); dyn{2} = 0;
 end
 leaf = 1e3;
-mu = mu_build(dyn{1},'leafmax',leaf,'maxdepth',2); %speed drops DRAMATICALLY at depth 3
+mu = mu_build(dyn{1},[0,0,0;boxsize],'leafmax',leaf,'maxdepth',2); %speed drops DRAMATICALLY at depth 3
 if nargin<4
     split = struct; %ixincat = 1; %dynpts = single(zeros(0,3));
 else
