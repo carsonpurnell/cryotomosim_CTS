@@ -10,6 +10,7 @@ arguments
     %pix = 10
     param = {10}
     opt.suffix = ''
+    opt.con = 1
 end
 
 if strcmp(input,'gui')
@@ -23,11 +24,11 @@ for i=1:numel(input)
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
 
-layers{1} = particles; fprintf('loaded %i structure files  ',numel(input));
+layers{1} = particles; fprintf('loaded %i structure files   \n',numel(input));
 
 % functionalized model gen part
 %rng(7); 
-con = 1;
+%con = 0;
 boxsize = pix*box*1;
 % need a working toggle to setup split/dyn without carbon or mem
 % do constraint first to prep dyn? would need to rejigger modelmem placement testing
@@ -43,7 +44,7 @@ tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize
 %dyn
 %dx
 
-if con==1
+if opt.con==1
     con = helper_atomcon(boxsize,pix,0,0); % pseudonatural ice border (wavy flat, no curvature)
     dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 end
