@@ -1,4 +1,4 @@
-function [vol,solv,atlas,splitvol,acount,split,dat,list] = cts_model_atomic(box,input,param,opt)
+function [vol,solv,atlas,splitvol,acount,split,dat,list,outfile] = cts_model_atomic(box,input,param,opt)
 % [vol,solv,atlas,splitvol,acount,split,dat,list] = cts_model_atomic(box,input,param,opt)
 % ex
 % [vol,solv,atlas] = cts_model_atomic([300,400,50],'gui',{8,'mem',1,'iters',400});
@@ -77,6 +77,7 @@ foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix),opt.suffix
 %move to output directory in user/tomosim
 cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
 mkdir(foldername); cd(foldername);
+
 WriteMRC(vol,pix,append(ident,opt.suffix,'.mrc'))
 dat.box = boxsize;
 dat.data = split;
@@ -84,7 +85,11 @@ save(append(ident,opt.suffix,'.atom.mat'),'dat','-v7.3')
 cts.vol = vol+solv; cts.splitmodel = splitvol; cts.param.pix = pix;
 cts.model.particles = vol; cts.model.ice = solv;
 cts.list = list;
-save(append(ident,opt.suffix,'.mat'),'cts','-v7.3')
+
+outname = append(ident,opt.suffix,'.mat');
+outfile = fullfile(getenv('HOME'),'tomosim',foldername,outname);
+save(outname,'cts','-v7.3')
+
 
 f = fieldnames(cts.list);
 for i=1:numel(f)
