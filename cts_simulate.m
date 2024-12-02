@@ -1,4 +1,4 @@
-function [detected, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC,param,opt)
+function [detected, conv, tiltseries, atlas, ctf, rec] = cts_simulate(sampleMRC,param,opt)
 %[detected, conv, tiltseries, atlas, ctf] = cts_simulate(sampleMRC, param, opt)
 %simulates tomographic data as if collected from a sample and reconstructs a tomogram
 %
@@ -129,7 +129,7 @@ else
 end
 
 %run the simulation itself within the subfunction. might extend 'real' to also 'ideal' later
-[detected, conv, tiltseries, ctf] = internal_sim(vol,opt.suffix,param,'real',opt.ctford,opt);
+[detected, conv, tiltseries, ctf, rec] = internal_sim(vol,opt.suffix,param,'real',opt.ctford,opt);
 
 %
 if isstruct(cts) %if a tomosim formatted .mat struct is selected, generate a particle atlas
@@ -141,7 +141,7 @@ cd(userpath) %return to the user directory
 end
 
 
-function [detected, convolved, tilt, ctf] = internal_sim(in,filename,param,type,order,opt)
+function [detected, convolved, tilt, ctf, rec] = internal_sim(in,filename,param,type,order,opt)
 pix = param.pix;
 
 base = append(filename,'.mrc'); 
@@ -224,5 +224,6 @@ if opt.norm==1
     normed = (vol-mean(vol,'all'))/std(vol,1,'all');
     WriteMRC(vol,head.pixA,append('5_recon',base),1);
 end
+[rec,~] = ReadMRC(append('5_recon',base));
 delete temp.mrc %remove temporary files after they are used for rotation
 end
