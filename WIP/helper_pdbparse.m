@@ -82,14 +82,16 @@ for i=1:numel(headstart)
     header = replace(header,{'_atom_site.',' '},{'',''}); %clean bad chars from headers
     model = text( headend(i)+1:loopend(1)-1 ); %pull model lines from after header to loop end
     
-    q = strrep(model,'" "','1'); %replace quoted spaces with 1 to fix blankspace errors
-    %tt = strsplit(q,{' '}) %needs char vector
-    tt = cellfun(@(x) strsplit(x, ' '), model, 'UniformOutput', false);
-    tt = vertcat(tt{:});
-    q = textscan([q{:}],'%s','Delimiter',' ','MultipleDelimsAsOne',1); %read strings into cells
+    try
+        q = strrep(model,'" "','1'); %replace quoted spaces with 1 to fix blankspace errors
+        q = textscan([q{:}],'%s','Delimiter',' ','MultipleDelimsAsOne',1); %read strings into cells
+        q = reshape(q{1},numel(header),[])'; %reshape cells to row per atom
+    catch
+        q = cellfun(@(x) strsplit(x, ' '), model, 'UniformOutput', false);
+        q = vertcat(q{:});
+    end
     
-    %q = reshape(q{1},numel(header),[])'; %reshape cells to row per atom
-    t = cell2table(tt,'VariableNames',header); %generate table from atoms using extracted headers
+    t = cell2table(q,'VariableNames',header); %generate table from atoms using extracted headers
     
     atoms = t.type_symbol; %re-extract atom ID and coordinates from the temporary table
     x = char(t.Cartn_x); y = char(t.Cartn_y); z = char(t.Cartn_z);
