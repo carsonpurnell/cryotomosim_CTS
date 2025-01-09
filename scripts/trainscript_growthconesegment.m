@@ -24,7 +24,7 @@ ptable = table; % initialize table of parameters, one row per run
 % modeling params
 ptable.pix(1:n) = 12+round(rand(n,1)*20)/10; %12-14 angstrom size/scale variation
 ptable.thick(1:n) = 40+round(20*rand(n,1)); % 40-60 pixel thickness for SNR/orientation variation
-ptable.iters(1:n) = 100+10*round(50*rand(n,1)); % 100-600 (increment 10) iterations
+ptable.iters(1:n) = 100+10*round(50*rand(n,1))*25; % 100-600 (increment 10) iterations
 ptable.mem(1:n) = randi(12,n,1); %1-12 membranes
 %randomized beads?
 
@@ -39,7 +39,7 @@ digits = numel(num2str(n));
 fspec = append('%0',num2str(digits),'i'); %formatspec for suffixes
 for i=1:n
     rng(randset+i);
-    vol = zeros([400,400,ptable.thick(i)]);
+    vol = zeros([800,800,ptable.thick(i)]);
     
     %distix = logical(randi(2,1,numel(distractors))-1);
     %if all(distix==false), distix(randi(numel(distix)))=1; end %ensure at least one distractor
