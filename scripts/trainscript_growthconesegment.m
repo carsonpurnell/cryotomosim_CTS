@@ -24,7 +24,7 @@ ptable = table; % initialize table of parameters, one row per run
 % modeling params
 ptable.pix(1:n) = 12+round(rand(n,1)*20)/10; %12-14 angstrom size/scale variation
 ptable.thick(1:n) = 40+round(20*rand(n,1)); % 40-60 pixel thickness for SNR/orientation variation
-ptable.iters(1:n) = 100+10*round(50*rand(n,1))*25; % 100-600 (increment 10) iterations
+ptable.iters(1:n) = 100+10*round(50*rand(n,1)); % 100-600 (increment 10) iterations
 ptable.mem(1:n) = randi(12,n,1); %1-12 membranes
 %randomized beads?
 
@@ -51,10 +51,10 @@ for i=1:n
     ptable.distractors(i) = join(string(dx));
     dis = distractors(dx);
     dparam = param_model(ptable.pix(i),'layers',dis);
-    modelparam = param_model(ptable.pix(i),'layers',targets,'iters',ptable.iters(i),...
+    modelparam = param_model(ptable.pix(i),'layers',targets,'iters',ptable.iters(i)*5,...
         'mem',ptable.mem(i),'beads',10);
     modelparam.layers{2} = dparam.layers{1}; %add distractors into layer
-    modelparam.iters(2) = modelparam.iters(1)*2; modelparam.density(2) = modelparam.density(1);
+    modelparam.iters(2) = modelparam.iters(1)*2*5; modelparam.density(2) = modelparam.density(1);
     % distractor iters too?
     
     suf = append('batch_',num2str(i,fspec));
