@@ -39,7 +39,7 @@ digits = numel(num2str(n));
 fspec = append('%0',num2str(digits),'i'); %formatspec for suffixes
 for i=1:n
     rng(randset+i);
-    vol = zeros([800,800,ptable.thick(i)]);
+    vol = zeros([400,400,ptable.thick(i)]);
     
     %distix = logical(randi(2,1,numel(distractors))-1);
     %if all(distix==false), distix(randi(numel(distix)))=1; end %ensure at least one distractor
@@ -51,10 +51,10 @@ for i=1:n
     ptable.distractors(i) = join(string(dx));
     dis = distractors(dx);
     dparam = param_model(ptable.pix(i),'layers',dis);
-    modelparam = param_model(ptable.pix(i),'layers',targets,'iters',ptable.iters(i)*5,...
+    modelparam = param_model(ptable.pix(i),'layers',targets,'iters',ptable.iters(i),...
         'mem',ptable.mem(i),'beads',10);
     modelparam.layers{2} = dparam.layers{1}; %add distractors into layer
-    modelparam.iters(2) = modelparam.iters(1)*2*5; modelparam.density(2) = modelparam.density(1);
+    modelparam.iters(2) = modelparam.iters(1)*2; modelparam.density(2) = modelparam.density(1);
     % distractor iters too?
     
     suf = append('batch_',num2str(i,fspec));
