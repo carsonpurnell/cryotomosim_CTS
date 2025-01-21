@@ -34,7 +34,7 @@ ptable.defocus(1:n) = -4-round(10*rand(n,1))/5; % -4 to -6 defocus
 
 % z thickness from thin plane to thick low SNR (don't have variable layer thickness yet though)
 % same density cap for all layers for simplicity
-
+%%
 digits = numel(num2str(n));
 fspec = append('%0',num2str(digits),'i'); %formatspec for suffixes
 for i=1:n
