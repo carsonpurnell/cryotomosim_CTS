@@ -96,8 +96,9 @@ for j=1:s
 end
 %need to compute spread via smoothing
 ex = pix/3;
+emsz
 %solv = (rand(emsz)-0.6)*1.5*pix^2+(pix^3)*1; %set initial solvent density
-solv = (rand(emsz)*0.5+ones(emsz)*0.75)*pix^3;
+solv = (rand(emsz,'single')*0.5+ones(emsz,'single')*0.75)*pix^3; % initial solvent density from mean 1
 %sliceViewer(solv)
 solv = imgaussfilt3(solv,0.5);
 
