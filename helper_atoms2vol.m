@@ -55,8 +55,8 @@ emsz = floor(sz/pix);
 
 %solv = (rand(emsz)-0.6)*1.5*pix^2+(pix^3); %set initial solvent density
 %solv = imgaussfilt3(solv,0.5); % smoother solvation test
-
-acount = zeros(emsz);
+solv = 0;
+acount = zeros(emsz,'single');
 sptmp = cell(1,s);
 for j=1:s
     
