@@ -52,13 +52,11 @@ wd = 6.022e23/18/(1e8)^3; %molecules of water per a^3 - ~1/30 for liquid water
 wvol = 32; %eyeballed volume of amorphous ice molecules in angstroms
 
 emsz = floor(sz/pix); 
-solv = (rand(emsz)-0.6)*1.5*pix^2+(pix^3); %set initial solvent density
-%sliceViewer(solv)
-solv = imgaussfilt3(solv,0.5); % smoother solvation test
-acount = zeros(emsz);
-%figure(); sliceViewer(solv);
-% need more random initial density - higher peaks, also smooth the data a bit for smoother density waves?
 
+%solv = (rand(emsz)-0.6)*1.5*pix^2+(pix^3); %set initial solvent density
+%solv = imgaussfilt3(solv,0.5); % smoother solvation test
+
+acount = zeros(emsz);
 sptmp = cell(1,s);
 for j=1:s
     
@@ -147,7 +145,7 @@ mag = single(mag);
 mag=mag(ixf); %out of memory error - problematic reuse of same array? is mag too high precision?
 tmpvol = accumarray(p,mag,emsz);
 acount = acount+accumarray(p,1,emsz)*avol;
-tmpsolv = (solv-acount);
+tmpsolv = solv;%-acount;
 end
 
 function [vl,solv] = internal_accum(p,mag,avol,emsz,solv)
