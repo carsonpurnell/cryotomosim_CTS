@@ -112,7 +112,7 @@ end
 %}
 tmp = cat(4,zeros(emsz),sptmp{:});
 %size(tmp)
-[~,atlas] = max(tmp,[],4); atlas = atlas-1;
+[~,atlas] = max(tmp,[],4); atlas = single(atlas-1);
 vol = sum(tmp,4);
 if iscell(names)
     for i=1:s
