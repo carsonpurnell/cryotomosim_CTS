@@ -99,7 +99,8 @@ acount = imgaussfilt3(acount,ex);
 solv = max(solv-acount,0)/wvol*h20; %compute waters in pixels from remaining volume
 
 tmp = cat(4,zeros(emsz,'single'),sptmp{:});
-[~,atlas] = max(tmp,[],4); atlas = single(atlas-1);
+[~,atlas] = max(tmp,[],4); atlas = atlas-1;
+atlas = single(atlas);
 vol = sum(tmp,4);
 if iscell(names)
     for i=1:s
