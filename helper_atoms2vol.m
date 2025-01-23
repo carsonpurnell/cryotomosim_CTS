@@ -44,7 +44,6 @@ elseif all(sz==[0,0,0]) %if box 0, keep the object centered in the volume
 elseif nargin<4 %box limit only, output corner starting at 0
     offset = [0,0,0];
 end
-%if size(pts,2)<4, pts(:,end+1)=1; end %intensity==1 if not given by 4th column
 % rough constants - need improved values, per-atom vol especially
 avol = 4/3*pi*(1.9^3); %eyeballed volume of the average organic atom (radii approx 1.8A)- get per-atom measure?
 h20 = 3.041/2; %computed scatter factor for H2O - /2 for similarity to vol and simulate defaults
@@ -92,26 +91,15 @@ for j=1:s
     %sliceViewer(solv-sl)
     %[a,b] = bounds(vl{1}-split,'all')
 end
-%need to compute spread via smoothing
-ex = pix/3;
-
 %solv = (rand(emsz)-0.6)*1.5*pix^2+(pix^3)*1; %set initial solvent density
-solv = (rand(emsz,'single')*0.5+ones(emsz,'single')*0.75)*pix^3; % initial solvent density from mean 1
-%sliceViewer(solv)
+solv = (rand(emsz,'single')*0.5+ones(emsz,'single')*0.75)*pix^3; % initial solvent density in A^3 per pix
 solv = imgaussfilt3(solv,0.5);
 
-%solv = imgaussfilt3(solv,ex);
+ex = pix/3;
 acount = imgaussfilt3(acount,ex);
 solv = max(solv-acount,0)/wvol*h20; %compute waters in pixels from remaining volume
-%{
-size(sptmp{1})
-size(sptmp)
-for i=1:numel(sptmp)
-    figure(); sliceViewer(sptmp{i});
-end
-%}
+
 tmp = cat(4,zeros(emsz),sptmp{:});
-%size(tmp)
 [~,atlas] = max(tmp,[],4); atlas = single(atlas-1);
 vol = sum(tmp,4);
 if iscell(names)
@@ -128,15 +116,13 @@ else
 end
 end
 
-
 function [tmpvol,tmpsolv,acount] = test_accumarray(p,mag,emsz,solv,avol,acount)
 if nargin<6, acount = zeros(emsz,'single'); end
 ixf = ones(size(mag),'single');
 for i=1:3
     ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %index points inside the box
     %p = p(ix,:); mag=mag(ix); %drop points outside the box
-    %ixf = ixf.*ix;
-    ixf = ixf & ix;
+    ixf = ixf & ix; %ixf = ixf.*ix;
     %fprintf('%i dropped \n',numel(ix)-sum(ix)) %diagnostic to check if any points eliminated
 end
 ixf = ixf>0;
