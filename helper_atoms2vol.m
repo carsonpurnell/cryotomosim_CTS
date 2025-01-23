@@ -30,7 +30,6 @@ if ~iscell(pts) && numel(size(pts))==2
     pts = {pts}; %convert single array to cell for ease of use
 end
 
-%t = 1; 
 s = numel(pts); %temp patch for old loop definition code and cell/array switcher
 
 if nargin<3 %no box inputs, output tight bounds
@@ -99,17 +98,17 @@ ex = pix/3;
 acount = imgaussfilt3(acount,ex);
 solv = max(solv-acount,0)/wvol*h20; %compute waters in pixels from remaining volume
 
-tmp = cat(4,zeros(emsz),sptmp{:});
+tmp = cat(4,zeros(emsz,'single'),sptmp{:});
 [~,atlas] = max(tmp,[],4); atlas = single(atlas-1);
 vol = sum(tmp,4);
 if iscell(names)
     for i=1:s
-        split.(names{i}) = tmp(:,:,:,i+1);
+        split.(names{i}) = sptmp{i};%tmp(:,:,:,i+1);
     end
 elseif s>0
     split = cell(1,s);
     for i=1:s
-        split{i} = tmp(:,:,:,i+1);
+        split{i} = sptmp{i};%tmp(:,:,:,i+1);
     end
 else
     split = 0;
