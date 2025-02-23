@@ -72,5 +72,7 @@ for i=1:n
         'raddamage',0,'tilt',-85:1:85,'ctfoverlap',2,'scatter',0);
     rng(randset+i);
     [det,~,~,~] = cts_simulate(outfile,simparam_quality,'suffix','sim_trainOUT');
+    % re-load recon for analysis, compute metrics like SSI between image pair?
+    % also reorganize outputs better - into a struct of some sort? or save the mrc and dump?
 end
 disp(ptable) % display table of parameters used
