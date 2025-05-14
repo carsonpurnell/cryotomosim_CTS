@@ -9,7 +9,7 @@ padding = [pval,pval]; %basic minor padding to cover edge rounding
 padding(axis) = round((box(axspec)+box(3))*mtilt)+pix*2; % huge padding to cover for tilting
 [x,y] = meshgrid(pix/padmult-padding(1):res:box(1)+padding(1),pix/padmult-padding(2):res:box(2)+padding(2));
 
-surfaces{1} = gensurf(x,y,box,pix,[0,1.2]); %generate each field of 3d points from xy coord grid
+surfaces{1} = gensurf(x,y,box,pix,sc); %generate each field of 3d points from xy coord grid
 surfaces{2} = gensurf(x,y,box,pix,-sc);
 end
 

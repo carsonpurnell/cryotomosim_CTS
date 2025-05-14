@@ -11,6 +11,7 @@ arguments
     param = {10}
     opt.suffix = ''
     opt.con = 1
+    opt.ermem = 0
 end
 
 if strcmp(input,'gui')
@@ -39,11 +40,16 @@ else
 end
 %memnum = 5;
 memnum = param.mem;
-tic; [splitin.lipid,kdcell,shapecell,dx.lipid,dyn] = modelmem(memnum,dyn,boxsize); toc;
+tic; 
+[splitin,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize,opt.ermem); 
+toc;
 %size(dyn)
 %dyn
 %dx
-
+%splitin has entries, but are all 0?!
+%[mi1,ma1] = bounds(splitin.lipid,1)
+%[mi2,ma2] = bounds(splitin.ERmem,1)
+%return 
 if opt.con==1
     con = helper_atomcon(boxsize,pix,0,0); % pseudonatural ice border (wavy flat, no curvature)
     dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
@@ -52,9 +58,11 @@ end
 n = 100;
 n = param.iters(1);
 %profile on
+
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 tic; [split,dyn,mu,list] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
 %profile viewer
+
 
 %% function for vol, atlas, and split generation + water solvation
 % preprune split to eliminate empty bins (membrane/carbon)
@@ -63,7 +71,9 @@ for i=1:numel(f)
     if size(split.(f{i}),1)==0
         split = rmfield(split,f{i});
     end
+    %[mi,ma] = bounds(split.(f{i}),1)
 end
+%split has stuff in it, despite not contributing to vol
 [vol,solv,atlas,splitvol,acount] = helper_atoms2vol(pix,split,boxsize);
 %sliceViewer(vol*1+solv);
 
@@ -126,7 +136,7 @@ function [dyn] = dyncell(addpts,dyn)
     dyn{2} = dyn{2}+l;
 end
 
-function [pts,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize)
+function [pts,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize,ermem)
 dyn = {dyn,size(dyn,1)}; %convert to dyncell
 pad = [0,0,0;boxsize];
 dyn{1} = [dyn{1};pad];
@@ -134,15 +144,21 @@ kdcell = []; shapecell = [];
 mu = mu_build(dyn{1},'leafmax',1e3,'maxdepth',2);
 
 %memparam = {zeros(3,2)};
-memparam = {[300,500;.4,.6;24,6],1};
+memparam = {[300,500;.4,.6;28,6],'lipid'}; %size, sp, thick?)
+lipid.(memparam{1,2}){1} = zeros(0,4); lipid.(memparam{1,2}){2} = 1;
+if ermem==1
+    memparam(2,:) = {[200,500;.1,.2;12,2],'ERmem'};
+    lipid.(memparam{2,2}){1} = zeros(0,4); lipid.(memparam{2,2}){2} = 1;
+end
 
 tol = 2; %tolerance for overlap testing
 retry = 5; %retry attempts per iteration
 count.s = 0; count.f = 0;
-lipid{1} = zeros(0,4); lipid{2} = 1;
+%lipid{1} = zeros(0,4); lipid{2} = 1;
 for i=1:memnum % simplified loop to add vesicles
+    mtype = randi(size(memparam,1));
     %[tpts,tperim] = gen_mem(300+randi(500),[],rand*0.6+0.4, 24+randi(6));%.3/.7 and 24/8
-    [tpts,tperim] = gen_mem(memparam{1,1});
+    [tpts,tperim] = gen_mem(memparam{mtype,1});
     
     [err,loc,tform,ovcheck,muix] = anyloc(boxsize,tperim,dyn,retry,tol,mu);
     %{
@@ -156,9 +172,10 @@ for i=1:memnum % simplified loop to add vesicles
     
     if err==0
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
+        %[miQ,maQ] = bounds(tpts,1) NOT full of zeros
         
         [dyn] = dyncell(ovcheck,dyn);
-        [lipid] = dyncell(tpts,lipid);
+        [lipid.(memparam{mtype,2})] = dyncell(tpts,lipid.(memparam{mtype,2}));
         mu = mu_build(ovcheck,muix,mu,'leafmax',1e3,'maxdepth',2);
         %[dyn{1},dyn{2}] = dyncat(dyn{1},dyn{2},ovcheck);
         
@@ -180,6 +197,23 @@ for i=1:memnum % simplified loop to add vesicles
     end
     
 end
-pts = lipid{1}(1:lipid{2}-1,:); dx = lipid{2};
+%lipid
+%[mi1,ma1] = bounds(lipid.lipid{1},1)
+%[mi2,ma2] = bounds(lipid.ERmem{1},1)
+for i=1:size(memparam,1)
+    tmp = lipid.(memparam{i,2}){2};
+    lipid.(memparam{i,2}) = lipid.(memparam{i,2}){1}(1:tmp-1,:);
+    %lipid.(memparam{i,2}){1}(tmp:end,:) = [];
+    %lipid.(memparam{i,2})(2) = [];
+    dx.(memparam{i,2}) = tmp;
+    %lipid.(memparam{i,2}){1}(1:lipid{2}-1,:);
+end
+%lipid
+%dx
+pts = lipid; % all vals reduced to 0 at this point
+%[mi3,ma3] = bounds(pts.lipid,1)
+%[mi4,ma4] = bounds(pts.ERmem,1)
+%pts = lipid{1}(1:lipid{2}-1,:); dx = lipid{2};
+%dx.lipid = lipid.lipid{2};
 fprintf('vesicles: placed %i, failed %i  ',count.s,count.f)
 end

@@ -46,12 +46,14 @@ if strcmp(param.tiltax,'X'), box=box([2,1,3]); end
 %if strcmp(param.tiltax,'Y'), axis=1; else axis=2; end
 axis = 1;
 axspec = zeros(1,3); axspec(1+rem(axis,2)) = 1;
-%axis = 1;
-sc = [2.0,1.2]; % [perlin magnitude, surface centering
-%rng(7)
-surfaces = helper_surf(box,param.pix,tiltangs,axis,sc);
-%histogram(surfaces{1}(:,3)); hold on
-%histogram(surfaces{2}(:,3));
+if param.mill>0
+    pm = 10+param.size(3)/15*0-1*param.pix/3;
+    surfaces = helper_surfmill(box,param.pix,tiltangs,axis,pm*param.mill);
+else
+    sc = [2.0,1.2]; % [perlin magnitude, surface centering
+    surfaces = helper_surf(box,param.pix,tiltangs,axis,sc);
+end
+%histogram(surfaces{1}(:,3)); hold on; histogram(surfaces{2}(:,3));
 [newpath,gridt] = helper_thickfromsurf(surfaces,box,param.pix,tiltangs,axspec); 
 %[a,b] = bounds(newpath,'all')
 %histogram(newpath)

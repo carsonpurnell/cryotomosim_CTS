@@ -1,18 +1,19 @@
 function [atoms,perim,vol,mesh,split] = gen_mem(sz,pix,sp,thick)
 
 arguments
-    sz
+    sz %weird scalar value for membrane size
     pix = []
-    sp = 0.6+rand*0.4
-    thick = 22+randi(6)
+    sp = 0.6+rand*0.4 %
+    thick = 20+randi(6) % thickness in angstroms (radius)   ? how much does head domain spread add?
 end
 vol = 0;
-if size(sz,1)>1
+if size(sz,1)>1 %obsolete? size is single scalar now
     thick = sz(3,1)+rand*sz(3,2);
     sp = sz(2,1)+rand*sz(2,2);
     sz = sz(1,1)+rand*sz(1,2);
 end
 
+%rework the initial functions to generate basic shape as the shell core, and a generic function for thickening
 switch 1%randi(2)
     case 1 %needs a bit more smoothing and less flat faces
         [sh] = blob(sz,sp); %connect and smooth scattered points
@@ -40,6 +41,7 @@ perim = [shell.Points;sh.Points]; %perimeter from shell and centre shape points
 ix = randi(size(pts,1),1,round(size(pts,1)/10)); % 10% of pts
 perim = [pts(ix,1:3);perim]; perim = unique(perim,'rows');
 
+split = 0;
 if ~isempty(pix)
     [vol] = helper_atoms2vol(pix,atoms);
     [~,~,~,split] = helper_atoms2vol(pix,{atoms(:,1:3),mesh}); % nonscaled version of vol {1} and shell {2}
@@ -107,11 +109,11 @@ shell = alphaShape(meshpts+vec,24);
 end
 
 function [pts,head,tail] = shell2pts(shell,atomfrac)
-surfvar = 10;
+surfvar = 13;
 %atomfrac = 2; %make operable? 4 super rough at higher pixel sizes, but 1 very slow for atomic gen
 
-tail = randtess(0.03/atomfrac,shell,'v'); % need better reference ratios
-head = randtess(20.0/atomfrac,shell,'s'); % need better shape? triangular distance distribution?
+tail = randtess(0.028/atomfrac,shell,'v'); % need better reference ratios
+head = randtess(25.0/atomfrac,shell,'s'); % need better shape? triangular distance distribution?
 
 vec = randn(size(head));
 %spd = rand(size(vec,1),1)*surfvar+0;

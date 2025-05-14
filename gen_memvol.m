@@ -44,11 +44,13 @@ vesvol = memvol; skel = vesvol;
 nvecs = zeros(size(memvol,1),size(memvol,2),size(memvol,3),3);
 label = 1;
 for i=1:num
+    %{
     if memtype==3
         gg = randi(2);
     else
         gg=memtype;
     end
+    %}
     tmpskel=0;
     switch 3%randi(2)
         case 1

@@ -48,6 +48,7 @@ arguments
     param.tilterr = 0; %0 no randomization, 1 range==tilt increment
     %separate or same use X/Y stage error during tilting?
     %tilt error at 1 might be excessive, has pretty signaificant impact on the noise
+    param.mill = 0;
 end
 
 if strcmp(guiinput,'gui') %basic GUI for manual input of values

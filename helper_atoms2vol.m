@@ -21,11 +21,13 @@ function [vol,solv,atlas,split,acount] = helper_atoms2vol(pix,pts,sz,offset)
 %else (bound not given or given empty) auto box, tight on all sides
 
 %break into subfunctions for speed? not everything needs to run through multiple inputs
+
 if isstruct(pts)
     names = fieldnames(pts); pts = struct2cell(pts); %convert to cell for easy looping
 else
     names = 0;
 end
+
 if ~iscell(pts) && numel(size(pts))==2
     pts = {pts}; %convert single array to cell for ease of use
 end
@@ -57,7 +59,6 @@ solv = 0;
 acount = zeros(emsz,'single');
 sptmp = cell(1,s);
 for j=1:s
-    
     p = single(pts{j});
     %{
     if t==1
@@ -67,14 +68,16 @@ for j=1:s
     end
     %}
     
-    if size(p,2)<4, p(:,4)=1; end %intensity==1 if not provided in 4th column
+    %size(p)
+    %[mi,ma] = bounds(p,1)
+    if size(p,2)<4, p(:,4)=1; disp('mag backstop'); end %intensity==1 if not provided in 4th column
     mag = p(:,4); p = p(:,1:3); p = round( (p-offset)/pix+0.5 );
     %p(:,1:3) = round((p(:,1:3)-offset)/pix+0.5); %very slow intermediate array assignments
     
     [sptmp{j},solv,acount] = test_accumarray(p,mag,emsz,solv,avol,acount);
     %[sptmp{j},solv2] = internal_accum(p,mag,avol,emsz,solv);
     %all(tmpvol==sptmp{j},'all')
-    
+    %figure(); sliceViewer(sptmp{j}); figure(); plot3p(p,'.'); axis equal
     %{
     for i=1:3
         ix = p(:,i) <= emsz(i) & p(:,i) >= 1; %get points inside the box

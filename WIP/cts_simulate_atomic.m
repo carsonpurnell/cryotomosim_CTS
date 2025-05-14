@@ -1,4 +1,4 @@
-function [dtilt,atlas,tilt,ideal] = cts_simulate_atomic(input,param,opt)
+function [vol,dtilt,atlas,tilt,ideal] = cts_simulate_atomic(input,param,opt)
 % dtilt = cts_simulate_atomic(input,param,opt)
 % simulate a tilteries and reconstruct from an atomic model. more accurate and slower than vol-based method.
 % ex
@@ -13,7 +13,7 @@ arguments
 end
 if iscell(param), param = param_simulate(param{:}); end
 if param.pix<0.5, error('inappropriate pixel size - check paramters'); end
-if opt.slice==0, opt.slice = param.pix*2; end
+if opt.slice==0, opt.slice = param.pix*3; end
 
 if strcmp(input,'gui') %load model via GUI or specific filename
     [input, path] = uigetfile({'*atom.mat'},'Select input MRC or generated ts.mat',getenv('HOME')); 
@@ -44,7 +44,7 @@ file = fopen('tiltanglesR.txt','w'); fprintf(file,'%i\n',param.tilt); fclose(fil
 mod.box = size(atlas)*param.pix;
 
 WriteMRC(rescale((vol+solv)*-1),param.pix,append('0_model',opt.suffix,'.mrc'));
-WriteMRC(atlas,param.pix,append('Atlas',opt.suffix,'.mrc'));
+WriteMRC(atlas,param.pix,append('Atlas',opt.suffix,'.mrc'),1);
 roinames = fieldnames(split); roinames = string(roinames); 
 file = fopen(append('Atlas',opt.suffix,'.txt'),'w'); 
 fprintf(file,'background\n'); fprintf(file,'%s\n',roinames); fclose(file);
@@ -53,7 +53,6 @@ fprintf(file,'background\n'); fprintf(file,'%s\n',roinames); fclose(file);
 
 prev = append('3_tilt',opt.suffix,'.mrc');
 WriteMRC(rescale(dtilt*-1),param.pix,prev);
-
 
 % recon block, should move out into a separate function, and rely on running bash scripts (easier
 % customization) rather than running bash commands from the matlab terminal
@@ -78,20 +77,22 @@ disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the comma
 base = append(opt.suffix,'.mrc');
 %cmd = append('trimvol -rx temp.mrc ',append('5_recon_rx',base)); %#ok<NASGU>
 %[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
-cmd = append('trimvol -mode 1 -yz temp.mrc ',append('5_recon',base)); %#ok<NASGU>
+cmd = append('trimvol -mode 2 -yz temp.mrc ',append('5_recon',base)); %#ok<NASGU>
 [~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 %cmd = append('clip flipz ',append('5_recon',base),' ',append('5_recon_flipz',base)); %#ok<NASGU>
 %[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 % rx is supposed to match yz direction, but is inverted
 % yz is almost matched to vol, might be ob1 in z direction.
 % flipz is identical to yz
+
+[vol,head] = ReadMRC(append('5_recon',base));
 if opt.norm ==1
-    [vol,head] = ReadMRC(append('5_recon',base));
     delete(append('5_recon',base));
     vol = single(vol);
     normed = (vol-mean(vol,'all'))/std(vol,1,'all');
-    WriteMRC(vol,head.pixA,append('5_recon',base),1);
+    WriteMRC(vol,head.pixA,append('5_recon',base),2);
 end
+
 delete temp.mrc
 cd(userpath)
 end
@@ -123,7 +124,7 @@ L = relativistic_electrons(V); %compute wavelength from voltage, correcting for 
 Ny = 1/(2*pix); %nyquist frequency for later use
 B = param.sigma*Ny; %envelope factor from nyquist frequency - also incorporates the MTF signal dropoff (approx)
 % make sigma param description more clear as the envelope factor
-q = 0.07; %amplitude contrast 7% is approx https://www.sciencedirect.com/science/article/pii/0304399188900034
+q = 0.00; %amplitude contrast 7% is approx https://www.sciencedirect.com/science/article/pii/0304399188900034
 %phi = param.phase;
 %envelope/amplitude still needs validation and corroboration to our real data
 
