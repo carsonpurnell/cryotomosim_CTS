@@ -28,10 +28,11 @@ end
 %alternative shape generators? cylinders, planes, sphere, stacks, double layers?
 %alt gen 3: curved spline of core points with varying radii for expansion - how to derive radii?
 
-[shell,mesh] = shape2shell(sh,thick); %shape central shell and dense mesh of that shell
+[shell,mesh] = shape2shell(sh,thick*0.9); %shape central shell and dense mesh of that shell
 % need to use mesh to generate dense mesh of vepts - all points works fo atomic, but may be slow
 
-[pts,head,tail] = shell2pts(shell,atomfrac); %need to use surface/interior for atomic density purposes
+surfvar = thick*0.2;
+[pts,head,tail] = shell2pts(shell,atomfrac,surfvar); %need to use surface/interior for atomic density purposes
 %better control over thickness and surface layer density - impacts layered CTF artifact a lot.
 %spread of surface density also impacts the apparent thickness of final membrane, need to account
 
@@ -44,7 +45,8 @@ perim = [pts(ix,1:3);perim]; perim = unique(perim,'rows');
 split = 0;
 if ~isempty(pix)
     [vol] = helper_atoms2vol(pix,atoms);
-    [~,~,~,split] = helper_atoms2vol(pix,{atoms(:,1:3),mesh}); % nonscaled version of vol {1} and shell {2}
+    [~,~,~,split] = helper_atoms2vol(pix,atoms(:,1:4));
+    %[~,~,~,split] = helper_atoms2vol(pix,{atoms(:,1:4),mesh}); % nonscaled version of vol {1} and shell {2}
 end
 
 
@@ -108,12 +110,12 @@ vec = randn(size(meshpts)); vec = thick*vec./vecnorm(vec,2,2);
 shell = alphaShape(meshpts+vec,24);
 end
 
-function [pts,head,tail] = shell2pts(shell,atomfrac)
-surfvar = 13;
+function [pts,head,tail] = shell2pts(shell,atomfrac,surfvar)
+%surfvar = 6; %12 looks pretty good - use portion of thickness instead?
 %atomfrac = 2; %make operable? 4 super rough at higher pixel sizes, but 1 very slow for atomic gen
 
 tail = randtess(0.028/atomfrac,shell,'v'); % need better reference ratios
-head = randtess(25.0/atomfrac,shell,'s'); % need better shape? triangular distance distribution?
+head = randtess(24.0/atomfrac,shell,'s'); % need better shape? triangular distance distribution?
 
 vec = randn(size(head));
 %spd = rand(size(vec,1),1)*surfvar+0;
