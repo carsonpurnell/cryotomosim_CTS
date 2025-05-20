@@ -44,8 +44,8 @@ perim = [pts(ix,1:3);perim]; perim = unique(perim,'rows');
 
 split = 0;
 if ~isempty(pix)
-    [vol] = helper_atoms2vol(pix,atoms);
-    [~,~,~,split] = helper_atoms2vol(pix,atoms(:,1:4));
+    %[vol] = helper_atoms2vol(pix,atoms);
+    [vol,~,~,split] = helper_atoms2vol(pix,atoms(:,1:4));
     %[~,~,~,split] = helper_atoms2vol(pix,{atoms(:,1:4),mesh}); % nonscaled version of vol {1} and shell {2}
 end
 
@@ -89,16 +89,16 @@ pts1 = unique(pts1,'rows'); %prune duplicates
 sh = alphaShape(pts1); sh.Alpha = criticalAlpha(sh,'one-region')+sz/2;
 end
 
-function ptsa = smiter(ptso,iter,nb)
-ptsa = zeros(size(ptso));
-for j=1:iter
-    [~,ix] = pdist2(ptso,ptso,'euclidean','Smallest',nb);
+function smpts = smiter(pts,iters,nearn)
+smpts = zeros(size(pts));
+for j=1:iters
+    [~,ix] = pdist2(pts,pts,'euclidean','Smallest',nearn);
     ix = ix(2:end,:);
     for i=1:size(ix,2)
-        mm = mean(ptso(ix(:,i),:));
-        ptsa(i,:) = mm;
+        mm = mean(pts(ix(:,i),:));
+        smpts(i,:) = mm;
     end
-    ptso = ptsa;
+    pts = smpts;
 end
 end
 
