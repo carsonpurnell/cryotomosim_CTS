@@ -40,9 +40,9 @@ switch op
             out{i} = padarray(out{i},max(round(difCOM*-1),0),'pre');
         end
     case 'edgeblank'
-        in([1:opt,end-opt:end],:,:) = 0;
-        in(:,[1:opt,end-opt:end],:) = 0;
-        in(:,:,[1:opt,end-opt:end]) = 0;
+        in([1:opt,end-opt+1:end],:,:) = 0;
+        in(:,[1:opt,end-opt+1:end],:) = 0;
+        in(:,:,[1:opt,end-opt+1:end]) = 0;
         out = in;
         
     case 'findloc'
