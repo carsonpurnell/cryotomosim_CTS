@@ -12,11 +12,22 @@ arguments
     opt.suffix = ''
     opt.con = 1
     opt.ermem = 0
+    opt.outdir = []
 end
 
 if strcmp(input,'gui')
     filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
     input = util_loadfiles(filter);
+end
+
+if strcmp(opt.outdir,'gui') % custom output locations
+    outdir = uigetdir(); cd(outdir)
+elseif isempty(opt.outdir)
+    outdir = fullfile(getenv('HOME'),'tomosim');
+    cd(getenv('HOME'));
+    if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
+else
+    outdir = opt.outdir; cd(outdir)
 end
 
 if iscell(param), param = param_model(param{:},'layers',input); end
@@ -85,7 +96,7 @@ if ~strncmp('_',opt.suffix,1), opt.suffix = append('_',opt.suffix); end
 foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix),opt.suffix); %combine info for folder name
 
 %move to output directory in user/tomosim
-cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
+%cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
 mkdir(foldername); cd(foldername);
 
 WriteMRC(vol,pix,append(ident,opt.suffix,'.mrc'))

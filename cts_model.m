@@ -32,13 +32,24 @@ arguments
     
     opt.suffix = ''
     opt.graph = 0
-    
+    opt.outdir = []
     %opt to save incremental models for each layer and component of model building?
     %save the splitmodels in another file to reduce bloat in cts?
 end
 if ~strncmp('_',opt.suffix,1), opt.suffix = append('_',opt.suffix); end
 if iscell(param), param = param_model(param{:}); end
 pix = param.pix;
+
+if strcmp(opt.outdir,'gui') % custom output locations
+    outdir = uigetdir(); cd(outdir)
+elseif isempty(opt.outdir)
+    outdir = fullfile(getenv('HOME'),'tomosim');
+    cd(getenv('HOME'));
+    if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
+else
+    outdir = opt.outdir; cd(outdir)
+end
+
 %{
 runtime = numel(vol)/60*1.2e-5; %for my laptop, doesn't really apply to anything else
 %need to compute by iterations too, vol alone not that relevant
@@ -165,7 +176,8 @@ foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix),opt.suffix
 %combine info for folder name
 
 %move to output directory in user/tomosim
-cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
+%cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
+
 mkdir(foldername); cd(foldername);
 WriteMRC(cts.vol,pix,append(ident,opt.suffix,'.mrc'))
 outname = append(ident,opt.suffix,'.mat');
