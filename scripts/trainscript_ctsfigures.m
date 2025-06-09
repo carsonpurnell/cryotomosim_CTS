@@ -11,8 +11,8 @@ targets = {'ribo__ribo__4ug0_4v6x.group.mat',... % two ribo variations
 %}
 targets = {'ribo__ribo__4ug0_4v6x.group.mat'}; % currently only using ribos for clean&fast testing
 
-%% SNR
-n = 3; % number of training samples, one extra will be created as independent test data
+%% SNR/dose
+n = 2; % number of training samples, one extra will be created as independent test data
 varname = 'dose'; % name of the simulation variable to modify
 variters = [10,25,75,100,200]; % values of the variable to iterate over for each sample
 pmod = param_model(pix,'layers',targets,'iters',500,'mem',0,'grid',0);
@@ -32,10 +32,44 @@ end
 
 
 %% defocus
+n = 2; % number of training samples, one extra will be created as independent test data
+varname = 'defocus'; % name of the simulation variable to modify
+variters = [-2,-3,-4,-5,-6]; % values of the variable to iterate over for each sample
+pmod = param_model(pix,'layers',targets,'iters',500,'mem',0,'grid',0);
+psim = param_simulate(); % currently all default values
 
+digits = numel(num2str(n)); fspec = append('%0',num2str(digits),'i'); % naming stuff
+for i=1:n+1
+    suf = append('var_',varname,'_',num2str(i,fspec));
+    [cts,outfile] = cts_model(zeros(sz),pmod,'suffix',suf);
+    
+    for j=1:numel(variters)
+        psim.(varname) = variters(j); % get iteration value for variable
+        sufsim = append('var_',varname,'_',string(variters(j)));
+        [~,~,~,atlas] = cts_simulate(outfile,psim,'suffix',sufsim);
+    end
+end
 
 %% pixel size
+n = 2; % number of training samples, one extra will be created as independent test data
+varname = 'pix'; % name of the simulation variable to modify
+variters = [8,10,12,14,16]; % values of the variable to iterate over for each sample
+pmod = param_model(pix,'layers',targets,'iters',500,'mem',0,'grid',0);
+psim = param_simulate(); % currently all default values
 
+digits = numel(num2str(n)); fspec = append('%0',num2str(digits),'i'); % naming stuff
+for i=1:n+1
+    suf = append('var_',varname,'_',num2str(i,fspec));
+    [cts,outfile] = cts_model_atomic(sz,targets,pmod,'suffix',suf); % need reframed params
+    
+    for j=1:numel(variters)
+        psim.(varname) = variters(j); % get iteration value for variable
+        sufsim = append('var_',varname,'_',string(variters(j)));
+        [~,~,~,atlas] = cts_simulate_atomic(outfile,psim,'suffix',sufsim);
+    end
+end
 
 
 %% density
+
+% more complicated, needs lots of models rather than simulation replicates
