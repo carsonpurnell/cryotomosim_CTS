@@ -34,7 +34,7 @@ end
 %% defocus
 n = 2; % number of training samples, one extra will be created as independent test data
 varname = 'defocus'; % name of the simulation variable to modify
-variters = [-2,-3,-4,-5,-6]; % values of the variable to iterate over for each sample
+variters = [-1,-3,-5,-7,-9]; % values of the variable to iterate over for each sample
 pmod = param_model(pix,'layers',targets,'iters',500,'mem',0,'grid',0);
 psim = param_simulate(); % currently all default values
 
