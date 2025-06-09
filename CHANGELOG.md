@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.6.5](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.5) - 2025-06-09 14:32:23+00:00
+
+Output can be directed to folders
+
 ## [v0.6.4](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.4) - 2024-11-04 14:18:35
 
 *No description*
