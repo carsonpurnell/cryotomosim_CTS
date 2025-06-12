@@ -13,7 +13,7 @@ targets = {'ribo__ribo__4ug0_4v6x.group.mat'}; % currently only using ribos for 
 %targets  1; % for using GUI to load a single layer instead
 
 %% SNR/dose
-n = 2; % number of training samples, one extra will be created as independent test data
+n = 3; % number of training samples, one extra will be created as independent test data
 varname = 'dose'; % name of the simulation variable to modify
 variters = [10,25,75,100,200]; % values of the variable to iterate over for each sample
 
@@ -34,7 +34,7 @@ end
 
 
 %% defocus
-n = 2; % number of training samples, one extra will be created as independent test data
+n = 3; % number of training samples, one extra will be created as independent test data
 varname = 'defocus'; % name of the simulation variable to modify
 variters = [-1,-3,-5,-7,-9]; % values of the variable to iterate over for each sample
 
@@ -54,9 +54,9 @@ for i=1:n+1
 end
 
 %% pixel size
-n = 2; % number of training samples, one extra will be created as independent test data
+n = 3; % number of training samples, one extra will be created as independent test data
 varname = 'pix'; % name of the simulation variable to modify
-variters = [8,10,12,14,16]; % values of the variable to iterate over for each sample
+variters = [4,7,10,13,16]; % values of the variable to iterate over for each sample
 
 pmod = param_model(pix,'layers',targets,'iters',500,'mem',0,'grid',0);
 psim = param_simulate(); % currently all default values
