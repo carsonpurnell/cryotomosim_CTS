@@ -22,6 +22,9 @@ else
     [path,input,ext] = fileparts(input); input = append(input,ext);
 end
 q = load(fullfile(path,input));
+%if isfield(q,'cts'); q=q.cts; end % wrong way to get around vol model data
+% [path,file,ext] = fileparts(outfile); outfile = fullfile(path,append(file,'.atom.mat')); % closer to right
+% way
 if ~isfield(q,'dat'), error('not a valid atomic model file'); end
 mod = q.dat; split = mod.data;
 
