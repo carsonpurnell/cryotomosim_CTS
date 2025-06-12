@@ -15,7 +15,7 @@ targets = {'ribo__ribo__4ug0_4v6x.group.mat'}; % currently only using ribos for 
 %% SNR/dose
 n = 3; % number of training samples, one extra will be created as independent test data
 varname = 'dose'; % name of the simulation variable to modify
-variters = [10,25,75,100,200]; % values of the variable to iterate over for each sample
+variters = [5,15,35,60,80,120]; % values of the variable to iterate over for each sample
 
 pmod = param_model(pix,'layers',targets,'iters',500,'mem',0,'grid',0);
 psim = param_simulate(); % currently all default values
