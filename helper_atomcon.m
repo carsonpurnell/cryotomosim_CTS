@@ -6,8 +6,8 @@ end
 sz = [max(box),max(box)]; 
 dl = 2;
 w = 1;
-ptsb = internal_gen_atomborder(sz,n/2,sc*1,pix*0.5)-[0,0,dl*randi(6)*w];
-ptst = internal_gen_atomborder(sz,n/2,sc*1,pix*0.5)+[0,0,dl*randi(6)*w+box(3)];
+ptsb = internal_gen_atomborder(sz,n/2,sc*1,pix*0.25)-[0,0,dl*randi(6)*w];
+ptst = internal_gen_atomborder(sz,n/2,sc*1,pix*0.25)+[0,0,dl*randi(6)*w+box(3)];
 pts = zeros(0,3);
 for i=1:4
     pts = [pts;ptsb-[0,0,dl*i]]; pts = [pts;ptst+[0,0,dl*i]];
