@@ -66,7 +66,7 @@ if opt.con==1
     dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 end
 
-n = 100;
+%n = 100;
 n = param.iters(1);
 %profile on
 
