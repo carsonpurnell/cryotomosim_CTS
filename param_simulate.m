@@ -91,11 +91,11 @@ end
 
 if numel(param.tilt)==3 %if 3 numbers are input try to resolve them as a vector
     tilt = param.tilt(1):param.tilt(2):param.tilt(3);
-    err = param.tilt(2)/2; %calculate the base error size
     if ~isempty(tilt), param.tilt=tilt; end
 end
 
 if param.tilterr~=0 %randomly generate angle errors and add to tiltangles
+    err = mean(diff(param.tilt))/2; %calculate the base error size
     err = (rand(1,numel(param.tilt))*2-1)*err;
     param.tilterr = err*param.tilterr;
     %param.tilt = param.tilt+param.tilterr; % keeping it separate, adding error only inside sim
