@@ -90,6 +90,10 @@ for i=1:numel(list)
     fprintf('read: %s ',filename)
     if iscellstr(list(i)) && ismember(ext,modelext)
         [tmp.vol,tmp.sumvol,names] = helper_pdb2vol(list{i},pixelsize,trim,centering,sv); 
+        
+        dat = helper_pdb2dat(list{i},pixelsize,trim,centering,sv); % hideous kludge
+        tmp.adat = dat.adat; tmp.perim = dat.perim; 
+        tmp.modelname = dat.modelname;
         %read pdb and construct as volume at pixel size
         %pdb names read in as 'NA', cif are in column cell array of strings
         %fprintf('generating at %g A ',pixelsize)

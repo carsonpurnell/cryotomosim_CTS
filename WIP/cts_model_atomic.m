@@ -32,11 +32,12 @@ end
 
 if iscell(param), param = param_model(param{:},'layers',input); end
 pix = param.pix;
+if input>0
 for i=1:numel(input)
     particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
 end
-
 layers{1} = particles; fprintf('loaded %i structure files   \n',numel(input));
+end
 
 % functionalized model gen part
 %rng(7); 
@@ -67,11 +68,14 @@ if opt.con==1
 end
 
 %n = 100;
-n = param.iters(1);
+n = param.iters;
 %profile on
 
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
-tic; [split,dyn,mu,list] = helper_randfill_atom(layers,boxsize,n,splitin,dx,dyn); toc
+%for i=1:numel(param.layers)
+tic; [split,dyn,mu,list] = helper_randfill_atom(param.layers,boxsize,n,splitin,dx,dyn); toc
+% list will be broken
+%end
 %profile viewer
 
 

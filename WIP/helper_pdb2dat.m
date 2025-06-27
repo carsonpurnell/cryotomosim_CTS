@@ -42,10 +42,13 @@ switch ext %parse structure files depending on filetype
         data = internal_pdbparse(file);
 end
 %}
-%[vol,sumvol,names] = internal_volbuild(data,pix,trim,centering);
+%{
 names = '';
 sumvol = 0;
 vol = {0};
+%}
+%[vol,sumvol,names] = internal_volbuild(data,pix,trim,centering);
+
 %disp(filename)
 id = strsplit(filename,{'__','.'});
 
