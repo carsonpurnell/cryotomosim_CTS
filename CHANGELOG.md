@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [v0.6.7](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.7) - 2025-06-27 14:45:52+00:00
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix failure to add random tilterr ([6eef45b](https://github.com/carsonpurnell/cryotomosim_CTS/commit/6eef45b50151e8229cd509e738531417f8ad8ce2))
+
 ## [v0.6.6](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.6) - 2025-06-12 18:14:47+00:00
 
 *No description*
