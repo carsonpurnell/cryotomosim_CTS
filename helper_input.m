@@ -124,6 +124,12 @@ for i=1:numel(list)
         names{j} = strrep(names{j},'-','_');
     end
     names = reshape(names,1,[]); %reshape to single row to unbreak concatenation in randomfill
+    for j=1:numel(tmp.modelname)
+        if ~isempty(sscanf(tmp.modelname{j},'%f')) %detect id that do not start with a letter
+            tmp.modelname{j} = strcat('fix_',tmp.modelname{j}); %append a letter when necessary
+        end
+        tmp.modelname{j} = strrep(tmp.modelname{j},'-','_');
+    end
     
     % change distractors to same type so they all occupy the same atlas label
     if contains(filename,'distract','IgnoreCase',true) 
