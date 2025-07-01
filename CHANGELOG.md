@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.6.8](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.8) - 2025-07-01 17:08:05+00:00
+
+fix for .cif model names with leading numbers (i.e. basically all of them)
+
 ## [v0.6.7](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.7) - 2025-06-27 14:45:52+00:00
 
 *No description*
