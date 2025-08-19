@@ -462,15 +462,31 @@ end
 %need to update radial to start normally, then only call the subfunct for the radials
 %radial internal func
 function [inarray,split,counts] = radialfill(inarray,bundle,n,split,counts)
-which = randi(numel(bundle.vol));
+% need flag to place all parts of a complex instead of each model on its own
+if any(ismember(bundle.flags,'complex'))
+    plex=1; 
+    [primary,tform,init,err] = testplace(inarray,bundle.sumvol,4);
+else
+    plex=0;
+    which = randi(numel(bundle.vol));
+    [primary,tform,init,err] = testplace(inarray,bundle.vol{which},4);
+end
 
+%which = randi(numel(bundle.vol));
 %replacement for redundant initial test code, using 4 tries (might need more to balance out bundles)
-[primary,tform,init,err] = testplace(inarray,bundle.vol{which},4);
+%[primary,tform,init,err] = testplace(inarray,bundle.vol{which},4);
 
 if err==0
     counts.s=counts.s+1;
     [inarray] = helper_arrayinsert(inarray,primary,init);
-    split.(bundle.id{which}) = helper_arrayinsert(split.(bundle.id{which}),primary,init);
+    if plex==1
+        for p=1:numel(bundle.vol)
+            tmp = imwarp(bundle.vol{p},tform);
+            split.(bundle.id{p}) = helper_arrayinsert(split.(bundle.id{p}),tmp,init);
+        end
+    else
+        split.(bundle.id{which}) = helper_arrayinsert(split.(bundle.id{which}),primary,init);
+    end
 elseif err==1
     counts.f=counts.f+1;
 end
@@ -492,13 +508,22 @@ for i=1:numel(bundle.vol)
     props = regionprops3(imbinarize(rescale(bundle.vol{i})),'PrincipalAxisLength');
     rs(i) = sum(props.PrincipalAxisLength(2:3))/4; %current obj radius, other half of radial distance
 end
+if plex ==1
+    rs(1:numel(rs)) = ri;
+end
 
 initcenter = size(primary)/2+init;
 cum = 0; r = 0;
 for i=1:n
     which = randi(numel(bundle.vol)); %randomize index of the bundle member to place
-    sec = bundle.vol{which}; %extract the selected volume
-    rot = imrotate3(sec,randi(360),vec); %randomly rotate around its axis for variability
+    if plex==1
+        sec = bundle.sumvol;
+    else
+        sec = bundle.vol{which};
+    end
+    %extract the selected volume
+    rotang = randi(360);
+    rot = imrotate3(sec,rotang,vec); %randomly rotate around its axis for variability
     
     theta = rand*2*pi; %random points for variety
     rad = (r+ri+rs(which)); %get radial distance for the attempt from component radii and accumulated disp
@@ -510,7 +535,14 @@ for i=1:n
     [~,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
     if err==0
         [inarray] = helper_arrayinsert(inarray,rot,loc);
-        split.(bundle.id{which}) = helper_arrayinsert(split.(bundle.id{which}),rot,loc);
+        if plex==1
+            for j=1:numel(bundle.vol)
+                rot = imrotate3(bundle.vol{j},rotang,vec);
+                split.(bundle.id{j}) = helper_arrayinsert(split.(bundle.id{j}),rot,loc);
+            end
+        else
+            split.(bundle.id{which}) = helper_arrayinsert(split.(bundle.id{which}),rot,loc);
+        end
         cum=0; counts.s=counts.s+1;
     elseif cum>(n/2-1)
         break
