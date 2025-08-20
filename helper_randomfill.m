@@ -466,6 +466,7 @@ function [inarray,split,counts] = radialfill(inarray,bundle,n,split,counts)
 if any(ismember(bundle.flags,'complex'))
     plex=1; 
     [primary,tform,init,err] = testplace(inarray,bundle.sumvol,4);
+    %n=round(n*1.5+1); % increase bundle size deprec
 else
     plex=0;
     which = randi(numel(bundle.vol));
@@ -509,12 +510,15 @@ for i=1:numel(bundle.vol)
     rs(i) = sum(props.PrincipalAxisLength(2:3))/4; %current obj radius, other half of radial distance
 end
 if plex ==1
+    bundle.sumvol = imwarp(bundle.sumvol,tform);
     rs(1:numel(rs)) = ri;
 end
 
 initcenter = size(primary)/2+init;
 cum = 0; r = 0;
+%fprintf('\n')
 for i=1:n
+    %fprintf('%i,',i)
     which = randi(numel(bundle.vol)); %randomize index of the bundle member to place
     if plex==1
         sec = bundle.sumvol;
@@ -533,20 +537,30 @@ for i=1:n
     
     %[inarray,err] = helper_arrayinsert(inarray,rot,loc,'nonoverlap');
     [~,err] = helper_arrayinsert(inarray,rot,loc,'overlaptest');
+    %fprintf('%i, %g\n',err,r)
+    %err = 0; % force placements
     if err==0
+        %fprintf('1')
         [inarray] = helper_arrayinsert(inarray,rot,loc);
         if plex==1
             for j=1:numel(bundle.vol)
+                %disp(sum(split.(bundle.id{j}),'all'))
+                %fprintf('\n')
                 rot = imrotate3(bundle.vol{j},rotang,vec);
                 split.(bundle.id{j}) = helper_arrayinsert(split.(bundle.id{j}),rot,loc);
+                %disp('a')
+                %disp(sum(split.(bundle.id{j}),'all'))
             end
+            %disp('b')
         else
             split.(bundle.id{which}) = helper_arrayinsert(split.(bundle.id{which}),rot,loc);
         end
         cum=0; counts.s=counts.s+1;
     elseif cum>(n/2-1)
+        %fprintf('2')
         break
     else
+        %fprintf('0')
         cum = cum+1; r=r+(rs(which)+ri)*cum/20; counts.f=counts.f+1;
     end
     
