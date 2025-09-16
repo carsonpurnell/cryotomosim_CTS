@@ -31,6 +31,7 @@ else
 end
 
 if iscell(param), param = param_model(param{:},'layers',input); end
+param
 pix = param.pix;
 %if input>0
 for i=1:numel(input)
