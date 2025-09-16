@@ -1,4 +1,4 @@
-function [vol,solv,atlas,splitvol,acount,split,dat,list,outfile] = cts_model_atomic(box,input,param,opt)
+function [cts,vol,solv,atlas,splitvol,acount,split,dat,list,outfile] = cts_model_atomic(box,input,param,opt)
 % [vol,solv,atlas,splitvol,acount,split,dat,list] = cts_model_atomic(box,input,param,opt)
 % ex
 % [vol,solv,atlas] = cts_model_atomic([300,400,50],'gui',{8,'mem',1,'iters',400});
@@ -6,7 +6,7 @@ function [vol,solv,atlas,splitvol,acount,split,dat,list,outfile] = cts_model_ato
 
 arguments
     box
-    input = 'gui'
+    input = 'gui' %DEPRECATED
     %pix = 10
     param = {10}
     opt.suffix = ''
@@ -14,11 +14,12 @@ arguments
     opt.ermem = 0
     opt.outdir = []
 end
-
+%{
 if strcmp(input,'gui')
     filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
     input = util_loadfiles(filter);
 end
+%}
 
 if strcmp(opt.outdir,'gui') % custom output locations
     outdir = uigetdir(); cd(outdir)
@@ -30,15 +31,20 @@ else
     outdir = opt.outdir; cd(outdir)
 end
 
-if iscell(param), param = param_model(param{:},'layers',input); end
-param
+if iscell(param), param = param_model(param{:}); end
 pix = param.pix;
-%if input>0
-for i=1:numel(input)
-    particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
-end
-layers{1} = particles; fprintf('loaded %i structure files   \n',numel(input));
+%{
+%if numel(param.layers)>0
+    for i=1:numel(param.layers)
+        filter = '*.pdb;*.pdb1;*.mrc;*.cif;*.mmcif;*.mat';
+        input = util_loadfiles(filter);
+        particles(i) = helper_pdb2dat(input,pix,2,0,0);
+    end
 %end
+layers{1} = particles; 
+%}
+fprintf('loaded %i layers of particles  \n',numel(param.layers));
+
 
 % functionalized model gen part 
 %con = 0;
@@ -110,6 +116,7 @@ save(append(ident,opt.suffix,'.atom.mat'),'dat','-v7.3')
 cts.vol = vol+solv; cts.splitmodel = splitvol; cts.param.pix = pix;
 cts.model.particles = vol; cts.model.ice = solv;
 cts.list = list;
+cts.param = param;
 
 outname = append(ident,opt.suffix,'.mat');
 outfile = fullfile(getenv('HOME'),'tomosim',foldername,outname);
