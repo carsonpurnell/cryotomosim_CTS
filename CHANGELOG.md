@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [v0.6.9](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.9) - 2025-09-16 19:34:22+00:00
+
+*No description*
+
+### Bug Fixes
+
+- general:
+  - fix input discrepancy in atomic model ([f2e40fc](https://github.com/carsonpurnell/cryotomosim_CTS/commit/f2e40fc35ff90b35eeada2715a99fede0ca83f89))
+  - fix complexed bundles being far too sparse ([57724b1](https://github.com/carsonpurnell/cryotomosim_CTS/commit/57724b1cdb5043c056653becd0bf65b46744e0ba))
+
 ## [v0.6.8](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.8) - 2025-07-01 17:08:05+00:00
 
 fix for .cif model names with leading numbers (i.e. basically all of them)
