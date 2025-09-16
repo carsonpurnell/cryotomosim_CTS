@@ -32,12 +32,13 @@ end
 
 if iscell(param), param = param_model(param{:},'layers',input); end
 pix = param.pix;
-if input>0
-for i=1:numel(input)
-    particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
-end
-layers{1} = particles; fprintf('loaded %i structure files   \n',numel(input));
-end
+input
+%if input>0
+    for i=1:numel(input)
+        particles(i) = helper_pdb2dat(input{i},pix,2,0,0);
+    end
+    layers{1} = particles; fprintf('loaded %i structure files   \n',numel(input));
+%end
 
 % functionalized model gen part
 %rng(7); 
