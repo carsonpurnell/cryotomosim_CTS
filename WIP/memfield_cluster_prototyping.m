@@ -5,8 +5,8 @@ box = sz*pix;
 
 % global membrane parameters
 frac = -1;%.3; % fallback ~.1 per membrane
-num = 3:8; % default 4-ish?    % change randomizer to be in the blob retension step instead of seed count?
-memsz = 1.0;
+num = 1:12; % default 4-ish?    % change randomizer to be in the blob retension step instead of seed count?
+memsz = 1;
 
 %sphmult = 0.9; % make per-mem, and not used by voronoi for iters?
 %szvar = 1; % multiplier to membrane size variation, should be membrane data, need to remove from voronoi step
@@ -14,8 +14,8 @@ thresh = 0.1; % multiplier to volume threshold (frac of mean) for inclusion
 %thickvar = 3; % absolute variation in angstroms % should be part of the membrane data, not global
 
 % individual mem params
-mdict(1) = struct('class','vesicle','thick',28,'thickvar',4,'size',0.8,'sphericity',0.9);
-mdict(2) = struct('class','er','thick',14,'thickvar',3,'size',0.6,'sphericity',0.2);
+mdict(1) = struct('class','vesicle','thick',28,'thickvar',6,'size',1,'sphericity',0.9);
+%mdict(2) = struct('class','er','thick',14,'thickvar',4,'size',0.6,'sphericity',0.2);
 %mdict(3) = struct('class','membrane','thick',32,'thickvar',4,'size',2,'sphericity',0.1);
 %mdict(4) = struct('class','mito','thick',35,'thickvar',3,'size',3,'sphericity',0.8);
 %cdict = {mdict(:).class}; % lookup from class name to index
@@ -24,7 +24,7 @@ mdict(2) = struct('class','er','thick',14,'thickvar',3,'size',0.6,'sphericity',0
 
 % derived vars
 % also have an auto calc fallback for not using frac? 10% per vesicle?
-if numel(num)>1, num=randi(num(2)-num(1)+1)+num(1)-1; end
+if numel(num)>1, num=randi(num(end)-num(1)+1)+num(1)-1; end
 % make an easier vector expansion randi selector? x:y randi(numel(num)) sort of deal?
 if frac<0, frac = min(sqrt(num/10)/2,1); end % fallback computed fraction
 seeds = round(num/frac)+0; % number of seeds needed for given membrane number and coverage ratio
