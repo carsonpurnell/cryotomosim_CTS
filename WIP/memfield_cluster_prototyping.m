@@ -24,9 +24,9 @@ mdict(1) = struct('class','vesicle','thick',28,'thickvar',6,'size',1,'sphericity
 
 % derived vars
 % also have an auto calc fallback for not using frac? 10% per vesicle?
-if numel(num)>1, num=randi(num(end)-num(1)+1)+num(1)-1; end
+if numel(num)>1, num=randi(num(end)-num(1)+1)+num(1)-1; end % target range calc
 % make an easier vector expansion randi selector? x:y randi(numel(num)) sort of deal?
-if frac<0, frac = min(sqrt(num/10)/2,1); end % fallback computed fraction
+if frac<0, frac = min(sqrt(num/10)/2,1); end % fallback computed fraction of vol
 seeds = round(num/frac)+0; % number of seeds needed for given membrane number and coverage ratio
 %szmult = (frac+10*(frac/num)-1/num)*memsz; % probably also needs to be a per-membrane instead of global var
 
@@ -574,15 +574,14 @@ mesh = randtess(0.2,shape,'s'); % might need raised (higher resolution?) if hole
 vec = randn(size(mesh)); vec = 0.9*thick*vec./vecnorm(vec,2,2);
 shell = alphaShape(mesh+vec,30+thick*2); % hopefully works across pixel/membrane sizes
 
-tail = randtess(0.014/atomfrac,shell,'v'); % need better reference ratios
-head = randtess(12.0/atomfrac,shell,'s'); % head domain layers across shell
+tail = randtess(0.013/atomfrac,shell,'v'); % need better reference ratios
+head = randtess(12.5/atomfrac,shell,'s'); % head domain layers across shell
 
-vec = randn(size(head)); % random displacement directions
+vec = randn(size(head)); % random displacement directions for head density
 spd = (rand(size(vec,1),1)-rand(size(vec,1),1))*(thick*0.2); % triangular random displacement distances
 vec = vec./vecnorm(vec,2,2).*spd; % displacement vectors
 head=head+vec; atoms = [head;tail];
 atoms(:,4) = 6.0/1 *atomfrac; % magnitude of pseudoatoms
-    
 end
 
 function [cen,pts] = voronoirelax(pts,cen,iters,weight)
@@ -601,15 +600,14 @@ for j=1:iters
 end
 end
 
-function nvecs = shapenorm(pts,sh)
-%pts = sh.Points;
+function nvecs = shapenorm(pts,sh) % compute normal vectors from shape core mesh
 [~,ix] = pdist2(pts,pts,'squaredeuclidean','Smallest',4); % nearest n pts for speed in fewer iters
 
 p1 = pts(ix(2,:),:); % hardpoints for plane/normal vector
 p2 = pts(ix(3,:),:);
 p3 = pts(ix(4,:),:);
-ntmp = cross(p1-p3,p2-p3);
-nvecs = ntmp./vecnorm(ntmp,2,2);
+ntmp = cross(p1-p3,p2-p3); % vectors normal to local facet triangle
+nvecs = ntmp./vecnorm(ntmp,2,2); % normalize vectors to unit length
 in = inShape(sh,pts+nvecs*5); %test if pts inside shape
 nvecs(in,:) = nvecs(in,:)*-1; % invert pts inside the shape to make all point outward from surface
 end
