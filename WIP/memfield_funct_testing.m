@@ -106,6 +106,7 @@ for i=1:seeds
     minit{i} = pf(ixp,1:3);
     v(i) = volume(alphaShape(minit{i})); % measure volume of local blob
 end
+%blobtable.vol = v';
 
 
 %% convert blobs into membrane hulls and mesh out densities
@@ -119,14 +120,9 @@ for i=runs
     msel = blobtable.classindex(i);
     id = mdict(msel).class;
     thick = mdict(msel).thick+(rand-rand)*mdict(msel).thickvar;
-    %thick = mdat{msel,1}+(rand-rand)*mdat{msel,3};
-    %id = mdat{msel,2};
     
     qq = vertcat(minit{[1:i-1,1+i:end]}); % scrape all other points (faster if minit itself pruned first)
     [d] = pdist2(qq,minit{i},'euclidean','smallest',1); % detect pts in cell close to pts of other cells
-    %[d2] = pdist2(qq,minit{i}); %slowest
-    %[d,ix] = pdist2(minit{i},qq,'euclidean','smallest',1);
-    %[d2] = pdist2(minit{i},qq);
     cellpts = (d>(thick*1.6+45)); %remove pts too close to other cells - not great, common edge clipping
     % use a larger distance for membranes marked for proteins?
     % need larger retreat with weighted cells since things are more squished
