@@ -20,7 +20,6 @@ mdict(1) = struct('class','vesicle','thick',28,'thickvar',6,'size',1,'sphericity
 %mdict(4) = struct('class','mito','thick',35,'thickvar',3,'size',3,'sphericity',0.8);
 %cdict = {mdict(:).class}; % lookup from class name to index
 % make a fixed dict and use a selector function to grab the target ones?
-%mdat = {28,'vesicle',4;14,'er',3}; % thickness/label/thickvar in angstroms
 
 % derived vars
 % also have an auto calc fallback for not using frac? 10% per vesicle?
