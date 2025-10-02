@@ -61,15 +61,12 @@ pf(:,5) = 0;
 
 
 %% seed growing
-%basedist = 35;  % current sphmult badly implemented, large size differences & relatively low impact
 iters = 4;
 minit = cell(1,seeds); v = zeros(1,seeds);
 for i=1:seeds
     for j=1:iters
-        %tmpdist = basedist*seed{i,1};
-        tmpdist = 35*memsz*blobtable.szmult(i); 
+        tmpdist = 35*memsz*blobtable.szmult(i); % 35 arbitrary, might need to change
         msel = blobtable.classindex(i);
-        % 35 is arbitrary scalar value to get 'good'-looking vesicles
         ix = pf(:,4)==i; ix = find(ix);
         subsel = pf(ix,1:3);
         
@@ -100,7 +97,6 @@ for i=1:seeds
         ix = pf(:,5)==i; ix = find(ix);
         
         blobtable.centroid(i,:) = mean(pf(ix,1:3),1);
-        %seed{i,2} = mean(pf(ix,1:3),1);
     end
     ixp = pf(:,5)==i;
     minit{i} = pf(ixp,1:3);
@@ -123,7 +119,7 @@ for i=runs
     
     qq = vertcat(minit{[1:i-1,1+i:end]}); % scrape all other points (faster if minit itself pruned first)
     [d] = pdist2(qq,minit{i},'euclidean','smallest',1); % detect pts in cell close to pts of other cells
-    cellpts = (d>(thick*1.6+45)); %remove pts too close to other cells - not great, common edge clipping
+    cellpts = (d>(thick*1.6+40+num)); %remove pts too close to other cells - not great, common edge clipping
     % use a larger distance for membranes marked for proteins?
     % need larger retreat with weighted cells since things are more squished
     
@@ -145,7 +141,7 @@ for i=runs
     tmp2 = randtess(0.5,sh1,'s'); % sometimes has wacky infills from incomplete internal tesselation
     
     initshape{i} = sh1;
-    [tmp,head,tail,shell,mesh] = shape2mem(sh1,thick,pix/4);
+    [tmp,head,tail,shell,mesh] = shape2mem(sh1,thick,pix/2);
     % currently very wiggly, quite possibly too wiggly
     % denser mesh to reduce the wiggle? or smiter iters in already very round mems?
     
@@ -167,14 +163,14 @@ mesh = randtess(0.2,shape,'s'); % might need raised (higher resolution?) if hole
 vec = randn(size(mesh)); vec = 0.9*thick*vec./vecnorm(vec,2,2);
 shell = alphaShape(mesh+vec,30+thick*2); % hopefully works across pixel/membrane sizes
 
-tail = randtess(0.013/atomfrac,shell,'v'); % need better reference ratios
-head = randtess(12.5/atomfrac,shell,'s'); % head domain layers across shell
+tail = randtess(0.014/atomfrac,shell,'v'); % need better reference ratios
+head = randtess(15/atomfrac,shell,'s'); % head domain layers across shell
 
 vec = randn(size(head)); % random displacement directions for head density
 spd = (rand(size(vec,1),1)-rand(size(vec,1),1))*(thick*0.2); % triangular random displacement distances
 vec = vec./vecnorm(vec,2,2).*spd; % displacement vectors
 head=head+vec; atoms = [head;tail];
-atoms(:,4) = 6.0/1 *atomfrac; % magnitude of pseudoatoms
+atoms(:,4) = 5.8/1 *atomfrac; % magnitude of pseudoatoms
 end
 
 function [cen,pts] = voronoirelax(pts,cen,iters,weight)
