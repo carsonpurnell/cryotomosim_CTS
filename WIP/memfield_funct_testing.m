@@ -51,15 +51,14 @@ blobtable = table(cen,classindex,class',szmult,...
     'VariableNames',{'centroid','classindex','class','szmult'});%,'vol'});
 
 
-
 %% prepartitioning cells
 iters = 2;%round(1*1/frac+sqrt(num)/2); % relaxation iters, probably not doing much anymore, set to 1-3?
 %[cen,pf] = voronoirelax(field,cen,iters,[seed{:,1}]'); % was using weight, trying to obsolete
 [blobtable.centroid,pf] = voronoirelax(field,blobtable.centroid,iters,blobtable.szmult);
 pf(:,5) = 0;
 
-
 %% seed growing
+% needs functionalized, allow for alternate methods that all feed into the same atomic meshing system
 iters = 4;
 minit = cell(1,seeds); v = zeros(1,seeds);
 for i=1:seeds
@@ -109,7 +108,10 @@ runs = 1:numel(minit);
 runs = runs(v>mean(v*thresh));
 runs = runs(1:min(num,numel(runs)));
 
-atoms = struct('vesicle',[],'er',[]);
+atoms = struct;%('vesicle',[],'er',[]);
+for i=1:numel(mdict)
+    atoms.(mdict(i).class) = [];
+end
 normcell = cell(1,numel(minit));
 for i=runs
     msel = blobtable.classindex(i);
@@ -139,7 +141,7 @@ for i=runs
     sh1 = alphaShape(cellpts,250);
     tmp2 = randtess(0.5,sh1,'s'); % sometimes has wacky infills from incomplete internal tesselation
     
-    initshape{i} = sh1;
+    %initshape{i} = sh1;
     [tmp,head,tail,shell,mesh] = shape2mem(sh1,thick,pix/2);
     % currently very wiggly, quite possibly too wiggly
     % denser mesh to reduce the wiggle? or smiter iters in already very round mems?
@@ -147,14 +149,14 @@ for i=runs
     atoms.(id) = [atoms.(id);tmp];
     % second round of trimming edges from actual membrane shape (or only round, drop initial prune?)
     
-    normcell{i} = shapenorm(mesh,initshape{i}); % calculate normal vectors for mesh points
+    normcell{i} = shapenorm(mesh,sh1); % calculate normal vectors for mesh points
     % bottleneck, need to reduce point counts
 end
 
 %% generate volumes
 [vol,~,~,splitvol] = helper_atoms2vol(pix,atoms,box);
 sliceViewer(vol);
-
+%plot3p(mesh,'.'); hold on; plot3p(mesh+normcell{runs(end)}*10,'.'); % vector direction diagnostic
 
 %% internal functions
 function [atoms,head,tail,shell,mesh] = shape2mem(shape,thick,atomfrac)
