@@ -10,7 +10,7 @@ memsz = 1;
 
 %sphmult = 0.9; % make per-mem, and not used by voronoi for iters?
 %szvar = 1; % multiplier to membrane size variation, should be membrane data, need to remove from voronoi step
-thresh = 0.1; % multiplier to volume threshold (frac of mean) for inclusion
+%thresh = 0.1; % multiplier to volume threshold (frac of mean) for inclusion
 %thickvar = 3; % absolute variation in angstroms % should be part of the membrane data, not global
 
 % individual mem params
@@ -28,7 +28,162 @@ if numel(num)>1, num=randi(num(end)-num(1)+1)+num(1)-1; end % target range calc
 if frac<0, frac = min(sqrt(num/10)/2,1); end % fallback computed fraction of vol
 seeds = round(num/frac)+0; % number of seeds needed for given membrane number and coverage ratio
 
+memparam = struct('num',num,'frac',frac,'memsz',memsz,'seeds',seeds);
 
+%% generate initial membrane blobs from partitioned cells
+[minit,blobtable] = voronoiblobcells(box,memparam,mdict);
+%{
+%% set up initial volume and points
+pad = max(box)/20*0+50;
+isosz = ones(1,3)*max(box)+pad*2;
+n = round(prod(isosz/100)/1); %approx 100-150 is reliable, higher starts to have voidless blobs
+field = rand(n,3).*isosz-pad; 
+% add a second larger box at lower density to feather out Z edges?
+for i=1:3 % rejection loop to eliminate points outside the box to ensure isotropy
+    r = field(:,i)>(box(i)+pad);
+    field(r,:) = [];
+end
+% using a cube and using boxsize later stretches mems horizontally instead of vertically
+% nontrivial to get isotropic distribution - rejection sampling only method? or randtess?
+% might get most of the way there by making a cube & discarding above Z?
+
+cen = rand(seeds,3).*[1,1,0.5].*box+[0,0,.25].*box; %centralize seeds a bit for less z clipping
+classindex = randi(numel(mdict),seeds,1); % class as index to the mdict, not as class name
+szmult = [mdict(classindex).size]'; % probably need to reintroduce some variability
+szmult = szmult+szmult.*(rand(seeds,1)-rand(seeds,1))/2; % 0.5 to 1.5 spread?
+class = {mdict(classindex).class};
+blobtable = table(cen,classindex,class',szmult,...
+    'VariableNames',{'centroid','classindex','class','szmult'});%,'vol'});
+
+
+%% prepartitioning cells
+iters = 2;%round(1*1/frac+sqrt(num)/2); % relaxation iters, probably not doing much anymore, set to 1-3?
+%[cen,pf] = voronoirelax(field,cen,iters,[seed{:,1}]'); % was using weight, trying to obsolete
+[blobtable.centroid,pf] = voronoirelax(field,blobtable.centroid,iters,blobtable.szmult);
+pf(:,5) = 0;
+
+%% seed growing
+% needs functionalized, allow for alternate methods that all feed into the same atomic meshing system
+iters = 4;
+minit = cell(1,seeds); v = zeros(1,seeds);
+for i=1:seeds
+    for j=1:iters
+        tmpdist = 35*memsz*blobtable.szmult(i); % 35 arbitrary, might need to change
+        msel = blobtable.classindex(i);
+        ix = pf(:,4)==i; ix = find(ix);
+        subsel = pf(ix,1:3);
+        
+        % simplify growing procedure? use only from centroid for speed and simplicity
+        % prorate based on # identified points, distance change in new centroid, centroid of new points
+        % high sphericity low tolerance for centroid,, high for points?
+        
+        %search everything against the centroid to avoid weird interleaving?
+        %[d] = pdist2(subsel,seed{i,2},'euclidean'); % centroid proximity catch
+        [d] = pdist2(subsel,blobtable.centroid(i,:),'euclidean');
+        if j>1,qq=mdict(msel).sphericity; else qq=1; end
+        cendist = qq*tmpdist*15+j*30*mdict(msel).sphericity;
+        ix2 = d<cendist; ix2 = ix(ix2);
+        pf(ix2,5) = i;
+        
+        ix3 = pf(:,5)==i;
+        
+        ix = pf(:,4)==i; ix = find(ix);
+        subsel = pf(ix,1:3);
+        [d] = pdist2(subsel,pf(ix3,1:3),'euclidean'); % radiating proximity catch - OOM with few mems
+        % penalize distance based on centroid to curb cornering?
+        tmpix = min(d,[],2);
+        proxdist = ((1-mdict(msel).sphericity)*tmpdist*1.1-j*1.5);
+        tmpix2 = tmpix< proxdist;
+        ix2 = ix(tmpix2);
+        
+        pf(ix2,5) = i;
+        ix = pf(:,5)==i; ix = find(ix);
+        
+        blobtable.centroid(i,:) = mean(pf(ix,1:3),1);
+    end
+    ixp = pf(:,5)==i;
+    minit{i} = pf(ixp,1:3);
+    v(i) = volume(alphaShape(minit{i})); % measure volume of local blob
+end
+thresh = 0.1; % to prevent excessively tiny membranes
+blobtable.vol = v';
+runs = 1:numel(minit);
+runs = runs(v>mean(v*thresh));
+runs = runs(1:min(num,numel(runs)));
+% prune down to only relevant blobs
+minit = minit(runs);
+blobtable = blobtable(runs,:);
+% do run selection here and prune down to only those blobs, leave next section for hull/mesh only
+%}
+
+%% convert blobs into membrane hulls and mesh out densities
+[atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict);
+%{
+atoms = struct;%('vesicle',[],'er',[]);
+for i=1:numel(mdict)
+    atoms.(mdict(i).class) = [];
+end
+normcell = cell(1,numel(minit)); memcell = normcell;
+for i=1:numel(minit)
+    msel = blobtable.classindex(i);
+    id = mdict(msel).class;
+    thick = mdict(msel).thick+(rand-rand)*mdict(msel).thickvar;
+    
+    if numel(minit)>1
+        qq = vertcat(minit{[1:i-1,1+i:end]}); % scrape all other points (faster if minit itself pruned first)
+        [d] = pdist2(qq,minit{i},'euclidean','smallest',1); % detect pts in cell close to pts of other cells
+        cellpts = (d>(thick*1.6+40+num)); %remove pts too close to other cells - not great, common edge clipping
+        % use a larger distance for membranes marked for proteins?
+        % need larger retreat with weighted cells since things are more squished
+    else
+        cellpts = 1:size(minit{i},1);
+    end
+    % instead alpha the whole cell and remove pts within distance of dense mesh? coverage is better
+    cellpts = minit{i}(cellpts,:); %sometimes empty and fails alphashape
+    
+    % need to instead alphashape the whole cell, get a dense surface mesh, remove all pts within thick*~1.1
+    % points are not uniform so cells might already be separated by several A, can leave more leeway
+    if size(cellpts,1)<4, continue; end
+    
+    % apparently need to rework shape2shell/shell2dens, alphashape not behaving well and retaining surface
+    % simultaneous creation of both, so regeneration the alphashape doesn't break surface detail between?
+    
+    % too many iterations here, need simplification into only necessary components
+    %sh = alphaShape(cellpts,1000); %1000 doesn't break at lower
+    %[~,tmp1] = boundaryFacets(sh);
+    %sh.Alpha = criticalAlpha(sh,'one-region')*10 % 500-1500ish?
+    
+    sh1 = alphaShape(cellpts,250);
+    tmp2 = randtess(0.5,sh1,'s'); % sometimes has wacky infills from incomplete internal tesselation
+    
+    %initshape{i} = sh1;
+    [tmp,head,tail,shell,mesh] = shape2mem(sh1,thick,pix/2);
+    % currently very wiggly, quite possibly too wiggly
+    % denser mesh to reduce the wiggle? or smiter iters in already very round mems?
+    
+    atoms.(id) = [atoms.(id);tmp];
+    
+    memcell{i} = mesh; % core points mesh for placing proteins
+    normcell{i} = shapenorm(mesh,sh1); % calculate normal vectors for mesh points
+end
+%}
+
+%% generate volumes
+[vol,~,~,splitvol] = helper_atoms2vol(pix,atoms,box);
+sliceViewer(vol);
+%plot3p(mesh,'.'); hold on; plot3p(mesh+normcell{runs(end)}*10,'.'); % vector direction diagnostic
+
+
+
+%% internal functions
+
+function [minit,blobtable] = voronoiblobcells(box,memparam,mdict)
+
+%memparam = struct('num',num,'frac',frac,'memsz',memsz,'seeds',seeds);
+num = memparam.num;
+frac = memparam.frac;
+memsz = memparam.memsz;
+seeds = memparam.seeds;
 
 %% set up initial volume and points
 pad = max(box)/20*0+50;
@@ -102,33 +257,45 @@ for i=1:seeds
     minit{i} = pf(ixp,1:3);
     v(i) = volume(alphaShape(minit{i})); % measure volume of local blob
 end
-%blobtable.vol = v';
-% do run selection here and prune down to only those blobs, leave next section for hull/mesh only
-
-
-%% convert blobs into membrane hulls and mesh out densities
+thresh = 0.1; % to prevent excessively tiny membranes
+blobtable.vol = v';
 runs = 1:numel(minit);
 runs = runs(v>mean(v*thresh));
 runs = runs(1:min(num,numel(runs)));
+% prune down to only relevant blobs
+minit = minit(runs);
+blobtable = blobtable(runs,:);
+% do run selection here and prune down to only those blobs, leave next section for hull/mesh only
+
+
+end
+
+
+
+function [atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict)
 
 atoms = struct;%('vesicle',[],'er',[]);
 for i=1:numel(mdict)
     atoms.(mdict(i).class) = [];
 end
 normcell = cell(1,numel(minit)); memcell = normcell;
-for i=runs
+for i=1:numel(minit)
     msel = blobtable.classindex(i);
     id = mdict(msel).class;
     thick = mdict(msel).thick+(rand-rand)*mdict(msel).thickvar;
     
-    qq = vertcat(minit{[1:i-1,1+i:end]}); % scrape all other points (faster if minit itself pruned first)
-    [d] = pdist2(qq,minit{i},'euclidean','smallest',1); % detect pts in cell close to pts of other cells
-    cellpts = (d>(thick*1.6+40+num)); %remove pts too close to other cells - not great, common edge clipping
-    % use a larger distance for membranes marked for proteins?
-    % need larger retreat with weighted cells since things are more squished
-    
+    if numel(minit)>1
+        qq = vertcat(minit{[1:i-1,1+i:end]}); % scrape all other points (faster if minit itself pruned first)
+        [d] = pdist2(qq,minit{i},'euclidean','smallest',1); % detect pts in cell close to pts of other cells
+        cellpts = (d>(thick*1.6+40+numel(minit))); %remove pts too close to other cells - not great, common edge clipping
+        % use a larger distance for membranes marked for proteins?
+        % need larger retreat with weighted cells since things are more squished
+    else
+        cellpts = 1:size(minit{i},1);
+    end
     % instead alpha the whole cell and remove pts within distance of dense mesh? coverage is better
     cellpts = minit{i}(cellpts,:); %sometimes empty and fails alphashape
+    
     % need to instead alphashape the whole cell, get a dense surface mesh, remove all pts within thick*~1.1
     % points are not uniform so cells might already be separated by several A, can leave more leeway
     if size(cellpts,1)<4, continue; end
@@ -145,7 +312,7 @@ for i=runs
     tmp2 = randtess(0.5,sh1,'s'); % sometimes has wacky infills from incomplete internal tesselation
     
     %initshape{i} = sh1;
-    [tmp,head,tail,shell,mesh] = shape2mem(sh1,thick,pix/2);
+    [tmp,head,tail,shell,mesh] = shape2mem(sh1,thick,12/3);
     % currently very wiggly, quite possibly too wiggly
     % denser mesh to reduce the wiggle? or smiter iters in already very round mems?
     
@@ -155,14 +322,9 @@ for i=runs
     normcell{i} = shapenorm(mesh,sh1); % calculate normal vectors for mesh points
 end
 
-%% generate volumes
-[vol,~,~,splitvol] = helper_atoms2vol(pix,atoms,box);
-sliceViewer(vol);
-%plot3p(mesh,'.'); hold on; plot3p(mesh+normcell{runs(end)}*10,'.'); % vector direction diagnostic
+end 
 
 
-
-%% internal functions
 function [atoms,head,tail,shell,mesh] = shape2mem(shape,thick,atomfrac)
 mesh = randtess(0.2,shape,'s'); % might need raised (higher resolution?) if holes prevent memvec computing
 vec = randn(size(mesh)); vec = 0.9*thick*vec./vecnorm(vec,2,2);
