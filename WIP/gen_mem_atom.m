@@ -28,13 +28,11 @@ mdict(1) = struct('class','vesicle','thick',28,'thickvar',6,'size',1,'sphericity
 % also have an auto calc fallback for not using frac? 10% per vesicle?
 %if numel(num)>1, num=randi(num(end)-num(1)+1)+num(1)-1; end % target range calc
 % make an easier vector expansion randi selector? x:y randi(numel(num)) sort of deal?
-if frac<0, frac = min(sqrt(num/10)/2,1); end % fallback computed fraction of vol
-seeds = round(num/frac)+0; % number of seeds needed for given membrane number and coverage ratio
+if param.frac<0, param.frac = min(sqrt(param.num/10)/2,1); end % fallback computed fraction of vol
+param.seeds = round(param.num/param.frac)+0; 
+% number of seeds needed for given membrane number and coverage ratio
 
-
-param = struct('num',num,'frac',frac,'memsz',memsz,'seeds',seeds);
-
-
+%param = struct('num',num,'frac',frac,'memsz',memsz,'seeds',seeds);
 
 [minit,blobtable] = voronoiblobcells(box,param,mdict);
 
@@ -42,3 +40,4 @@ param = struct('num',num,'frac',frac,'memsz',memsz,'seeds',seeds);
 
 memdat = atoms; % needs to not be stupid
 end
+
