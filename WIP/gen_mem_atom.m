@@ -1,6 +1,9 @@
 function [memdat] = gen_mem_atom(sz,pix,param)
+% [memdat] = gen_mem_atom(sz,pix,param)
 %
 %
+%
+% [vol,~,~,splitvol] = helper_atoms2vol(pix,memdat.atoms,sz*pix); % review output example
 arguments
     sz
     pix
@@ -38,7 +41,11 @@ param.seeds = round(param.num/param.frac)+0;
 
 [atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict);
 
-memdat = atoms; % needs to not be stupid
+%memdat = struct('atoms',atoms,'memcell',memcell,'normcell',normcell); %get split annoyingly
+memdat.atoms = atoms;
+memdat.memcell = memcell;
+memdat.normcell = normcell;
+memdat.table = blobtable;
 end
 
 
