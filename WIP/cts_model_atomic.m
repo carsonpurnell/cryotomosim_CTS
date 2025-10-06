@@ -67,7 +67,7 @@ dyn{1} = [dyn{1};pad];
 
 % new mem stuff testing, need better parsing and passing args from model_param etc
 [memdat] = gen_mem_atom(box,pix,'num',memnum);
-memdat
+
 splitin = memdat.atoms;
 f = fieldnames(memdat.atoms);
 for i=1:numel(f)
@@ -76,9 +76,8 @@ for i=1:numel(f)
     dx.(f{i}) = size(tmp,1)+1;
     dyn{1} = [dyn{1};tmp(ix,1:3)]; dyn{2} = numel(ix)+1;
 end
-memdat.table
-f
-dx
+%memdat.table
+
 toc;
 %size(dyn)
 %dyn
