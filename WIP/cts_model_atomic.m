@@ -72,12 +72,10 @@ splitin = memdat.atoms;
 f = fieldnames(memdat.atoms);
 for i=1:numel(f)
     tmp = memdat.atoms.(f{i}); n = size(tmp,1);
-    ix = randperm(n); ix = ix(1:round(n/100));
+    ix = randperm(n); ix = ix(1:round(n/2)); % 1/6 of atoms for collision detection later
     dx.(f{i}) = size(tmp,1)+1;
     dyn{1} = [dyn{1};tmp(ix,1:3)]; dyn{2} = numel(ix)+1;
 end
-dx
-dyn
 
 toc;
 %size(dyn)

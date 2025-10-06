@@ -21,8 +21,8 @@ elseif numel(param.num)==2
 end
 
 % individual mem definitions (mostly garbage still)
-mdict(1) = struct('class','vesicle','thick',28,'thickvar',6,'size',1,'sphericity',0.9);
-%mdict(2) = struct('class','er','thick',14,'thickvar',4,'size',0.6,'sphericity',0.2);
+mdict(1) = struct('class','vesicle','thick',27,'thickvar',6,'size',1,'sphericity',0.9);
+mdict(2) = struct('class','er','thick',13,'thickvar',4,'size',0.6,'sphericity',0.2);
 %mdict(3) = struct('class','membrane','thick',32,'thickvar',4,'size',2,'sphericity',0.1);
 %mdict(4) = struct('class','mito','thick',35,'thickvar',3,'size',3,'sphericity',0.8);
 % make a fixed dict and use a selector function to grab the target ones?
