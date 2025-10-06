@@ -40,7 +40,7 @@ param.seeds = round(param.num/param.frac)+0;
 [minit,blobtable] = voronoiblobcells(box,param,mdict);
 % problem: single membrane always in the middle, needs to be random
 
-[atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict);
+[atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict,pix);
 
 %memdat = struct('atoms',atoms,'memcell',memcell,'normcell',normcell); %get split annoyingly
 memdat.atoms = atoms;
@@ -91,6 +91,7 @@ pf(:,5) = 0;
 % needs functionalized, allow for alternate methods that all feed into the same atomic meshing system
 iters = 4;
 minit = cell(1,seeds); v = zeros(1,seeds);
+
 for i=1:seeds
     for j=1:iters
         tmpdist = 35*memsz*blobtable.szmult(i); % 35 arbitrary, might need to change
@@ -143,7 +144,7 @@ blobtable = blobtable(runs,:);
 end
 
 
-function [atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict)
+function [atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict,pix)
 
 atoms = struct;%('vesicle',[],'er',[]);
 for i=1:numel(mdict)
@@ -184,7 +185,7 @@ for i=1:numel(minit)
     tmp2 = randtess(0.5,sh1,'s'); % sometimes has wacky infills from incomplete internal tesselation
     
     %initshape{i} = sh1;
-    [tmp,head,tail,shell,mesh] = shape2mem(sh1,thick,12/3);
+    [tmp,head,tail,shell,mesh] = shape2mem(sh1,thick,pix/2);
     % currently very wiggly, quite possibly too wiggly
     % denser mesh to reduce the wiggle? or smiter iters in already very round mems?
     
