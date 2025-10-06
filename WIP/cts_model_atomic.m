@@ -56,17 +56,15 @@ if param.grid~=0
 else
     dyn = zeros(1,3);
 end
-%memnum = 5;
-memnum = param.mem;
-tic; 
 
 %[splitin,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize,opt.ermem); 
-dyn = {dyn,size(dyn,1)}; %convert to dyncell
+dyn = {dyn,1}; %convert to dyncell
 pad = [0,0,0;boxsize];
 dyn{1} = [dyn{1};pad];
 
+if param.mem
 % new mem stuff testing, need better parsing and passing args from model_param etc
-[memdat] = gen_mem_atom(box,pix,'num',memnum);
+[memdat] = gen_mem_atom(box,pix,'num',param.mem);
 
 splitin = memdat.atoms;
 f = fieldnames(memdat.atoms);
@@ -76,16 +74,11 @@ for i=1:numel(f)
     dx.(f{i}) = size(tmp,1)+1;
     dyn{1} = [dyn{1};tmp(ix,1:3)]; dyn{2} = numel(ix)+1;
 end
-%memdat.table
+else
+    dx = struct;
+    splitin = struct;
+end
 
-toc;
-%size(dyn)
-%dyn
-%dx
-%splitin has entries, but are all 0?!
-%[mi1,ma1] = bounds(splitin.lipid,1)
-%[mi2,ma2] = bounds(splitin.ERmem,1)
-%return 
 if opt.con==1
     con = helper_atomcon(boxsize,pix,0,0); % pseudonatural ice border (wavy flat, no curvature)
     dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
@@ -98,6 +91,7 @@ n = param.iters;
 %tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
 %for i=1:numel(param.layers)
 tic; [split,dyn,mu,list] = helper_randfill_atom(param.layers,boxsize,n,splitin,dx,dyn); toc
+
 % list will be broken
 %end
 %profile viewer
