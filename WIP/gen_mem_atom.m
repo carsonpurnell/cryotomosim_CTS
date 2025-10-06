@@ -7,8 +7,8 @@ function [memdat] = gen_mem_atom(sz,pix,param)
 arguments
     sz
     pix
-    param.num = 1:6
-    param.frac = 0.9
+    param.num = 2:6 % 1 still empty, alphashape failing
+    param.frac = -1
     param.memsz = 1
 end
 box = sz*pix;
@@ -81,13 +81,11 @@ class = {mdict(classindex).class};
 blobtable = table(cen,classindex,class',szmult,...
     'VariableNames',{'centroid','classindex','class','szmult'});%,'vol'});
 
-blobtable
 % prepartitioning cells
 iters = 2;%round(1*1/frac+sqrt(num)/2); % relaxation iters, probably not doing much anymore, set to 1-3?
 %[cen,pf] = voronoirelax(field,cen,iters,[seed{:,1}]'); % was using weight, trying to obsolete
 [blobtable.centroid,pf] = voronoirelax(field,blobtable.centroid,iters,blobtable.szmult);
 pf(:,5) = 0;
-blobtable
 
 % seed growing
 % needs functionalized, allow for alternate methods that all feed into the same atomic meshing system
@@ -130,18 +128,14 @@ for i=1:seeds
     end
     ixp = pf(:,5)==i;
     minit{i} = pf(ixp,1:3);
-    tmp = alphaShape(minit{i}) % no points with single membrane?
+    tmp = alphaShape(minit{i}); % no points with single membrane?
     v(i) = volume(tmp); % measure volume of local blob
 end
 thresh = 0.1; % to prevent excessively tiny membranes
 blobtable.vol = v';
-blobtable
 runs = 1:numel(minit);
-runs
 runs = runs(v>mean(v*thresh));
-runs
 runs = runs(1:min(num,numel(runs)));
-runs
 % prune down to only relevant blobs
 minit = minit(runs);
 blobtable = blobtable(runs,:);
