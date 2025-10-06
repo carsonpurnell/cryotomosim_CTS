@@ -8,7 +8,7 @@ arguments
     sz
     pix
     param.num = 1:6
-    param.frac = -1
+    param.frac = 0.9
     param.memsz = 1
 end
 box = sz*pix;
@@ -22,7 +22,7 @@ end
 
 % individual mem definitions (mostly garbage still)
 mdict(1) = struct('class','vesicle','thick',27,'thickvar',6,'size',1,'sphericity',0.9);
-mdict(2) = struct('class','er','thick',13,'thickvar',4,'size',0.6,'sphericity',0.2);
+%mdict(2) = struct('class','er','thick',13,'thickvar',4,'size',0.6,'sphericity',0.2);
 %mdict(3) = struct('class','membrane','thick',32,'thickvar',4,'size',2,'sphericity',0.1);
 %mdict(4) = struct('class','mito','thick',35,'thickvar',3,'size',3,'sphericity',0.8);
 % make a fixed dict and use a selector function to grab the target ones?
@@ -38,12 +38,13 @@ param.seeds = round(param.num/param.frac)+0;
 %param = struct('num',num,'frac',frac,'memsz',memsz,'seeds',seeds);
 
 [minit,blobtable] = voronoiblobcells(box,param,mdict);
+% problem: single membrane always in the middle, needs to be random
 
 [atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict);
 
 %memdat = struct('atoms',atoms,'memcell',memcell,'normcell',normcell); %get split annoyingly
 memdat.atoms = atoms;
-memdat.memcell = memcell;
+memdat.memcell = memcell; % need to store alphashapes for in/out of vesicle placements
 memdat.normcell = normcell;
 memdat.table = blobtable;
 end
@@ -80,12 +81,13 @@ class = {mdict(classindex).class};
 blobtable = table(cen,classindex,class',szmult,...
     'VariableNames',{'centroid','classindex','class','szmult'});%,'vol'});
 
-
+blobtable
 % prepartitioning cells
 iters = 2;%round(1*1/frac+sqrt(num)/2); % relaxation iters, probably not doing much anymore, set to 1-3?
 %[cen,pf] = voronoirelax(field,cen,iters,[seed{:,1}]'); % was using weight, trying to obsolete
 [blobtable.centroid,pf] = voronoirelax(field,blobtable.centroid,iters,blobtable.szmult);
 pf(:,5) = 0;
+blobtable
 
 % seed growing
 % needs functionalized, allow for alternate methods that all feed into the same atomic meshing system
@@ -128,13 +130,18 @@ for i=1:seeds
     end
     ixp = pf(:,5)==i;
     minit{i} = pf(ixp,1:3);
-    v(i) = volume(alphaShape(minit{i})); % measure volume of local blob
+    tmp = alphaShape(minit{i}) % no points with single membrane?
+    v(i) = volume(tmp); % measure volume of local blob
 end
 thresh = 0.1; % to prevent excessively tiny membranes
 blobtable.vol = v';
+blobtable
 runs = 1:numel(minit);
+runs
 runs = runs(v>mean(v*thresh));
+runs
 runs = runs(1:min(num,numel(runs)));
+runs
 % prune down to only relevant blobs
 minit = minit(runs);
 blobtable = blobtable(runs,:);
@@ -192,6 +199,12 @@ for i=1:numel(minit)
     memcell{i} = mesh; % core points mesh for placing proteins
     normcell{i} = shapenorm(mesh,sh1); % calculate normal vectors for mesh points
 end
+f = fieldnames(atoms);
+for i=1:numel(f)
+    if isempty(atoms.(f{i}))
+        atoms = rmfield(atoms,f{i});
+    end
+end
 end 
 
 function [atoms,head,tail,shell,mesh] = shape2mem(shape,thick,atomfrac)
@@ -211,7 +224,8 @@ end
 
 function [cen,pts] = voronoirelax(pts,cen,iters,weight)
 if nargin<4, weight = ones(1,size(cen,1)); end
-if iters==0; iters=1; skip=1; else skip=0; end
+if iters==0||size(cen,1)<2; iters=1; skip=1; else skip=0; end
+
 for j=1:iters
     [d] = pdist2(cen,pts(:,1:3),'euclidean'); % distances for each point to each centroid
     d = d./weight; % weight distances by centroid
@@ -223,6 +237,7 @@ for j=1:iters
         end
     end
 end
+
 end
 
 function nvecs = shapenorm(pts,sh) % compute normal vectors from shape core mesh
