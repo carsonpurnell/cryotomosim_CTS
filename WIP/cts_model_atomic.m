@@ -13,6 +13,7 @@ arguments
     opt.con = 1
     opt.ermem = 0
     opt.outdir = []
+    opt.dynamotable = 0
 end
 %{
 if strcmp(input,'gui')
@@ -140,6 +141,9 @@ for i=1:numel(f)
     coordmatrix = cts.list.(f{i});
     if ~isempty(coordmatrix)
         writematrix(coordmatrix,append('zcoords_',f{i},'.csv'));
+        if opt.dynamotable==1
+            [dtable] = internal_dynamotable(coordmatrix,append('zdtable_',f{i},'.tbl'));
+        end
     end
 end
 %output text file of input informations?
@@ -148,6 +152,17 @@ cd(userpath)
 end
 
 %% internal functions
+function [dtable] = internal_dynamotable(coords,filename)
+dtable = zeros(size(coords,1),35); %pregenerate the full table with zeros
+dtable(:,1) = 1:size(coords,1); %particle number
+dtable(:,24) = coords(:,1); %x coords does this need an xy flip?
+dtable(:,25) = coords(:,2); %y coords
+dtable(:,26) = coords(:,3); %z coords
+
+fid = fopen(append(filename,'.tbl'),'wt'); %writing to file per column after transposing
+fprintf(fid,[repmat('%g ', 1, size(dtable,2)) '\n'],transpose(dtable));
+fclose(fid);
+end
 
 function [err,loc,tform,ovcheck,ix] = anyloc(boxsize,tperim,dyn,retry,tol,mu)
 for r=1:retry
