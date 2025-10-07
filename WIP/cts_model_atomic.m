@@ -142,7 +142,7 @@ for i=1:numel(f)
     if ~isempty(coordmatrix)
         writematrix(coordmatrix,append('zcoords_',f{i},'.csv'));
         if opt.dynamotable==1
-            [dtable] = internal_dynamotable(coordmatrix,append('zdtable_',f{i},'.tbl'));
+            [dtable] = internal_dynamotable(coordmatrix,append('zdtable_',f{i}));
         end
     end
 end
