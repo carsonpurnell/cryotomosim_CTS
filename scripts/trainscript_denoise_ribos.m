@@ -7,5 +7,5 @@ outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
 
 %%
 a = 80;
-psim = param_simulate('pix',4,'defocus',-3,'dose',a*5,'raddamage',0,'tilt',[-a,1,a]);
-cts_simulate_atomic(outfile,psim,'suffix','test_ideal_80-1');
+psim = param_simulate('pix',4,'defocus',-3,'dose',a*5,'raddamage',0,'tilt',[-a,2,a]);
+cts_simulate_atomic(outfile,psim,'suffix','test_ideal_80-2');
