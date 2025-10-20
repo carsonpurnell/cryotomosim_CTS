@@ -6,6 +6,6 @@ pmod = param_model(4,'iters',200,'mem',0,'grid',0);
 outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
 
 %%
-a = 80;
-psim = param_simulate('pix',4,'defocus',-3,'dose',a*5,'raddamage',0,'tilt',[-a,2,a]);
-cts_simulate_atomic(outfile,psim,'suffix','test_ideal_80-2');
+% 80/2 is best, 80/1 has OOM on laptop
+psim = param_simulate('pix',4,'defocus',-2,'dose',800,'raddamage',0,'tilt',[-80,2,80]);
+cts_simulate_atomic(outfile,psim,'suffix','test_ideal_80-2_def-2');
