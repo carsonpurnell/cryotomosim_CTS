@@ -9,17 +9,17 @@ psim = param_simulate('pix',5,'defocus',-4,'dose',100,'raddamage',1,'tilt',[-60,
 psim_i = param_simulate('pix',5,'defocus',-3,'dose',600,'raddamage',0,'tilt',[-84,2,84]);
 
 %% ribo
-[cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic(sz,1,pmod_r,'suffix',append(fname,'_ribo'));
+[cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic(sz,1,pmod_r,'suffix',append(fname,'_ribo3'));
 [path,name,ext] = fileparts(outfile);
 outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
 
-cts_simulate_atomic(outfile,psim,'suffix','ribo_sim');
-cts_simulate_atomic(outfile,psim_i,'suffix','ribo_ideal');
+cts_simulate_atomic(outfile,psim,'suffix','ribo_sim3');
+cts_simulate_atomic(outfile,psim_i,'suffix','ribo_ideal3');
 
 %% actin
-[cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic(sz,1,pmod_a,'suffix',append(fname,'_actin'));
+[cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic(sz,1,pmod_a,'suffix',append(fname,'_actin3'));
 [path,name,ext] = fileparts(outfile);
 outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
 
-cts_simulate_atomic(outfile,psim,'suffix','actin_sim');
-cts_simulate_atomic(outfile,psim_i,'suffix','actin_ideal');
+cts_simulate_atomic(outfile,psim,'suffix','actin_sim3');
+cts_simulate_atomic(outfile,psim_i,'suffix','actin_ideal3');
