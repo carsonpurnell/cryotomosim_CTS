@@ -1,11 +1,23 @@
 
 fname = 'ribo_4a';
-pmod = param_model(4,'iters',200,'mem',0,'grid',0);
-[cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic([800,800,120],1,pmod,'suffix',append(fname,'_9'),'dynamotable',1);
+targs = {'ribosome__4ug0.mat'};
+pix = 4;
+pmod = param_model(pix,'layers',targs,'iters',200,'mem',0,'grid',0);
+psim1 = param_simulate('pix',pix,'defocus',-4,'dose',60,'raddamage',1,'tilterr',1,'tilt',[-60,2,60]);
+psim2 = param_simulate('pix',pix,'defocus',-4,'dose',120,'raddamage',0.5,'tilterr',0.5,'tilt',[-60,2,60]);
+psim3 = param_simulate('pix',pix,'defocus',-3,'dose',300,'raddamage',0.2,'tilterr',0,'tilt',[-65,2,65]);
+pideal = param_simulate('pix',pix,'defocus',-2,'dose',500,'raddamage',0,'tilt',[-80,2,80]);
+
+for i=1:4
+[cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic([800,800,120],1,pmod,'suffix',append(fname,'_',string(i)),'dynamotable',1);
 [path,name,ext] = fileparts(outfile);
 outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
 
-%%
-% 80/2 is best, 80/1 has OOM on laptop
-psim = param_simulate('pix',4,'defocus',-2,'dose',800,'raddamage',0,'tilt',[-80,2,80]);
-cts_simulate_atomic(outfile,psim,'suffix','test_ideal_80-2_def-2');
+cts_simulate_atomic(outfile,psim1,'suffix',append('s1_',string(i)));
+cts_simulate_atomic(outfile,psim2,'suffix',append('s2_',string(i)));
+cts_simulate_atomic(outfile,psim3,'suffix',append('s3_',string(i)));
+cts_simulate_atomic(outfile,pideal,'suffix',append('id_',string(i)));
+end
+
+% how many runs, and what levels of denoising? simulate at poor, mid, high quality and non-extreme ideal?
+% might show extreme background flattening happening only at certain relative noise of original
