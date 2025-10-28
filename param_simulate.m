@@ -38,7 +38,7 @@ arguments
     param.tiltscheme = 0 %flip angle for bidirectional, otherwise 'symmetric'
     param.pix = 0 %0 to not override input
     param.tiltax = 'Y' %using X now works but generates super thick tomograms
-    param.phase = .07 % for phase shift imaging (unsure of best default)
+    param.phase = .07 % ~pi/2 for phase shift imaging (unsure of best default)
     
     %simulation/computational parameters
     param.raddamage = 1; %split into different components?
@@ -48,7 +48,7 @@ arguments
     param.tilterr = 0; %0 no randomization, 1 range==tilt increment
     %separate or same use X/Y stage error during tilting?
     %tilt error at 1 might be excessive, has pretty signaificant impact on the noise
-    param.mill = 0;
+    param.mill = 0; % generate fib-mill like thickness artifacts
 end
 
 if strcmp(guiinput,'gui') %basic GUI for manual input of values

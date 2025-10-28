@@ -206,7 +206,7 @@ eucentric = boxsize/2-[0,0,0]*0; %~25 at 12pix registers to vol but desyncs from
 
 % get the transmission wave dose 
 if param.phase>pi/4, phi=0.8; else, phi=1; end % cut 20% of the DQE due to weird PP scattering
-DQE = 0.84*0.7*phi;
+DQE = 0.84*0.7*phi; % need to make DQE a usable parameter
 d = DQE*param.dose/numel(param.tilt)*param.pix^2;
 boxsize = param.pix*round(boxsize/param.pix); % adjust for weird pixel sizes
 
@@ -237,8 +237,13 @@ for t=1:numel(param.tilt)
     sz = boxsize; sz(3) = max(atomtmp(:,3),[],'all')-min(atomtmp(:,3),[],'all');
     %of = min(atomtmp(:,1:3),[],1);
     of = [0,0,min(atomtmp(:,3),[],'all')];
+    
     [vol,solv] = helper_atoms2vol(param.pix,atomtmp,sz,of);
+    % solv not accurate, using the entire span distance rather than true thickness of sample
+    thick = boxsize(3);
+    solv = solv/sz(3)*thick/cosd(angle); % slapdash temp fix for virtual ice thickness
     vol = vol+solv;
+    
     % get the transmission wave
     %d = param.dose*param.pix^2;
     %dvol = poissrnd((vol*1)*d,size(vol)); %extremely slow with many sections - do at the end?
