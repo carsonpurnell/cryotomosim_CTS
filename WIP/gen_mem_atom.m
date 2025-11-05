@@ -214,7 +214,7 @@ vec = randn(size(head)); % random displacement directions for head density
 spd = (rand(size(vec,1),1)-rand(size(vec,1),1))*(thick*0.2); % triangular random displacement distances
 vec = vec./vecnorm(vec,2,2).*spd; % displacement vectors
 head=head+vec; atoms = [head;tail];
-atoms(:,4) = 5.8/1 *atomfrac; % magnitude of pseudoatoms
+atoms(:,4) = 5.5/1 *atomfrac; % magnitude of pseudoatoms
 end
 
 function [cen,pts] = voronoirelax(pts,cen,iters,weight)
