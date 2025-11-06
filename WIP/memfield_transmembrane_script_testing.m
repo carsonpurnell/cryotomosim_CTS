@@ -1,12 +1,14 @@
 %% placing memprots with new atomic membrane structure
 pix = 12;
 targ = {'ATPS.membrane.complex.mat'};
-targ = {'GABAar.membrane.complex.mat'};
+%targ = {'GABAar.membrane.complex.mat'};
 pmod = param_model(pix,'layers',targ);
 
-sz = [300,300,60];
-memdat = gen_mem_atom(sz,pix);
+sz = [200,200,100];
+memdat = gen_mem_atom(sz,pix,'num',1);
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
+% alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
+% would need to be very dense. but could average with the near-3 result to cover most cases?
 
 %%
 split = struct; dx = struct; list = struct;
@@ -38,15 +40,15 @@ mu = mu_build(dyn{1},[0,0,0;sz*pix],'leafmax',leaf,'maxdepth',2);
 
 %pick a membrane
 memsel = randi(numel(memdat));
-init = [0,0,-1];
+init = [0,0,1];
 
 sel = pmod.layers{1}(1);
 if any(ismember(sel.flags,'complex'))
     sel.sumperim = vertcat(sel.perim{:});
-    complex = 1;
+    subsel = 0;
 else
     sel.sumperim = sel.perim{1};
-    complex = 0;
+    subsel = randi(numel(sel.id));
 end
 % start off preselecting coords from it or just start running through them? they are not spatially ordered
 iters = 50;
@@ -57,14 +59,13 @@ for i=1:iters
     surfvec = memdat.normcell{memsel}(i,:); % normal vector to surface at coordinate
     
     rotax=cross(init,surfvec); %compute the normal axis from the rotation angle
-    theta = acos( dot(init,surfvec) ); % angle between ori vec and surfae
+    theta = -acos( dot(init,surfvec) ); % angle between ori vec and surface
     
     spinang = rand*2*pi;
     rot1 = sel.sumperim*rotmat(init,spinang); % random axial rotation
     rot2 = rot1*rotmat(rotax,theta)+memloc;
     
-    
-    
+    diagori = init*rotmat(rotax,theta);
     err = 0; % force placement, no collision test yet
     
     % if no collision, switch to place subunits as needed after replicating rotations
@@ -73,9 +74,9 @@ for i=1:iters
         % no muix yet, not testing
         % mu = mu_build(rot2,muix,mu,'leafmax',leaf,'maxdepth',2);
         
-        if complex ==1
+        if subsel==0
             for u=1:numel(sel.id)
-                tmp = sel.adat{u};
+                tmp = sel.adat{u}; tmp(:,4)=tmp(:,4)*2;
                 tmp(:,1:3) = tmp(:,1:3)*rotmat(init,spinang);
                 tmp(:,1:3) = tmp(:,1:3)*rotmat(rotax,theta)+memloc;
                 
@@ -83,40 +84,11 @@ for i=1:iters
                 list.(sel.id{u})(end+1,:) = memloc;
             end
         else
-            
+            % use subsel index to place that item alone
         end
         %tpts = sel.adat{sub};
         %tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
-        
-        %{
-        %[dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
-        %[dyn{1},dyn{2}] = dyncat(dyn{1},dyn{2},ovcheck); %6s
-        %modnm = sel.modelname{sub};
-        %[split.(modnm),dx.(modnm)] = dyncat(split.(modnm),dx.(modnm),tpts); %46 - crazy slow :(
-        
-        %{
-        % % inlined dyncat code, dynpts % %
-        l = size(ovcheck,1); e = ixincat+l-1;
-        if e>size(dynpts,1)
-            dynpts(ixincat:(size(dynpts,1)+l)*3,:) = 0;
-        end
-        dynpts(ixincat:e,:) = ovcheck; ixincat = ixincat+l;
-        %}
-        % % inlined dyncat code, split assignments % %
-        %{
-        tdx = dx.(sel.modelname{sub}); %MUCH faster than hard cat, ~7x.
-        l = size(tpts,1); e = tdx+l-1;
-        if e>size(split.(sel.modelname{sub}),1)
-            split.(sel.modelname{sub})(tdx:(tdx+l)*4,:) = 0;
-        end
-        split.(sel.modelname{sub})(tdx:e,:) = tpts; dx.(sel.modelname{sub}) = tdx+l;
-        % % inlined dyncat code % %
-        %}
-        
-        %split{which} = [split{which};tpts]; %add to splitvol - cell version
-        %split.(sel.modelname{sub}) = [split.(sel.modelname{sub});tpts]; %struct a bit slower :(
-        %}
         %count.s=count.s+1;
     else
         %count.f=count.f+1;
@@ -127,6 +99,8 @@ end
 mvol = helper_atoms2vol(pix,memdat.atoms,sz*pix);
 sliceViewer(max(vol,mvol));
 
+diagpts = [init;rotax;surfvec];
+% plot3p(list.ATPS_head,'o'); hold on; plot3p(list.ATPS_head+memdat.normcell{1}(1:50,:)*100,'.'); % diag vecs
 
 %% internal functions
 
