@@ -203,7 +203,7 @@ end
 end 
 
 function [atoms,head,tail,shell,mesh] = shape2mem(shape,thick,atomfrac)
-mesh = randtess(0.2,shape,'s'); % might need raised (higher resolution?) if holes prevent memvec computing
+mesh = randtess(0.5,shape,'s'); % might need raised (higher resolution?) if holes prevent memvec computing
 vec = randn(size(mesh)); vec = 0.9*thick*vec./vecnorm(vec,2,2);
 shell = alphaShape(mesh+vec,30+thick*2); % hopefully works across pixel/membrane sizes
 
