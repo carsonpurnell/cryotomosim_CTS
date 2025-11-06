@@ -51,7 +51,7 @@ else
     subsel = randi(numel(sel.id));
 end
 % start off preselecting coords from it or just start running through them? they are not spatially ordered
-iters = 50;
+iters = 150;
 for i=1:iters
     % inner loop: random axial rotation, rotation to transmembrane vector, collision test
     % mem vector and figuring stuff
