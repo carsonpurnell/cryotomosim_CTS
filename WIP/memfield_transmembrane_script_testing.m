@@ -52,6 +52,7 @@ else
 end
 % start off preselecting coords from it or just start running through them? they are not spatially ordered
 iters = 150;
+count.s = 0; count.f = 0;
 for i=1:iters
     % inner loop: random axial rotation, rotation to transmembrane vector, collision test
     % mem vector and figuring stuff
@@ -66,13 +67,16 @@ for i=1:iters
     rot2 = rot1*rotmat(rotax,theta)+memloc;
     
     diagori = init*rotmat(rotax,theta);
-    err = 0; % force placement, no collision test yet
+    %err = 0; % force placement, no collision test yet
+    tol = 2;
+    [err,muix] = mu_search(mu,rot2,tol,'short',0); %slightly faster!
+    err = any(err>0);
     
     % if no collision, switch to place subunits as needed after replicating rotations
     if err==0
         [dyn] = dyncell(rot2,dyn); % write to partial list for fast lookups (obsolete under mu?)
         % no muix yet, not testing
-        % mu = mu_build(rot2,muix,mu,'leafmax',leaf,'maxdepth',2);
+        mu = mu_build(rot2,muix,mu,'leafmax',leaf,'maxdepth',2);
         
         if subsel==0
             for u=1:numel(sel.id)
@@ -89,12 +93,13 @@ for i=1:iters
         %tpts = sel.adat{sub};
         %tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
-        %count.s=count.s+1;
+        count.s=count.s+1;
     else
-        %count.f=count.f+1;
-        disp('fail, something borked')
+        count.f=count.f+1;
+        %disp('fail, something borked')
     end
 end
+disp(count)
 [vol,solv] = helper_atoms2vol(pix,split,sz*pix);
 mvol = helper_atoms2vol(pix,memdat.atoms,sz*pix);
 sliceViewer(max(vol,mvol));
