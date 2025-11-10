@@ -59,6 +59,8 @@ for i=1:iters
     memloc = memdat.memcell{memsel}(i,:); % selected coordinate
     surfvec = memdat.normcell{memsel}(i,:); % normal vector to surface at coordinate
     
+    % need to funct out placement testing, and allow multiple attempts per iteration
+    
     rotax=cross(init,surfvec); %compute the normal axis from the rotation angle
     theta = -acos( dot(init,surfvec) ); % angle between ori vec and surface
     
@@ -80,7 +82,7 @@ for i=1:iters
         
         if subsel==0
             for u=1:numel(sel.id)
-                tmp = sel.adat{u}; tmp(:,4)=tmp(:,4)*2;
+                tmp = sel.adat{u};
                 tmp(:,1:3) = tmp(:,1:3)*rotmat(init,spinang);
                 tmp(:,1:3) = tmp(:,1:3)*rotmat(rotax,theta)+memloc;
                 
@@ -99,6 +101,14 @@ for i=1:iters
         %disp('fail, something borked')
     end
 end
+
+% remove trailing zeros from atom registry and sparse tracker
+f = fieldnames(split);
+for i=1:numel(f)
+    split.(f{i})(dx.(f{i}):end,:) = [];
+end
+dyn{1}(dyn{2}:end,:) = [];
+
 disp(count)
 [vol,solv] = helper_atoms2vol(pix,split,sz*pix);
 mvol = helper_atoms2vol(pix,memdat.atoms,sz*pix);
@@ -106,7 +116,7 @@ sliceViewer(max(vol,mvol));
 
 diagpts = [init;rotax;surfvec];
 % plot3p(list.ATPS_head,'o'); hold on; plot3p(list.ATPS_head+memdat.normcell{1}(1:50,:)*100,'.'); % diag vecs
-
+% plot3p(dyn{1}(1:dyn{2}-1,:),'.'); hold on; plot3p(memdat.memcell{1},'.'); % diag placements
 %% internal functions
 
 
