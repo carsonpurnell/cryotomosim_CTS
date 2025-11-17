@@ -72,6 +72,7 @@ if ~any(err==0)
 for i=1:n
     %ix(:,i)
     %size(mu{ix(1,i),1}{1,ix(2,i)},2); %size(mu{ix(1,i),1}{3,ix(2,i)},1)
+    %ix(1,i)
     if ix(1,i)==mdepth || err==1 %if bottom of tree no nav
         %it = ix(:,i);
     elseif size(mu{ix(1,i),1}{1,ix(2,i)},2)==3 %if points in leaf no nav
@@ -82,6 +83,8 @@ for i=1:n
         ix(:,i) = nav(mu,bm,test(i,:),ix(1,i),ix(2,i)); %still too common, bin check not deep?
     end
     if opt.short==1
+        %test(i,:) % 1x3 coordinate vector
+        %ix(:,i) %root,bin 1x2 vector
         te = prox(mu,test(i,:),ix(:,i),tol);
         if opt.short %short circuit loop breaker, return 0
             if te, err=i; %disp('kill');
