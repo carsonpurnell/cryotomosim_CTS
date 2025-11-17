@@ -5,10 +5,11 @@ targ = {'ATPS.membrane.complex.mat'};
 pmod = param_model(pix,'layers',targ);
 
 sz = [200,200,100];
-memdat = gen_mem_atom(sz,pix,'num',1);
+memdat = gen_mem_atom(sz,pix,'num',3);
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
+rng(0)
 
 %%
 split = struct; dx = struct; list = struct;
@@ -38,11 +39,15 @@ dyn{1} = single(zeros(0,3)); dyn{2} = 1;
 leaf = 1e3;
 mu = mu_build(dyn{1},[0,0,0;sz*pix],'leafmax',leaf,'maxdepth',2);
 
-%pick a membrane
-memsel = randi(numel(memdat));
 init = [0,0,1];
-
 sel = pmod.layers{1}(1);
+
+for j=1:numel(memdat.memcell)
+memsel = j;%randi(numel(memdat)); % select membrane to place on
+
+qq = vertcat(memdat.memcell{[1:j-1,1+j:end]});
+kdt = KDTreeSearcher(qq);
+
 if any(ismember(sel.flags,'complex'))
     sel.sumperim = vertcat(sel.perim{:});
     subsel = 0;
@@ -68,11 +73,34 @@ for i=1:iters
     rot1 = sel.sumperim*rotmat(init,spinang); % random axial rotation
     rot2 = rot1*rotmat(rotax,theta)+memloc;
     
-    diagori = init*rotmat(rotax,theta);
-    %err = 0; % force placement, no collision test yet
+    %diagori = init*rotmat(rotax,theta);
+    
+    %
     tol = 2;
-    [err,muix] = mu_search(mu,rot2,tol,'short',0); %slightly faster!
+    [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
+    %}
+    
+    % what's the fastest collision search for membranes? kdnn for each mem iteration? before or after atoms?
+    if err==0
+        [ix,d] = knnsearch(kdt,rot2); % sort false might be faster
+        %if any(d<15), er2=1; else er2=0; end % hard switch since no base value for er2
+        if any(d<15), err=1; er2=1; else er2=0; err=0; end
+    end
+    
+    %{
+    if err==0
+    tol = 2;
+    [err,muix] = mu_search(mu,rot2,tol,'short',0);
+    err = any(err>0);
+    end
+    %}
+    %17/21 18/20 9/16 mu second?
+    %12/6 19/9 19/8 mu first
+    % test2, mu second then mu first, then mu first ss
+    %13/17 29/39 40/38
+    %35/21 42/24 41/23
+    %
     
     % if no collision, switch to place subunits as needed after replicating rotations
     if err==0
@@ -83,6 +111,7 @@ for i=1:iters
         if subsel==0
             for u=1:numel(sel.id)
                 tmp = sel.adat{u};
+                if er2==1; tmp(:,4)=tmp(:,4)*3; end % diag collision test against membranes
                 tmp(:,1:3) = tmp(:,1:3)*rotmat(init,spinang);
                 tmp(:,1:3) = tmp(:,1:3)*rotmat(rotax,theta)+memloc;
                 
@@ -100,6 +129,8 @@ for i=1:iters
         count.f=count.f+1;
         %disp('fail, something borked')
     end
+end
+
 end
 
 % remove trailing zeros from atom registry and sparse tracker
