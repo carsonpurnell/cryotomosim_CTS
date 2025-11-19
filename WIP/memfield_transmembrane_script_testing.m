@@ -9,7 +9,7 @@ memdat = gen_mem_atom(sz,pix,'num',3);
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
-rng(0)
+rng(5)
 
 %%
 split = struct; dx = struct; list = struct;
@@ -55,7 +55,8 @@ else
     sel.sumperim = sel.perim{1};
     subsel = randi(numel(sel.id));
 end
-% start off preselecting coords from it or just start running through them? they are not spatially ordered
+% start off preselecting coords from it or just start running through them? 
+% they are not spatially ordered
 iters = 150;
 count.s = 0; count.f = 0;
 for i=1:iters
@@ -79,14 +80,15 @@ for i=1:iters
     tol = 2;
     [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
-    %}
+    %} 
+    %mu first faster overall, mu is faster per iteration so saves time avoiding knn
+    %
     
-    % what's the fastest collision search for membranes? kdnn for each mem iteration? before or after atoms?
-    if err==0
-        [ix,d] = knnsearch(kdt,rot2); % sort false might be faster
+    %if err==0
+        [ix,d] = knnsearch(kdt,rot2,'K',1,'SortIndices',0); % sort false might be faster
         %if any(d<15), er2=1; else er2=0; end % hard switch since no base value for er2
-        if any(d<15), err=1; er2=1; else er2=0; err=0; end
-    end
+        if any(d<15), err=1; else err=0; end
+    %end
     
     %{
     if err==0
@@ -95,12 +97,8 @@ for i=1:iters
     err = any(err>0);
     end
     %}
-    %17/21 18/20 9/16 mu second?
-    %12/6 19/9 19/8 mu first
-    % test2, mu second then mu first, then mu first ss
-    %13/17 29/39 40/38
-    %35/21 42/24 41/23
-    %
+    %20/6 21/6 mu first
+    %11/19 11/17 10/17 mu second
     
     % if no collision, switch to place subunits as needed after replicating rotations
     if err==0
@@ -111,7 +109,7 @@ for i=1:iters
         if subsel==0
             for u=1:numel(sel.id)
                 tmp = sel.adat{u};
-                if er2==1; tmp(:,4)=tmp(:,4)*3; end % diag collision test against membranes
+                %if er2==1; tmp(:,4)=tmp(:,4)*2; end % diag collision test against membranes
                 tmp(:,1:3) = tmp(:,1:3)*rotmat(init,spinang);
                 tmp(:,1:3) = tmp(:,1:3)*rotmat(rotax,theta)+memloc;
                 
