@@ -1,15 +1,16 @@
 %% placing memprots with new atomic membrane structure
 pix = 12;
 targ = {'ATPS.membrane.complex.mat'};
+%targ = {'ATPS.membrane.mat'};
 %targ = {'GABAar.membrane.complex.mat'};
 pmod = param_model(pix,'layers',targ);
 
 sz = [200,200,100];
-memdat = gen_mem_atom(sz,pix,'num',3);
+memdat = gen_mem_atom(sz,pix,'num',3); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
-rng(5)
+%rng(5)
 
 %%
 split = struct; dx = struct; list = struct;
@@ -30,11 +31,13 @@ end
 %memat(:,4) = 3;
 %split.mem = memdat.atoms.vesicle;
 
+%{
 for i=1:numel(pmod.layers)
     for j=1:numel(pmod.layers{i}.id)
         atoms.(pmod.layers{i}.id{j}) = zeros(0,4);
     end
 end
+%}
 dyn{1} = single(zeros(0,3)); dyn{2} = 1;
 leaf = 1e3;
 mu = mu_build(dyn{1},[0,0,0;sz*pix],'leafmax',leaf,'maxdepth',2);
@@ -48,19 +51,20 @@ memsel = j;%randi(numel(memdat)); % select membrane to place on
 qq = vertcat(memdat.memcell{[1:j-1,1+j:end]});
 kdt = KDTreeSearcher(qq);
 
-if any(ismember(sel.flags,'complex'))
-    sel.sumperim = vertcat(sel.perim{:});
-    subsel = 0;
-else
-    sel.sumperim = sel.perim{1};
-    subsel = randi(numel(sel.id));
-end
 % start off preselecting coords from it or just start running through them? 
 % they are not spatially ordered
-iters = 150;
+iters = 200;
 count.s = 0; count.f = 0;
 for i=1:iters
     % inner loop: random axial rotation, rotation to transmembrane vector, collision test
+    if any(ismember(sel.flags,'complex'))
+        sel.sumperim = vertcat(sel.perim{:});
+        subsel = 0;
+    else
+        subsel = randi(numel(sel.id));
+        sel.sumperim = sel.perim{subsel};
+    end
+    
     % mem vector and figuring stuff
     memloc = memdat.memcell{memsel}(i,:); % selected coordinate
     surfvec = memdat.normcell{memsel}(i,:); % normal vector to surface at coordinate
@@ -81,14 +85,15 @@ for i=1:iters
     [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
     %} 
-    %mu first faster overall, mu is faster per iteration so saves time avoiding knn
-    %
+    % mu first marginally faster - might be more so with more atoms (carbon, etc)
+    % mu first stays faster with increasingly large iterations/accumulated atoms
+    % one mem at a time is fast (don't need to regenerate kdt) but could create weirdness
     
-    %if err==0
+    if err==0
         [ix,d] = knnsearch(kdt,rot2,'K',1,'SortIndices',0); % sort false might be faster
         %if any(d<15), er2=1; else er2=0; end % hard switch since no base value for er2
         if any(d<15), err=1; else err=0; end
-    %end
+    end
     
     %{
     if err==0
@@ -97,8 +102,6 @@ for i=1:iters
     err = any(err>0);
     end
     %}
-    %20/6 21/6 mu first
-    %11/19 11/17 10/17 mu second
     
     % if no collision, switch to place subunits as needed after replicating rotations
     if err==0
@@ -116,7 +119,14 @@ for i=1:iters
                 [split,dx] = dynsplit(tmp,split,dx,sel.id{u});
                 list.(sel.id{u})(end+1,:) = memloc;
             end
-        else
+        else % if not complex, use subsel index to write only that model
+            tmp = sel.adat{subsel};
+            %if er2==1; tmp(:,4)=tmp(:,4)*2; end % diag collision test against membranes
+            tmp(:,1:3) = tmp(:,1:3)*rotmat(init,spinang);
+            tmp(:,1:3) = tmp(:,1:3)*rotmat(rotax,theta)+memloc;
+            
+            [split,dx] = dynsplit(tmp,split,dx,sel.id{subsel});
+            list.(sel.id{subsel})(end+1,:) = memloc;
             % use subsel index to place that item alone
         end
         %tpts = sel.adat{sub};
