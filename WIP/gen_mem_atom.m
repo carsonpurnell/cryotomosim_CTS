@@ -159,7 +159,7 @@ for i=1:numel(minit)
     if numel(minit)>1
         qq = vertcat(minit{[1:i-1,1+i:end]}); % scrape all other points (faster if minit itself pruned first)
         [d] = pdist2(qq,minit{i},'euclidean','smallest',1); % detect pts in cell close to pts of other cells
-        cellpts = (d>(thick*1.6+40+numel(minit))); 
+        cellpts = (d>(thick*1.8+40+numel(minit)*2)); 
         %remove pts too close to other cells - not great, common edge clipping
         % use a larger distance for membranes marked for proteins?
         % need larger retreat with weighted cells since things are more squished
