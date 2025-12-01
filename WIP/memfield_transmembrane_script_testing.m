@@ -3,10 +3,11 @@ pix = 12;
 targ = {'ATPS.membrane.complex.mat'};
 %targ = {'ATPS.membrane.mat'};
 %targ = {'GABAar.membrane.complex.mat'};
+targ = {'ATPS.membrane.complex.mat','GABAar.membrane.complex.mat','ATPS__flip.6j5i.membrane.mat'};
 pmod = param_model(pix,'layers',targ);
 
-sz = [400,400,100];
-memdat = gen_mem_atom(sz,pix,'num',4:8,'memsz',2); % needs carbon exclusion and input
+sz = [300,300,100];
+memdat = gen_mem_atom(sz,pix,'num',3:6,'memsz',2); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
@@ -53,9 +54,10 @@ kdt = KDTreeSearcher(qq);
 
 % start off preselecting coords from it or just start running through them? 
 % they are not spatially ordered
-iters = 1000;
+iters = 400;
 count.s = 0; count.f = 0;
 for i=1:iters
+    sel = pmod.layers{1}(randi(numel(pmod.layers{1})));
     % inner loop: random axial rotation, rotation to transmembrane vector, collision test
     if any(ismember(sel.flags,'complex'))
         sel.sumperim = vertcat(sel.perim{:});
@@ -149,7 +151,8 @@ end
 dyn{1}(dyn{2}:end,:) = [];
 
 disp(count)
-[vol,solv] = helper_atoms2vol(pix,split,sz*pix);
+%%
+[vol,solv,atlas] = helper_atoms2vol(pix,split,sz*pix);
 mvol = helper_atoms2vol(pix,memdat.atoms,sz*pix);
 sliceViewer(max(vol,mvol));
 
