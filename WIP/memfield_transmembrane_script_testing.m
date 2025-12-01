@@ -5,8 +5,8 @@ targ = {'ATPS.membrane.complex.mat'};
 %targ = {'GABAar.membrane.complex.mat'};
 pmod = param_model(pix,'layers',targ);
 
-sz = [200,200,100];
-memdat = gen_mem_atom(sz,pix,'num',3); % needs carbon exclusion and input
+sz = [400,400,100];
+memdat = gen_mem_atom(sz,pix,'num',4:8,'memsz',2); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
@@ -53,7 +53,7 @@ kdt = KDTreeSearcher(qq);
 
 % start off preselecting coords from it or just start running through them? 
 % they are not spatially ordered
-iters = 200;
+iters = 2000;
 count.s = 0; count.f = 0;
 for i=1:iters
     % inner loop: random axial rotation, rotation to transmembrane vector, collision test
