@@ -53,7 +53,7 @@ kdt = KDTreeSearcher(qq);
 
 % start off preselecting coords from it or just start running through them? 
 % they are not spatially ordered
-iters = 2000;
+iters = 1000;
 count.s = 0; count.f = 0;
 for i=1:iters
     % inner loop: random axial rotation, rotation to transmembrane vector, collision test
