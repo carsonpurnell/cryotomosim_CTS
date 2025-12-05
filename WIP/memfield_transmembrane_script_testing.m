@@ -3,7 +3,7 @@ pix = 12;
 targ = {'ATPS.membrane.complex.mat'};
 %targ = {'ATPS.membrane.mat'};
 %targ = {'GABAar.membrane.complex.mat'};
-targ = {'ATPS.membrane.complex.mat','GABAar.membrane.complex.mat','ATPS__flip.6j5i.membrane.cif'};
+targ = {'GABAar.membrane.complex.mat','ATPS__flip.6j5i.membrane.cif'}; %flip.mat not flipped?
 pmod = param_model(pix,'layers',targ);
 
 sz = [300,300,100];
