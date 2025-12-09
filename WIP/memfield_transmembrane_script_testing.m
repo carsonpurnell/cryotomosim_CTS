@@ -5,10 +5,11 @@ targ = {'ATPS.membrane.complex.mat'};
 %targ = {'GABAar.membrane.complex.mat'};
 targ = {'GABAar.membrane.complex.mat','ATPS__flip.6j5i.membrane.cif'...%}; %flip.mat not flipped?
     'COVID19_spike.membrane.complex.pdb','ETC1_huge__6zkq.membrane.cif','kchannel__1bl8.membrane.pdb'};
+targ = {'ATPS__flip.6j5i.membrane.cif'};
 pmod = param_model(pix,'layers',targ);
 
 sz = [300,300,100];
-memdat = gen_mem_atom(sz,pix,'num',3:6,'memsz',2); % needs carbon exclusion and input
+memdat = gen_mem_atom(sz,pix,'num',7,'memsz',1,'frac',0.4); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
@@ -105,7 +106,7 @@ for i=1:iters
         % no muix yet, not testing
         mu = mu_build(rot2,muix,mu,'leafmax',leaf,'maxdepth',2);
         
-        if subsel==0
+        if subsel==0 % if complex, write each individual submodel after transforming
             for u=1:numel(sel.id)
                 tmp = sel.adat{u};
                 %if er2==1; tmp(:,4)=tmp(:,4)*2; end % diag collision test against membranes
@@ -123,15 +124,11 @@ for i=1:iters
             
             [split,dx] = dynsplit(tmp,split,dx,sel.id{subsel});
             list.(sel.id{subsel})(end+1,:) = memloc;
-            % use subsel index to place that item alone
         end
-        %tpts = sel.adat{sub};
-        %tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
         count.s=count.s+1;
     else
         count.f=count.f+1;
-        %disp('fail, something borked')
     end
 end
 
@@ -154,7 +151,6 @@ diagpts = [init;rotax;surfvec];
 % plot3p(list.ATPS_head,'o'); hold on; plot3p(list.ATPS_head+memdat.normcell{1}(1:50,:)*100,'.'); % diag vecs
 % plot3p(dyn{1}(1:dyn{2}-1,:),'.'); hold on; plot3p(memdat.memcell{1},'.'); % diag placements
 %% internal functions
-
 
 function [err,loc,tform,ovcheck,ix] = anyloc(boxsize,tperim,dyn,retry,tol,mu)
 for r=1:retry
