@@ -33,13 +33,6 @@ end
 %memat(:,4) = 3;
 %split.mem = memdat.atoms.vesicle;
 
-%{
-for i=1:numel(pmod.layers)
-    for j=1:numel(pmod.layers{i}.id)
-        atoms.(pmod.layers{i}.id{j}) = zeros(0,4);
-    end
-end
-%}
 dyn{1} = single(zeros(0,3)); dyn{2} = 1;
 leaf = 1e3;
 mu = mu_build(dyn{1},[0,0,0;sz*pix],'leafmax',leaf,'maxdepth',2);
