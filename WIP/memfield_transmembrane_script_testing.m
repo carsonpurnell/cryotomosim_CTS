@@ -78,7 +78,7 @@ for i=1:iters
     
     %diagori = init*rotmat(rotax,theta);
     
-    %
+    %{
     [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
     %} 
@@ -86,20 +86,20 @@ for i=1:iters
     % mu first stays faster with increasingly large iterations/accumulated atoms
     % one mem at a time is fast (don't need to regenerate kdt) but could create weirdness
     
-    if err==0
+    %if err==0
         [ix,d] = knnsearch(kdt,rot2,'K',1,'SortIndices',0); % sort false might be faster
         %if any(d<15), er2=1; else er2=0; end % hard switch since no base value for er2
         if any(d<15), err=1; else err=0; end
-    end
+    %end
     
-    %{
+    %
     if err==0
     [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
     end
     %}
-    % mu/mem first: 
-    % kdt first: 
+    % mu/mem first: 151/19 103/17 63/16
+    % kdt first: 51/77 
     
     % if no collision, switch to place subunits as needed after replicating rotations
     if err==0
