@@ -191,8 +191,9 @@ for i=1:numel(minit)
     
     atoms.(id) = [atoms.(id);tmp];
     
-    memcell{i} = mesh; % core points mesh for placing proteins
-    normcell{i} = shapenorm(mesh,sh1); % calculate normal vectors for mesh points
+    pmesh = mesh(1:round(end/3),:); % preprune the mesh to speed vecnorms & clean weird facets
+    memcell{i} = pmesh; % core points mesh for placing proteins
+    normcell{i} = shapenorm(pmesh,sh1); % calculate normal vectors for mesh points
     % these vectors are generally correct, but a minority are significantly off normal
     % use a slower reliable method? or do more triangles and pool them?
 end
@@ -205,7 +206,7 @@ end
 end 
 
 function [atoms,head,tail,shell,mesh] = shape2mem(shape,thick,atomfrac)
-mesh = randtess(0.5,shape,'s'); % might need raised (higher resolution?) if holes prevent memvec computing
+mesh = randtess(0.6,shape,'s'); % might need raised (higher resolution?) if holes prevent memvec computing
 vec = randn(size(mesh)); vec = 0.9*thick*vec./vecnorm(vec,2,2);
 shell = alphaShape(mesh+vec,30+thick*2); % hopefully works across pixel/membrane sizes
 
