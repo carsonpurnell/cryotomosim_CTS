@@ -8,12 +8,12 @@ targ = {'GABAar.membrane.complex.mat','ATPS__flip.6j5i.membrane.cif'...%}; %flip
 targ = {'ATPS__flip.6j5i.membrane.cif'};
 pmod = param_model(pix,'layers',targ);
 
-sz = [300,300,100];
-memdat = gen_mem_atom(sz,pix,'num',7,'memsz',1,'frac',0.4); % needs carbon exclusion and input
+sz = [300,300,80];
+memdat = gen_mem_atom(sz,pix,'num',3:6,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
-%rng(5)
+rng(9)
 
 %%
 split = struct; dx = struct; list = struct;
@@ -40,6 +40,7 @@ mu = mu_build(dyn{1},[0,0,0;sz*pix],'leafmax',leaf,'maxdepth',2);
 
 init = [0,0,1];
 sel = pmod.layers{1}(1);
+tol = 2;
 
 for j=1:numel(memdat.memcell)
 memsel = j;%randi(numel(memdat)); % select membrane to place on
@@ -78,7 +79,6 @@ for i=1:iters
     %diagori = init*rotmat(rotax,theta);
     
     %
-    tol = 2;
     [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
     %} 
@@ -94,11 +94,12 @@ for i=1:iters
     
     %{
     if err==0
-    tol = 2;
     [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
     end
     %}
+    % mu/mem first: 
+    % kdt first: 
     
     % if no collision, switch to place subunits as needed after replicating rotations
     if err==0
