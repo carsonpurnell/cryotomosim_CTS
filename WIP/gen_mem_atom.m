@@ -193,6 +193,8 @@ for i=1:numel(minit)
     
     memcell{i} = mesh; % core points mesh for placing proteins
     normcell{i} = shapenorm(mesh,sh1); % calculate normal vectors for mesh points
+    % these vectors are generally correct, but a minority are significantly off normal
+    % use a slower reliable method? or do more triangles and pool them?
 end
 f = fieldnames(atoms);
 for i=1:numel(f)
@@ -243,6 +245,6 @@ p2 = pts(ix(3,:),:);
 p3 = pts(ix(4,:),:);
 ntmp = cross(p1-p3,p2-p3); % vectors normal to local facet triangle
 nvecs = ntmp./vecnorm(ntmp,2,2); % normalize vectors to unit length
-in = inShape(sh,pts+nvecs*5); %test if pts inside shape
+in = inShape(sh,pts+nvecs*2); %test if pts inside shape
 nvecs(in,:) = nvecs(in,:)*-1; % invert pts inside the shape to make all point outward from surface
 end
