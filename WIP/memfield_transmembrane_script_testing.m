@@ -73,9 +73,8 @@ for i=1:iters
     theta = -acos( dot(init,surfvec) ); % angle between ori vec and surface
     
     spinang = rand*2*pi;
-    rot1 = sel.sumperim*rotmat(init,spinang); % random axial rotation
-    rot2 = rot1*rotmat(rotax,theta)+memloc;
-    
+    rot1 = sel.sumperim*rotmat(init,spinang); % apply random axial rotation
+    rot2 = rot1*rotmat(rotax,theta)+memloc; % apply rotation to surface vector and translate
     %diagori = init*rotmat(rotax,theta);
     
     %
