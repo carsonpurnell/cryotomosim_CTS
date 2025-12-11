@@ -9,7 +9,7 @@ targ = {'ATPS__flip.6j5i.membrane.cif'};
 pmod = param_model(pix,'layers',targ);
 
 sz = [300,300,80];
-memdat = gen_mem_atom(sz,pix,'num',3:6,'memsz',1,'frac',-1); % needs carbon exclusion and input
+memdat = gen_mem_atom(sz,pix,'num',3:8);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
@@ -42,8 +42,14 @@ init = [0,0,1];
 sel = pmod.layers{1}(1);
 tol = 2;
 
+% currently each membrane is acting as a layer, actual layers on top would be messy
+% any simple way to differentially fill membranes? random layer selection might work
 for j=1:numel(memdat.memcell)
 memsel = j;%randi(numel(memdat)); % select membrane to place on
+
+% skip bare membrane
+memflags = memdat.table.class(j);
+if any(matches(memflags,'bare')); continue; end % skip placements for bare mems
 
 qq = vertcat(memdat.memcell{[1:j-1,1+j:end]});
 kdt = KDTreeSearcher(qq);
@@ -52,7 +58,10 @@ kdt = KDTreeSearcher(qq);
 % they are not spatially ordered
 iters = 400;
 count.s = 0; count.f = 0;
-for i=1:iters
+% spread iterations out, or have a per-mem iteration thing? from size?
+% use mesh count in the membrane for approximate iteration count, not needing fine-tuning?
+% instead of flat bare flag, have a density value as multiplier on mesh pts?
+for i=1:iters 
     sel = pmod.layers{1}(randi(numel(pmod.layers{1})));
     % inner loop: random axial rotation, rotation to transmembrane vector, collision test
     if any(ismember(sel.flags,'complex'))
@@ -104,7 +113,9 @@ for i=1:iters
         mu = mu_build(rot2,muix,mu,'leafmax',leaf,'maxdepth',2);
         
         if subsel==0 % if complex, write each individual submodel after transforming
-            for u=1:numel(sel.id)
+            tmpix = 1:numel(sel.ix);
+            % for assembly, instead construct tmpix with the randomized models needed
+            for u=tmpix
                 tmp = sel.adat{u};
                 %if er2==1; tmp(:,4)=tmp(:,4)*2; end % diag collision test against membranes
                 tmp(:,1:3) = tmp(:,1:3)*rotmat(init,spinang);
