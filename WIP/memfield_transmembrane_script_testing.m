@@ -42,8 +42,8 @@ init = [0,0,1];
 sel = pmod.layers{1}(1);
 tol = 2;
 
-% currently each membrane is acting as a layer, actual layers on top would be messy
-% any simple way to differentially fill membranes? random layer selection might work
+% currently each membrane is acting as a layer, new set of extra layers would be too messy
+% use existing layers, randomly (or from membrane definition?) select layer to use?
 for j=1:numel(memdat.memcell)
 memsel = j;%randi(numel(memdat)); % select membrane to place on
 
@@ -54,8 +54,6 @@ if any(matches(memflags,'bare')); continue; end % skip placements for bare mems
 qq = vertcat(memdat.memcell{[1:j-1,1+j:end]});
 kdt = KDTreeSearcher(qq);
 
-% start off preselecting coords from it or just start running through them? 
-% they are not spatially ordered
 iters = 400;
 count.s = 0; count.f = 0;
 % spread iterations out, or have a per-mem iteration thing? from size?
@@ -73,6 +71,9 @@ for i=1:iters
     end
     
     % mem vector and figuring stuff
+    % coordinates are not spatially ordered, so can be selected randomly
+    
+    % % % start of placement test block for building a subfunct
     memloc = memdat.memcell{memsel}(i,:); % selected coordinate
     surfvec = memdat.normcell{memsel}(i,:); % normal vector to surface at coordinate
     
@@ -90,6 +91,7 @@ for i=1:iters
     [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
     %} 
+    % % % end of block for test placement subfunct
     % mu first marginally faster - might be more so with more atoms (carbon, etc)
     % mu first stays faster with increasingly large iterations/accumulated atoms
     
@@ -112,6 +114,7 @@ for i=1:iters
         % no muix yet, not testing
         mu = mu_build(rot2,muix,mu,'leafmax',leaf,'maxdepth',2);
         
+        % make write block into a generic subfunct and propogate to other atomfills?
         if subsel==0 % if complex, write each individual submodel after transforming
             tmpix = 1:numel(sel.ix);
             % for assembly, instead construct tmpix with the randomized models needed
