@@ -81,6 +81,8 @@ class = {mdict(classindex).class};
 blobtable = table(cen,classindex,class',szmult,...
     'VariableNames',{'centroid','classindex','class','szmult'});%,'vol'});
 
+% can't subindex into table to change it, multiple flags per me difficult. go to struct?
+
 % prepartitioning cells
 iters = 2;%round(1*1/frac+sqrt(num)/2); % relaxation iters, probably not doing much anymore, set to 1-3?
 %[cen,pf] = voronoirelax(field,cen,iters,[seed{:,1}]'); % was using weight, trying to obsolete
@@ -93,6 +95,8 @@ iters = 4;
 minit = cell(1,seeds); v = zeros(1,seeds);
 
 for i=1:seeds
+    % randomly make 50% bare for test
+    if rand<.5, blobtable{i,3} = {'bare'}; end
     for j=1:iters
         tmpdist = 35*memsz*blobtable.szmult(i); % 35 arbitrary, might need to change
         msel = blobtable.classindex(i);
