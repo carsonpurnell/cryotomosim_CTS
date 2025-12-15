@@ -13,7 +13,7 @@ memdat = gen_mem_atom(sz,pix,'num',3:8);%,'memsz',1,'frac',-1); % needs carbon e
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
-rng(9)
+%rng(9)
 
 %%
 split = struct; dx = struct; list = struct;
@@ -47,18 +47,16 @@ tol = 2;
 for j=1:numel(memdat.memcell)
 memsel = j;%randi(numel(memdat)); % select membrane to place on
 
-% skip bare membrane
-memflags = memdat.table.class(j);
-if any(matches(memflags,'bare')); continue; end % skip placements for bare mems
+%memflags = memdat.table.class(j); if any(matches(memflags,'bare')); continue; end
+if rand<memdat.table.bare(j); continue; end % skip if membrane doesn't hit dictionary fraction
 
-qq = vertcat(memdat.memcell{[1:j-1,1+j:end]});
-kdt = KDTreeSearcher(qq);
+%qq = vertcat(memdat.memcell{[1:j-1,1+j:end]});
+kdt = KDTreeSearcher(vertcat(memdat.memcell{[1:j-1,1+j:end]}));
 
-iters = 400;
+% placement attempt iterations, based on meshpts available and class fraction
+iters = size(memdat.memcell{memsel},1)*.04*memdat.table.protfrac(j);
+
 count.s = 0; count.f = 0;
-% spread iterations out, or have a per-mem iteration thing? from size?
-% use mesh count in the membrane for approximate iteration count, not needing fine-tuning?
-% instead of flat bare flag, have a density value as multiplier on mesh pts?
 for i=1:iters 
     sel = pmod.layers{1}(randi(numel(pmod.layers{1})));
     % inner loop: random axial rotation, rotation to transmembrane vector, collision test
@@ -70,14 +68,15 @@ for i=1:iters
         sel.sumperim = sel.perim{subsel};
     end
     
-    % mem vector and figuring stuff
-    % coordinates are not spatially ordered, so can be selected randomly
     
     % % % start of placement test block for building a subfunct
-    memloc = memdat.memcell{memsel}(i,:); % selected coordinate
-    surfvec = memdat.normcell{memsel}(i,:); % normal vector to surface at coordinate
-    
     % need to funct out placement testing, and allow multiple attempts per iteration
+    
+    % coordinates are not spatially ordered, so can be selected randomly or linearly
+    meshsel = randi(size(memdat.memcell{memsel},1));
+    
+    memloc = memdat.memcell{memsel}(meshsel,:); % selected coordinate
+    surfvec = memdat.normcell{memsel}(meshsel,:); % normal vector to surface at coordinate
     
     rotax=cross(init,surfvec); %compute the normal axis from the rotation angle
     theta = -acos( dot(init,surfvec) ); % angle between ori vec and surface
@@ -91,7 +90,6 @@ for i=1:iters
     [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
     %} 
-    % % % end of block for test placement subfunct
     % mu first marginally faster - might be more so with more atoms (carbon, etc)
     % mu first stays faster with increasingly large iterations/accumulated atoms
     
@@ -100,6 +98,8 @@ for i=1:iters
         %if any(d<15), er2=1; else er2=0; end % hard switch since no base value for er2
         if any(d<15), err=1; else err=0; end
     end
+    
+    % % % end of block for test placement subfunct
     
     %{
     if err==0
