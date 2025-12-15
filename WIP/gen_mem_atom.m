@@ -21,10 +21,10 @@ elseif numel(param.num)==2
 end
 
 % individual mem definitions (mostly garbage still)
-mdict(1) = struct('class','vesicle','thick',27,'thickvar',6,'size',1,'sphericity',0.9);
-%mdict(2) = struct('class','er','thick',13,'thickvar',4,'size',0.6,'sphericity',0.2);
-%mdict(3) = struct('class','membrane','thick',32,'thickvar',4,'size',2,'sphericity',0.1);
-%mdict(4) = struct('class','mito','thick',35,'thickvar',3,'size',3,'sphericity',0.8);
+mdict(1) = struct('class','vesicle','thick',27,'thickvar',6,'size',1,'sphericity',0.9,'bare',0.2,'protfrac',1);
+%mdict(2) = struct('class','er','thick',13,'thickvar',4,'size',0.6,'sphericity',0.2,'memprot',0.2);
+%mdict(3) = struct('class','membrane','thick',32,'thickvar',4,'size',2,'sphericity',0.1,'memprot',0.5);
+%mdict(4) = struct('class','mito','thick',35,'thickvar',3,'size',3,'sphericity',0.8,'memprot',0.0);
 % make a fixed dict and use a selector function to grab the target ones?
 
 % derived vars
@@ -78,8 +78,10 @@ classindex = randi(numel(mdict),seeds,1); % class as index to the mdict, not as 
 szmult = [mdict(classindex).size]'; % probably need to reintroduce some variability
 szmult = szmult+szmult.*(rand(seeds,1)-rand(seeds,1))/2; % 0.5 to 1.5 spread?
 class = {mdict(classindex).class};
-blobtable = table(cen,classindex,class',szmult,...
-    'VariableNames',{'centroid','classindex','class','szmult'});%,'vol'});
+bare = [mdict(classindex).bare]';
+protfrac = [mdict(classindex).protfrac]';
+blobtable = table(cen,classindex,class',szmult,bare,protfrac,...
+    'VariableNames',{'centroid','classindex','class','szmult','bare','protfrac'});%,'vol'});
 
 % can't subindex into table to change it, multiple flags per me difficult. go to struct?
 
@@ -96,7 +98,8 @@ minit = cell(1,seeds); v = zeros(1,seeds);
 
 for i=1:seeds
     % randomly make 50% bare for test
-    if rand<.5, blobtable{i,3} = {'bare'}; end
+    %if rand<.5, blobtable{i,3} = {'bare'}; end
+    %protfrac = 
     for j=1:iters
         tmpdist = 35*memsz*blobtable.szmult(i); % 35 arbitrary, might need to change
         msel = blobtable.classindex(i);
