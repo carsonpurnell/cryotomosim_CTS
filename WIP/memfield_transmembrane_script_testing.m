@@ -13,7 +13,7 @@ memdat = gen_mem_atom(sz,pix,'num',3:8);%,'memsz',1,'frac',-1); % needs carbon e
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
-%rng(9)
+%rng(11)
 
 %%
 split = struct; dx = struct; list = struct;
@@ -38,8 +38,8 @@ dyn{1} = single(zeros(0,3)); dyn{2} = 1;
 leaf = 1e3;
 mu = mu_build(dyn{1},[0,0,0;sz*pix],'leafmax',leaf,'maxdepth',2);
 
-init = [0,0,1];
-sel = pmod.layers{1}(1);
+init = [0,0,1]; % origin vector for rotation calculations
+%sel = pmod.layers{1}(1);
 tol = 2;
 
 % currently each membrane is acting as a layer, new set of extra layers would be too messy
@@ -54,7 +54,7 @@ if rand<memdat.table.bare(j); continue; end % skip if membrane doesn't hit dicti
 kdt = KDTreeSearcher(vertcat(memdat.memcell{[1:j-1,1+j:end]}));
 
 % placement attempt iterations, based on meshpts available and class fraction
-iters = size(memdat.memcell{memsel},1)*.04*memdat.table.protfrac(j);
+iters = size(memdat.memcell{memsel},1)*.05*memdat.table.protfrac(j);
 
 count.s = 0; count.f = 0;
 for i=1:iters 
