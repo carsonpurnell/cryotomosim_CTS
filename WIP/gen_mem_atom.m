@@ -10,6 +10,7 @@ arguments
     param.num = 2:6 % 1 still empty, alphashape failing
     param.frac = -1
     param.memsz = 1
+    param.prior = []
 end
 box = sz*pix;
 
@@ -37,10 +38,10 @@ param.seeds = round(param.num/param.frac)+0;
 
 %param = struct('num',num,'frac',frac,'memsz',memsz,'seeds',seeds);
 
-[minit,blobtable] = voronoiblobcells(box,param,mdict);
+[minit,blobtable] = voronoiblobcells(box,param,mdict,param.prior);
 % problem: single membrane always in the middle, needs to be random
 
-[atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict,pix);
+[atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict,pix,param.prior);
 
 %memdat = struct('atoms',atoms,'memcell',memcell,'normcell',normcell); %get split annoyingly
 memdat.atoms = atoms;
@@ -51,7 +52,7 @@ end
 
 
 %% internal functions
-function [minit,blobtable] = voronoiblobcells(box,memparam,mdict)
+function [minit,blobtable] = voronoiblobcells(box,memparam,mdict,prior)
 
 %memparam = struct('num',num,'frac',frac,'memsz',memsz,'seeds',seeds);
 num = memparam.num;
@@ -69,6 +70,12 @@ for i=1:3 % rejection loop to eliminate points outside the box to ensure isotrop
     r = field(:,i)>(box(i)+pad);
     field(r,:) = [];
 end
+kdt = KDTreeSearcher(prior);
+[~,d] = knnsearch(kdt,field,'K',1,'SortIndices',0);
+prox = d>150;
+field = field(prox,:);
+%plot3p(prior,'.'); hold on; plot3p(field,'.'); axis equal
+
 % using a cube and using boxsize later stretches mems horizontally instead of vertically
 % nontrivial to get isotropic distribution - rejection sampling only method? or randtess?
 % might get most of the way there by making a cube & discarding above Z?
@@ -151,7 +158,7 @@ blobtable = blobtable(runs,:);
 end
 
 
-function [atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict,pix)
+function [atoms,memcell,normcell] = blob2mem(minit,blobtable,mdict,pix,prior)
 
 atoms = struct;%('vesicle',[],'er',[]);
 for i=1:numel(mdict)
@@ -175,6 +182,11 @@ for i=1:numel(minit)
     end
     % instead alpha the whole cell and remove pts within distance of dense mesh? coverage is better
     cellpts = minit{i}(cellpts,:); %sometimes empty and fails alphashape
+    
+    kdt = KDTreeSearcher(prior);
+    [~,d] = knnsearch(kdt,cellpts,'K',1,'SortIndices',0);
+    prox = d>50;
+    cellpts = cellpts(prox,:);
     
     % need to instead alphashape the whole cell, get a dense surface mesh, remove all pts within thick*~1.1
     % points are not uniform so cells might already be separated by several A, can leave more leeway
