@@ -9,7 +9,9 @@ targ = {'ATPS__flip.6j5i.membrane.cif'};
 pmod = param_model(pix,'layers',targ);
 
 sz = [300,300,80];
-memdat = gen_mem_atom(sz,pix,'num',3:8);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
+[carbon,perim] = gen_carbon(sz*pix);
+
+memdat = gen_mem_atom(sz,pix,'num',3:8,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
@@ -34,7 +36,11 @@ end
 %memat(:,4) = 3;
 %split.mem = memdat.atoms.vesicle;
 
-dyn{1} = single(zeros(0,3)); dyn{2} = 1;
+if isempty(perim)
+    dyn{1} = single(zeros(0,3)); dyn{2} = 1;
+else
+    dyn{1} = perim; dyn{2} = size(perim,1)+1;
+end
 leaf = 1e3;
 mu = mu_build(dyn{1},[0,0,0;sz*pix],'leafmax',leaf,'maxdepth',2);
 
@@ -154,6 +160,7 @@ dyn{1}(dyn{2}:end,:) = [];
 
 disp(count)
 %%
+split.carbon = carbon;
 [vol,solv,atlas] = helper_atoms2vol(pix,split,sz*pix);
 mvol = helper_atoms2vol(pix,memdat.atoms,sz*pix);
 sliceViewer(max(vol,mvol));
