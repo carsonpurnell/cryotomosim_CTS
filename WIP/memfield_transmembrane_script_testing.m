@@ -116,7 +116,7 @@ for i=1:iters
         
         % make write block into a generic subfunct and propogate to other atomfills?
         if subsel==0 % if complex, write each individual submodel after transforming
-            tmpix = 1:numel(sel.ix);
+            tmpix = 1:numel(sel.id);
             % for assembly, instead construct tmpix with the randomized models needed
             for u=tmpix
                 tmp = sel.adat{u};
