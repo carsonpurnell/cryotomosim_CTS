@@ -198,7 +198,7 @@ for i=1:numel(minit)
     
     atoms.(id) = [atoms.(id);tmp];
     
-    pmesh = mesh(1:round(end/3),:); % preprune the mesh to speed vecnorms & clean weird facets
+    pmesh = mesh(1:round(end/2.5),:); % preprune the mesh to speed vecnorms & clean weird facets
     memcell{i} = pmesh; % core points mesh for placing proteins
     normcell{i} = shapenorm(pmesh,sh1); % calculate normal vectors for mesh points
     % these vectors are generally correct, but a minority are significantly off normal
@@ -213,7 +213,7 @@ end
 end 
 
 function [atoms,head,tail,shell,mesh] = shape2mem(shape,thick,atomfrac)
-mesh = randtess(0.6,shape,'s'); % might need raised (higher resolution?) if holes prevent memvec computing
+mesh = randtess(0.5,shape,'s'); % might need raised (higher resolution?) if holes prevent memvec computing
 vec = randn(size(mesh)); vec = 0.9*thick*vec./vecnorm(vec,2,2);
 shell = alphaShape(mesh+vec,30+thick*2); % hopefully works across pixel/membrane sizes
 
@@ -246,12 +246,16 @@ end
 end
 
 function nvecs = shapenorm(pts,sh) % compute normal vectors from shape core mesh
-[~,ix] = pdist2(pts,pts,'squaredeuclidean','Smallest',4); % nearest n pts for speed in fewer iters
+[~,ix] = pdist2(pts,pts,'squaredeuclidean','Smallest',7); % nearest n pts for speed in fewer iters
 
 p1 = pts(ix(2,:),:); % hardpoints for plane/normal vector
 p2 = pts(ix(3,:),:);
 p3 = pts(ix(4,:),:);
+p4 = pts(ix(5,:),:); % hardpoints for plane/normal vector 2
+p5 = pts(ix(6,:),:);
+p6 = pts(ix(7,:),:);
 ntmp = cross(p1-p3,p2-p3); % vectors normal to local facet triangle
+ntmp = ntmp+cross(p4-p6,p5-p6);
 nvecs = ntmp./vecnorm(ntmp,2,2); % normalize vectors to unit length
 in = inShape(sh,pts+nvecs*2); %test if pts inside shape
 nvecs(in,:) = nvecs(in,:)*-1; % invert pts inside the shape to make all point outward from surface
