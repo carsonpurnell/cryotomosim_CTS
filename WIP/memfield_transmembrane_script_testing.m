@@ -10,6 +10,7 @@ pmod = param_model(pix,'layers',targ);
 
 sz = [300,300,80];
 [carbon,perim] = gen_carbon(sz*pix);
+% irregular carbon overlaps from C-shape membranes closing over the carbon edge
 
 memdat = gen_mem_atom(sz,pix,'num',3:8,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
