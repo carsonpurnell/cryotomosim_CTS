@@ -5,7 +5,7 @@ function [carbon,perim] = gen_carbon(vol,pix,opt)
 arguments
     vol (1,3)
     pix = [] %empty or 0 returns atoms, real value returns the volume
-    opt.thick = 140+randi(20)
+    opt.thick = 150+randi(20)
     opt.radius = 1e4+randi(400)-200
 end
 
