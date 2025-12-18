@@ -264,6 +264,7 @@ p0 = pts(ix(1,:),:);
 p1 = pts(ix(2,:),:); % hardpoints for plane/normal vector
 p2 = pts(ix(3,:),:);
 p3 = pts(ix(4,:),:);
+% 3 facets might be useful for a local curve metric too
 
 ntmp = cross(p1-p0,p2-p0)+cross(p2-p0,p3-p0)+cross(p3-p0,p1-p0); % 3 facet normals
 %ntmp = ntmp+cross(p4-p6,p5-p6)+cross(p1-p5,p3-p5);
