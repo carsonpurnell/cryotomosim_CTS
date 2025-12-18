@@ -63,7 +63,7 @@ seeds = memparam.seeds;
 % set up initial volume and points
 pad = max(box)/20*0+50;
 isosz = ones(1,3)*max(box)+pad*2;
-n = round(prod(isosz/100)/1); %approx 100-150 is reliable, higher starts to have voidless blobs
+n = round(prod(isosz/110)/1); %approx 100-150 is reliable, higher starts to have voidless blobs
 field = rand(n,3).*isosz-pad; 
 % add a second larger box at lower density to feather out Z edges?
 for i=1:3 % rejection loop to eliminate points outside the box to ensure isotropy
@@ -173,7 +173,7 @@ for i=1:numel(minit)
     if numel(minit)>1
         qq = vertcat(minit{[1:i-1,1+i:end]}); % scrape all other points (faster if minit itself pruned first)
         [d] = pdist2(qq,minit{i},'euclidean','smallest',1); % detect pts in cell close to pts of other cells
-        cellpts = (d>(thick*1.8+40+numel(minit)*2)); 
+        cellpts = (d>(thick*1.9+40+numel(minit)*2)); 
         %remove pts too close to other cells - not great, common edge clipping
         % use a larger distance for membranes marked for proteins?
         % need larger retreat with weighted cells since things are more squished
@@ -258,16 +258,15 @@ end
 end
 
 function nvecs = shapenorm(pts,sh) % compute normal vectors from shape core mesh
-[~,ix] = pdist2(pts,pts,'squaredeuclidean','Smallest',7); % nearest n pts for speed in fewer iters
+[~,ix] = pdist2(pts,pts,'squaredeuclidean','Smallest',4); % nearest n pts for speed in fewer iters
 
+p0 = pts(ix(1,:),:);
 p1 = pts(ix(2,:),:); % hardpoints for plane/normal vector
 p2 = pts(ix(3,:),:);
 p3 = pts(ix(4,:),:);
-p4 = pts(ix(5,:),:); % hardpoints for plane/normal vector 2
-p5 = pts(ix(6,:),:);
-p6 = pts(ix(7,:),:);
-ntmp = cross(p1-p3,p2-p3); % vectors normal to local facet triangle
-ntmp = ntmp+cross(p4-p6,p5-p6)+cross(p1-p5,p3-p5);
+
+ntmp = cross(p1-p0,p2-p0)+cross(p2-p0,p3-p0)+cross(p3-p0,p1-p0); % 3 facet normals
+%ntmp = ntmp+cross(p4-p6,p5-p6)+cross(p1-p5,p3-p5);
 nvecs = ntmp./vecnorm(ntmp,2,2); % normalize vectors to unit length
 in = inShape(sh,pts+nvecs*2); %test if pts inside shape
 nvecs(in,:) = nvecs(in,:)*-1; % invert pts inside the shape to make all point outward from surface
