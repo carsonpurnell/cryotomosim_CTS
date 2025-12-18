@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.7.0](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.7.0) - 2025-12-18 20:48:56+00:00
+
+WIP expert support for atomistic membrane-associated protein placement and improvements to membrane model generation
+
 ## [v0.6.9](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.6.9) - 2025-09-16 19:34:22+00:00
 
 *No description*
