@@ -70,10 +70,12 @@ for i=1:3 % rejection loop to eliminate points outside the box to ensure isotrop
     r = field(:,i)>(box(i)+pad);
     field(r,:) = [];
 end
-kdt = KDTreeSearcher(prior);
-[~,d] = knnsearch(kdt,field,'K',1,'SortIndices',0);
-prox = d>150;
-field = field(prox,:);
+if ~isempty(prior)
+    kdt = KDTreeSearcher(prior);
+    [~,d] = knnsearch(kdt,field,'K',1,'SortIndices',0);
+    prox = d>150;
+    field = field(prox,:);
+end
 %plot3p(prior,'.'); hold on; plot3p(field,'.'); axis equal
 
 % using a cube and using boxsize later stretches mems horizontally instead of vertically
@@ -183,10 +185,12 @@ for i=1:numel(minit)
     % instead alpha the whole cell and remove pts within distance of dense mesh? coverage is better
     cellpts = minit{i}(cellpts,:); %sometimes empty and fails alphashape
     
-    kdt = KDTreeSearcher(prior);
-    [~,d] = knnsearch(kdt,cellpts,'K',1,'SortIndices',0);
-    prox = d>50;
-    cellpts = cellpts(prox,:);
+    if ~isempty(prior)
+        kdt = KDTreeSearcher(prior);
+        [~,d] = knnsearch(kdt,cellpts,'K',1,'SortIndices',0);
+        prox = d>50;
+        cellpts = cellpts(prox,:);
+    end
     
     % need to instead alphashape the whole cell, get a dense surface mesh, remove all pts within thick*~1.1
     % points are not uniform so cells might already be separated by several A, can leave more leeway
