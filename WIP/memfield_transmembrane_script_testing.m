@@ -1,4 +1,5 @@
 %% placing memprots with new atomic membrane structure
+% now generally functional - do still need vesicle/cytosol placement, doable in normal placer
 pix = 12;
 targ = {'ATPS.membrane.complex.mat'};
 %targ = {'ATPS.membrane.mat'};
@@ -9,7 +10,9 @@ targ = {'ATPS__flip.6j5i.membrane.cif'};
 pmod = param_model(pix,'layers',targ);
 
 sz = [300,300,80];
-[carbon,perim] = gen_carbon(sz*pix);
+
+%[carbon,perim] = gen_carbon(sz*pix);
+carbon = []; perim = [];
 % irregular carbon overlaps from C-shape membranes closing over the carbon edge
 
 memdat = gen_mem_atom(sz,pix,'num',3:8,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
