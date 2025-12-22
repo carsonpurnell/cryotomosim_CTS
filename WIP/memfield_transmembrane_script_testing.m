@@ -11,8 +11,8 @@ pmod = param_model(pix,'layers',targ);
 
 sz = [300,300,80];
 
-%[carbon,perim] = gen_carbon(sz*pix);
-carbon = []; perim = [];
+[carbon,perim] = gen_carbon(sz*pix);
+%carbon = []; perim = [];
 % irregular carbon overlaps from C-shape membranes closing over the carbon edge
 
 memdat = gen_mem_atom(sz,pix,'num',3:8,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
@@ -54,7 +54,7 @@ tol = 2;
 
 % currently each membrane is acting as a layer, new set of extra layers would be too messy
 % use existing layers, randomly (or from membrane definition?) select layer to use?
-retry = 3;
+retry = 4;
 count.s = 0; count.f = 0;
 for j=1:numel(memdat.memcell)
 memsel = j;%randi(numel(memdat)); % select membrane to place on
@@ -66,7 +66,7 @@ if rand<memdat.table.bare(j); continue; end % skip if membrane doesn't hit dicti
 kdt = KDTreeSearcher(vertcat(memdat.memcell{[1:j-1,1+j:end]}));
 
 % placement attempt iterations, based on meshpts available and class fraction
-iters = size(memdat.memcell{memsel},1)*.025*memdat.table.protfrac(j);
+iters = size(memdat.memcell{memsel},1)*.020*memdat.table.protfrac(j);
 
 for i=1:iters 
     sel = pmod.layers{1}(randi(numel(pmod.layers{1})));
