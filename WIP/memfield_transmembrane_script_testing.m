@@ -54,6 +54,8 @@ tol = 2;
 
 % currently each membrane is acting as a layer, new set of extra layers would be too messy
 % use existing layers, randomly (or from membrane definition?) select layer to use?
+retry = 3;
+count.s = 0; count.f = 0;
 for j=1:numel(memdat.memcell)
 memsel = j;%randi(numel(memdat)); % select membrane to place on
 
@@ -64,9 +66,8 @@ if rand<memdat.table.bare(j); continue; end % skip if membrane doesn't hit dicti
 kdt = KDTreeSearcher(vertcat(memdat.memcell{[1:j-1,1+j:end]}));
 
 % placement attempt iterations, based on meshpts available and class fraction
-iters = size(memdat.memcell{memsel},1)*.05*memdat.table.protfrac(j);
+iters = size(memdat.memcell{memsel},1)*.025*memdat.table.protfrac(j);
 
-count.s = 0; count.f = 0;
 for i=1:iters 
     sel = pmod.layers{1}(randi(numel(pmod.layers{1})));
     % inner loop: random axial rotation, rotation to transmembrane vector, collision test
@@ -79,7 +80,7 @@ for i=1:iters
     end
     
     
-    % % % start of placement test block for building a subfunct
+    for v=1:retry % % % start of placement test block for building a subfunct
     % need to funct out placement testing, and allow multiple attempts per iteration
     
     % coordinates are not spatially ordered, so can be selected randomly or linearly
@@ -99,6 +100,7 @@ for i=1:iters
     %
     [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
+    if err==1; continue; end
     %} 
     % mu first marginally faster - might be more so with more atoms (carbon, etc)
     % mu first stays faster with increasingly large iterations/accumulated atoms
@@ -109,7 +111,8 @@ for i=1:iters
         if any(d<15), err=1; else err=0; end
     end
     
-    % % % end of block for test placement subfunct
+    if err==0; break; end
+    end % % % end of block for test placement subfunct
     
     %{
     if err==0
