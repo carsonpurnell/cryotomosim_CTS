@@ -188,7 +188,7 @@ for i=1:numel(minit)
     if ~isempty(prior)
         kdt = KDTreeSearcher(prior);
         [~,d] = knnsearch(kdt,cellpts,'K',1,'SortIndices',0);
-        prox = d>50;
+        prox = d>60;
         cellpts = cellpts(prox,:);
     end
     
