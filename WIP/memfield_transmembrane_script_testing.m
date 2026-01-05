@@ -6,7 +6,7 @@ targ = {'ATPS.membrane.complex.mat'};
 %targ = {'GABAar.membrane.complex.mat'};
 targ = {'GABAar.membrane.complex.mat','ATPS__flip.6j5i.membrane.cif'...%}; %flip.mat not flipped?
     'COVID19_spike.membrane.complex.pdb','ETC1_huge__6zkq.membrane.cif','kchannel__1bl8.membrane.pdb'};
-targ = {'ATPS__flip.6j5i.membrane.cif'};
+%targ = {'ATPS__flip.6j5i.membrane.cif'};
 pmod = param_model(pix,'layers',targ);
 
 sz = [300,300,80];
@@ -66,7 +66,7 @@ if rand<memdat.table.bare(j); continue; end % skip if membrane doesn't hit dicti
 kdt = KDTreeSearcher(vertcat(memdat.memcell{[1:j-1,1+j:end]}));
 
 % placement attempt iterations, based on meshpts available and class fraction
-iters = size(memdat.memcell{memsel},1)*.015*memdat.table.protfrac(j);
+iters = size(memdat.memcell{memsel},1)*.02*memdat.table.protfrac(j);
 
 for i=1:iters 
     sel = pmod.layers{1}(randi(numel(pmod.layers{1})));
