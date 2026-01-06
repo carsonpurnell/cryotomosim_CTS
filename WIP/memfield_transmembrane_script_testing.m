@@ -56,7 +56,13 @@ tol = 2;
 % use existing layers, randomly (or from membrane definition?) select layer to use?
 retry = 5;
 count.s = 0; count.f = 0;
+prog = 0; progdel = ''; % initialize starting vals for progress bar
 for j=1:numel(memdat.memcell)
+    prog = prog + 100/numel(memdat.memcell); %progress update block
+    progstr = sprintf('progress %3.1f, membrane %i of %i', prog,j,numel(memdat.memcell));
+    fprintf([progdel, progstr]);
+    progdel = repmat(sprintf('\b'), 1, length(progstr));
+    
 memsel = j;%randi(numel(memdat)); % select membrane to place on
 
 %memflags = memdat.table.class(j); if any(matches(memflags,'bare')); continue; end
@@ -157,6 +163,7 @@ for i=1:iters
 end
 
 end
+fprintf('   membrane embedding complete, placed %i, failed attempts %i \n',count.s,count.f);
 
 % remove trailing zeros from atom registry and sparse tracker
 f = fieldnames(split);
@@ -165,7 +172,7 @@ for i=1:numel(f)
 end
 dyn{1}(dyn{2}:end,:) = [];
 
-disp(count)
+%disp(count)
 %%
 split.carbon = carbon;
 [vol,solv,atlas] = helper_atoms2vol(pix,split,sz*pix);
