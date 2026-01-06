@@ -43,6 +43,7 @@ for i=1:n
     which=randi(numel(particles));
     sel = particles(which); 
     sub = randi(numel(sel.adat));
+    
     [err,loc,tform,ovcheck,muix] = anyloc(boxsize,sel.perim{sub},dyn,retry,tol,mu); % just as fast
     
     if err==0
