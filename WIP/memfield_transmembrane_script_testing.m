@@ -9,13 +9,13 @@ targ = {'GABAar.membrane.complex.mat','ATPS__flip.6j5i.membrane.cif'...%}; %flip
 targ = {'ATPS__flip.6j5i.membrane.cif'};
 pmod = param_model(pix,'layers',targ);
 
-sz = [300,300,80];
+sz = [500,500,90];
 
-%[carbon,perim] = gen_carbon(sz*pix);
-carbon = []; perim = [];
+[carbon,perim] = gen_carbon(sz*pix);
+%carbon = []; perim = [];
 % irregular carbon overlaps from C-shape membranes closing over the carbon edge
 
-memdat = gen_mem_atom(sz,pix,'num',3:8,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
+memdat = gen_mem_atom(sz,pix,'num',15,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
@@ -59,7 +59,7 @@ count.s = 0; count.f = 0;
 prog = 0; progdel = ''; % initialize starting vals for progress bar
 for j=1:numel(memdat.memcell)
     prog = prog + 100/numel(memdat.memcell); %progress update block
-    progstr = sprintf('progress %3.1f, membrane %i of %i', prog,j,numel(memdat.memcell));
+    progstr = sprintf('progress %3.0f, membrane %i of %i', prog,j,numel(memdat.memcell));
     fprintf([progdel, progstr]);
     progdel = repmat(sprintf('\b'), 1, length(progstr));
     
@@ -114,7 +114,7 @@ for i=1:iters
     if err==0
         [ix,d] = knnsearch(kdt,rot2,'K',1,'SortIndices',0); % sort false might be faster
         %if any(d<15), er2=1; else er2=0; end % hard switch since no base value for er2
-        if any(d<15), err=1; else err=0; end
+        if any(d<16), err=1; else err=0; end
     end
     
     if err==0; break; end
@@ -163,7 +163,7 @@ for i=1:iters
 end
 
 end
-fprintf('   membrane embedding complete, placed %i, failed attempts %i \n',count.s,count.f);
+fprintf('   membrane embedding complete, placed %i, failed %i \n',count.s,count.f);
 
 % remove trailing zeros from atom registry and sparse tracker
 f = fieldnames(split);
