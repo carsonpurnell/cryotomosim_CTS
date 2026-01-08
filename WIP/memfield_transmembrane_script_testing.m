@@ -9,13 +9,16 @@ targ = {'GABAar.membrane.complex.mat','ATPS__flip.6j5i.membrane.cif'...%}; %flip
 targ = {'ATPS__flip.6j5i.membrane.cif'};
 pmod = param_model(pix,'layers',targ);
 
-sz = [500,500,90];
+sz = [300,300,80];
 
-[carbon,perim] = gen_carbon(sz*pix);
-%carbon = []; perim = [];
+if true
+    [carbon,perim] = gen_carbon(sz*pix);
+else
+    carbon = []; perim = [];
+end
 % irregular carbon overlaps from C-shape membranes closing over the carbon edge
 
-memdat = gen_mem_atom(sz,pix,'num',15,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
+memdat = gen_mem_atom(sz,pix,'num',9,'frac',0.9,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
