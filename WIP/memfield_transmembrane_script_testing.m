@@ -18,13 +18,13 @@ else
 end
 % irregular carbon overlaps from C-shape membranes closing over the carbon edge
 
-memdat = gen_mem_atom(sz,pix,'num',9,'frac',0.9,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
+memdat = gen_mem_atom(sz,pix,'num',3:9,'frac',0.9,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
 %rng(11)
 
-%%
+%% internal prep stuff
 split = struct; dx = struct; list = struct;
 layers = pmod.layers;
 for i=1:numel(layers)
@@ -55,6 +55,7 @@ init = [0,0,1]; % origin vector for rotation calculations
 %sel = pmod.layers{1}(1);
 tol = 2;
 
+%% placement loop
 % currently each membrane is acting as a layer, new set of extra layers would be too messy
 % use existing layers, randomly (or from membrane definition?) select layer to use?
 retry = 5;
@@ -166,6 +167,7 @@ for i=1:iters
 end
 
 end
+%% cleanup and output stuff
 fprintf('   membrane embedding complete, placed %i, failed %i \n',count.s,count.f);
 
 % remove trailing zeros from atom registry and sparse tracker
@@ -175,14 +177,13 @@ for i=1:numel(f)
 end
 dyn{1}(dyn{2}:end,:) = [];
 
-%disp(count)
-%%
+
 split.carbon = carbon;
 [vol,solv,atlas] = helper_atoms2vol(pix,split,sz*pix);
 mvol = helper_atoms2vol(pix,memdat.atoms,sz*pix);
 sliceViewer(max(vol,mvol));
 
-diagpts = [init;rotax;surfvec];
+%diagpts = [init;rotax;surfvec];
 % plot3p(list.ATPS_head,'o'); hold on; plot3p(list.ATPS_head+memdat.normcell{1}(1:50,:)*100,'.'); % diag vecs
 % plot3p(dyn{1}(1:dyn{2}-1,:),'.'); hold on; plot3p(memdat.memcell{1},'.'); % diag placements
 %% internal functions
