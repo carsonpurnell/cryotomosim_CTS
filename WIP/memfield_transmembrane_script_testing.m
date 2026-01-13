@@ -11,18 +11,28 @@ pmod = param_model(pix,'layers',targ);
 
 sz = [300,300,80];
 
-if true
+if false
     [carbon,perim] = gen_carbon(sz*pix);
 else
     carbon = []; perim = [];
 end
 % irregular carbon overlaps from C-shape membranes closing over the carbon edge
 
+%skips if mem==1?
 memdat = gen_mem_atom(sz,pix,'num',3:9,'frac',0.9,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
 %rng(11)
+
+%%
+[split,dx,dyn] = int_fill_mem(memdat,carbon,perim,pmod,sz); % carbon unused
+
+split.carbon = carbon;
+[vol,solv,atlas] = helper_atoms2vol(pix,split,sz*pix);
+mvol = helper_atoms2vol(pix,memdat.atoms,sz*pix);
+sliceViewer(max(vol,mvol));
+
 
 %% internal prep stuff
 split = struct; dx = struct; list = struct;
@@ -187,6 +197,167 @@ sliceViewer(max(vol,mvol));
 % plot3p(list.ATPS_head,'o'); hold on; plot3p(list.ATPS_head+memdat.normcell{1}(1:50,:)*100,'.'); % diag vecs
 % plot3p(dyn{1}(1:dyn{2}-1,:),'.'); hold on; plot3p(memdat.memcell{1},'.'); % diag placements
 %% internal functions
+
+function [split,dx,dyn] = int_fill_mem(memdat,carbon,perim,pmod,sz)
+% internal prep stuff
+split = struct; dx = struct; list = struct;
+pix = pmod.pix;
+layers = pmod.layers;
+for i=1:numel(layers)
+namelist = [layers{i}.modelname]; %slower than cell, but more consistent
+for j=1:numel(namelist)
+    if ~isfield(split,namelist{j})
+        split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
+        list.(namelist{j}) = zeros(0,3);
+    end
+    if ~isfield(dx,namelist{j})
+        dx.(namelist{j}) = size(split.(namelist{j}),1)+1;
+    end
+end
+end
+%memat = vertcat(memdat.memcell{:});
+%memat(:,4) = 3;
+%split.mem = memdat.atoms.vesicle;
+
+if isempty(perim)
+    dyn{1} = single(zeros(0,3)); dyn{2} = 1;
+else
+    dyn{1} = perim; dyn{2} = size(perim,1)+1;
+end
+leaf = 1e3;
+mu = mu_build(dyn{1},[0,0,0;sz*pix],'leafmax',leaf,'maxdepth',2);
+
+init = [0,0,1]; % origin vector for rotation calculations
+%sel = pmod.layers{1}(1);
+tol = 2;
+
+% placement loop
+% currently each membrane is acting as a layer, new set of extra layers would be too messy
+% use existing layers, randomly (or from membrane definition?) select layer to use?
+retry = 5;
+count.s = 0; count.f = 0;
+prog = 0; progdel = ''; % initialize starting vals for progress bar
+for j=1:numel(memdat.memcell)
+    prog = prog + 100/numel(memdat.memcell); %progress update block
+    progstr = sprintf('progress %3.0f, membrane %i of %i', prog,j,numel(memdat.memcell));
+    fprintf([progdel, progstr]);
+    progdel = repmat(sprintf('\b'), 1, length(progstr));
+    
+memsel = j;%randi(numel(memdat)); % select membrane to place on
+
+%memflags = memdat.table.class(j); if any(matches(memflags,'bare')); continue; end
+if rand<memdat.table.bare(j); continue; end % skip if membrane doesn't hit dictionary fraction
+
+%qq = vertcat(memdat.memcell{[1:j-1,1+j:end]});
+kdt = KDTreeSearcher(vertcat(memdat.memcell{[1:j-1,1+j:end]}));
+
+% placement attempt iterations, based on meshpts available and class fraction
+iters = size(memdat.memcell{memsel},1)*.02*memdat.table.protfrac(j);
+
+for i=1:iters 
+    sel = pmod.layers{1}(randi(numel(pmod.layers{1})));
+    % inner loop: random axial rotation, rotation to transmembrane vector, collision test
+    if any(ismember(sel.flags,'complex'))
+        sel.sumperim = vertcat(sel.perim{:});
+        subsel = 0;
+    else
+        subsel = randi(numel(sel.id));
+        sel.sumperim = sel.perim{subsel};
+    end
+    
+    
+    for v=1:retry % % % start of placement test block for building a subfunct
+    % need to funct out placement testing, and allow multiple attempts per iteration
+    
+    % coordinates are not spatially ordered, so can be selected randomly or linearly
+    meshsel = randi(size(memdat.memcell{memsel},1));
+    
+    memloc = memdat.memcell{memsel}(meshsel,:); % selected coordinate
+    surfvec = memdat.normcell{memsel}(meshsel,:); % normal vector to surface at coordinate
+    
+    rotax=cross(init,surfvec); %compute the normal axis from the rotation angle
+    theta = -acos( dot(init,surfvec) ); % angle between ori vec and surface
+    
+    spinang = rand*2*pi;
+    rot1 = sel.sumperim*rotmat(init,spinang); % apply random axial rotation
+    rot2 = rot1*rotmat(rotax,theta)+memloc; % apply rotation to surface vector and translate
+    %diagori = init*rotmat(rotax,theta);
+    
+    %
+    [err,muix] = mu_search(mu,rot2,tol,'short',0);
+    err = any(err>0);
+    if err==1; continue; end
+    %} 
+    % mu first marginally faster - might be more so with more atoms (carbon, etc)
+    % mu first stays faster with increasingly large iterations/accumulated atoms
+    
+    if err==0
+        [ix,d] = knnsearch(kdt,rot2,'K',1,'SortIndices',0); % sort false might be faster
+        %if any(d<15), er2=1; else er2=0; end % hard switch since no base value for er2
+        if any(d<16), err=1; else err=0; end
+    end
+    
+    if err==0; break; end
+    end % % % end of block for test placement subfunct
+    
+    %{
+    if err==0
+    [err,muix] = mu_search(mu,rot2,tol,'short',0);
+    err = any(err>0);
+    end
+    %}
+    
+    % if no collision, switch to place subunits as needed after replicating rotations
+    if err==0
+        [dyn] = dyncell(rot2,dyn); % write to partial list for fast lookups (obsolete under mu?)
+        % no muix yet, not testing
+        mu = mu_build(rot2,muix,mu,'leafmax',leaf,'maxdepth',2);
+        
+        % make write block into a generic subfunct and propogate to other atomfills?
+        if subsel==0 % if complex, write each individual submodel after transforming
+            tmpix = 1:numel(sel.id);
+            % for assembly, instead construct tmpix with the randomized models needed
+            for u=tmpix
+                tmp = sel.adat{u};
+                %if er2==1; tmp(:,4)=tmp(:,4)*2; end % diag collision test against membranes
+                tmp(:,1:3) = tmp(:,1:3)*rotmat(init,spinang);
+                tmp(:,1:3) = tmp(:,1:3)*rotmat(rotax,theta)+memloc;
+                
+                [split,dx] = dynsplit(tmp,split,dx,sel.id{u});
+                list.(sel.id{u})(end+1,:) = memloc;
+            end
+        else % if not complex, use subsel index to write only that model
+            tmp = sel.adat{subsel};
+            %if er2==1; tmp(:,4)=tmp(:,4)*2; end % diag collision test against membranes
+            tmp(:,1:3) = tmp(:,1:3)*rotmat(init,spinang);
+            tmp(:,1:3) = tmp(:,1:3)*rotmat(rotax,theta)+memloc;
+            
+            [split,dx] = dynsplit(tmp,split,dx,sel.id{subsel});
+            list.(sel.id{subsel})(end+1,:) = memloc;
+        end
+        
+        count.s=count.s+1;
+    else
+        count.f=count.f+1;
+    end
+end
+
+end
+% cleanup and output stuff
+fprintf('   membrane embedding complete, placed %i, failed %i \n',count.s,count.f);
+
+% remove trailing zeros from atom registry and sparse tracker
+f = fieldnames(split);
+for i=1:numel(f)
+    split.(f{i})(dx.(f{i}):end,:) = [];
+end
+dyn{1}(dyn{2}:end,:) = [];
+
+end
+
+
+
+
 
 function [err,loc,tform,ovcheck,ix] = anyloc(boxsize,tperim,dyn,retry,tol,mu)
 for r=1:retry
