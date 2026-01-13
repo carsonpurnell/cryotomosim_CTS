@@ -30,8 +30,17 @@ memdat = gen_mem_atom(sz,pix,'num',3:9,'frac',0.9,'prior',perim);%,'memsz',1,'fr
 %%
 %[split,dx,dyn] = int_fill_mem(memdat,carbon,perim,pmod,sz); % carbon unused
 [split,dx,dyn] = helper_randfill_atom_mem(memdat,pmod,perim,sz); % carbon unused
-
+%%
 split.carbon = carbon;
+tmp = struct2cell(split);
+atoms = vertcat(tmp{:}); % rediculously slow - reverse search order?
+
+tic; kdt = KDTreeSearcher(memdat.atoms.vesicle(:,1:3)); toc %10s
+tic; kdt2 = KDTreeSearcher(atoms(:,1:3)); toc %95s VERY slow
+%%
+tic; [ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); toc
+tic; [ix,d2] = knnsearch(kdt2,memdat.atoms.vesicle(:,1:3),'K',1,'SortIndices',0); toc
+
 [vol,solv,atlas] = helper_atoms2vol(pix,split,sz*pix);
 mvol = helper_atoms2vol(pix,memdat.atoms,sz*pix);
 sliceViewer(max(vol,mvol));
