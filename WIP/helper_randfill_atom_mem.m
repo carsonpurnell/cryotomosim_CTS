@@ -2,16 +2,17 @@ function [split,dx,dyn] = helper_randfill_atom_mem(memdat,pmod,perim,sz)
 %% prep stuff
 split = struct; dx = struct; list = struct;
 pix = pmod.pix;
-for i=1:numel(pmod.layers)
+
+for i=1:numel(pmod.layers) % filter to only the membrane entries
+    ix = zeros(1,numel(pmod.layers{i}));
     for j=1:numel(pmod.layers{i})
-        ix = any(contains([pmod.layers{i}(j).flags],'membrane'));
-        if ix
-            layers{i}(j) = pmod.layers{i}(j);
-        end
+        ix(j) = any(contains([pmod.layers{i}(j).flags],'membrane'));
     end
+    layers{i} = pmod.layers{i}(logical(ix));
 end
-layers
-%layers = pmod.layers; % filter only to membrane proteins? easier than skipping
+% need to test multiple different layers
+% each layer a different mixture - loop over each with the membrane loop
+
 for i=1:numel(layers)
 namelist = [layers{i}.modelname]; %slower than cell, but more consistent
 for j=1:numel(namelist)
@@ -61,7 +62,7 @@ if rand<memdat.table.bare(j); continue; end % skip if membrane doesn't hit dicti
 kdt = KDTreeSearcher(vertcat(memdat.memcell{[1:j-1,1+j:end]}));
 
 % placement attempt iterations, based on meshpts available and class fraction
-iters = size(memdat.memcell{memsel},1)*.02*memdat.table.protfrac(j);
+iters = size(memdat.memcell{memsel},1)*.03*memdat.table.protfrac(j);
 
 for i=1:iters 
     sel = layers{1}(randi(numel(layers{1})));
