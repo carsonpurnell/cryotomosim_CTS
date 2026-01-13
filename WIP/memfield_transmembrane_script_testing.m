@@ -11,7 +11,7 @@ pmod = param_model(pix,'layers',targ);
 
 sz = [300,300,80];
 
-if false
+if true
     [carbon,perim] = gen_carbon(sz*pix);
 else
     carbon = []; perim = [];
@@ -26,7 +26,8 @@ memdat = gen_mem_atom(sz,pix,'num',3:9,'frac',0.9,'prior',perim);%,'memsz',1,'fr
 %rng(11)
 
 %%
-[split,dx,dyn] = int_fill_mem(memdat,carbon,perim,pmod,sz); % carbon unused
+%[split,dx,dyn] = int_fill_mem(memdat,carbon,perim,pmod,sz); % carbon unused
+[split,dx,dyn] = helper_randfill_atom_mem(memdat,pmod,perim,sz); % carbon unused
 
 split.carbon = carbon;
 [vol,solv,atlas] = helper_atoms2vol(pix,split,sz*pix);
@@ -354,9 +355,6 @@ end
 dyn{1}(dyn{2}:end,:) = [];
 
 end
-
-
-
 
 
 function [err,loc,tform,ovcheck,ix] = anyloc(boxsize,tperim,dyn,retry,tol,mu)
