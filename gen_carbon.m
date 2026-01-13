@@ -67,7 +67,7 @@ function [edge] = carbonshape(vol,opt)
 pad = [50,50,0]; %padding to avoid edge effects
 
 %centering etc needs more control - at least transparency
-hcen = [vol(1)/2+(rand-rand)*(900),opt.radius+30+randi(200)]; %offsets for the hole center
+hcen = [vol(1)/2+(rand-rand)*(1000),opt.radius+30+randi(240)]; %offsets for the hole center
 filmsize = vol+pad*2; filmsize(3) = opt.thick;
 
 psn = round(prod(filmsize)/18000); % 18000 just looks nice and is fast, not evaluated or hypothesis-driven
