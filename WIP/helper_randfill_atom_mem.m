@@ -1,8 +1,17 @@
 function [split,dx,dyn] = helper_randfill_atom_mem(memdat,pmod,perim,sz)
-%% internal prep stuff
+%% prep stuff
 split = struct; dx = struct; list = struct;
 pix = pmod.pix;
-layers = pmod.layers;
+for i=1:numel(pmod.layers)
+    for j=1:numel(pmod.layers{i})
+        ix = any(contains([pmod.layers{i}(j).flags],'membrane'));
+        if ix
+            layers{i}(j) = pmod.layers{i}(j);
+        end
+    end
+end
+layers
+%layers = pmod.layers; % filter only to membrane proteins? easier than skipping
 for i=1:numel(layers)
 namelist = [layers{i}.modelname]; %slower than cell, but more consistent
 for j=1:numel(namelist)
@@ -55,7 +64,7 @@ kdt = KDTreeSearcher(vertcat(memdat.memcell{[1:j-1,1+j:end]}));
 iters = size(memdat.memcell{memsel},1)*.02*memdat.table.protfrac(j);
 
 for i=1:iters 
-    sel = pmod.layers{1}(randi(numel(pmod.layers{1})));
+    sel = layers{1}(randi(numel(layers{1})));
     % inner loop: random axial rotation, rotation to transmembrane vector, collision test
     if any(ismember(sel.flags,'complex'))
         sel.sumperim = vertcat(sel.perim{:});
