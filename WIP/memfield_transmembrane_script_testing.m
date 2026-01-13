@@ -7,6 +7,8 @@ targ = {'ATPS.membrane.complex.mat'};
 targ = {'GABAar.membrane.complex.mat','ATPS__flip.6j5i.membrane.cif'...%}; %flip.mat not flipped?
     'COVID19_spike.membrane.complex.pdb','ETC1_huge__6zkq.membrane.cif','kchannel__1bl8.membrane.pdb'};
 targ = {'ATPS__flip.6j5i.membrane.cif'};
+
+targ = {'ATPS__flip.6j5i.membrane.cif','tric_6nra-open_7lum-closed.group.mat','GABAar.membrane.complex.mat'};
 pmod = param_model(pix,'layers',targ);
 
 sz = [300,300,80];
