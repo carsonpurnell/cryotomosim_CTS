@@ -30,28 +30,31 @@ memdat = gen_mem_atom(sz,pix,'num',3:9,'frac',0.9,'prior',perim);%,'memsz',1,'fr
 %%
 %[split,dx,dyn] = int_fill_mem(memdat,carbon,perim,pmod,sz); % carbon unused
 [split,dx,dyn] = helper_randfill_atom_mem(memdat,pmod,perim,sz); % carbon unused
+% need to add carbon to dyn before or during
+% need to add mem perims to dyn at the end to feed into normal placement engine
 %%
 tmp = struct2cell(split);
 atoms = vertcat(tmp{:}); % rediculously slow - reverse search order?
 
-%tic; kdt = KDTreeSearcher(memdat.atoms.vesicle(:,1:3)); toc %10s
+tic; kdt = KDTreeSearcher(memdat.atoms.vesicle(:,1:3)); toc %10s
 tic; kdt2 = KDTreeSearcher(atoms(:,1:3)); toc %95s slow, but overall faster
 %
-%tic; [ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); toc %715s
+tic; [ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); toc %715s
 tic; [~,d2] = knnsearch(kdt2,memdat.atoms.vesicle(:,1:3),'K',1,'SortIndices',0); toc %154s
-%%
+%
 ix = d2>4.0; % possibly a bit high
 mematoms = memdat.atoms.vesicle(ix,:);
 
 % KDT seems to take way too long to be worth it, even the faster method is 4 mins.
 % alt 1: ad-hoc in atoms2vol (or variant for handling mems) in simulator - janky and annoying
-% alt 2: per-membrane KDT for lot fewer searches at a time - after placement loop
+% alt 2: per-membrane KDT for lot fewer searches at a time - after placement loop?
 split.carbon = carbon; % after membrane pruning for a bit of speed
 
+split.vesicle = mematoms;
 [vol,solv,atlas] = helper_atoms2vol(pix,split,sz*pix);
-mvol = helper_atoms2vol(pix,mematoms,sz*pix);
-sliceViewer(max(vol,mvol));
-
+%mvol = helper_atoms2vol(pix,mematoms,sz*pix);
+%sliceViewer(max(vol,mvol));
+sliceViewer(vol);
 
 %% internal prep stuff
 split = struct; dx = struct; list = struct;
