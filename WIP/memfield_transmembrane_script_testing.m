@@ -38,9 +38,9 @@ atoms = vertcat(tmp{:}); % rediculously slow - reverse search order?
 tic; kdt2 = KDTreeSearcher(atoms(:,1:3)); toc %95s slow, but overall faster
 %
 %tic; [ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); toc %715s
-tic; [ix,d2] = knnsearch(kdt2,memdat.atoms.vesicle(:,1:3),'K',1,'SortIndices',0); toc %154s
-%
-ix = d2>4.4;
+tic; [~,d2] = knnsearch(kdt2,memdat.atoms.vesicle(:,1:3),'K',1,'SortIndices',0); toc %154s
+%%
+ix = d2>4.0; % possibly a bit high
 mematoms = memdat.atoms.vesicle(ix,:);
 
 % KDT seems to take way too long to be worth it, even the faster method is 4 mins.
