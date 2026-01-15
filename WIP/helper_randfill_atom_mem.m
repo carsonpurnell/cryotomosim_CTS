@@ -163,6 +163,26 @@ for i=1:numel(f)
 end
 dyn{1}(dyn{2}:end,:) = [];
 
+% need to add membrane perims into dyn
+
+
+tmp = struct2cell(split);
+atoms = vertcat(tmp{:}); % rediculously slow - reverse search order?
+
+%tic; kdt = KDTreeSearcher(memdat.atoms.vesicle(:,1:3)); toc %11 12 15
+kdt2 = KDTreeSearcher(atoms(:,1:3)); %toc %77 68 67
+
+f = fieldnames(memdat.atoms);
+for i=1:numel(f)
+    %tic; [ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); toc %554 119 121
+    [~,d2] = knnsearch(kdt2,memdat.atoms.(f{i})(:,1:3),'K',1,'SortIndices',0); %toc %147 201 168
+    
+    ixf = d2>4.0; % possibly a bit high
+    mematoms = memdat.atoms.(f{i})(ixf,:);
+    split.(f{i}) = mematoms;
+end
+
+
 end
 
 
@@ -183,7 +203,6 @@ if e>size(split.(splitname),1)
 end
 split.(splitname)(tdx:e,:) = tpts; dx.(splitname) = tdx+l;
 end
-
 
 function t = rotmat(ax,rad)
 ax = ax/norm(ax);
