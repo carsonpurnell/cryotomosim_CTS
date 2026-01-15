@@ -28,10 +28,15 @@ memdat = gen_mem_atom(sz,pix,'num',3:9,'prior',perim);%,'memsz',1,'frac',-1); % 
 %rng(11)
 
 %%
-%[split,dx,dyn] = int_fill_mem(memdat,carbon,perim,pmod,sz); % carbon unused
 [split,dx,dyn] = helper_randfill_atom_mem(memdat,pmod,perim,sz);
-% need to add carbon to dyn before or during
 % need to add mem perims to dyn at the end to feed into normal placement engine
+
+split.carbon = carbon; % move into membrane placement instead?
+dx.carbon = size(carbon,1);
+
+[vol,solv,atlas] = helper_atoms2vol(pix,split,sz*pix);
+sliceViewer(vol);
+
 %%
 tmp = struct2cell(split);
 atoms = vertcat(tmp{:}); % rediculously slow - reverse search order?
@@ -49,7 +54,7 @@ mematoms = memdat.atoms.vesicle(ixf,:);
 % alt 1: ad-hoc in atoms2vol (or variant for handling mems) in simulator - janky and annoying
 % alt 2: per-membrane KDT for lot fewer searches at a time - after placement loop?
 
-%%
+%
 split.carbon = carbon; % after membrane pruning for a bit of speed
 
 %split.vesicle = mematoms;
