@@ -49,7 +49,7 @@ count.s = 0; count.f = 0;
 prog = 0; progdel = ''; % initialize starting vals for progress bar
 for j=1:numel(memdat.memcell)
     prog = prog + 100/numel(memdat.memcell); %progress update block
-    progstr = sprintf('progress %3.0f, membrane %i of %i', prog,j,numel(memdat.memcell));
+    progstr = sprintf('progress %3.0f%, membrane %i of %i', prog,j,numel(memdat.memcell));
     fprintf([progdel, progstr]);
     progdel = repmat(sprintf('\b'), 1, length(progstr));
     
