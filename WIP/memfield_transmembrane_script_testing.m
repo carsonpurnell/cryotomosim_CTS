@@ -1,6 +1,6 @@
 %% placing memprots with new atomic membrane structure
 % now generally functional - do still need vesicle/cytosol placement, doable in normal placer
-pix = 12;
+pix = 10;
 targ = {'ATPS.membrane.complex.mat'};
 %targ = {'ATPS.membrane.mat'};
 %targ = {'GABAar.membrane.complex.mat'};
@@ -11,7 +11,7 @@ targ = {'ATPS__flip.6j5i.membrane.cif'};
 targ = {'ATPS__flip.6j5i.membrane.cif','tric_6nra-open_7lum-closed.group.mat','GABAar.membrane.complex.mat'};
 pmod = param_model(pix,'layers',targ);
 
-sz = [300,300,80];
+sz = [400,400,80];
 
 if true
     [carbon,perim] = gen_carbon(sz*pix);
@@ -21,7 +21,7 @@ end
 % irregular carbon overlaps from C-shape membranes closing over the carbon edge
 
 %skips if mem==1?
-memdat = gen_mem_atom(sz,pix,'num',3:9,'frac',0.9,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
+memdat = gen_mem_atom(sz,pix,'num',3:9,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
@@ -29,28 +29,30 @@ memdat = gen_mem_atom(sz,pix,'num',3:9,'frac',0.9,'prior',perim);%,'memsz',1,'fr
 
 %%
 %[split,dx,dyn] = int_fill_mem(memdat,carbon,perim,pmod,sz); % carbon unused
-[split,dx,dyn] = helper_randfill_atom_mem(memdat,pmod,perim,sz); % carbon unused
+[split,dx,dyn] = helper_randfill_atom_mem(memdat,pmod,perim,sz);
 % need to add carbon to dyn before or during
 % need to add mem perims to dyn at the end to feed into normal placement engine
 %%
 tmp = struct2cell(split);
 atoms = vertcat(tmp{:}); % rediculously slow - reverse search order?
 
-tic; kdt = KDTreeSearcher(memdat.atoms.vesicle(:,1:3)); toc %10s
-tic; kdt2 = KDTreeSearcher(atoms(:,1:3)); toc %95s slow, but overall faster
+%tic; kdt = KDTreeSearcher(memdat.atoms.vesicle(:,1:3)); toc %11 12 15
+tic; kdt2 = KDTreeSearcher(atoms(:,1:3)); toc %77 68 67
 %
-tic; [ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); toc %715s
-tic; [~,d2] = knnsearch(kdt2,memdat.atoms.vesicle(:,1:3),'K',1,'SortIndices',0); toc %154s
+%tic; [ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); toc %554 119 121
+tic; [~,d2] = knnsearch(kdt2,memdat.atoms.vesicle(:,1:3),'K',1,'SortIndices',0); toc %147 201 168
 %
-ix = d2>4.0; % possibly a bit high
-mematoms = memdat.atoms.vesicle(ix,:);
+ixf = d2>4.0; % possibly a bit high
+mematoms = memdat.atoms.vesicle(ixf,:);
 
 % KDT seems to take way too long to be worth it, even the faster method is 4 mins.
 % alt 1: ad-hoc in atoms2vol (or variant for handling mems) in simulator - janky and annoying
 % alt 2: per-membrane KDT for lot fewer searches at a time - after placement loop?
+
+%%
 split.carbon = carbon; % after membrane pruning for a bit of speed
 
-split.vesicle = mematoms;
+%split.vesicle = mematoms;
 [vol,solv,atlas] = helper_atoms2vol(pix,split,sz*pix);
 %mvol = helper_atoms2vol(pix,mematoms,sz*pix);
 %sliceViewer(max(vol,mvol));
