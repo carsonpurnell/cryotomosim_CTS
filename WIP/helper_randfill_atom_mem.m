@@ -49,7 +49,7 @@ count.s = 0; count.f = 0;
 prog = 0; progdel = ''; % initialize starting vals for progress bar
 for j=1:numel(memdat.memcell)
     prog = prog + 100/numel(memdat.memcell); %progress update block
-    progstr = sprintf('progress %3.0f%, membrane %i of %i', prog,j,numel(memdat.memcell));
+    progstr = sprintf('progress %3.0f, membrane %i of %i',prog,j,numel(memdat.memcell));
     fprintf([progdel, progstr]);
     progdel = repmat(sprintf('\b'), 1, length(progstr));
     
@@ -75,8 +75,8 @@ for i=1:iters
         sel.sumperim = sel.perim{subsel};
     end
     
-    
-    for v=1:retry % % % start of placement test block for building a subfunct
+    % % % start of placement test block (might subfunct)
+    for v=1:retry 
     % need to funct out placement testing, and allow multiple attempts per iteration
     
     % coordinates are not spatially ordered, so can be selected randomly or linearly
@@ -91,31 +91,18 @@ for i=1:iters
     spinang = rand*2*pi;
     rot1 = sel.sumperim*rotmat(init,spinang); % apply random axial rotation
     rot2 = rot1*rotmat(rotax,theta)+memloc; % apply rotation to surface vector and translate
-    %diagori = init*rotmat(rotax,theta);
     
-    %
     [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
     if err==1; continue; end
-    %} 
-    % mu first marginally faster - might be more so with more atoms (carbon, etc)
-    % mu first stays faster with increasingly large iterations/accumulated atoms
-    
     if err==0
-        [ix,d] = knnsearch(kdt,rot2,'K',1,'SortIndices',0); % sort false might be faster
-        %if any(d<15), er2=1; else er2=0; end % hard switch since no base value for er2
+        [~,d] = knnsearch(kdt,rot2,'K',1,'SortIndices',0); % sort false might be faster
         if any(d<16), err=1; else err=0; end
     end
-    
     if err==0; break; end
-    end % % % end of block for test placement subfunct
-    
-    %{
-    if err==0
-    [err,muix] = mu_search(mu,rot2,tol,'short',0);
-    err = any(err>0);
     end
-    %}
+    % % % end of block for test placement
+    
     
     % if no collision, switch to place subunits as needed after replicating rotations
     if err==0
