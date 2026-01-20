@@ -10,6 +10,11 @@ for i=1:numel(pmod.layers) % filter to only the membrane entries
     end
     layers{i} = pmod.layers{i}(logical(ix));
 end
+ix = cellfun(@numel,layers);
+layers = layers(logical(ix)); % prune layers without membranes
+if numel(layers)<1, dyn = {}; return, end % bail if there are no memprots
+% probably need cleanup dx/dyn/split stuff
+
 % need to test multiple different layers
 % each layer a different mixture - loop over each with the membrane loop
 
@@ -64,8 +69,12 @@ kdt = KDTreeSearcher(vertcat(memdat.memcell{[1:j-1,1+j:end]}));
 % placement attempt iterations, based on meshpts available and class fraction
 iters = size(memdat.memcell{memsel},1)*.03*memdat.table.protfrac(j);
 
+memcycle = randi(numel(layers));
+
 for i=1:iters 
-    sel = layers{1}(randi(numel(layers{1})));
+    sel = layers{memcycle}(randi(numel(layers{memcycle})));
+    
+    
     % inner loop: random axial rotation, rotation to transmembrane vector, collision test
     if any(ismember(sel.flags,'complex'))
         sel.sumperim = vertcat(sel.perim{:});
