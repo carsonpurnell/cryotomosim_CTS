@@ -71,7 +71,7 @@ theta = rand*2*pi;
 t1 = sin(theta); t2 = cos(theta);
 q = abs([t1*vol(1),t2*vol(2)]);
 r = opt.radius-max(q)/2 -min(q)/4+rand*max(vol)/10;
-hcen = [t1,t2]*r+vol(1:2)/2+(rand(1,2)-rand(1,2))*vol(1:2)/20;
+hcen = [t1,t2]*r+vol(1:2)/2+(rand(1,2)-rand(1,2)).*vol(1:2)/20;
 
 %hcen = [vol(1)/2+(rand-rand)*(1000),opt.radius+30+randi(240)]; %old offsets for the hole center
 filmsize = vol+pad*2; filmsize(3) = opt.thick;
