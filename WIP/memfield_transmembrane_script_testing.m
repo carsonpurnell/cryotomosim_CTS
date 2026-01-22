@@ -23,12 +23,12 @@ end
 % irregular carbon overlaps from C-shape membranes closing over the carbon edge
 
 %skips if mem==1?
-memdat = gen_mem_atom(sz,pix,'num',3,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
+memdat = gen_mem_atom(sz,pix,'num',3:9,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
 %rng(11)
-[c] = helper_atoms2vol(pix,carbon,sz*pix); sliceViewer(c);
+%[c] = helper_atoms2vol(pix,carbon,sz*pix); sliceViewer(c);
 
 %%
 [split,dx,dyn] = helper_randfill_atom_mem(memdat,pmod,perim,sz);
