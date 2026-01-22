@@ -67,11 +67,11 @@ function [edge] = carbonshape(vol,opt)
 pad = [50,50,0]; %padding to avoid edge effects
 
 % instead of fixed centering, randomize circular offset away from center?
-theta = rand*0*pi+(rand-rand)/5+0.1
+theta = rand*0*pi+(rand-rand)/5*0
 t1 = sin(theta);
 t2 = cos(theta);
 %r = opt.radius+randi(200)%-(t1+t2)*(vol(1)+vol(2))/100; %random offset angle and distance
-r = opt.radius-(vol(1)+vol(2))/5*0
+r = opt.radius+min(t1*vol(1),t2*vol(2))
 hcen = [t1,t2]*r+vol(1:2)/2
 
 %centering etc needs more control - at least transparency
