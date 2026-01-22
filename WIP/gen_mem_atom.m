@@ -73,7 +73,7 @@ end
 if ~isempty(prior)
     kdt = KDTreeSearcher(prior);
     [~,d] = knnsearch(kdt,field,'K',1,'SortIndices',0);
-    prox = d>150;
+    prox = d>175;
     field = field(prox,:);
 end
 %plot3p(prior,'.'); hold on; plot3p(field,'.'); axis equal
