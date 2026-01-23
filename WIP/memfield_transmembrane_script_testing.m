@@ -8,7 +8,7 @@ targ = {'GABAar.membrane.complex.mat','ATPS__flip.6j5i.membrane.cif'...%}; %flip
     'COVID19_spike.membrane.complex.pdb','ETC1_huge__6zkq.membrane.cif','kchannel__1bl8.membrane.pdb'};
 targ = {'ATPS__flip.6j5i.membrane.cif'};
 
-%targ = {'ATPS__flip.6j5i.membrane.cif','tric_6nra-open_7lum-closed.group.mat','GABAar.membrane.complex.mat'};
+targ = {'ATPS__flip.6j5i.membrane.cif','tric_6nra-open_7lum-closed.group.mat','GABAar.membrane.complex.mat'};
 %targ = {'ATPS__flip.6j5i.membrane.cif';'GABAar.membrane.complex.mat';'tric_6nra-open_7lum-closed.group.mat'};
 
 pmod = param_model(pix,'layers',targ);
@@ -41,6 +41,7 @@ dx.carbon = size(carbon,1);
 sliceViewer(vol);
 
 %%
+%{
 tmp = struct2cell(split);
 atoms = vertcat(tmp{:}); % rediculously slow - reverse search order?
 
@@ -96,7 +97,6 @@ mu = mu_build(dyn{1},[0,0,0;sz*pix],'leafmax',leaf,'maxdepth',2);
 init = [0,0,1]; % origin vector for rotation calculations
 %sel = pmod.layers{1}(1);
 tol = 2;
-
 %% placement loop
 % currently each membrane is acting as a layer, new set of extra layers would be too messy
 % use existing layers, randomly (or from membrane definition?) select layer to use?
@@ -153,7 +153,7 @@ for i=1:iters
     [err,muix] = mu_search(mu,rot2,tol,'short',0);
     err = any(err>0);
     if err==1; continue; end
-    %} 
+    %
     % mu first marginally faster - might be more so with more atoms (carbon, etc)
     % mu first stays faster with increasingly large iterations/accumulated atoms
     
@@ -228,6 +228,8 @@ sliceViewer(max(vol,mvol));
 %diagpts = [init;rotax;surfvec];
 % plot3p(list.ATPS_head,'o'); hold on; plot3p(list.ATPS_head+memdat.normcell{1}(1:50,:)*100,'.'); % diag vecs
 % plot3p(dyn{1}(1:dyn{2}-1,:),'.'); hold on; plot3p(memdat.memcell{1},'.'); % diag placements
+%}
+
 %% internal functions
 
 function [split,dx,dyn] = int_fill_mem(memdat,carbon,perim,pmod,sz)
