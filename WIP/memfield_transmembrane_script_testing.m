@@ -31,7 +31,7 @@ memdat = gen_mem_atom(sz,pix,'num',3,'prior',perim);%,'memsz',1,'frac',-1); % ne
 
 %[c] = c+helper_atoms2vol(pix,carbon,sz*pix); %sliceViewer(c);
 
-%%
+%{
 for i=1:100
 [carbon,perim] = gen_carbon(sz*pix);
 [c] = c+helper_atoms2vol(pix,carbon,sz*pix);
