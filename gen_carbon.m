@@ -80,7 +80,8 @@ psn = round(prod(filmsize)/18000); % 18000 just looks nice and is fast, not eval
 ps = rand(psn,3).*filmsize-pad;
 h = sqrt( (ps(:,1)-hcen(1)).^2 + (ps(:,2)-hcen(2)).^2 ); %find points inside hole
 ps = ps(h>opt.radius,:); %remove points in hole
-ps(:,3) = ps(:,3)+(vol(3)-opt.thick)/2; %adjust grid to the center of the volume
+zadj = (vol(3)-opt.thick)/2+(rand-rand)*vol(3)*0.3; % partially randomized center-adjust
+ps(:,3) = ps(:,3)+zadj; %adjust grid to the center of the volume
 
 vec = randn(size(ps)); mag = rand(size(ps,1),1)*60;
 vec = mag.*vec./vecnorm(vec,2,2);
