@@ -162,18 +162,17 @@ dyn{1}(dyn{2}:end,:) = [];
 % need to add membrane perims into dyn
 
 %% cleanup membrane, remove lipid pseudoatoms replaced by membrane proteins
-tmp = struct2cell(split);
-atoms = vertcat(tmp{:}); % rediculously slow - reverse search order?
+tmp = struct2cell(split); atoms = vertcat(tmp{:});
 
-kdt = KDTreeSearcher(memdat.atoms.vesicle(:,1:3)); %toc %11 12 15
+%kdt = KDTreeSearcher(memdat.atoms.vesicle(:,1:3)); %toc %11 12 15
 kdt2 = KDTreeSearcher(atoms(:,1:3)); %toc %77 68 67
 
 f = fieldnames(memdat.atoms);
 for i=1:numel(f)
-    [ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); %toc %554 119 121
+    %[ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); %toc %554 119 121
     [~,d2] = knnsearch(kdt2,memdat.atoms.(f{i})(:,1:3),'K',1,'SortIndices',0); %toc %147 201 168
     
-    ixf = d2>4.0; % possibly a bit high
+    ixf = d2>4.0; % appears to reliably prevent overlap without gaps
     mematoms = memdat.atoms.(f{i})(ixf,:);
     split.(f{i}) = mematoms;
 end
