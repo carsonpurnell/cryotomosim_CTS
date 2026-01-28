@@ -115,7 +115,7 @@ for i=1:iters
     
     % if no collision, switch to place subunits as needed after replicating rotations
     if err==0
-        [dyn] = dyncell(rot2,dyn); % write to partial list for fast lookups (obsolete under mu?)
+        [dyn] = dyncell(rot2,dyn); % write to partial list for fast lookups
         % no muix yet, not testing
         mu = mu_build(rot2,muix,mu,'leafmax',leaf,'maxdepth',2);
         
@@ -152,14 +152,12 @@ end
 %% cleanup and output stuff
 fprintf('   membrane embedding complete, placed %i, failed %i \n',count.s,count.f);
 
-% remove trailing zeros from atom registry and sparse tracker
-f = fieldnames(split);
+f = fieldnames(split); % remove trailing zeros in atom registry
 for i=1:numel(f)
     split.(f{i})(dx.(f{i}):end,:) = [];
 end
-dyn{1}(dyn{2}:end,:) = [];
-
-% need to add membrane perims into dyn
+[dyn] = dyncell(vertcat(memdat.memcell{:}),dyn); % add mems to dyn for collision detection
+%dyn{1}(dyn{2}:end,:) = []; % remove trailing zeros in sparse tracker
 
 %% cleanup membrane, remove lipid pseudoatoms replaced by membrane proteins
 tmp = struct2cell(split); atoms = vertcat(tmp{:});
@@ -170,7 +168,7 @@ kdt2 = KDTreeSearcher(atoms(:,1:3)); %toc %77 68 67
 f = fieldnames(memdat.atoms);
 for i=1:numel(f)
     %[ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); %toc %554 119 121
-    [~,d2] = knnsearch(kdt2,memdat.atoms.(f{i})(:,1:3),'K',1,'SortIndices',0); %toc %147 201 168
+    [~,d2] = knnsearch(kdt2,memdat.atoms.(f{i})(:,1:3),'K',1,'SortIndices',0); %toc %
     
     ixf = d2>4.0; % appears to reliably prevent overlap without gaps
     mematoms = memdat.atoms.(f{i})(ixf,:);
