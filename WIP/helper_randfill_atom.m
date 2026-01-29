@@ -21,6 +21,7 @@ tol = 2; %tolerance for overlap testing
 retry = 4; %retry attempts per iteration
 count.s = 0; count.f = 0; %success and failure counters
 
+% need to prune out membranes (or, alternatively, have a separate parameter for them)
 for i=1:numel(layers)
 namelist = [layers{i}.modelname]; %slower than cell, but more consistent
 for j=1:numel(namelist)
