@@ -3,7 +3,10 @@ function [split,dx,dyn] = helper_randfill_atom_mem(memdat,pmod,perim,sz)
 split = struct; dx = struct; list = struct;
 pix = pmod.pix;
 
-for i=1:numel(pmod.layers) % filter to only the membrane entries
+% combine filtering to only/no membranes into a subfunct and add to randfill
+% maybe also combine with a split setup sub? or move split setup to here only?
+
+for i=1:numel(pmod.layers) % filter to only membrane entries in each layer
     ix = zeros(1,numel(pmod.layers{i}));
     for j=1:numel(pmod.layers{i})
         ix(j) = any(contains([pmod.layers{i}(j).flags],'membrane'));
@@ -11,8 +14,9 @@ for i=1:numel(pmod.layers) % filter to only the membrane entries
     layers{i} = pmod.layers{i}(logical(ix));
 end
 ix = cellfun(@numel,layers);
-layers = layers(logical(ix)); % prune layers without membranes
-if numel(layers)<1, dyn = {}; return, end % bail if there are no memprots
+layers = layers(logical(ix)); % prune out layers without membranes
+
+if numel(layers)<1, dyn = {perim,1}; return, end % bail if there are no memprots
 % probably need cleanup dx/dyn/split stuff
 
 % need to test multiple different layers
