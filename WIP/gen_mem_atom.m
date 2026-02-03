@@ -234,7 +234,7 @@ vec = randn(size(mesh)); vec = 0.9*thick*vec./vecnorm(vec,2,2);
 shell = alphaShape(mesh+vec,30+thick*2); % hopefully works across pixel/membrane sizes
 
 tail = randtess(0.014/atomfrac,shell,'v'); % need better reference ratios
-head = randtess(15/atomfrac,shell,'s'); % head domain layers across shell
+head = randtess(16/atomfrac,shell,'s'); % head domain layers across shell
 
 vec = randn(size(head)); % random displacement directions for head density
 spd = (rand(size(vec,1),1)-rand(size(vec,1),1))*(thick*0.2); % triangular random displacement distances
