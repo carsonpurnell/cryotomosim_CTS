@@ -1,6 +1,6 @@
 %% placing memprots with new atomic membrane structure
 % now generally functional - do still need vesicle/cytosol placement, doable in normal placer
-pix = 10;
+pix = 6;
 targ = {'ATPS.membrane.complex.mat'};
 %targ = {'ATPS.membrane.mat'};
 %targ = {'GABAar.membrane.complex.mat'};
