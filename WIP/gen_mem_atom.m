@@ -270,7 +270,7 @@ p2 = pts(ix(3,:),:);
 p3 = pts(ix(4,:),:);
 % 3 facets might be useful for a local curve metric too
 
-ntmp = cross(p1-p0,p2-p0)+cross(p2-p0,p3-p0)+cross(p3-p0,p1-p0); % 3 facet normals
+ntmp = cross(p1-p0,p2-p0)+cross(p2-p0,p3-p0)+cross(p3-p0,p1-p0)+cross(p1-p3,p2-p3); % 3 facet normals
 %ntmp = ntmp+cross(p4-p6,p5-p6)+cross(p1-p5,p3-p5);
 nvecs = ntmp./vecnorm(ntmp,2,2); % normalize vectors to unit length
 in = inShape(sh,pts+nvecs*2); %test if pts inside shape
