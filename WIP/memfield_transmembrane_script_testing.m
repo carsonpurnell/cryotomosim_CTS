@@ -1,6 +1,6 @@
 %% placing memprots with new atomic membrane structure
 % now generally functional - do still need vesicle/cytosol placement, doable in normal placer
-pix = 6;
+pix = 5;
 targ = {'ATPS.membrane.complex.mat'};
 %targ = {'ATPS.membrane.mat'};
 %targ = {'GABAar.membrane.complex.mat'};
@@ -13,7 +13,7 @@ targ = {'ATPS__flip.6j5i.membrane.cif';'GABAar.membrane.complex.mat';'tric_6nra-
 
 pmod = param_model(pix,'layers',targ);
 
-sz = [400,400,80];
+sz = [800,800,80];
 
 if true
     [carbon,perim] = gen_carbon(sz*pix);
@@ -24,7 +24,7 @@ end
 % add some randomization in for the z-height of the carbon
 
 %skips if mem==1?
-memdat = gen_mem_atom(sz,pix,'num',2:12,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
+memdat = gen_mem_atom(sz,pix,'num',6:15,'frac',1,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
