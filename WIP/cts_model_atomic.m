@@ -53,7 +53,7 @@ boxsize = pix*box*1;
 % need a working toggle to setup split/dyn without carbon or mem
 % do constraint first to prep dyn? would need to rejigger modelmem placement testing
 if param.grid~=0
-    [splitin.carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
+    [carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 else
     dyn = zeros(1,3);
 end
@@ -63,22 +63,28 @@ dyn = {dyn,1}; %convert to dyncell
 pad = [0,0,0;boxsize];
 dyn{1} = [dyn{1};pad];
 
-if param.mem
-% new mem stuff testing, need better parsing and passing args from model_param etc
-[memdat] = gen_mem_atom(box,pix,'num',param.mem);
-
-splitin = memdat.atoms;
-f = fieldnames(memdat.atoms);
-for i=1:numel(f)
-    tmp = memdat.atoms.(f{i}); n = size(tmp,1);
-    ix = randperm(n); ix = ix(1:round(n/1)); % 1/6 of atoms for collision detection later
-    dx.(f{i}) = size(tmp,1)+1;
-    dyn{1} = [dyn{1};tmp(ix,1:3)]; dyn{2} = numel(ix)+1;
-end
+if any(param.mem>0)
+    % new mem stuff testing, need better parsing and passing args from model_param etc
+    %[memdat] = gen_mem_atom(box,pix,'num',param.mem);
+    memdat = gen_mem_atom(box,pix,'num',param.mem,'prior',dyn{1});
+    
+    [splitin,dx,dyn] = helper_randfill_atom_mem(memdat,param,dyn{1},box);
+    
+    %splitin = memdat.atoms;
+    %{
+    f = fieldnames(memdat.atoms);
+    for i=1:numel(f)
+        tmp = memdat.atoms.(f{i}); n = size(tmp,1);
+        ix = randperm(n); ix = ix(1:round(n/1)); % 1/6 of atoms for collision detection later
+        dx.(f{i}) = size(tmp,1)+1;
+        dyn{1} = [dyn{1};tmp(ix,1:3)]; dyn{2} = numel(ix)+1;
+    end
+    %}
 else
     dx = struct;
     splitin = struct;
 end
+
 
 if opt.con==1
     con = helper_atomcon(boxsize,pix,0,0); % pseudonatural ice border (wavy flat, no curvature)
