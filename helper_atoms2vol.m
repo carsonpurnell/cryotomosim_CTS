@@ -134,7 +134,7 @@ mag = single(mag);
 mag=mag(ixf); %out of memory error - problematic reuse of same array? is mag too high precision?
 tmpvol = accumarray(p,mag,emsz);
 acount = acount+accumarray(p,1,emsz)*avol;
-tmpsolv = solv;%-acount;
+tmpsolv = solv-acount;
 end
 
 function [vl,solv] = internal_accum(p,mag,avol,emsz,solv)

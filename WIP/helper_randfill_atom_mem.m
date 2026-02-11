@@ -16,7 +16,9 @@ end
 ix = cellfun(@numel,layers);
 layers = layers(logical(ix)); % prune out layers without membranes
 
-if numel(layers)<1, dyn = {perim,1}; return, end % bail if there are no memprots
+%bail if no membranes
+if numel(layers)<1, dyn = {perim,1};disp('no membrane structs to embed, skipping');return, end
+
 % probably need cleanup dx/dyn/split stuff
 
 % need to test multiple different layers
