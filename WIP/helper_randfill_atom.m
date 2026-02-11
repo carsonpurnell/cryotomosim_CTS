@@ -4,9 +4,10 @@ if nargin<6
 end
 leaf = 1e3;
 mu = mu_build(dyn{1},[0,0,0;boxsize],'leafmax',leaf,'maxdepth',2); %speed drops DRAMATICALLY at depth 3
-
+list = struct;
 if nargin<4
     split = struct; %ixincat = 1; %dynpts = single(zeros(0,3));
+    %{
 else
     fn = fieldnames(split);
     for i=1:numel(fn) %add split into dynpts
@@ -14,8 +15,20 @@ else
         %ix = randi(s,round(s/50),1); ix = unique(ix); %tmp = split.(fn{i})(ix,1:3);
         %l = size(tmp,1); %dynpts(end+1:end+l,:) = tmp; %dynpts = [dynpts;tmp];
     end
+    %}
 end
 %ixincat = size(dynpts,1)+1; %deprecated counter for starting point for dyncat insertions
+
+for i=1:numel(layers) % filter to only membrane entries in each layer
+    ix = zeros(1,numel(layers{i}));
+    for j=1:numel(layers{i})
+        ix(j) = any(contains([layers{i}(j).flags],'membrane'));
+    end
+    tmplayers{i} = layers{i}(logical(ix));
+end
+ix = cellfun(@numel,tmplayers);
+layers = tmplayers(~logical(ix)); % prune out layers without membranes
+if isempty(layers), disp('no structs after mem prune'); return, end
 
 tol = 2; %tolerance for overlap testing
 retry = 4; %retry attempts per iteration
