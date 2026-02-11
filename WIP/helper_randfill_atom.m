@@ -28,7 +28,8 @@ for i=1:numel(layers) % filter to only membrane entries in each layer
 end
 ix = cellfun(@numel,tmplayers);
 layers = tmplayers(~logical(ix)); % prune out layers without membranes
-if isempty(layers), disp('no structs after mem prune'); return, end
+if isempty(layers), disp('no soluble (non-membrane) structures provided, exiting'); return, end
+%bail if all membranes
 
 tol = 2; %tolerance for overlap testing
 retry = 4; %retry attempts per iteration
