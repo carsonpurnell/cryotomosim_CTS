@@ -11,8 +11,8 @@ targ = {'ATPS__flip.6j5i.membrane.cif'};
 %targ = {'ATPS__flip.6j5i.membrane.cif','tric_6nra-open_7lum-closed.group.mat','GABAar.membrane.complex.mat'};
 targ = {'ATPS__flip.6j5i.membrane.mat';'GABAar.membrane.complex.mat';'tric_6nra-open_7lum-closed.group.mat'};
 
-pmod = param_model(pix,'layers',3);
-
+pmod = param_model(pix,'layers',3,'mem',5:10);
+%%
 sz = [600,600,100];
 %
 if true
@@ -24,7 +24,7 @@ end
 % add some randomization in for the z-height of the carbon
 
 %skips if mem==1?
-memdat = gen_mem_atom(sz,pix,'num',15,'frac',1,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
+memdat = gen_mem_atom(sz,pix,'num',pmod.mem,'frac',1,'prior',perim);%,'memsz',1,'frac',-1); % needs carbon exclusion and input
 % needs a bit more work, a few vectors (probably due to corners) are not well-oriented - denser mesh?
 % alternate method - dense surface mesh of expanded membrane hull, remove inner points, get nearest?
 % would need to be very dense. but could average with the near-3 result to cover most cases?
