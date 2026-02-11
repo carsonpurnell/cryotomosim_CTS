@@ -28,9 +28,9 @@ for j=1:numel(namelist)
     if ~isfield(split,namelist{j})
         split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
     end
-    if ~isfield(list,namelist{j})
+    %if ~isfield(list,namelist{j})
         list.(namelist{j}) = zeros(0,3);
-    end
+    %end
     if ~isfield(dx,namelist{j})
         dx.(namelist{j}) = size(split.(namelist{j}),1)+1;
     end
