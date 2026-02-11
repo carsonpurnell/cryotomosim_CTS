@@ -27,6 +27,8 @@ namelist = [layers{i}.modelname]; %slower than cell, but more consistent
 for j=1:numel(namelist)
     if ~isfield(split,namelist{j})
         split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
+    end
+    if ~isfield(list,namelist{j})
         list.(namelist{j}) = zeros(0,3);
     end
     if ~isfield(dx,namelist{j})
