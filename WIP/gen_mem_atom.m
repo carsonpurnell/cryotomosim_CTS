@@ -208,7 +208,7 @@ for i=1:numel(minit)
     tmp2 = randtess(0.5,sh1,'s'); % sometimes has wacky infills from incomplete internal tesselation
     
     %initshape{i} = sh1;
-    [tmp,head,tail,shell,mesh] = shape2mem(sh1,thick,pix/2.0);
+    [tmp,head,tail,shell,mesh] = shape2mem(sh1,thick,pix/1.5);
     % currently very wiggly, quite possibly too wiggly
     % denser mesh to reduce the wiggle? or smiter iters in already very round mems?
     
