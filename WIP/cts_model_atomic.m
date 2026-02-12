@@ -11,7 +11,7 @@ arguments
     param = {10}
     opt.suffix = ''
     opt.con = 1
-    opt.ermem = 0
+    %opt.ermem = 0
     opt.outdir = []
     opt.dynamotable = 0
 end
@@ -46,12 +46,11 @@ layers{1} = particles;
 %}
 fprintf('loaded %i layers of particles  \n',numel(param.layers));
 
-
 % functionalized model gen part 
-%con = 0;
 boxsize = pix*box*1;
 % need a working toggle to setup split/dyn without carbon or mem
 % do constraint first to prep dyn? would need to rejigger modelmem placement testing
+
 if param.grid~=0
     [carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 else
@@ -59,58 +58,36 @@ else
 end
 
 %[splitin,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize,opt.ermem); 
-dyn = {dyn,1}; %convert to dyncell
-pad = [0,0,0;boxsize];
+%convert to dyncell
+dyn = {dyn,1}; pad = [0,0,0;boxsize];
 dyn{1} = [dyn{1};pad];
 
 if any(param.mem>0)
     % new mem stuff testing, need better parsing and passing args from model_param etc
-    %[memdat] = gen_mem_atom(box,pix,'num',param.mem);
     memdat = gen_mem_atom(box,pix,'num',param.mem,'prior',dyn{1});
     
     [splitin,dx,dyn] = helper_randfill_atom_mem(memdat,param,dyn{1},box);
     if carbon~=0
         splitin.carbon = carbon;
     end
-    %splitin = memdat.atoms;
-    %
-    f = fieldnames(memdat.atoms);
+    f = fieldnames(splitin);
     for i=1:numel(f)
         tmp = splitin.(f{i}); n = size(tmp,1);
         ix = randperm(n); ix = ix(1:round(n/10)); % 10% of atoms for collision detection later
         dx.(f{i}) = size(tmp,1)+1;
         dyn{1} = [dyn{1};tmp(ix,1:3)]; dyn{2} = numel(ix)+1;
     end
-    %{
-    for i=1:numel(f)
-        tmp = memdat.atoms.(f{i}); n = size(tmp,1);
-        ix = randperm(n); ix = ix(1:round(n/10)); % 10% of atoms for collision detection later
-        dx.(f{i}) = size(tmp,1)+1;
-        dyn{1} = [dyn{1};tmp(ix,1:3)]; dyn{2} = numel(ix)+1;
-    end
-    %}
 else
     dx = struct;
     splitin = struct;
 end
-
 
 if opt.con==1
     con = helper_atomcon(boxsize,pix,0,0); % pseudonatural ice border (wavy flat, no curvature)
     dyn{1}(dyn{2}:dyn{2}+size(con,1)-1,:) = con; dyn{2}=dyn{2}+size(con,1)-1;
 end
 
-%n = 100;
-n = param.iters;
-%profile on
-
-%tic; [split,dyn,mu] = fn_modelgen(layers,boxsize,n,splitin,dx,dyn); toc
-%for i=1:numel(param.layers)
-tic; [split,dyn,mu,list] = helper_randfill_atom(param.layers,boxsize,n,splitin,dx,dyn); toc
-
-% list will be broken
-%end
-%profile viewer
+[split,dyn,mu,list] = helper_randfill_atom(param.layers,boxsize,param.iters,splitin,dx,dyn);
 
 
 %% function for vol, atlas, and split generation + water solvation
@@ -131,7 +108,8 @@ time = string(datetime('now','Format','yyyy-MM-dd''t''HH.mm')); %timestamp
 ident = char(strjoin(fieldnames(split),'_')); %combine target names to one string
 if length(ident)>60, ident=ident(1:60); end %truncation check to prevent invalidly long filenames
 if ~strncmp('_',opt.suffix,1), opt.suffix = append('_',opt.suffix); end
-foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix),opt.suffix); %combine info for folder name
+foldername = append('model_',time,'_',ident,'_pixelsize_',string(pix),opt.suffix); 
+%combine info for folder name
 
 %move to output directory in user/tomosim
 %cd(getenv('HOME')); if ~isfolder('tomosim'), mkdir tomosim; end, cd tomosim
