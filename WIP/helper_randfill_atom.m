@@ -24,10 +24,10 @@ for i=1:numel(layers) % filter to only membrane entries in each layer
     for j=1:numel(layers{i})
         ix(j) = any(contains([layers{i}(j).flags],'membrane'));
     end
-    tmplayers{i} = layers{i}(logical(ix));
+    tmplayers{i} = layers{i}(~logical(ix));
 end
 ix = cellfun(@numel,tmplayers);
-layers = tmplayers(~logical(ix)); % prune out layers without membranes
+layers = tmplayers(logical(ix)); % prune out layers without membranes
 if isempty(layers), disp('no soluble (non-membrane) structures provided, exiting'); return, end
 %bail if all membranes
 

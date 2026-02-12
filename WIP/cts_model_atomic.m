@@ -55,7 +55,7 @@ boxsize = pix*box*1;
 if param.grid~=0
     [carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
 else
-    dyn = zeros(1,3);
+    dyn = zeros(1,3); carbon = 0;
 end
 
 %[splitin,kdcell,shapecell,dx,dyn] = modelmem(memnum,dyn,boxsize,opt.ermem); 
@@ -69,13 +69,22 @@ if any(param.mem>0)
     memdat = gen_mem_atom(box,pix,'num',param.mem,'prior',dyn{1});
     
     [splitin,dx,dyn] = helper_randfill_atom_mem(memdat,param,dyn{1},box);
-    
+    if carbon~=0
+        splitin.carbon = carbon;
+    end
     %splitin = memdat.atoms;
-    %{
+    %
     f = fieldnames(memdat.atoms);
     for i=1:numel(f)
+        tmp = splitin.(f{i}); n = size(tmp,1);
+        ix = randperm(n); ix = ix(1:round(n/10)); % 10% of atoms for collision detection later
+        dx.(f{i}) = size(tmp,1)+1;
+        dyn{1} = [dyn{1};tmp(ix,1:3)]; dyn{2} = numel(ix)+1;
+    end
+    %{
+    for i=1:numel(f)
         tmp = memdat.atoms.(f{i}); n = size(tmp,1);
-        ix = randperm(n); ix = ix(1:round(n/1)); % 1/6 of atoms for collision detection later
+        ix = randperm(n); ix = ix(1:round(n/10)); % 10% of atoms for collision detection later
         dx.(f{i}) = size(tmp,1)+1;
         dyn{1} = [dyn{1};tmp(ix,1:3)]; dyn{2} = numel(ix)+1;
     end

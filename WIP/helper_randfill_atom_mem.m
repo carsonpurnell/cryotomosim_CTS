@@ -158,6 +158,7 @@ end
 %% cleanup and output stuff
 fprintf('   membrane embedding complete, placed %i, failed %i \n',count.s,count.f);
 
+% % % major bottleneck below here, dramatically slowing overall progress
 f = fieldnames(split); % remove trailing zeros in atom registry
 for i=1:numel(f)
     split.(f{i})(dx.(f{i}):end,:) = [];
@@ -174,7 +175,8 @@ kdt2 = KDTreeSearcher(atoms(:,1:3)); %toc %77 68 67
 f = fieldnames(memdat.atoms);
 for i=1:numel(f)
     %[ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); %toc %554 119 121
-    [~,d2] = knnsearch(kdt2,memdat.atoms.(f{i})(:,1:3),'K',1,'SortIndices',0); %toc %
+    % bottleneck right here
+    [~,d2] = knnsearch(kdt2,memdat.atoms.(f{i})(:,1:3),'K',1,'SortIndices',0); %toc
     
     ixf = d2>4.0; % appears to reliably prevent overlap without gaps
     mematoms = memdat.atoms.(f{i})(ixf,:);
