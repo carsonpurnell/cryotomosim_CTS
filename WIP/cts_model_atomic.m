@@ -52,7 +52,8 @@ boxsize = pix*box*1;
 % do constraint first to prep dyn? would need to rejigger modelmem placement testing
 
 if param.grid~=0
-    [carbon,dyn] = gen_carbon(boxsize); % atomic carbon grid generator
+    [carbon,dyn] = gen_carbon(boxsize,'thick',param.grid(1),'radius',param.grid(2)); 
+    % atomic carbon grid generator
 else
     dyn = zeros(1,3); carbon = 0;
 end
@@ -80,6 +81,10 @@ if any(param.mem>0)
 else
     dx = struct;
     splitin = struct;
+    if carbon~=0
+        splitin.carbon = carbon;
+        dx.carbon = size(carbon,1)+1;
+    end
 end
 
 if opt.con==1
