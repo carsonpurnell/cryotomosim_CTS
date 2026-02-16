@@ -82,8 +82,9 @@ else
     dx = struct;
     splitin = struct;
     if carbon~=0
-        splitin.carbon = carbon;
-        dx.carbon = size(carbon,1)+1;
+        splitin.carbon = carbon; dx.carbon = size(carbon,1)+1;
+        n = round(size(carbon,1)/10); ix = randperm(n); ix = ix(1:n);
+        dyn{1} = [dyn{1};carbon(:,1:3)]; dyn{2} = dyn{2}+size(carbon,1);
     end
 end
 
