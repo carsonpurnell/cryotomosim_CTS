@@ -1,7 +1,7 @@
 function [split,dx,dyn] = helper_randfill_atom_mem(memdat,pmod,perim,sz)
 %% prep stuff
 split = struct; dx = struct; list = struct;
-pix = pmod.pix;
+%pix = pmod.pix;
 
 % combine filtering to only/no membranes into a subfunct and add to randfill
 % maybe also combine with a split setup sub? or move split setup to here only?
@@ -46,7 +46,7 @@ else
     dyn{1} = perim; dyn{2} = size(perim,1)+1;
 end
 leaf = 1e3;
-mu = mu_build(dyn{1},[0,0,0;sz*pix],'leafmax',leaf,'maxdepth',2);
+mu = mu_build(dyn{1},[0,0,0;sz*pmod.pix],'leafmax',leaf,'maxdepth',2);
 
 init = [0,0,1]; % origin vector for rotation calculations
 %sel = pmod.layers{1}(1);
