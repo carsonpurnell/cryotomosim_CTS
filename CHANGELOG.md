@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.7.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.7.1) - 2026-02-16 20:05:57+00:00
+
+fully support protein embeddings in atomistic membranes, and improve log file outputs
+
 ## [v0.7.0](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.7.0) - 2025-12-18 20:48:56+00:00
 
 WIP expert support for atomistic membrane-associated protein placement and improvements to membrane model generation
