@@ -134,7 +134,7 @@ cts.param = param;
 outname = append(ident,opt.suffix,'.mat');
 outfile = fullfile(getenv('HOME'),'tomosim',foldername,outname);
 save(outname,'cts','-v7.3')
-logmodel(param,'cts_param.log'); % log input params as json text file
+logmodel(param,'cts_param_model.log'); % log input params as json text file
 
 f = fieldnames(cts.list);
 for i=1:numel(f)
@@ -152,11 +152,7 @@ end
 
 %% internal functions
 function logmodel(logdata,logfile)
-%logdata = pmod;
-%tmplayers = logout.layers; % separate layers to prune down to just filenames?
-
-% iterate through layers to collect each as a list of source filenames
-layers = cell(numel(logdata.layers),1);
+layers = cell(numel(logdata.layers),1); % iterate through layers to collect filenames
 for i=1:numel(logdata.layers)
     layers{i} = [logdata.layers{i}(:).file];
 end
@@ -164,11 +160,8 @@ logdata = rmfield(logdata,'layers'); % remove builtin layers
 logdata.layers = layers;
 
 jsonout = jsonencode(logdata); % encode into json string 
-%logfile = 'cts_param.log'; 
 file = fopen(logfile,'w'); % create output file
 fprintf(file,'%s',jsonout); fclose(file); % write json-encoded param file
-
-%ftext = fileread(logfile); readin_param = jsondecode(ftext); % read and decode json text file
 end
 
 

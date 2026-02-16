@@ -95,6 +95,7 @@ if opt.norm ==1
     normed = (vol-mean(vol,'all'))/std(vol,1,'all');
     WriteMRC(vol,head.pixA,append('5_recon',base),2);
 end
+logsim(param,'cts_param_simulate.log')
 
 delete temp.mrc
 cd(userpath)
@@ -102,6 +103,11 @@ end
 
 
 %% internal functs
+function logsim(logdata,logfile)
+jsonout = jsonencode(logdata); % encode into json string 
+file = fopen(logfile,'w'); % create output file
+fprintf(file,'%s',jsonout); fclose(file); % write json-encoded param file
+end
 
 function [convolved,ctf] = flatctf(input,slab,param,pad)
 

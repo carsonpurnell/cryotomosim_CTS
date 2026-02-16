@@ -136,10 +136,17 @@ if isstruct(cts) %if a tomosim formatted .mat struct is selected, generate a par
     atlas = helper_particleatlas(cts,opt.atlasindividual,opt.dynamotable,'suffix',opt.suffix);
 end
 %}
+logsim(param,'cts_param_simulate.log')
 
 cd(userpath) %return to the user directory
 end
 
+%% internal functions
+function logsim(logdata,logfile)
+jsonout = jsonencode(logdata); % encode into json string 
+file = fopen(logfile,'w'); % create output file
+fprintf(file,'%s',jsonout); fclose(file); % write json-encoded param file
+end
 
 function [detected, convolved, tilt, ctf, rec] = internal_sim(in,filename,param,type,order,opt)
 pix = param.pix;

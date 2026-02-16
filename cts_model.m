@@ -182,6 +182,7 @@ mkdir(foldername); cd(foldername);
 WriteMRC(cts.vol,pix,append(ident,opt.suffix,'.mrc'))
 outname = append(ident,opt.suffix,'.mat');
 save(outname,'cts','-v7.3')
+logmodel(cts.param,'cts_param_model.log');
 outfile = fullfile(getenv('HOME'),'tomosim',foldername,outname);
 f = fieldnames(cts.list);
 for i=1:numel(f)
@@ -195,4 +196,17 @@ end
 
 %output text file of input informations?
 cd(userpath)
+end
+
+function logmodel(logdata,logfile)
+layers = cell(numel(logdata.layers),1); % iterate through layers to collect filenames
+for i=1:numel(logdata.layers)
+    layers{i} = [logdata.layers{i}(:).file];
+end
+logdata = rmfield(logdata,'layers'); % remove builtin layers
+logdata.layers = layers;
+
+jsonout = jsonencode(logdata); % encode into json string 
+file = fopen(logfile,'w'); % create output file
+fprintf(file,'%s',jsonout); fclose(file); % write json-encoded param file
 end
