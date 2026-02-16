@@ -94,7 +94,7 @@ if opt.con==1
 end
 
 [split,dyn,mu,list] = helper_randfill_atom(param.layers,boxsize,param.iters,splitin,dx,dyn);
-
+% % % do need to finish up adding atomic beads
 
 %% function for vol, atlas, and split generation + water solvation
 % preprune split to eliminate empty bins (membrane/carbon)
