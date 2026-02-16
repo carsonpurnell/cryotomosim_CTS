@@ -156,9 +156,9 @@ function logmodel(logdata,logfile)
 %tmplayers = logout.layers; % separate layers to prune down to just filenames?
 
 % iterate through layers to collect each as a list of source filenames
-layers = cell(numel(pmod.layers),1);
-for i=1:numel(pmod.layers)
-    layers{i} = [pmod.layers{i}(:).file];
+layers = cell(numel(logdata.layers),1);
+for i=1:numel(logdata.layers)
+    layers{i} = [logdata.layers{i}(:).file];
 end
 logdata = rmfield(logdata,'layers'); % remove builtin layers
 logdata.layers = layers;
