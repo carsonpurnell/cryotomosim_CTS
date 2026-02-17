@@ -1,12 +1,12 @@
-function [cts,vol,solv,atlas,splitvol,acount,split,dat,list,outfile] = cts_model_atomic(box,input,param,opt)
-% [vol,solv,atlas,splitvol,acount,split,dat,list] = cts_model_atomic(box,input,param,opt)
+function [cts,vol,solv,atlas,splitvol,acount,split,dat,list,outfile] = cts_model_atomic(box,param,opt)
+% [vol,solv,atlas,splitvol,acount,split,dat,list] = cts_model_atomic(box,param,opt)
 % ex
-% [vol,solv,atlas] = cts_model_atomic([300,400,50],'gui',{8,'mem',1,'iters',400});
+% [vol,solv,atlas] = cts_model_atomic([300,400,50],{8,'mem',1,'iters',400});
 %
 
 arguments
     box
-    input = 'gui' %DEPRECATED
+    %input = 'gui' %DEPRECATED
     %pix = 10
     param = {10}
     opt.suffix = ''
