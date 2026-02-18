@@ -63,13 +63,13 @@ seeds = memparam.seeds;
 % set up initial volume and points
 pad = max(box)/20*0+50;
 isosz = ones(1,3)*max(box)+pad*2;
-n = round(prod(isosz/110)/1); %approx 100-150 is reliable, higher starts to have voidless blobs
+n = round(prod(isosz/100)/1); %approx 100-150 is reliable, higher starts to have voidless blobs
 field = rand(n,3).*isosz-pad; 
 % add a second larger box at lower density to feather out Z edges?
 for i=1:3 % rejection loop to eliminate points outside the box to ensure isotropy
     r = field(:,i)>(box(i)+pad);
     field(r,:) = [];
-end
+end % directly using rand is anisotropic, stratching has the same problem
 if ~isempty(prior)
     kdt = KDTreeSearcher(prior);
     [~,d] = knnsearch(kdt,field,'K',1,'SortIndices',0);
@@ -77,10 +77,6 @@ if ~isempty(prior)
     field = field(prox,:);
 end
 %plot3p(prior,'.'); hold on; plot3p(field,'.'); axis equal
-
-% using a cube and using boxsize later stretches mems horizontally instead of vertically
-% nontrivial to get isotropic distribution - rejection sampling only method? or randtess?
-% might get most of the way there by making a cube & discarding above Z?
 
 cen = rand(seeds,3).*[1,1,0.5].*box+[0,0,.25].*box; %centralize seeds a bit for less z clipping
 classindex = randi(numel(mdict),seeds,1); % class as index to the mdict, not as class name
@@ -96,7 +92,6 @@ blobtable = table(cen,classindex,class',szmult,bare,protfrac,...
 
 % prepartitioning cells
 iters = 2;%round(1*1/frac+sqrt(num)/2); % relaxation iters, probably not doing much anymore, set to 1-3?
-%[cen,pf] = voronoirelax(field,cen,iters,[seed{:,1}]'); % was using weight, trying to obsolete
 [blobtable.centroid,pf] = voronoirelax(field,blobtable.centroid,iters,blobtable.szmult);
 pf(:,5) = 0;
 
@@ -106,9 +101,7 @@ iters = 4;
 minit = cell(1,seeds); v = zeros(1,seeds);
 
 for i=1:seeds
-    % randomly make 50% bare for test
-    %if rand<.5, blobtable{i,3} = {'bare'}; end
-    %protfrac = 
+    %if rand<.5, blobtable{i,3} = {'bare'}; end % random bare test (deprec)
     for j=1:iters
         tmpdist = 35*memsz*blobtable.szmult(i); % 35 arbitrary, might need to change
         msel = blobtable.classindex(i);
@@ -120,8 +113,7 @@ for i=1:seeds
         % high sphericity low tolerance for centroid,, high for points?
         
         %search everything against the centroid to avoid weird interleaving?
-        %[d] = pdist2(subsel,seed{i,2},'euclidean'); % centroid proximity catch
-        [d] = pdist2(subsel,blobtable.centroid(i,:),'euclidean');
+        [d] = pdist2(subsel,blobtable.centroid(i,:),'euclidean'); % centroid prox growing
         if j>1,qq=mdict(msel).sphericity; else qq=1; end
         cendist = qq*tmpdist*15+j*30*mdict(msel).sphericity;
         ix2 = d<cendist; ix2 = ix(ix2);
