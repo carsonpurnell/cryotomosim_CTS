@@ -75,7 +75,7 @@ if any(param.mem>0)
     f = fieldnames(splitin);
     for i=1:numel(f)
         tmp = splitin.(f{i}); n = round(size(tmp,1)/1); if contains(f{i},'vesicle'); n=n*1-1; end
-        ix = randperm(n); ix = ix(1:n); % 10% of atoms for collision detection later
+        ix = randperm(n); ix = ix(1:round(n/2)); % ??% of atoms for collision detection later
         dx.(f{i}) = size(tmp,1)+1;
         dyn{1} = [dyn{1};tmp(ix,1:3)]; dyn{2} = numel(ix)+1;
     end
@@ -84,7 +84,7 @@ else
     splitin = struct;
     if carbon~=0
         splitin.carbon = carbon; dx.carbon = size(carbon,1)+1;
-        n = round(size(carbon,1)/10); ix = randperm(n); ix = ix(1:n);
+        n = round(size(carbon,1)); ix = randperm(n); ix = ix(1:round(n/10));
         dyn{1} = [dyn{1};carbon(:,1:3)]; dyn{2} = dyn{2}+size(carbon,1);
     end
 end
