@@ -4,6 +4,8 @@ n = 3; % number to mod-sim
 pix = 10; % currently fixed, should be easy to implement as variable
 sz = [400,400,60]; % side lengths
 % separate vector or second row to indicate variation in model size?
+batchname = 'ATPs_mem';
+targs = {'ATPS__flip.6j5i.membrane.cif'};
 
 %targets = x; % probably most complicated, might need its own entry function
 % for now, use only one fixed layer set to avoid even more complexity
@@ -11,13 +13,21 @@ sz = [400,400,60]; % side lengths
 
 % how to parse so many inputs? how to randomize across the parameter space?
 % if 1x1 nonrandom, if 1x2, flat x:y randomizer, if 2x1 use x+y*(rng), if >2 pick from the set?
-pmod = param_model(8);
-psim = param_simulate;
+pmod = param_model(8,'layers',targs,'mem',[3,12]);
+psim = param_simulate('pix',8);
 
 %% execute runs
 
+for i=1:n
 % model
+suf = append(batchname,'_',string(i));
+[cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic(sz,pmod,'suffix',suf,'dynamotable',1);
+[path,name,ext] = fileparts(outfile);
+outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
+
 % simulation
+cts_simulate_atomic(outfile,psim1,'suffix',append('sim_',string(i)));
+end
 % how to specify iterative simulations of the same model? cell array of input parameters?
 % more likely extra option to input another set of simulation parameters
 
