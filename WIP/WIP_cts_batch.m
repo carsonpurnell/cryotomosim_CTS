@@ -1,8 +1,8 @@
 % testing batch simulation runs
 %% parameter setups
 n = 3; % number to mod-sim
-pix = 10; % currently fixed, should be easy to implement as variable
-sz = [400,400,60]; % side lengths
+pix = 8.5; % currently fixed, should be easy to implement as variable
+sz = [500,500,70]; % side lengths
 % separate vector or second row to indicate variation in model size?
 batchname = 'ATPs_mem';
 targs = {'ATPS__flip.6j5i.membrane.cif'};
@@ -13,8 +13,8 @@ targs = {'ATPS__flip.6j5i.membrane.cif'};
 
 % how to parse so many inputs? how to randomize across the parameter space?
 % if 1x1 nonrandom, if 1x2, flat x:y randomizer, if 2x1 use x+y*(rng), if >2 pick from the set?
-pmod = param_model(8,'layers',targs,'mem',[3,12]);
-psim = param_simulate('pix',8);
+pmod = param_model(pix,'layers',targs,'mem',[3,12]);
+psim = param_simulate('pix',pix);
 
 %% execute runs
 
@@ -26,7 +26,7 @@ suf = append(batchname,'_',string(i));
 outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
 
 % simulation
-cts_simulate_atomic(outfile,psim1,'suffix',append('sim_',string(i)));
+cts_simulate_atomic(outfile,psim,'suffix',append('sim_',string(i)));
 end
 % how to specify iterative simulations of the same model? cell array of input parameters?
 % more likely extra option to input another set of simulation parameters
@@ -35,16 +35,11 @@ end
 %% output/display?
 
 % test for structs, it does work even with missing arguments if converted to cell first
+%{
 clear test
 test.a = 5; test.b = 'q';
 test = namedargs2cell(test);
 tfunct(test{:})
-
-%% internal functions
-% the actual cts_batchrunner parts
-
-
-
 function tfunct(opt)
 arguments
     opt.a = 0
@@ -53,3 +48,10 @@ arguments
 end
 opt
 end
+%}
+
+%% internal functions
+% the actual cts_batchrunner parts
+
+
+
