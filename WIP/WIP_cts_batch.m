@@ -14,7 +14,10 @@ targs = {'ATPS__flip.6j5i.membrane.cif'};
 % how to parse so many inputs? how to randomize across the parameter space?
 % if 1x1 nonrandom, if 1x2, flat x:y randomizer, if 2x1 use x+y*(rng), if >2 pick from the set?
 pmod = param_model(pix,'layers',targs,'mem',[3,12]);
+%batchmod = batchparam('layers',targs,'mem',[3,12],)
 psim = param_simulate('pix',pix);
+%%
+batchsim = batchparam(n,'pix',pix,'dose',[60,150],'defocus',[-3,-5],'tilt',-60:3:60);
 
 %% execute runs
 
@@ -53,5 +56,20 @@ end
 %% internal functions
 % the actual cts_batchrunner parts
 
+function param = batchparam(n,varargin)
+if rem(numel(varargin),2)==1, error('CTS batch params: bad number of args'); end
 
+param = cell(n,1);
+for i=1:n
+    param{i} = struct(varargin{:}); % place the initial parameters
+    f = fieldnames(param{i});
+    for j=1:numel(f)
+        if isequal(size(param{i}.(f{j})),[1,2])
+            disp('switch det')
+        end
+    end
+end
+
+param
+end
 
