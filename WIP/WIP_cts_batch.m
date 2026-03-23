@@ -2,7 +2,7 @@
 %% parameter setups
 n = 3; % number to mod-sim
 pix = 8.5; % currently fixed, should be easy to implement as variable
-sz = [500,500,70]; % side lengths
+sz = [400,400,60]; % side lengths
 % separate vector or second row to indicate variation in model size?
 batchname = 'ATPs_mem';
 targs = {'ATPS__flip.6j5i.membrane.cif'};
@@ -29,7 +29,9 @@ suf = append(batchname,'_',string(i));
 outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
 
 % simulation
-cts_simulate_atomic(outfile,psim,'suffix',append('sim_',string(i)));
+tmp = namedargs2cell(batchsim{i});
+tsim = param_simulate(tmp{:});
+cts_simulate_atomic(outfile,tsim,'suffix',append('sim_',string(i)));
 end
 % how to specify iterative simulations of the same model? cell array of input parameters?
 % more likely extra option to input another set of simulation parameters
@@ -65,11 +67,17 @@ for i=1:n
     f = fieldnames(param{i});
     for j=1:numel(f)
         if isequal(size(param{i}.(f{j})),[1,2])
-            disp('switch det')
+            %disp('switch det')
+            % hideous randomization, subfunct for it?
+            param{i}.(f{j}) = param{i}.(f{j})(1)+rand*(param{i}.(f{j})(2)-param{i}.(f{j})(1));
+            param{i}.(f{j}) = round(param{i}.(f{j}),2,'significant');
+        else
+            %param{i}.(f{j}) = param{i}.(f{j}); % do nothing same val
         end
     end
+    % run param functions here to generate full params beforehand? need flag or separate mod/sim functs
 end
 
-param
+param;
 end
 
