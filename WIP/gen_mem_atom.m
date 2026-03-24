@@ -22,7 +22,7 @@ elseif numel(param.num)==2
 end
 
 % individual mem definitions (mostly garbage still)
-mdict(1) = struct('class','vesicle','thick',26,'thickvar',6,'size',1,'sphericity',0.9,'bare',0.2,'protfrac',1);
+mdict(1) = struct('class','vesicle','thick',25,'thickvar',6,'size',1,'sphericity',0.9,'bare',0.2,'protfrac',1);
 %mdict(2) = struct('class','er','thick',13,'thickvar',4,'size',0.6,'sphericity',0.2,'memprot',0.2);
 %mdict(3) = struct('class','membrane','thick',32,'thickvar',4,'size',2,'sphericity',0.1,'memprot',0.5);
 %mdict(4) = struct('class','mito','thick',35,'thickvar',3,'size',3,'sphericity',0.8,'memprot',0.0);
