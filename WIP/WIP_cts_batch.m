@@ -5,7 +5,8 @@ pix = 8.5; % currently fixed, should be easy to implement as variable
 sz = [400,400,50]; % side lengths
 % separate vector or second row to indicate variation in model size?
 batchname = 'ATPs_mem';
-targs = {'ATPS__flip.6j5i.membrane.cif','tubulin__1tub.distract.mat','act1-A2.distract.mat'};
+targs = {'ATPS__flip.6j5i.membrane.cif','tubulin__1tub.distract.mat','act1-A2.distract.mat'...
+    '1trv_thioredoxin.distract.pdb','ribo__ribo__4ug0_4v6x.group.mat'};
 
 %targets = x; % probably most complicated, might need its own entry function
 % for now, use only one fixed layer set to avoid even more complexity
@@ -17,16 +18,16 @@ pmod = param_model(pix,'layers',targs,'mem',[3,12]);
 %batchmod = batchparam('layers',targs,'mem',[3,12],)
 psim = param_simulate('pix',pix);
 %%
-batchmod = batchparam(n,'pix',[8,9],'iters',[300,1200]);
-batchsim = batchparam(n,'pix',pix,'dose',[60,150],'defocus',[-3,-5],'tilt',-60:3:60);
+batchmod = batchparam(n,1,'layers',{targs},'pix',[8,9],'iters',[200,1000]);
+batchsim = batchparam(n,2,'pix',pix,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
 
 %% execute runs
 
 for i=1:n
-    pmod.pix = batchmod{i}.pix; pmod.iters(2) = batchmod{i}.iters;
+    %pmod.pix = batchmod{i}.pix; pmod.iters(2) = batchmod{i}.iters;
 % model
 suf = append(batchname,'_',string(i));
-[cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic(sz,pmod,'suffix',suf,'dynamotable',1);
+[cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic(sz,batchmod{i},'suffix',suf,'dynamotable',1);
 [path,name,ext] = fileparts(outfile);
 outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
 
@@ -60,7 +61,7 @@ end
 %% internal functions
 % the actual cts_batchrunner parts
 
-function param = batchparam(n,varargin)
+function param = batchparam(n,ptype,varargin)
 if rem(numel(varargin),2)==1, error('CTS batch params: bad number of args'); end
 
 param = cell(n,1);
@@ -78,8 +79,14 @@ for i=1:n
         end
     end
     % run param functions here to generate full params beforehand? need flag or separate mod/sim functs
+    tmp = namedargs2cell(param{i});
+    
+    if ptype==1
+        param{i} = param_model(param{i}.pix,tmp{:});
+    else
+        param{i} = param_simulate(tmp{:});
+    end
 end
 
-param;
 end
 
