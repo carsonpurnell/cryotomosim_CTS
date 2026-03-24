@@ -1,11 +1,11 @@
 % testing batch simulation runs
 %% parameter setups
-n = 3; % number to mod-sim
+n = 5; % number to mod-sim
 pix = 8.5; % currently fixed, should be easy to implement as variable
-sz = [400,400,60]; % side lengths
+sz = [400,400,50]; % side lengths
 % separate vector or second row to indicate variation in model size?
 batchname = 'ATPs_mem';
-targs = {'ATPS__flip.6j5i.membrane.cif'};
+targs = {'ATPS__flip.6j5i.membrane.cif','tubulin__1tub.distract.mat','act1-A2.distract.mat'};
 
 %targets = x; % probably most complicated, might need its own entry function
 % for now, use only one fixed layer set to avoid even more complexity
@@ -17,11 +17,13 @@ pmod = param_model(pix,'layers',targs,'mem',[3,12]);
 %batchmod = batchparam('layers',targs,'mem',[3,12],)
 psim = param_simulate('pix',pix);
 %%
+batchmod = batchparam(n,'pix',[8,9],'iters',[300,1200]);
 batchsim = batchparam(n,'pix',pix,'dose',[60,150],'defocus',[-3,-5],'tilt',-60:3:60);
 
 %% execute runs
 
 for i=1:n
+    pmod.pix = batchmod{i}.pix; pmod.iters(2) = batchmod{i}.iters;
 % model
 suf = append(batchname,'_',string(i));
 [cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic(sz,pmod,'suffix',suf,'dynamotable',1);
@@ -35,7 +37,7 @@ cts_simulate_atomic(outfile,tsim,'suffix',append('sim_',string(i)));
 end
 % how to specify iterative simulations of the same model? cell array of input parameters?
 % more likely extra option to input another set of simulation parameters
-
+fprintf('done batch of %i runs\n',n)
 
 %% output/display?
 
