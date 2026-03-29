@@ -35,7 +35,6 @@ flaglist = ["membrane" "vesicle" "cytosol" "complex" "assembly" "cluster" "bundl
 
 %instead of type, use label. first entry? use for generating filenames so complex are not bloated?
 %does assembly imply complex, or should it add complex to the flags?
-
 for i=1:numel(list)
     fprintf('Loading input %i ',i)
     [~,filename,ext] = fileparts(list{i}); %get file name and extension
