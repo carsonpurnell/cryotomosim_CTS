@@ -1,8 +1,8 @@
 % testing batch simulation runs
 %% parameter setups
 n = 5; % number to mod-sim
-pix = 8.5; % currently fixed, should be easy to implement as variable
-sz = [500,500,60]; % side lengths
+%pix = 8.5; % currently fixed, should be easy to implement as variable
+sz = [400,400,50]; % side lengths
 % separate vector or second row to indicate variation in model size?
 batchname = 'ATPs_mem';
 targs = {'ATPS__flip.6j5i.membrane.cif','tubulin__1tub.distract.mat','act1-A2.distract.mat'...
@@ -14,13 +14,13 @@ targs = {'ATPS__flip.6j5i.membrane.cif','tubulin__1tub.distract.mat','act1-A2.di
 
 % how to parse so many inputs? how to randomize across the parameter space?
 % if 1x1 nonrandom, if 1x2, flat x:y randomizer, if 2x1 use x+y*(rng), if >2 pick from the set?
-%pmod = param_model(pix,'layers',targs,'mem',[3,12]);
+%pmod = param_model(8,'layers',targs,'mem',[3,12]);
 %batchmod = batchparam('layers',targs,'mem',[3,12],)
 %psim = param_simulate('pix',pix);
 %%
 % probably should split batch, special handle targs, maybe pixel size?
-batchmod = batchparam(n,1,'layers',{targs},'pix',[8,9],'iters',[200,1000],'mem',[3,12]);
-batchsim = batchparam(n,2,'pix',pix,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
+batchmod = batchparam(n,1,'layers',{targs},'pix',[8,9],'iters',[200,1000],'mem',[4,16]);
+batchsim = batchparam(n,2,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
 
 %% execute runs
 
@@ -33,9 +33,16 @@ suf = append(batchname,'_',string(i));
 outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
 
 % simulation
+batchsim{i}.pix = cts.param.pix;
 tmp = namedargs2cell(batchsim{i});
 tsim = param_simulate(tmp{:});
 cts_simulate_atomic(outfile,tsim,'suffix',append('sim_',string(i)));
+
+% ideal sim run
+%if isstruct(opt.ideal)
+    %should already be a consolidated param? or allow a cell array of values?
+    %cts_simulate_atomic(outfile,isim,'suffix',append('ideal_',string(i)));
+%end
 end
 % how to specify iterative simulations of the same model? cell array of input parameters?
 % more likely extra option to input another set of simulation parameters
@@ -64,13 +71,24 @@ end
 
 function param = batchparam(n,ptype,varargin)
 if rem(numel(varargin),2)==1, error('CTS batch params: bad number of args'); end
+%{
+if ptype==1
+    % match which cells have pix/layers string and add 1 for the value
+    ix = find(strcmp(varargin,'pix'));
+    pix = varargin{ix+1};
+    ix = find(strcmp(varargin,'layers'));
+    layers = varargin{ix+1}{:}
+    modpreload = param_model(pix,'layers',layers);
+    varargin{ix+1} = modpreload.layers;
+end
+%}
 
 param = cell(n,1);
 for i=1:n
     param{i} = struct(varargin{:}); % place the initial parameters
     f = fieldnames(param{i});
     for j=1:numel(f)
-        if isequal(size(param{i}.(f{j})),[1,2])
+        if isequal(size(param{i}.(f{j})),[1,2]) && ~iscell(param{i}.(f{j}))
             %disp('switch det')
             % hideous randomization, subfunct for it?
             param{i}.(f{j}) = param{i}.(f{j})(1)+rand*(param{i}.(f{j})(2)-param{i}.(f{j})(1));
