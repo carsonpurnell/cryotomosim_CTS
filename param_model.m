@@ -94,7 +94,8 @@ else
 end
 param.mem = round(param.mem); 
 
-if ~iscell(param.layers)
+
+if isnumeric(param.layers)
     layers = cell(1,param.layers);
 else
     %layers = size(param.layers,1);
@@ -104,15 +105,19 @@ iters = zeros(1,numel(param.layers));
 %tmp = layers; % temporary kludge to test generic universal input
 
 for i=1:numel(layers) %loop through layers to load particles and assign iterations/density vectors
-    fprintf('Loading layer %i structures \n',i)
-    %need a check or something for when a layer is already parsed files? or just let input return by itself?
-    %param.layers{i}
-    if ~iscell(param.layers)
-        layers{i} = helper_input('gui',param.pix); 
-        %load layer - how to deal with saved list of layers?
-        %tmp{i} = helper_pdb2dat(file,pix,trim,centering,savemat);
+    if isstruct(param.layers)
+        layers = param.layers;
     else
-        layers{i} = helper_input(param.layers(i,:),pix);
+        fprintf('Loading layer %i structures \n',i)
+        %need a check or something for when a layer is already parsed files? or just let input return by itself?
+        %param.layers{i}
+        if ~iscell(param.layers)
+            layers{i} = helper_input('gui',param.pix);
+            %load layer - how to deal with saved list of layers?
+            %tmp{i} = helper_pdb2dat(file,pix,trim,centering,savemat);
+        else
+            layers{i} = helper_input(param.layers(i,:),pix);
+        end
     end
     param.density(i) = param.density(min(i,end));
     iters(i) = param.iters( min(i,numel(param.iters)) );
