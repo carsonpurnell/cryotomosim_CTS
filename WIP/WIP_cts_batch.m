@@ -5,8 +5,8 @@ n = 3; % number to mod-sim
 sz = [400,400,50]; % side lengths
 % separate vector or second row to indicate variation in model size?
 batchname = 'ATPs_mem';
-targs = {'ATPS__flip.6j5i.membrane.cif','tubulin__1tub.distract.mat','act1-A2.distract.mat'...
-    '1trv_thioredoxin.distract.pdb','ribo__ribo__4ug0_4v6x.group.mat','7b5s.distract.mat'};
+targs = {'ATPS__flip.6j5i.membrane.cif'};%'tubulin__1tub.distract.mat','act1-A2.distract.mat'...
+    %'1trv_thioredoxin.distract.pdb','ribo__ribo__4ug0_4v6x.group.mat','7b5s.distract.mat'};
 
 %targets = x; % probably most complicated, might need its own entry function
 % for now, use only one fixed layer set to avoid even more complexity
@@ -22,8 +22,11 @@ targs = {'ATPS__flip.6j5i.membrane.cif','tubulin__1tub.distract.mat','act1-A2.di
 %batchmod = batchparam(n,1,'layers',{targs},'pix',[8,9],'iters',[200,1000],'mem',[2,12]);
 %batchsim = batchparam(n,2,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
 
-batchmod = batchparam_mod(n,'layers',{targs},'pix',[8,9],'iters',[200,1000],'mem',[2,12]);
-batchsim = batchparam_sim(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
+%batchmod = batchparam_mod(n,'layers',{targs},'pix',[8,9],'iters',[200,1000],'mem',[2,12]);
+%batchsim = batchparam_sim(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
+
+batchmod = batchparam(n,'layers',{targs},'pix',[8,9],'iters',[200,1000],'mem',[2,12]);
+batchsim = batchparam(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
 
 opt.ideal = param_simulate('dose',500,'defocus',-4,'raddamage',0,'scatter',0.5,'tilt',-80:2:80);
 opt.ideal = 0;
@@ -65,6 +68,8 @@ function param = batchparam_mod(n,varargin)
 if rem(numel(varargin),2)==1, error('CTS batch params: bad number of args'); end
 param = cell(n,1);
 for i=1:n
+    tmp = batchrand(varargin);
+    %{
     param{i} = struct(varargin{:}); % place the initial parameters
     f = fieldnames(param{i});
     for j=1:numel(f)
@@ -77,8 +82,10 @@ for i=1:n
         end
     end
     tmp = namedargs2cell(param{i});
-    
-    param{i} = param_model(param{i}.pix,tmp{:});
+    %}
+    ix = find(strcmp(tmp,'pix'));
+    pix = tmp{ix+1};
+    param{i} = param_model(pix,tmp{:});
 end
 end
 
@@ -86,6 +93,8 @@ function param = batchparam_sim(n,varargin)
 if rem(numel(varargin),2)==1, error('CTS batch params: bad number of args'); end
 param = cell(n,1);
 for i=1:n
+    tmp = batchrand(varargin);
+    %{
     param{i} = struct(varargin{:}); % place the initial parameters
     % the block below could be a generic local funct for each batcher to do randomization
     f = fieldnames(param{i});
@@ -99,12 +108,42 @@ for i=1:n
         end
     end
     tmp = namedargs2cell(param{i});
-    
+    %}
     param{i} = param_simulate(tmp{:});
 end
 end
 
-function param = batchparam(n,ptype,varargin)
+function param = batchparam(n,varargin)
+if rem(numel(varargin),2)==1, error('CTS batch params: bad number of args'); end
+param = cell(n,1);
+ix = find(strcmp(varargin,'pix'));
+for i=1:n
+    tmp = batchrand(varargin);
+    if ix>0
+        pix = tmp{ix+1};
+        param{i} = param_model(pix,tmp{:});
+    else
+        param{i} = param_simulate(tmp{:});
+    end
+end
+end
+
+function paramcell = batchrand(vars)
+paramcell = struct(vars{:}); % place the initial parameters
+f = fieldnames(paramcell);
+for j=1:numel(f)
+    if isequal(size(paramcell.(f{j})),[1,2]) && ~iscell(paramcell.(f{j}))
+        % hideous randomization, subfunct for it?
+        paramcell.(f{j}) = paramcell.(f{j})(1)+rand*(paramcell.(f{j})(2)-paramcell.(f{j})(1));
+        paramcell.(f{j}) = round(paramcell.(f{j}),2,'significant');
+    else
+        %param{i}.(f{j}) = param{i}.(f{j}); % do nothing same val
+    end
+end
+paramcell = namedargs2cell(paramcell);
+end
+
+function param = batchparam_both(n,ptype,varargin)
 if rem(numel(varargin),2)==1, error('CTS batch params: bad number of args'); end
 %{
 if ptype==1
