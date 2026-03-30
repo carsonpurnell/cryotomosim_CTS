@@ -2,11 +2,19 @@
 %% parameter setups
 n = 1; % number to mod-sim
 %pix = 8.5; % currently fixed, should be easy to implement as variable
-sz = [300,300,50]; % side lengths
+sz = [400,400,50]; % side lengths
 % separate vector or second row to indicate variation in model size?
 batchname = 'ATPs_mem';
 targs = {'ATPS__flip.6j5i.membrane.cif'};%'tubulin__1tub.distract.mat','act1-A2.distract.mat'...
     %'1trv_thioredoxin.distract.pdb','ribo__ribo__4ug0_4v6x.group.mat','7b5s.distract.mat'};
+
+batchmod = batchparam(n,'pix',[8,9],'layers',{targs},'iters',[200,1000],'mem',[2,12]);
+batchsim = batchparam(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
+
+opt.ideal = param_simulate('dose',500,'defocus',-3,'raddamage',0,'scatter',0.5,'tilt',-80:2:80);
+%opt.ideal = 0;
+
+ctsbatch(sz,batchmod,batchsim,'batchname',batchname,'ideal',opt.ideal)
 
 %targets = x; % probably most complicated, might need its own entry function
 % for now, use only one fixed layer set to avoid even more complexity
@@ -17,7 +25,7 @@ targs = {'ATPS__flip.6j5i.membrane.cif'};%'tubulin__1tub.distract.mat','act1-A2.
 %pmod = param_model(8,'layers',targs,'mem',[3,12]);
 %batchmod = batchparam('layers',targs,'mem',[3,12],)
 %psim = param_simulate('pix',pix);
-%%
+%% old script internal functs
 % probably should split batch, special handle targs, maybe pixel size?
 %batchmod = batchparam(n,1,'layers',{targs},'pix',[8,9],'iters',[200,1000],'mem',[2,12]);
 %batchsim = batchparam(n,2,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
@@ -25,13 +33,13 @@ targs = {'ATPS__flip.6j5i.membrane.cif'};%'tubulin__1tub.distract.mat','act1-A2.
 %batchmod = batchparam_mod(n,'layers',{targs},'pix',[8,9],'iters',[200,1000],'mem',[2,12]);
 %batchsim = batchparam_sim(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
 
-batchmod = batchparam(n,'layers',{targs},'pix',[8,9],'iters',[200,1000],'mem',[2,12]);
+batchmod = batchparam(n,'pix',[8,9],'layers',{targs},'iters',[200,1000],'mem',[2,12]);
 batchsim = batchparam(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
 
 opt.ideal = param_simulate('dose',500,'defocus',-4,'raddamage',0,'scatter',0.5,'tilt',-80:2:80);
 opt.ideal = 0;
 
-%% execute runs
+% execute runs
 
 ctsbatch(sz,batchmod,batchsim,'batchname',batchname,'ideal',opt.ideal)
 %{
@@ -151,10 +159,11 @@ end
 function param = batchparam(n,varargin)
 if rem(numel(varargin),2)==1, error('CTS batch params: bad number of args'); end
 param = cell(n,1);
-ix = find(strcmp(varargin,'pix'));
+ix = find(strcmp(varargin,'pix'),1); if isempty(ix); ix=0; end
+doseix = find(strcmp(varargin,'dose'),1); if isempty(doseix); doseix=0; end
 for i=1:n
     tmp = batchrand(varargin);
-    if ix>0
+    if ix>0 && doseix==0
         pix = tmp{ix+1};
         param{i} = param_model(pix,tmp{:});
     else
