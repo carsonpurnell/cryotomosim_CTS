@@ -1,8 +1,8 @@
 % testing batch simulation runs
 %% parameter setups
-n = 3; % number to mod-sim
+n = 1; % number to mod-sim
 %pix = 8.5; % currently fixed, should be easy to implement as variable
-sz = [400,400,50]; % side lengths
+sz = [300,300,50]; % side lengths
 % separate vector or second row to indicate variation in model size?
 batchname = 'ATPs_mem';
 targs = {'ATPS__flip.6j5i.membrane.cif'};%'tubulin__1tub.distract.mat','act1-A2.distract.mat'...
@@ -33,11 +33,12 @@ opt.ideal = 0;
 
 %% execute runs
 
+ctsbatch(sz,batchmod,batchsim,'batchname',batchname,'ideal',opt.ideal)
+%{
 for i=1:n
     %pmod.pix = batchmod{i}.pix; pmod.iters(2) = batchmod{i}.iters;
     suf = append(batchname,'_',string(i));
 % model
-
 [cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic(sz,batchmod{i},'suffix',suf,'dynamotable',1);
 [path,name,ext] = fileparts(outfile);
 outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
@@ -56,6 +57,7 @@ cts_simulate_atomic(outfile,batchsim{i},'suffix',append('sim_',string(i)));
     fprintf('CTS batch: finished %i of %i runs\n',i,n)
 end
 fprintf('done batch of %i runs\n',n)
+%}
 
 %% output/display?
 
@@ -63,6 +65,39 @@ fprintf('done batch of %i runs\n',n)
 
 %% internal functions
 % the actual cts_batchrunner parts
+
+function ctsbatch(sz,batchmod,batchsim,opt)
+arguments
+    sz
+    batchmod
+    batchsim
+    opt.ideal = 0
+    opt.batchname = ''
+end
+n = numel(batchmod);
+for i=1:n
+    %pmod.pix = batchmod{i}.pix; pmod.iters(2) = batchmod{i}.iters;
+    suf = append(opt.batchname,'_',string(i));
+    % model
+    [cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic(sz,batchmod{i},'suffix',suf,'dynamotable',1);
+    [path,name,ext] = fileparts(outfile);
+    outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
+    
+    % simulation
+    batchsim{i}.pix = cts.param.pix;
+    %tmp = namedargs2cell(batchsim{i});
+    %tsim = param_simulate(tmp{:});
+    cts_simulate_atomic(outfile,batchsim{i},'suffix',append('sim_',string(i)));
+    % ideal sim run
+    if isstruct(opt.ideal) % run ideal sim if argument given
+        %should already be a consolidated param? or allow a cell array of values?
+        isim = opt.ideal; isim.pix = cts.param.pix;
+        cts_simulate_atomic(outfile,isim,'suffix',append('ideal_',string(i)));
+    end
+    fprintf('CTS batch: finished %i of %i runs\n',i,n)
+end
+fprintf('done batch of %i runs\n',n)
+end
 
 function param = batchparam_mod(n,varargin)
 if rem(numel(varargin),2)==1, error('CTS batch params: bad number of args'); end
