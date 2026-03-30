@@ -8,13 +8,13 @@ batchname = 'ATPs_mem';
 targs = {'ATPS__flip.6j5i.membrane.cif'};%'tubulin__1tub.distract.mat','act1-A2.distract.mat'...
     %'1trv_thioredoxin.distract.pdb','ribo__ribo__4ug0_4v6x.group.mat','7b5s.distract.mat'};
 
-batchmod = batchparam(n,'pix',[8,9],'layers',{targs},'iters',[200,1000],'mem',[2,12]);
-batchsim = batchparam(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
+batchmod = param_batch(n,'pix',[8,9],'layers',{targs},'iters',[200,1000],'mem',[2,12]);
+batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
 
-opt.ideal = param_simulate('dose',500,'defocus',-3,'raddamage',0,'scatter',0.5,'tilt',-80:2:80);
-%opt.ideal = 0;
+opt.ideal = param_simulate('dose',600,'defocus',-3,'raddamage',0,'scatter',0.5,'tilt',-80:2:80);
+opt.ideal = 0;
 
-ctsbatch(sz,batchmod,batchsim,'batchname',batchname,'ideal',opt.ideal)
+cts_batch(sz,batchmod,batchsim,'batchname',batchname,'ideal',opt.ideal)
 
 %targets = x; % probably most complicated, might need its own entry function
 % for now, use only one fixed layer set to avoid even more complexity
