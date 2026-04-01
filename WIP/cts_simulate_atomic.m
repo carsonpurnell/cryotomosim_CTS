@@ -259,6 +259,7 @@ for t=1:numel(param.tilt)
     convolved = zeros(size(vol));
     cv = convolved;
     tparam = param;
+    % radiation might be breaking 0 dose ideal projections
     rad = helper_radiation(vol,param.pix,param.dose,param.raddamage,'byslice',0);
     for i=1:size(vol,3)
         adj = (tparam.pix*slabthick*(i-mid))/1e4*1e0; %convert from ang to um
@@ -276,8 +277,12 @@ for t=1:numel(param.tilt)
 end
 fprintf('\n%i tilts simulated\n',t)
 %ctf = 0;
-dtilt = poissrnd((d*rescale(tilt*1,0,1))*01,size(tilt));
-cv2 = poissrnd((d*rescale(cv2*1,0,1))*01,size(cv2));
+if param.dose>0
+    dtilt = poissrnd((d*rescale(tilt*1,0,1))*01,size(tilt));
+    cv2 = poissrnd((d*rescale(cv2*1,0,1))*01,size(cv2));
+else
+    dtilt = rescale(tilt); cv2 = rescale(cv2);
+end
 end
 
 function t = rotmat(ax,rad)
