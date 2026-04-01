@@ -28,5 +28,5 @@ for i=1:n
     end
     fprintf('CTS batch: finished %i of %i runs\n',i,n)
 end
-fprintf('done batch of %i runs\n',n)
+%fprintf('done batch of %i runs\n',n)
 end
