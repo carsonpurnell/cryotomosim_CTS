@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.7.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.7.2) - 2026-03-30 14:03:28+00:00
+
+Added a simple interface for running model/simulation batches for better throughput: cts_batch, and inputs from param_batch with almost identical syntax as param_model and param_simulate.
+
 ## [v0.7.1](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.7.1) - 2026-02-16 20:05:57+00:00
 
 fully support protein embeddings in atomistic membranes, and improve log file outputs
