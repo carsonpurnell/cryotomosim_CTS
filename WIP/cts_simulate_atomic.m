@@ -12,7 +12,7 @@ arguments
     opt.norm = 1
 end
 if iscell(param), param = param_simulate(param{:}); end
-if param.pix<0.5, error('inappropriate pixel size - check paramters'); end
+if param.pix<0.1, warning('extremely small pixel size (%g) - check paramters',param.pix); end
 if opt.slice==0, opt.slice = param.pix*3; end
 
 if strcmp(input,'gui') %load model via GUI or specific filename

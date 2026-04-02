@@ -1,4 +1,14 @@
 function cts_batch(sz,batchmod,batchsim,opt)
+% cts_batch(sz,batchmod,batchsim,opt)
+%inputs:
+% sz: 1x3 vector of model dimensions in voxels
+% batchmod: cell array of param_model structures (as the output from param_batch, requires 'pix')
+% batchsim: cell array of param_simulate structures (as the output from param_batch, requires 'dose')
+%name-value inputs
+% method: string to indicate which CTS method to use: atom/atomic (default) or 'vol' for volumetric
+% ideal: param_simulate structure for running a second set of simulations. 0 to disable (default).
+% batchname: string (default '') appended to model folder name for convenience before iter number
+
 arguments
     sz
     batchmod

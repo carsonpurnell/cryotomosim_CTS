@@ -1,19 +1,21 @@
 % testing batch simulation runs
 %% parameter setups
-n = 5; % number to mod-sim
+n = 3; % number to mod-sim
 %pix = 8.5; % currently fixed, should be easy to implement as variable
-sz = [400,400,50]; % side lengths
+sz = [300,300,40]; % side lengths
 % separate vector or second row to indicate variation in model size?
 batchname = 'ATPs_mem';
 targs = {'ATPS__flip.6j5i.membrane.cif','tubulin__1tub.distract.mat','act1-A2.distract.mat'...
     '1trv_thioredoxin.distract.pdb','ribo__ribo__4ug0_4v6x.group.mat','7b5s.distract.mat'};
-targs = {'ATPS__flip.6j5i.membrane.cif'};
+%targs = {'ATPS__flip.6j5i.membrane.cif'};
+% calmodulin superres attempt?
+targs = {'tri__9K8D.cif'}; batchname = 'tri_test';
 
-batchmod = param_batch(n,'pix',[8,9],'layers',{targs},'iters',[200,1000],'mem',[2,12]);
+batchmod = param_batch(n,'pix',[1,3],'layers',{targs},'iters',[200,1000]*0+5,'mem',[2,12]*0);
 batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
 
-ideal = param_simulate('dose',0,'phase',pi/2,'ice',0,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-80:2:80);
-ideal = 0;
+ideal = param_simulate('dose',0,'phase',pi/2,'ice',0,'defocus',-2,'raddamage',0,'scatter',0.2,'tilt',-80:2:80);
+%ideal = 0;
 
 cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal)
 

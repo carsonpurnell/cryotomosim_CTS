@@ -1,4 +1,14 @@
 function param = param_batch(n,varargin)
+% param = param_batch(n,varargin)
+%inputs:
+% n = number of parameter files to generate==number of batch runs
+% varargin = same as inputs to param_model and param_simulate
+%output:
+% param = cell array of parameter structures from param_model or param_simulate
+%
+%note: must be run TWICE, one to generate each set of parameter structs
+%param_simulate is used by inclusion of the 'dose' parameter, otherwise it feeds into param_model
+
 if rem(numel(varargin),2)==1, error('CTS batch params: bad number of args'); end
 param = cell(n,1);
 ix = find(strcmp(varargin,'pix'),1); if isempty(ix); ix=0; end
