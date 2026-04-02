@@ -247,7 +247,7 @@ for t=1:numel(param.tilt)
     [vol,solv] = helper_atoms2vol(param.pix,atomtmp,sz,of);
     % solv not accurate, using the entire span distance rather than true thickness of sample
     thick = boxsize(3);
-    solv = solv/sz(3)*thick/cosd(angle); % slapdash temp fix for virtual ice thickness
+    solv = param.ice*solv/sz(3)*thick/cosd(angle); % slapdash temp fix for virtual ice thickness
     vol = vol+solv;
     
     % get the transmission wave
