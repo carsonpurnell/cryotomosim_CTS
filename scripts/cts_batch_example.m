@@ -16,17 +16,28 @@ ideal = param_simulate('dose',500,'ice',0,'defocus',-3,'raddamage',0,'scatter',0
 %ideal = 0;
 
 %% tric-ribo denoise
-targs = {'ribo__ribo__4ug0_4v6x.group.pdb','tric_6nra-open_7lum-closed.group.cif'};
+targs = {'ribos_4ug0_4v6x.group.mat','tric_6nra-open_7lum-closed.group.mat'};
 batchname = 'segDN';
 
 n = 10; % number of total runs in the batch
-sz = [400,400,50]; % size of the samples, in pixels
+sz = [400,400,60]; % size of the samples, in pixels
 
-batchmod = param_batch(n,'pix',[4,6],'layers',{targs},'mem',0);
+batchmod = param_batch(n,'pix',[5,8],'layers',{targs},'iters',[100,1000],'mem',0,'constraint','   ');
 batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:2:60);
 
 ideal = param_simulate('dose',800,'ice',0,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-85:1:85);
 %ideal = 0;
+
+%% distract bork test
+targs = {'ribos_4ug0_4v6x.group.mat','tric_6nra-open_7lum-closed.group.mat'};
+batchname = 'bork';
+
+n = 2; % number of total runs in the batch
+sz = [400,400,50]; % size of the samples, in pixels
+
+batchmod = param_batch(n,'pix',[4,6],'layers',{targs},'mem',0);
+batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:2:60);
+ideal = 0;
 
 %% run the batch process
 cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
