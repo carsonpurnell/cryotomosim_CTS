@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.7.3](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.7.3) - 2026-04-19 15:06:27+00:00
+
+fixed .complex methods for atomic modeling, and added a demo script for using CTS in abtch mode: /scripts/cts_batch_example.m
+
 ## [v0.7.2](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.7.2) - 2026-03-30 14:03:28+00:00
 
 Added a simple interface for running model/simulation batches for better throughput: cts_batch, and inputs from param_batch with almost identical syntax as param_model and param_simulate.
