@@ -59,11 +59,46 @@ for i=1:n
     if rem(i,n/20)==0; fprintf('%i,',i); end
     which=randi(numel(particles));
     sel = particles(which); 
-    sub = randi(numel(sel.adat));
     
-    [err,loc,tform,ovcheck,muix] = anyloc(boxsize,sel.perim{sub},dyn,retry,tol,mu); % just as fast
+    if any(ismember(sel.flags,'complex'))
+        sub = 0;
+        sel.sumperim = vertcat(sel.perim{:});
+    else
+        sub = randi(numel(sel.id));
+        sel.sumperim = sel.perim{sub};
+    end
+    
+    %sub = randi(numel(sel.adat));
+    
+    [err,loc,tform,ovcheck,muix] = anyloc(boxsize,sel.sumperim,dyn,retry,tol,mu); % just as fast
     
     if err==0
+        [dyn] = dyncell(ovcheck,dyn); % write to partial list for fast lookups
+        % no muix yet, not testing
+        mu = mu_build(ovcheck,muix,mu,'leafmax',leaf,'maxdepth',2);
+        
+        % make write block into a generic subfunct and propogate to other atomfills?
+        if sub==0 % if complex, write each individual submodel after transforming
+            tmpix = 1:numel(sel.id);
+            % for assembly, instead construct tmpix with the randomized models needed
+            for u=tmpix
+                tmp = sel.adat{u};
+                %if er2==1; tmp(:,4)=tmp(:,4)*2; end % diag collision test against membranes
+                tmp(:,1:3) = transformPointsForward(tform,tmp(:,1:3))+loc;
+                
+                [split,dx] = dynsplit(tmp,split,dx,sel.id{u});
+                list.(sel.id{u})(end+1,:) = loc;
+            end
+        else % if not complex, use subsel index to write only that model
+            tmp = sel.adat{sub};
+            %if er2==1; tmp(:,4)=tmp(:,4)*2; end % diag collision test against membranes
+            tmp(:,1:3) = transformPointsForward(tform,tmp(:,1:3))+loc;
+            
+            [split,dx] = dynsplit(tmp,split,dx,sel.id{subsel});
+            list.(sel.id{subsel})(end+1,:) = loc;
+        end
+        
+        %{
         tpts = sel.adat{sub};
         tpts(:,1:3) = transformPointsForward(tform,tpts(:,1:3))+loc;
         
@@ -71,6 +106,7 @@ for i=1:n
         mu = mu_build(ovcheck,muix,mu,'leafmax',leaf,'maxdepth',2);
         [split,dx] = dynsplit(tpts,split,dx,sel.modelname{sub});
         list.(sel.modelname{sub})(end+1,:) = loc;
+        %}
         %{
         %[dynfn,dynfnix] = fcndyn(ovcheck,dynfn,dynfnix); % insignificantly slower than inlined
         %[dyn{1},dyn{2}] = dyncat(dyn{1},dyn{2},ovcheck); %6s
@@ -99,6 +135,10 @@ for i=1:n
         %split{which} = [split{which};tpts]; %add to splitvol - cell version
         %split.(sel.modelname{sub}) = [split.(sel.modelname{sub});tpts]; %struct a bit slower :(
         %}
+        
+        
+        
+        
         count.s=count.s+1;
     else
         count.f=count.f+1;
