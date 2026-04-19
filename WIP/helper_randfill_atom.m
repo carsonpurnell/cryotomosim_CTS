@@ -94,8 +94,8 @@ for i=1:n
             %if er2==1; tmp(:,4)=tmp(:,4)*2; end % diag collision test against membranes
             tmp(:,1:3) = transformPointsForward(tform,tmp(:,1:3))+loc;
             
-            [split,dx] = dynsplit(tmp,split,dx,sel.id{subsel});
-            list.(sel.id{subsel})(end+1,:) = loc;
+            [split,dx] = dynsplit(tmp,split,dx,sel.id{sub});
+            list.(sel.id{sub})(end+1,:) = loc;
         end
         
         %{
