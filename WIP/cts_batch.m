@@ -27,7 +27,6 @@ for i=1:n
     else
         [cts,~,~,~,~,~,~,~,~,outfile] = cts_model_atomic(sz,batchmod{i},'suffix',suf,'dynamotable',1);
     end
-    
     % simulation
     batchsim{i}.pix = cts.param.pix;
     %tmp = namedargs2cell(batchsim{i}); %tsim = param_simulate(tmp{:});
@@ -41,8 +40,13 @@ for i=1:n
     % ideal sim run
     if isstruct(opt.ideal) % run ideal sim if argument given
         %should already be a consolidated param? or allow a cell array of values?
-        isim = opt.ideal; isim.pix = cts.param.pix;
-        cts_simulate_atomic(outfile,isim,'suffix',append('ideal_',string(i)));
+        if strcmp(opt.method,'vol')
+            isim = opt.ideal; isim.pix = cts.param.pix;
+            cts_simulate(outfile,isim,'suffix',append('ideal_',string(i)));
+        else
+            isim = opt.ideal; isim.pix = cts.param.pix;
+            cts_simulate_atomic(outfile,isim,'suffix',append('ideal_',string(i)));
+        end
     end
     fprintf('CTS batch: finished %i of %i runs\n',i,n)
 end
