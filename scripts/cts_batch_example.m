@@ -12,7 +12,7 @@ sz = [400,400,50]; % size of the samples, in pixels
 batchmod = param_batch(n,'pix',[8,9],'layers',{targs},'iters',[200,1000],'mem',[2,12]);
 batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
 
-ideal = param_simulate('dose',500,'ice',0,'defocus',-3,'raddamage',0,'scatter',0.5,'tilt',-84:2:84);
+ideal = param_simulate('dose',500,'ice',0.6,'defocus',-3,'raddamage',0,'scatter',0.5,'tilt',-84:2:84);
 %ideal = 0;
 
 %% tric-ribo denoise
@@ -25,7 +25,7 @@ sz = [400,400,60]; % size of the samples, in pixels
 batchmod = param_batch(n,'pix',[5,8],'layers',{targs},'iters',[100,1000],'mem',0,'constraint','   ');
 batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:2:60);
 
-ideal = param_simulate('dose',800,'ice',0,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-85:1:85);
+ideal = param_simulate('dose',800,'ice',0.5,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-85:1:85);
 %ideal = 0;
 cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
 
@@ -39,7 +39,7 @@ sz = [400,400,60]; % size of the samples, in pixels
 batchmod = param_batch(n,'pix',[10,15],'layers',{targs},'iters',[300,3000],'mem',[6,25]);
 batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:2:60);
 
-ideal = param_simulate('dose',800,'ice',0,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-85:1:85);
+ideal = param_simulate('dose',800,'ice',0.5,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-85:1:85);
 %ideal = 0;
 cts_batch(sz,batchmod,batchsim,'method','vol','batchname',batchname,'ideal',ideal);
 
