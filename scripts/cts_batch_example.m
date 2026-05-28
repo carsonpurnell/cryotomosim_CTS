@@ -12,7 +12,8 @@ sz = [400,400,50]; % size of the samples, in pixels
 batchmod = param_batch(n,'pix',[8,9],'layers',{targs},'iters',[200,1000],'mem',[2,12]);
 batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
 
-ideal = param_simulate('dose',500,'ice',0.6,'defocus',-3,'raddamage',0,'scatter',0.5,'tilt',-84:2:84);
+ideal = param_simulate('dose',500,'ice',0.6,'defocus',-3,'raddamage',0,'scatter',0.5,...
+    'tilt',-84:2:84,'phase',pi/2);
 %ideal = 0;
 
 %% tric-ribo denoise
@@ -30,7 +31,8 @@ ideal = param_simulate('dose',800,'ice',0.5,'defocus',-3,'raddamage',0,'scatter'
 cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
 
 %% tric-ribo denoise low-res volumetric
-targs = {'ribos_4ug0_4v6x.group.mat','tric_6nra-open_7lum-closed.group.mat','cofilin2x_actin2x.bundle.mat'};
+targs = {'ribos_4ug0_4v6x.group.mat','tric_6nra-open_7lum-closed.group.mat',...
+    'cofilin2x_actin2x.bundle.mat'};
 batchname = 'segDNv';
 
 n = 3; % number of total runs in the batch
@@ -55,4 +57,6 @@ batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'
 ideal = 0;
 
 %% run the batch process
+
 cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
+
