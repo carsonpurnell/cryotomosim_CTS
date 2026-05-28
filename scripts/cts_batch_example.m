@@ -1,7 +1,7 @@
 % % example script for using CTS batch mode to generate numerous samples
 
 %% set general batch inputs
-batchname = 'ATPs_mem'; % suffix appended to model folder names
+batchname = 'ATPs_example'; % suffix appended to model folder names
 % list of structure files for modeling in all runs: 
 targs = {'ATPS__flip.6j5i.membrane.cif','tubulin__1tub.distract.mat','act1-A2.distract.mat'...
     '1trv_thioredoxin.distract.pdb','ribo__ribo__4ug0_4v6x.group.mat','7b5s.distract.mat'};

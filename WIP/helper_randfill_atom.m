@@ -37,7 +37,7 @@ count.s = 0; count.f = 0; %success and failure counters
 
 % need to prune out membranes (or, alternatively, have a separate parameter for them)
 for i=1:numel(layers)
-namelist = [layers{i}.modelname]; %slower than cell, but more consistent
+namelist = [layers{i}.id]; %slower than cell, but more consistent
 for j=1:numel(namelist)
     if ~isfield(split,namelist{j})
         split.(namelist{j}) = zeros(0,4); %initialize split models of target ids
