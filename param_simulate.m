@@ -21,7 +21,7 @@ function [param] = param_simulate(guiinput,param)
 %raddamage - arbitrary scale for radiation damage imparted to tilts (default 1)
 %scatter - scales inelastic(lossy) electron scattering (nonlinear, scales distance relative to IMFP)
 %ctfoverlap sets the degree of overlap between CTF computation strips (default 2), 0 skips CTF simulation
-%tilterr scales tilt angle randomization from 0 to N, with 1 the error range equals the tilt increment
+%tilterr scales tilt angle randomization from 0 (default) to N, with 1 the error range equals the tilt increment
 
 arguments
     guiinput = 0
