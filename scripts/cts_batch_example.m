@@ -32,6 +32,20 @@ ideal = param_simulate('dose',800,'ice',0.5,'defocus',-3,'raddamage',0,'scatter'
 %ideal = 0;
 cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
 
+%% chromatin 5.56 denoise
+targs = {'nucleosome__6hkt_6array.mat','nuc_5wcu-assembly1.mat','nuc__pair_6L9Z.cif'};
+batchname = 'segDN_chromatin';
+
+n = 10; % number of total runs in the batch
+sz = [400,400,60]; % size of the samples, in pixels
+
+batchmod = param_batch(n,'pix',[5,6],'layers',{targs},'iters',[100,1000],'mem',0);
+batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:5:60);
+
+ideal = param_simulate('dose',600,'ice',0.5,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-80:2:80);
+%ideal = 0;
+cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
+
 %% tric-ribo denoise low-res volumetric
 targs = {'ribos_4ug0_4v6x.group.mat','tric_6nra-open_7lum-closed.group.mat',...
     'cofilin2x_actin2x.bundle.mat'};
