@@ -9,12 +9,14 @@ targs = {'ATPS__flip.6j5i.membrane.cif','tubulin__1tub.distract.mat','act1-A2.di
 n = 5; % number of total runs in the batch
 sz = [400,400,50]; % size of the samples, in pixels
 
-batchmod = param_batch(n,'pix',[8,9],'layers',{targs},'iters',[200,1000],'mem',[2,12]);
+batchmod = param_batch(n,'pix',[7,9],'layers',{targs},'iters',[200,1000],'mem',[2,12]);
 batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:3:60);
 
-ideal = param_simulate('dose',500,'ice',0.6,'defocus',-3,'raddamage',0,'scatter',0.5,...
-    'tilt',-84:2:84,'phase',pi/2);
+ideal = param_simulate('dose',500,'ice',0.6,'defocus',-2,'raddamage',0,'scatter',0.5,...
+    'tilt',-84:2:84,'phase',.07);
 %ideal = 0;
+% run the batch process
+cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
 
 %% tric-ribo denoise
 targs = {'ribos_4ug0_4v6x.group.mat','tric_6nra-open_7lum-closed.group.mat'};
