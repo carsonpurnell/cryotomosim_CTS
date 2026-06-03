@@ -40,8 +40,9 @@ batchname = 'segDN_chromatin';
 n = 10; % number of total runs in the batch
 sz = [400,400,60]; % size of the samples, in pixels
 
-batchmod = param_batch(n,'pix',[5,6],'layers',{targs},'iters',[100,1000],'mem',0);
-batchsim = param_batch(n,'dose',[120,200],'defocus',[-2,-4],'raddamage',[0.5,0.6],'tilt',-60:5:60);
+batchmod = param_batch(n,'pix',[5,6],'layers',{targs},'iters',[100,1000],'mem',0,'beads',6);
+batchsim = param_batch(n,'dose',[120,200],'defocus',[-2,-4],...
+    'raddamage',[0.2,0.4],'scatter',[0.2,0.4],'tilt',-60:5:60);
 
 ideal = param_simulate('dose',600,'ice',0.5,'defocus',-2,'raddamage',0,'scatter',0.2,'tilt',-80:2:80);
 
