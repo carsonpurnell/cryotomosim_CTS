@@ -35,16 +35,19 @@ cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ide
 %% chromatin 5.56 denoise
 targs = {'nucleosome__6hkt_6array.mat','nuc_5wcu-assembly1.mat','nuc__longlink_7K61.cif',...
     'nuc__pair_6L9Z.cif','nuc__tetra_1ZBB.cif'};
+targs = {'nuc__1_5wcu.complex.cif','nuc__1longlink_7K61.complex.cif','nuc__1longlink_7K61.complex.cif',...
+    'nuc__2_1zbb.complex.cif','nuc__2_1zbb.complex.cif','nuc__2_6l9z.complex.cif','nuc__6array_6hkt.complex.cif'};
+
 batchname = 'segDN_chromatin';
 
-n = 10; % number of total runs in the batch
+n = 5; % number of total runs in the batch
 sz = [400,400,60]; % size of the samples, in pixels
 
 batchmod = param_batch(n,'pix',[5,6],'layers',{targs},'iters',[100,1000],'mem',0,'beads',6);
-batchsim = param_batch(n,'dose',[120,200],'defocus',[-2,-4],...
-    'raddamage',[0.2,0.4],'scatter',[0.2,0.4],'tilt',-60:5:60);
+batchsim = param_batch(n,'dose',[150,200],'defocus',[-2,-4],...
+    'raddamage',[0.2,0.3],'scatter',[0.2,0.3],'tilt',-60:5:60);
 
-ideal = param_simulate('dose',600,'ice',0.5,'defocus',-2,'raddamage',0,'scatter',0.2,'tilt',-80:2:80);
+ideal = param_simulate('dose',600,'ice',0.5,'defocus',-2,'raddamage',0,'scatter',0.1,'tilt',-80:2:80);
 
 cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
 
