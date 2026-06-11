@@ -44,10 +44,10 @@ n = 5; % number of total runs in the batch
 sz = [400,400,60]; % size of the samples, in pixels
 
 batchmod = param_batch(n,'pix',[5,6],'layers',{targs},'iters',[100,1000],'mem',0,'beads',6);
-batchsim = param_batch(n,'dose',[150,200],'defocus',[-2,-4],...
-    'raddamage',[0.2,0.3],'scatter',[0.2,0.3],'tilt',-60:5:60);
+batchsim = param_batch(n,'dose',[160,200],'defocus',[-2,-4],...
+    'raddamage',[0.2,0.3],'scatter',[0.2,0.3],'tilt',-60:3:60,'phase',.02);
 
-ideal = param_simulate('dose',600,'ice',0.5,'defocus',-2,'raddamage',0,'scatter',0.1,'tilt',-80:2:80);
+ideal = param_simulate('dose',600,'ice',0.5,'defocus',-2,'raddamage',0,'scatter',0.1,'tilt',-80:2:80,'phase',0.02);
 
 cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
 
