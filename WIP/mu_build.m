@@ -233,9 +233,8 @@ l=round(l-1,-1); h=round(h+1,-1); %bounds from points/initial bounds
 %[l;h]
 len = round(h-l,-1); %length of each axis
 cen = (h+l)/2; %center of space
-%cen*2
 
-split = 2;
+split = 2; % was using 2, not sure what is fastest
 %cubifying does seem slightly faster overall, not sure how much or what context is most important
 %need some metric to force breaking lowest axis length into smaller increments to ensure more roots
 cubel = min(len)/split; ch = cubel/split; %cube full and half length for mesh compaction
