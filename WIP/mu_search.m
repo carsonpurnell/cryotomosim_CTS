@@ -64,6 +64,8 @@ if mdepth>1
         end
         %}
     end
+else
+    
 end
 
 %loop through points
@@ -94,6 +96,7 @@ for i=1:n
     end
 end
 end
+
 if opt.short==0 && any(err==1) && 1==3
     %pdist 2 faster for searching few bins with many points, short-circuit not as powerful
     [err] = bincheck(mu,test,ix);
@@ -160,7 +163,7 @@ end
 
 function ix = rootsplit(mu,test)
 n = size(test,1);
-ix = ones(2,n);
+ix = zeros(2,n);
 roots = vertcat(mu{1,1}{2,:}); %all top-level centers
 %check for multiple roots to avoid slow pdist 2 check?
 %D = distEucSq(roots,test); [~,rix] = min(D,[],1); % slower under most conditions
