@@ -75,7 +75,7 @@ for i=1:n
     %ix(:,i)
     %size(mu{ix(1,i),1}{1,ix(2,i)},2); %size(mu{ix(1,i),1}{3,ix(2,i)},1)
     %ix(1,i)
-    if ix(1,i)==mdepth || err==1 %if bottom of tree no nav
+    if ix(1,i)==mdepth || err(i)==1 %if bottom of tree no nav
         %it = ix(:,i);
     elseif size(mu{ix(1,i),1}{1,ix(2,i)},2)==3 %if points in leaf no nav
         %it = ix(:,i);
