@@ -133,7 +133,7 @@ L = relativistic_electrons(V); %compute wavelength from voltage, correcting for 
 Ny = 1/(2*pix); %nyquist frequency for later use
 B = param.sigma*Ny; %envelope factor from nyquist frequency - also incorporates the MTF signal dropoff (approx)
 % make sigma param description more clear as the envelope factor
-q = 0.00; %amplitude contrast 7% is approx https://www.sciencedirect.com/science/article/pii/0304399188900034
+q = 0.07; %amplitude contrast 7% is approx https://www.sciencedirect.com/science/article/pii/0304399188900034
 %phi = param.phase;
 %envelope/amplitude still needs validation and corroboration to our real data
 
@@ -259,6 +259,8 @@ for t=1:numel(param.tilt)
     convolved = zeros(size(vol));
     cv = convolved;
     tparam = param;
+    % IMFP for atomic projections?
+    
     % radiation might be breaking 0 dose ideal projections
     rad = helper_radiation(vol,param.pix,param.dose,param.raddamage,'byslice',0);
     for i=1:size(vol,3)
