@@ -43,7 +43,7 @@ batchname = 'segDN_chromatin';
 n = 5; % number of total runs in the batch
 sz = [400,400,50]; % size of the samples, in pixels
 
-batchmod = param_batch(n,'pix',[3,8],'layers',{targs},'iters',[100,1000],'mem',0,'beads',6);
+batchmod = param_batch(n,'pix',[5,6],'layers',{targs},'iters',[100,1000],'mem',0,'beads',6);
 batchsim = param_batch(n,'dose',[150,200],'defocus',[-2,-4],...
     'raddamage',[0.2,0.3],'scatter',[0.2,0.3],'tilt',-60:3:60,'phase',[.05,.2]);
 
@@ -64,6 +64,34 @@ batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'
 
 ideal = param_simulate('dose',800,'ice',0.5,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-85:1:85);
 %ideal = 0;
+cts_batch(sz,batchmod,batchsim,'method','vol','batchname',batchname,'ideal',ideal);
+
+%% dense cofilactin-actin bundles
+targs = {'cofilin2x_actin2x.bundle.mat'};
+batchname = 'bundles1';
+
+n = 5; % number of total runs in the batch
+sz = [400,400,50]; % size of the samples, in pixels
+
+batchmod = param_batch(n,'pix',[10,16],'layers',{targs},'iters',[500,3000],'mem',0);
+batchsim = param_batch(n,'dose',[80,160],'defocus',[-3,-5],'scatter',[0.5,1.0],'tilt',-60:2:60);
+
+%ideal = param_simulate('dose',800,'ice',0.5,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-85:1:85);
+ideal = 0;
+cts_batch(sz,batchmod,batchsim,'method','vol','batchname',batchname,'ideal',ideal);
+
+%% clusters of 
+targs = {'tric__tric__6nra-open_7lum-closed.group.cluster.pdb'};
+batchname = 'cluster1';
+
+n = 5; % number of total runs in the batch
+sz = [400,400,50]; % size of the samples, in pixels
+
+batchmod = param_batch(n,'pix',[10,16],'layers',{targs},'iters',[20,200],'mem',[5,12]);
+batchsim = param_batch(n,'dose',[80,160],'defocus',[-3,-5],'scatter',[0.5,1.0],'tilt',-60:2:60);
+
+%ideal = param_simulate('dose',800,'ice',0.5,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-85:1:85);
+ideal = 0;
 cts_batch(sz,batchmod,batchsim,'method','vol','batchname',batchname,'ideal',ideal);
 
 %% distract bork test
