@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.7.4](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.7.4) - 2026-07-30 18:39:16+00:00
+
+*No description*
+
 ## [v0.7.3](https://github.com/carsonpurnell/cryotomosim_CTS/releases/tag/v0.7.3) - 2026-04-19 15:06:27+00:00
 
 fixed .complex methods for atomic modeling, and added a demo script for using CTS in abtch mode: /scripts/cts_batch_example.m
