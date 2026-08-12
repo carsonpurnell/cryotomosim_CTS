@@ -50,6 +50,7 @@ arguments
     %tilt error at 1 might be excessive, has pretty signaificant impact on the noise
     param.mill = 0; % generate fib-mill like thickness artifacts
     param.ice = 1;
+    param.half = 0; % 1 to generate half-tilts and tomos
 end
 
 if strcmp(guiinput,'gui') %basic GUI for manual input of values
