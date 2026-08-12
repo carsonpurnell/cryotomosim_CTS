@@ -1,5 +1,5 @@
 function [vol,dtilt,atlas,tilt,ideal] = cts_simulate_atomic(input,param,opt)
-% dtilt = cts_simulate_atomic(input,param,opt)
+% [vol,dtilt,atlas,tilt,ideal] = cts_simulate_atomic(input,param,opt)
 % simulate a tilteries and reconstruct from an atomic model. more accurate and slower than vol-based method.
 % ex
 % dtilt = cts_simulate_atomic('gui',{'pix',9,'tilt',60:3:60},'slice',9)
@@ -23,8 +23,7 @@ else
 end
 q = load(fullfile(path,input));
 %if isfield(q,'cts'); q=q.cts; end % wrong way to get around vol model data
-% [path,file,ext] = fileparts(outfile); outfile = fullfile(path,append(file,'.atom.mat')); % closer to right
-% way
+% [path,file,ext] = fileparts(outfile); outfile = fullfile(path,append(file,'.atom.mat')); 
 if ~isfield(q,'dat'), error('not a valid atomic model file'); end
 mod = q.dat; split = mod.data;
 
@@ -52,10 +51,22 @@ roinames = fieldnames(split); roinames = string(roinames);
 file = fopen(append('Atlas',opt.suffix,'.txt'),'w'); 
 fprintf(file,'background\n'); fprintf(file,'%s\n',roinames); fclose(file);
 
-[tilt,dtilt,cv,cv2,ctf,ideal] = atomictiltproj(atoms,param,mod.box,opt.slice);
+[tilt,dtilt,cv,cv2,ctf,ideal,halves] = atomictiltproj(atoms,param,mod.box,opt.slice);
 
-prev = append('3_tilt',opt.suffix,'.mrc');
+prev = append('3_tilt',opt.suffix,'.mrc'); 
 WriteMRC(rescale(dtilt*-1),param.pix,prev);
+% run of recon funct here for base vol
+if size(halves{1},1)>1 %write half-tilts out too for recon
+    for i=1:2
+        h{i} = append('3_half',string(i),'_',opt.suffix,'.mrc');
+        WriteMRC(rescale(halves{i}*-1),param.pix,h{i});
+        % run of recon funct for halves here
+    end
+end
+% switch to output recon of uncorrupted image as well?
+
+% need to make a dedicated function out of this recon code - and allow for non-imod use cases?
+% use the generated ideal tilt as baseline output alongside normal recon? not good training data
 
 % recon block, should move out into a separate function, and rely on running bash scripts (easier
 % customization) rather than running bash commands from the matlab terminal
@@ -95,10 +106,10 @@ if opt.norm ==1
     normed = (vol-mean(vol,'all'))/std(vol,1,'all');
     WriteMRC(vol,head.pixA,append('5_recon',base),2);
 end
-logsim(param,'cts_param_simulate.log')
-
 delete temp.mrc
-cd(userpath)
+cd(userpath) % do need to run on every subfunct call, current dir is a global
+
+logsim(param,'cts_param_simulate.log')
 end
 
 
@@ -118,7 +129,8 @@ arguments
     pad = 10; %padding added to volume before any computations
 end
 if iscell(param), param = cts_param(param{:}); end %is this needed anymore?
-if param.ctfoverlap==0||isempty(param.defocus)||param.dose==0, convolved=input; ctf=0; return; end % skip CTF with null defocus
+% skip CTF if null defocus
+if param.ctfoverlap==0||isempty(param.defocus)||param.dose==0, convolved=input; ctf=0; return; end
 
 %fprintf('CTF parameters: pixels %g angstroms, %i KeV, aberration %g nm, sigma %g, defocus %d um',...
 %    param.pix, param.voltage, param.aberration, param.sigma, param.defocus)
@@ -201,8 +213,8 @@ h = 6.62607015e-34; %planck constant m^2 Kg/s
 L = h*c/sqrt(e*V*(2*m*c^2+e*V)); %calculation of wavelength L from accelerating voltage and constants
 end
 
-function [tilt,dtilt,cv,cv2,ctf,ideal] = atomictiltproj(atoms,param,boxsize,slabthick)
-if param.tiltax=='Y'
+function [tilt,dtilt,cv,cv2,ctf,ideal,halves] = atomictiltproj(atoms,param,boxsize,slabthick)
+if param.tiltax=='Y' % rejigger axis to use for rotations if tilt axis is not on x dim
     ax = [0,1,0];
 else
     ax = [1,0,0];
@@ -279,9 +291,15 @@ for t=1:numel(param.tilt)
 end
 fprintf('\n%i tilts simulated\n',t)
 %ctf = 0;
+halves{1} = 0;
 if param.dose>0
     dtilt = poissrnd((d*rescale(tilt*1,0,1))*01,size(tilt));
     cv2 = poissrnd((d*rescale(cv2*1,0,1))*01,size(cv2));
+    if param.half>0
+        h = 0.4+rand/5; % randomize to asymmetric noise? could that help cryocare overall?
+        halves{1} = poissrnd((d*h*rescale(tilt*1,0,1)),size(tilt));
+        halves{2} = poissrnd((d*(1-h)*rescale(tilt*1,0,1)),size(tilt));
+    end
 else
     dtilt = rescale(tilt); cv2 = rescale(cv2);
 end
