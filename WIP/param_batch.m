@@ -28,9 +28,12 @@ end
 function paramcell = batchrand(vars)
 paramcell = struct(vars{:}); % place the initial parameters
 f = fieldnames(paramcell);
+
 for j=1:numel(f)
-    if isequal(size(paramcell.(f{j})),[1,2]) && ~iscell(paramcell.(f{j}))
+    t = paramcell.(f{j});
+    if ~iscell(t) && isequal(size(t),[1,2]) && ~isstruct(t)
         % hideous randomization, subfunct for it?
+        
         paramcell.(f{j}) = paramcell.(f{j})(1)+rand*(paramcell.(f{j})(2)-paramcell.(f{j})(1));
         paramcell.(f{j}) = round(paramcell.(f{j}),2,'significant');
     else
