@@ -116,7 +116,11 @@ for i=1:numel(layers) %loop through layers to load particles and assign iteratio
             %load layer - how to deal with saved list of layers?
             %tmp{i} = helper_pdb2dat(file,pix,trim,centering,savemat);
         else
-            layers{i} = helper_input(param.layers(i,:),pix);
+            if isstruct(param.layers{1})
+                layers = param.layers; % direct import if already a cell array of structs
+            else
+                layers{i} = helper_input(param.layers(i,:),pix);
+            end
         end
     end
     param.density(i) = param.density(min(i,end));
