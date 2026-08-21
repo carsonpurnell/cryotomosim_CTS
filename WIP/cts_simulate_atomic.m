@@ -26,6 +26,8 @@ q = load(fullfile(path,input));
 % [path,file,ext] = fileparts(outfile); outfile = fullfile(path,append(file,'.atom.mat')); 
 if ~isfield(q,'dat'), error('not a valid atomic model file'); end
 mod = q.dat; split = mod.data;
+param.size = round(mod.box/param.pix);
+%if param.pix == 0; param.pix = mod.param.pix; end
 
 fn = fieldnames(split);
 atoms = zeros(0,4);
@@ -54,17 +56,26 @@ fprintf(file,'background\n'); fprintf(file,'%s\n',roinames); fclose(file);
 [tilt,dtilt,cv,cv2,ctf,ideal,halves] = atomictiltproj(atoms,param,mod.box,opt.slice);
 
 prev = append('3_tilt',opt.suffix,'.mrc'); 
-WriteMRC(rescale(dtilt*-1),param.pix,prev);
+recon_funct(dtilt,prev,param,opt);
+%WriteMRC(rescale(dtilt*-1),param.pix,prev);
 % run of recon funct here for base vol
 if size(halves{1},1)>1 %write half-tilts out too for recon
+    prev = append('3_odd',string(i),opt.suffix,'.mrc');
+    recon_funct(halves{1},prev,param,opt);
+    prev = append('3_even',string(i),opt.suffix,'.mrc');
+    recon_funct(halves{2},prev,param,opt);
+    %{
     for i=1:2
-        h{i} = append('3_half',string(i),'_',opt.suffix,'.mrc');
-        WriteMRC(rescale(halves{i}*-1),param.pix,h{i});
+        h{i} = append('3_half',string(i),opt.suffix,'.mrc');
+        %WriteMRC(rescale(halves{i}*-1),param.pix,h{i});
+        recon_funct(halves{i},h{i},param,opt);
         % run of recon funct for halves here
     end
+    %}
 end
 % switch to output recon of uncorrupted image as well?
 
+%{
 % need to make a dedicated function out of this recon code - and allow for non-imod use cases?
 % use the generated ideal tilt as baseline output alongside normal recon? not good training data
 
@@ -75,7 +86,7 @@ end
 % find currently running file path, then navigate up to find host folder?
 % use matlab execution as default, allow input of file path to .sh to run that instead- and make example bash
 % script for IMOD use case?
-param.size = round(mod.box/param.pix);
+%param.size = round(mod.box/param.pix);
 thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
 %reconstruct and rotate back into the proper space
 %radial command for fourier filtering the output, no idea what normal runs use so random numbers
@@ -107,6 +118,7 @@ if opt.norm ==1
     WriteMRC(vol,head.pixA,append('5_recon',base),2);
 end
 delete temp.mrc
+%}
 cd(userpath) % do need to run on every subfunct call, current dir is a global
 
 logsim(param,'cts_param_simulate.log')
@@ -118,6 +130,42 @@ function logsim(logdata,logfile)
 jsonout = jsonencode(logdata); % encode into json string 
 file = fopen(logfile,'w'); % create output file
 fprintf(file,'%s',jsonout); fclose(file); % write json-encoded param file
+end
+
+function recon_funct(tilt,tiltfname,param,opt)
+%tiltfname = append('x',tiltfname);
+WriteMRC(rescale(tilt*-1),param.pix,tiltfname);
+thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
+%reconstruct and rotate back into the proper space
+%radial command for fourier filtering the output, no idea what normal runs use so random numbers
+%first number radial cutoff, real tomos ~.35? cutoff slightly smoothes and increases contrast
+%lower second number sharper cutoff? or fill value past cutoff?
+%-hamminglikefilter should work similarly but only needs one input
+%-radial default 0.35 0.035
+if strcmp(param.tiltax,'Y'), tmpax = 1; else tmpax = 2; end
+w = string(round(param.size(tmpax)*1));
+cmd = append('tilt -tiltfile tiltanglesR.txt -RADIAL 0.35,0.035 -width ',w,...
+    ' -thickness ',thick,' ',tiltfname,' temp.mrc'); 
+disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
+base = append(opt.suffix,'.mrc');
+%cmd = append('trimvol -rx temp.mrc ',append('5_recon_rx',base)); %#ok<NASGU>
+%[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
+cmd = append('trimvol -mode 2 -yz temp.mrc ',append('5_recon',base)); %#ok<NASGU>
+[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
+%cmd = append('clip flipz ',append('5_recon',base),' ',append('5_recon_flipz',base)); %#ok<NASGU>
+%[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
+% rx is supposed to match yz direction, but is inverted
+% yz is almost matched to vol, might be ob1 in z direction.
+% flipz is identical to yz
+
+[vol,head] = ReadMRC(append('5_recon',base));
+if opt.norm ==1
+    delete(append('5_recon',base));
+    vol = single(vol);
+    normed = (vol-mean(vol,'all'))/std(vol,1,'all');
+    WriteMRC(vol,head.pixA,append('5_recon',base),2);
+end
+delete temp.mrc
 end
 
 function [convolved,ctf] = flatctf(input,slab,param,pad)
