@@ -55,15 +55,15 @@ fprintf(file,'background\n'); fprintf(file,'%s\n',roinames); fclose(file);
 
 [tilt,dtilt,cv,cv2,ctf,ideal,halves] = atomictiltproj(atoms,param,mod.box,opt.slice);
 
-prev = append('3_tilt',opt.suffix,'.mrc'); 
-recon_funct(dtilt,prev,param,opt);
+%fn = append(opt.suffix); 
+recon_funct(dtilt,'',param,opt);
 %WriteMRC(rescale(dtilt*-1),param.pix,prev);
 % run of recon funct here for base vol
 if size(halves{1},1)>1 %write half-tilts out too for recon
-    prev = append('3_odd',string(i),opt.suffix,'.mrc');
-    recon_funct(halves{1},prev,param,opt);
-    prev = append('3_even',string(i),opt.suffix,'.mrc');
-    recon_funct(halves{2},prev,param,opt);
+    %fn = append('odd',opt.suffix);%,'.mrc');
+    recon_funct(halves{1},'-odd',param,opt);
+    %fn = append('even',opt.suffix);%,'.mrc');
+    recon_funct(halves{2},'-even',param,opt);
     %{
     for i=1:2
         h{i} = append('3_half',string(i),opt.suffix,'.mrc');
@@ -132,9 +132,10 @@ file = fopen(logfile,'w'); % create output file
 fprintf(file,'%s',jsonout); fclose(file); % write json-encoded param file
 end
 
-function recon_funct(tilt,tiltfname,param,opt)
+function recon_funct(tilt,filename,param,opt)
 %tiltfname = append('x',tiltfname);
-WriteMRC(rescale(tilt*-1),param.pix,tiltfname);
+tiltname = append('3_tilt',filename,opt.suffix,'.mrc'); 
+WriteMRC(rescale(tilt*-1),param.pix,tiltname);
 thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
 %reconstruct and rotate back into the proper space
 %radial command for fourier filtering the output, no idea what normal runs use so random numbers
@@ -145,9 +146,9 @@ thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
 if strcmp(param.tiltax,'Y'), tmpax = 1; else tmpax = 2; end
 w = string(round(param.size(tmpax)*1));
 cmd = append('tilt -tiltfile tiltanglesR.txt -RADIAL 0.35,0.035 -width ',w,...
-    ' -thickness ',thick,' ',tiltfname,' temp.mrc'); 
+    ' -thickness ',thick,' ',tiltname,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
-base = append(opt.suffix,'.mrc');
+base = append(filename,opt.suffix,'.mrc');
 %cmd = append('trimvol -rx temp.mrc ',append('5_recon_rx',base)); %#ok<NASGU>
 %[~] = evalc('system(cmd)'); %run the command and capture outputs from spamming the console
 cmd = append('trimvol -mode 2 -yz temp.mrc ',append('5_recon',base)); %#ok<NASGU>

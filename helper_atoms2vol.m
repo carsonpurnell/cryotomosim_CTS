@@ -95,7 +95,7 @@ for j=1:s
 end
 %solv = (rand(emsz)-0.6)*1.5*pix^2+(pix^3)*1; %set initial solvent density
 solv = (rand(emsz,'single')*0.5+ones(emsz,'single')*0.75)*pix^3; % initial solvent density in A^3 per pix
-solv = imgaussfilt3(solv,0.5);
+solv = (imgaussfilt3(solv,0.6));%+solv)/2;
 
 ex = pix/3;
 acount = imgaussfilt3(acount,ex);
