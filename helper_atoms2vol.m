@@ -47,9 +47,10 @@ elseif nargin<4 %box limit only, output corner starting at 0
 end
 % rough constants - need improved values, per-atom vol especially
 avol = 4/3*pi*(1.9^3); %eyeballed volume of the average organic atom (radii approx 1.8A)- get per-atom measure?
-h20 = 3.041/2; %computed scatter factor for H2O - /2 for similarity to vol and simulate defaults
+h2o = 3.041/2; %computed scatter factor for H2O - /2 for similarity to vol and simulate defaults
 wd = 6.022e23/18/(1e8)^3; %molecules of water per a^3 - ~1/30 for liquid water
 wvol = 32; %eyeballed volume of amorphous ice molecules in angstroms
+vit = h2o/wvol;
 
 emsz = floor(sz/pix); 
 
@@ -95,11 +96,11 @@ for j=1:s
 end
 %solv = (rand(emsz)-0.6)*1.5*pix^2+(pix^3)*1; %set initial solvent density
 solv = (rand(emsz,'single')*0.5+ones(emsz,'single')*0.75)*pix^3; % initial solvent density in A^3 per pix
-solv = (imgaussfilt3(solv,0.6));%+solv)/2;
+solv = (imgaussfilt3(solv,0.4));%+solv)/2;
 
-ex = pix/3;
-acount = imgaussfilt3(acount,ex);
-solv = max(solv-acount,0)/wvol*h20; %compute waters in pixels from remaining volume
+ex = pix*2;
+acount = imgaussfilt3(acount,ex)/4; % /4 looks better aesthetically
+solv = max(solv-acount,0)*vit;%/wvol*h20; %compute waters in pixels from remaining volume
 
 tmp = cat(4,zeros(emsz,'single'),sptmp{:});
 [~,atlas] = max(tmp,[],4); atlas = atlas-1; % memory limitations - 4d array too large?
