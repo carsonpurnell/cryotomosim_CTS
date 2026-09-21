@@ -30,22 +30,24 @@ for i=1:n
     % simulation
     batchsim{i}.pix = cts.param.pix;
     %tmp = namedargs2cell(batchsim{i}); %tsim = param_simulate(tmp{:});
+    suf = append(opt.batchname,'_sim_',string(i));
     if strcmp(opt.method,'vol')
-        cts_simulate(outfile,batchsim{i},'suffix',append('sim_',string(i)));
+        cts_simulate(outfile,batchsim{i},'suffix',suf);
     else
         [path,name,ext] = fileparts(outfile);
         outfile = fullfile(path,append(name,'.atom.mat')); %bake into sim function?
-        cts_simulate_atomic(outfile,batchsim{i},'suffix',append('sim_',string(i)));
+        cts_simulate_atomic(outfile,batchsim{i},'suffix',suf);
     end
     % ideal sim run
     if isstruct(opt.ideal) % run ideal sim if argument given
         %should already be a consolidated param? or allow a cell array of values?
+        suf = append(opt.batchname,'_ideal_',string(i));
         if strcmp(opt.method,'vol')
             isim = opt.ideal; isim.pix = cts.param.pix;
-            cts_simulate(outfile,isim,'suffix',append('ideal_',string(i)));
+            cts_simulate(outfile,isim,'suffix',suf);
         else
             isim = opt.ideal; isim.pix = cts.param.pix;
-            cts_simulate_atomic(outfile,isim,'suffix',append('ideal_',string(i)));
+            cts_simulate_atomic(outfile,isim,'suffix',suf);
         end
     end
     fprintf('CTS batch: finished %i of %i runs\n',i,n)
