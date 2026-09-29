@@ -28,7 +28,7 @@ sz = [400,400,60]; % size of the samples, in pixels
 batchmod = param_batch(n,'pix',[5,8],'layers',{targs},'iters',[100,500],'mem',0,'constraint','   ');
 batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:2:60,'half',1);
 
-ideal = param_simulate('dose',800,'ice',0.2,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-60:2:60);
+ideal = param_simulate('dose',800,'ice',0.2,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-85:1:85);
 ideal = 0;
 cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
 
