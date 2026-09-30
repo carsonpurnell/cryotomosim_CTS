@@ -323,7 +323,8 @@ for t=1:numel(param.tilt)
     % IMFP for atomic projections?
     
     % radiation might be breaking 0 dose ideal projections
-    rad = helper_radiation(vol,param.pix,param.dose,param.raddamage,'byslice',0);
+    tf = 1+numel(param.tilt)-t; % scale rad damage across series - needs improvement
+    rad = helper_radiation(vol,param.pix,param.dose,param.raddamage/(tf),'byslice',0);
     for i=1:size(vol,3)
         adj = (tparam.pix*slabthick*(i-mid))/1e4*1e0; %convert from ang to um
         tparam.defocus = param.defocus+adj;
