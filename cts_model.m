@@ -76,9 +76,13 @@ if param.grid(1)~=0 % new carbon grid and hole generator
     %carbon grid sometimes fails to generate, off by 1 volume size
     cts.vol = cts.model.grid+cts.vol; fprintf('   complete \n')
 end
+if numel(param.mem)>1
+    param.mem = randi(max(param.mem)-min(param.mem))+min(param.mem);
+end
 if ~iscell(param.mem); param.mem = {param.mem(:)}; end
 if param.mem{1}~=0 %new membrane gen, makes spherical vesicles and places randomly
-    fprintf('Generating vesicular membranes ')
+    
+    fprintf('Generating %i vesicular membranes ',param.mem{1})
     %[memvol,count,~,vescen,vesvol] = gen_vesicle(cts.vol,round(param.mem),pix);
     [memvol,memskel,nvecs,vesvol,count,~] = gen_memvol(cts.vol,pix,param.mem{1},'bare',param.bare);%,3);
     cts.model.mem = memvol*1.0; % temp scalar to convert from scatter val to Z number density

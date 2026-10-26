@@ -66,6 +66,7 @@ dyn{1} = [dyn{1};pad];
 if any(param.mem>0)
     % new mem stuff testing, need better parsing and passing args from model_param etc
     memdat = gen_mem_atom(box,pix,'num',param.mem,'prior',dyn{1});
+    memdat
     param.mem = numel(memdat.memcell); % write actual mem number into param
     
     [splitin,dx,dyn] = helper_randfill_atom_mem(memdat,param,dyn{1},box);
@@ -74,7 +75,8 @@ if any(param.mem>0)
     end
     f = fieldnames(splitin);
     for i=1:numel(f)
-        tmp = splitin.(f{i}); n = round(size(tmp,1)/1); if contains(f{i},'vesicle'); n=n*1-1; end
+        tmp = splitin.(f{i}); n = round(size(tmp,1)/1); 
+        if contains(f{i},'vesicle'); n=n*1-1; end
         ix = randperm(n); ix = ix(1:round(n/2)); % ??% of atoms for collision detection later
         dx.(f{i}) = size(tmp,1)+1;
         dyn{1} = [dyn{1};tmp(ix,1:3)]; dyn{2} = numel(ix)+1;

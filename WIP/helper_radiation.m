@@ -13,7 +13,7 @@ if rad==0; out=vol; loss=0; noise=0; return; end
 rads = .02*rad*dose*pix^0; % arbitrary scalar for parameter values to map correctly to intensity
 
 % quantification from https://journals.iucr.org/s/issues/2011/03/00/xh5022/xh5022.pdf
-H = 8e2; % conversion constant for electrons -  signalout = ideal * exp(-log(2)*dose*A/H);
+H = 8e2; % conversion constant for electrons -  signalout = ideal * exp(-log(2)*dose/(pix*H));
 
 loss = zeros(size(vol)); noise = loss;
 if opt.byslice

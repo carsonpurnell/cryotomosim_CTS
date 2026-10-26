@@ -19,18 +19,19 @@ ideal = param_simulate('dose',500,'ice',0.6,'defocus',-2,'raddamage',0,'scatter'
 cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
 
 %% tric-ribo denoise
-targs = {'ribos_4ug0_4v6x.group.mat','tric_6nra-open_7lum-closed.group.mat'};
-batchname = 'segDN_111';
+targs = {'ribos_4ug0_4v6x.group.mat','tric_6nra-open_7lum-closed.group.mat'...
+    'rubisco__7zbt.mat'};
+batchname = 'segDN_d';
 
 n = 3; % number of total runs in the batch
-sz = [400,400,60]; % size of the samples, in pixels
+sz = [400,400,50]; % size of the samples, in pixels
 
-batchmod = param_batch(n,'pix',[5,8],'layers',{targs},'iters',[100,500],'mem',0,'constraint','   ');
-batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:2:60,'half',1);
+batchmod = param_batch(n,'pix',[8,14],'layers',{targs},'iters',[200,2000],'mem',[8,30],'constraint','  &');
+batchsim = param_batch(n,'dose',[60,150],'defocus',[-3,-5],'scatter',[0.5,1.5],'tilt',-60:2:60,'half',0);
 
 ideal = param_simulate('dose',800,'ice',0.2,'defocus',-3,'raddamage',0,'scatter',0.2,'tilt',-85:1:85);
-ideal = 0;
-cts_batch(sz,batchmod,batchsim,'method','atom','batchname',batchname,'ideal',ideal);
+%ideal = 0;
+cts_batch(sz,batchmod,batchsim,'method','vol','batchname',batchname,'ideal',ideal);
 
 %% chromatin 5.56 denoise
 targs = {'nucleosome__6hkt_6array.mat','nuc_5wcu-assembly1.mat','nuc__longlink_7K61.cif',...

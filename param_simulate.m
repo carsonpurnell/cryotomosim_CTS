@@ -8,16 +8,17 @@ function [param] = param_simulate(guiinput,param)
 %values that were supplied, and otherwise have defaults.
 %
 %name-value pair inputs (param):
-%voltage -  in KeV
-%aberration - in mm
-%sigma - arbitrary value of the CTF envelope function
-%defocus - in nm
+%voltage -  in KeV default 300
+%aberration - in mm default 2.7
+%sigma - unitless value of the CTF envelope function, default 0.9
+%defocus - in um
 %tilt - [min increment max], min:increment:max, or otherwise a list of tilt angles in the simulation
 %dose - in e/A^2. one value is distributed, 0 skips dose simulation, else must be a vector matching tilts
 %tiltscheme - 'symmetric' or otherwise a tilt angle that splits the half-tilt segments
 %      tilt acquisition proceeds from the split angle to positive, then the split towards negative
 %pix overrides a pixel size from an input model
 %tiltax determines the tilt axis, input 'X' else 'Y'. still some janky rotations
+%phase - (defult .07) amplitude contrast/phase shift, use pi/2 for ideal phase shift images
 %raddamage - arbitrary scale for radiation damage imparted to tilts (default 1)
 %scatter - scales inelastic(lossy) electron scattering (nonlinear, scales distance relative to IMFP)
 %ctfoverlap sets the degree of overlap between CTF computation strips (default 2), 0 skips CTF simulation

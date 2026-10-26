@@ -188,7 +188,7 @@ for i=1:iters(ww)
             list.(set(which).id{sub})(end+1,:) = com;
             %generate list of random points near loc
             num = 12;
-            r = randn(1,num).*mean(size(set(which).vol{sub}))/2+mean(size(set(which).vol{sub}));
+            r = abs(randn(1,num)).*mean(size(set(which).vol{sub}))+mean(size(set(which).vol{sub}))/2-1;
             az = rand(1,num)*360; el = rand(1,num)*360;
             [x,y,z] = sph2cart(az,el,abs(r));
             clusterpts = round([x;y;z]')+loc;

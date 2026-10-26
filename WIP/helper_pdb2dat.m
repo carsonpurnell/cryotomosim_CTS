@@ -376,6 +376,7 @@ function atomint = atomdict(atomid,mode)
 if nargin<2, mode='z'; end
 el = {'H','C','N','O','P','S','F','Na','MG','Cl','K','Ca','Mn','Fe'}; %element symbols to use for lookup
 %scattering potentials computed as sum of first 5 parameters of atom form factor, holding s=0
+%from https://onlinelibrary.wiley.com/iucr/itc/Cb/ch4o3v0001/sec4o3o1/
 sc = [0.5288,2.5088,2.2135,1.9834,5.4876,5.1604,1.8012,4.7758,5.2078,4.8577,8.9834,9.9131,7.5062,7.1637,0];
 z = [1,6,7,8,15,16,9,11,12,17,19,20,25,26,0]; %15==0 for bad entries
 hp = [0,1.3,1.1,0.2,0,0.6,0,0,0,0,0,0,0,0,0]; %average hydrogens per atom

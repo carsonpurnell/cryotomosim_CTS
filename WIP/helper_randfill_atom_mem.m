@@ -17,7 +17,21 @@ ix = cellfun(@numel,layers);
 layers = layers(logical(ix)); % prune out layers without membranes
 
 %bail if no membranes
-if numel(layers)<1, dyn = {perim,1};disp('no membrane structs to embed, skipping');return, end
+if numel(layers)<1
+    f = fieldnames(memdat.atoms);
+for i=1:numel(f)
+    %[ix,d] = knnsearch(kdt,atoms(:,1:3),'K',1,'SortIndices',0); %toc %554 119 121
+    % bottleneck right here
+    %[~,d2] = knnsearch(kdt2,memdat.atoms.(f{i})(:,1:3),'K',1,'SortIndices',0); %toc
+    
+    %ixf = d2>4.0; % appears to reliably prevent overlap without gaps
+    mematoms = memdat.atoms.(f{i});
+    split.(f{i}) = mematoms;
+end
+
+    dyn = {perim,1};disp('no membrane structs to embed, skipping');
+    return
+end
 
 % probably need cleanup dx/dyn/split stuff
 

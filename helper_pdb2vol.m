@@ -153,6 +153,8 @@ H=1;
 edat = {'H',0;'C',6+1.3;'N',7+1.1;'O',8+0.2;'P',15;'S',16+0.6;...
     'MG',12;'ZN',30;'MN',25;'F',9;'CL',17;'CA',20};
 %H = 25;
+% need to implement https://onlinelibrary.wiley.com/iucr/itc/Cb/ch4o3v0001/sec4o3o1/
+% as option consistent across all methods
 %edat = {'H',0;'C',108+1.28*H;'N',130+1.13*H;'O',97+0.08*H;'P',267;'S',100+0.41*H};
 %need to reformulate these into vectors, too annoying to work with as cell and refactored anyway
 elements = edat(:,1); atomdict = cell2mat(edat(:,2));

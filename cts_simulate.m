@@ -217,7 +217,7 @@ thick = string(round(param.size(3)*1)); %w = string(param.size(1)-50);
 %first number radial cutoff, real tomos ~.35? cutoff slightly smoothes and increases contrast
 %lower second number sharper cutoff? or fill value past cutoff?
 %-hamminglikefilter should work similarly but only needs one input
-%-radial default 0.35 0.035
+%-radial default 0.35 0.035 %  
 cmd = append('tilt -tiltfile tiltanglesR.txt -RADIAL 0.35,0.035 -width ',w,...
     ' -thickness ',thick,' ',prev,' temp.mrc'); 
 disp(cmd); [~] = evalc('system(cmd)'); %run the recon after displaying the command
@@ -228,7 +228,7 @@ if opt.norm==1
     [vol,head] = ReadMRC(append('5_recon',base));
     delete(append('5_recon',base));
     vol = single(vol);
-    normed = (vol-mean(vol,'all'))/std(vol,1,'all');
+    normed = (vol-mean(vol,'all'))/std(vol,1,'all'); % rescale intensities to normal dist
     WriteMRC(vol,head.pixA,append('5_recon',base),1);
 end
 [rec,~] = ReadMRC(append('5_recon',base));
