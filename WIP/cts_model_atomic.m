@@ -66,7 +66,6 @@ dyn{1} = [dyn{1};pad];
 if any(param.mem>0)
     % new mem stuff testing, need better parsing and passing args from model_param etc
     memdat = gen_mem_atom(box,pix,'num',param.mem,'prior',dyn{1});
-    memdat
     param.mem = numel(memdat.memcell); % write actual mem number into param
     
     [splitin,dx,dyn] = helper_randfill_atom_mem(memdat,param,dyn{1},box);
